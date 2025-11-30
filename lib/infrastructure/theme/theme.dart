@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Map<int, Color> swatch = {
@@ -67,55 +68,55 @@ MaterialColor primarySwatch = MaterialColor(0xFF1DB7CC, swatch);
 
 TextStyle h1 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 32,
+  fontSize: 32.sp,
   fontWeight: FontWeight.w600,
 );
 
 TextStyle h2 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 24,
+  fontSize: 24.sp,
   fontWeight: FontWeight.w600,
 );
 
 TextStyle h3 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 22,
+  fontSize: 22.sp,
   fontWeight: FontWeight.w600,
 );
 
 TextStyle r20 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 20,
+  fontSize: 20.sp,
   fontWeight: FontWeight.w400,
 );
 
 TextStyle r18 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 18,
+  fontSize: 18.sp,
   fontWeight: FontWeight.w400,
 );
 
 TextStyle r16 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 16,
+  fontSize: 16.sp,
   fontWeight: FontWeight.w400,
 );
 
 TextStyle r14 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 14,
+  fontSize: 14.sp,
   fontWeight: FontWeight.w400,
 );
 
 TextStyle r12 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 12,
+  fontSize: 12.sp,
   fontWeight: FontWeight.w400,
 );
 
 TextStyle r10 = TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 10,
+  fontSize: 10.sp,
   fontWeight: FontWeight.w400,
 );
 
@@ -136,7 +137,7 @@ class AppTheme {
     textTheme: TextTheme(
       bodyLarge: r16.copyWith(color: slate[900]),
       bodyMedium: r14.copyWith(color: slate[600]),
-      bodySmall: r12.copyWith(color: slate[800]),
+      bodySmall: r12.copyWith(color: slate[400]),
       headlineLarge: h1.copyWith(color: slate[800]),
       headlineMedium: h2.copyWith(color: slate[800]),
       headlineSmall: h3.copyWith(color: slate[800]),
@@ -284,7 +285,7 @@ class AppTheme {
     textTheme: TextTheme(
       bodyLarge: r16.copyWith(color: white),
       bodyMedium: r14.copyWith(color: slate[400]),
-      bodySmall: r12.copyWith(color: slate[800]),
+      bodySmall: r12.copyWith(color: slate[400]),
       headlineLarge: h1.copyWith(color: white),
       headlineMedium: h2.copyWith(color: white),
       headlineSmall: h3.copyWith(color: white),

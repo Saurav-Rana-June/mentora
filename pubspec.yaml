@@ -1,5 +1,5 @@
-name: mentora
-description: "A new Flutter project."
+name: Mentora
+description: "Mentora is a mental health and well-being app designed to support individuals dealing with stress, anxiety, or other emotional challenges. It offers mood tracking, guided exercises, and personalized self-care tools to help users build healthy habits and improve overall wellness."
 version: 1.0.0+1
 
 environment:
@@ -35,11 +35,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-assets:
-  - assets/logos/
-  - assets/images/
-  - assets/moods/
+  assets:
+    - assets/logos/
+    - assets/images/
+    - assets/gifs/
 
 fonts:
   - family: Satoshi

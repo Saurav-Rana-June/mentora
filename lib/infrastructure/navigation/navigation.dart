@@ -1,3 +1,4 @@
+import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -5,11 +6,12 @@ import 'package:get/get.dart';
 import '../../config.dart';
 import '../../presentation/screens.dart';
 import 'bindings/controllers/controllers_bindings.dart';
+import 'bindings/controllers/home.controller.binding.dart';
 import 'routes.dart';
 
 class EnvironmentsBadge extends StatelessWidget {
   final Widget child;
-  EnvironmentsBadge({required this.child});
+  const EnvironmentsBadge({super.key, required this.child});
   @override
   Widget build(BuildContext context) {
     var env = ConfigEnvironments.getEnvironments()['env'];
@@ -30,6 +32,11 @@ class Nav {
       name: Routes.HOME,
       page: () => const HomeScreen(),
       binding: HomeControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SPLASH,
+      page: () => const SplashScreen(),
+      binding: SplashControllerBinding(),
     ),
   ];
 }

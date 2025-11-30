@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
 import 'infrastructure/navigation/navigation.dart';
 import 'infrastructure/navigation/routes.dart';
+import 'infrastructure/theme/theme.dart';
 
 void main() async {
   var initialRoute = await Routes.initialRoute;
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(Main(initialRoute));
 }
 
 class Main extends StatelessWidget {
   final String initialRoute;
-  Main(this.initialRoute);
+  const Main(this.initialRoute, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialRoute: initialRoute,
-      getPages: Nav.routes,
+    return ScreenUtilInit(
+      designSize: const Size(360, 760),
+      minTextAdapt: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          title: "Mentora",
+          initialRoute: initialRoute,
+          debugShowCheckedModeBanner: false,
+          getPages: Nav.routes,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+        );
+      },
     );
   }
 }
