@@ -187,15 +187,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.16.0"
-  my_buttons:
-    dependency: "direct main"
-    description:
-      path: my_buttons
-      ref: my_buttons
-      resolved-ref: e88e23ed2950389890bc7d28f96c060e818ea89b
-      url: "https://github.com/Saurav-Rana-June/my_packages.git"
-    source: git
-    version: "1.0.0"
   my_icons:
     dependency: "direct main"
     description:

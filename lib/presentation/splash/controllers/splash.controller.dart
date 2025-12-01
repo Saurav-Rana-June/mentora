@@ -1,23 +1,14 @@
+import 'dart:async';
+
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
-  //TODO: Implement SplashController
-
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    Timer(const Duration(seconds: 3), () {
+      Get.offNamed(Routes.INTRODUCTION);
+    });
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

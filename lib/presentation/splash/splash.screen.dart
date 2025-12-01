@@ -9,7 +9,11 @@ import '../../infrastructure/theme/theme.dart';
 import 'controllers/splash.controller.dart';
 
 class SplashScreen extends GetView<SplashController> {
-  const SplashScreen({super.key});
+  SplashScreen({super.key});
+
+  @override
+  final controller = Get.put(SplashController());
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -18,7 +22,7 @@ class SplashScreen extends GetView<SplashController> {
         statusBarIconBrightness: Get.isDarkMode
             ? Brightness.light
             : Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarColor: black,
       ),
     );
 
@@ -32,8 +36,8 @@ class SplashScreen extends GetView<SplashController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: 50.h,
-                width: 50.w,
+                height: 60.spMin,
+                width: 60.spMin,
                 child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
               ),
               Spacing.s8.w,

@@ -22,11 +22,6 @@ dependencies:
       url: https://github.com/Saurav-Rana-June/my_packages.git
       path: my_spacing
       ref: my_spacing
-  my_buttons:
-    git:
-      url: https://github.com/Saurav-Rana-June/my_packages.git
-      path: my_buttons
-      ref: my_buttons
 
 dev_dependencies:
   flutter_test:
@@ -40,23 +35,27 @@ flutter:
     - assets/images/
     - assets/gifs/
 
-fonts:
-  - family: Satoshi
-    fonts:
-      - asset: assets/fonts/Satoshi-Regular.otf
-      - asset: assets/fonts/Satoshi-Medium.otf
-        weight: 500
-      - asset: assets/fonts/Satoshi-Bold.otf
-        weight: 700
-  - family: FontAwesomeSolid
-    fonts:
-      - asset: assets/fonts/fa-solid-900.ttf
-  - family: FontAwesomeRegular
-    fonts:
-      - asset: assets/fonts/fa-regular-400.ttf
-  - family: FontAwesomeLight
-    fonts:
-      - asset: assets/fonts/fa-light-300.ttf
-  - family: FontAwesomeBrands
-    fonts:
-      - asset: assets/fonts/fa-brands-400.ttf
+  fonts:
+    - family: Satoshi
+      fonts:
+        - asset: assets/fonts/Satoshi-Regular.otf
+        - asset: assets/fonts/Satoshi-Medium.otf
+          weight: 500
+        - asset: assets/fonts/Satoshi-Bold.otf
+          weight: 700
+
+    - family: FontAwesomeSolid
+      fonts:
+        - asset: assets/fonts/fa-solid-900.ttf
+
+    - family: FontAwesomeRegular
+      fonts:
+        - asset: assets/fonts/fa-regular-400.ttf
+
+    - family: FontAwesomeLight
+      fonts:
+        - asset: assets/fonts/fa-light-300.ttf
+
+    - family: FontAwesomeBrands
+      fonts:
+        - asset: assets/fonts/fa-brands-400.ttf

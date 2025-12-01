@@ -1,7 +1,8 @@
-import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+
+import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 
 import '../../config.dart';
 import '../../presentation/screens.dart';
@@ -35,8 +36,23 @@ class Nav {
     ),
     GetPage(
       name: Routes.SPLASH,
-      page: () => const SplashScreen(),
+      page: () => SplashScreen(),
       binding: SplashControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.INTRODUCTION,
+      page: () => IntroductionScreen(),
+      binding: IntroductionControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.CONTINUE,
+      page: () => const ContinueScreen(),
+      binding: ContinueControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.LOGIN,
+      page: () => const LoginScreen(),
+      binding: LoginControllerBinding(),
     ),
   ];
 }

@@ -33,7 +33,8 @@ Map<int, Color> slate = {
 Color white = const Color(0xFFFFFFFF);
 Color black = const Color(0xFF000000);
 
-Color primary = const Color(0xFFFA6403);
+Color primary = const Color(0xFFA5C67C);
+Color secondary = const Color(0xFFF8F9F2);
 
 Color red = const Color(0xFFF87171);
 Color red2 = const Color(0xFFEF4444);
@@ -56,7 +57,7 @@ Color green2 = const Color(0xFF22C55E);
 Color teal = const Color(0xFF2DD4BF);
 Color teal2 = const Color(0xFF14B8A6);
 
-Color scaffoldColorLight = Color(0xFFFEF2E9);
+Color scaffoldColorLight = white;
 Color scaffoldColorDark = Color(0xFF2D2E2B);
 
 Color successColor = const Color(0xFF76BB70);
