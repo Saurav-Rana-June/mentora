@@ -183,6 +183,7 @@ class AppTheme {
       ),
     ),
 
+    // filledButtonTheme: Theme,
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(foregroundColor: primary),
     ),
@@ -215,6 +216,8 @@ class AppTheme {
       type: BottomNavigationBarType.fixed,
       elevation: 10,
     ),
+
+    canvasColor: slate[100],
 
     // SWITCH / CHECKBOX
     switchTheme: SwitchThemeData(
@@ -349,6 +352,8 @@ class AppTheme {
       unselectedItemColor: slate[400],
       elevation: 12,
     ),
+
+    canvasColor: Color(0xFF41423E),
 
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.all(primary),

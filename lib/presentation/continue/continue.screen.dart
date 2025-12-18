@@ -1,3 +1,4 @@
+import 'package:Mentora/presentation/signUp/sign_up.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
-import 'package:my_spacing/spacing.enum.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/continue.controller.dart';
@@ -42,40 +42,44 @@ class ContinueScreen extends GetView<ContinueController> {
             Spacing.s40.h,
             buildAuthButtons(context),
             Spacing.s40.h,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Privacy Policy",
-                  textAlign: TextAlign.center,
-                  style: r14.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall!.color,
-                  ),
-                ),
-                Spacing.s12.w,
-                Container(
-                  height: 5,
-                  width: 5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(
-                      context,
-                    ).textTheme.bodySmall!.color!.withValues(alpha: 0.5),
-                  ),
-                ),
-                Spacing.s12.w,
-                Text(
-                  "Terms of Service",
-                  textAlign: TextAlign.center,
-                  style: r14.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall!.color,
-                  ),
-                ),
-              ],
-            ),
+            buildExtraButtons(context),
           ],
         ),
       ),
+    );
+  }
+
+  Row buildExtraButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Privacy Policy",
+          textAlign: TextAlign.center,
+          style: r14.copyWith(
+            color: Theme.of(context).textTheme.bodySmall!.color,
+          ),
+        ),
+        Spacing.s12.w,
+        Container(
+          height: 5,
+          width: 5,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Theme.of(
+              context,
+            ).textTheme.bodySmall!.color!.withValues(alpha: 0.5),
+          ),
+        ),
+        Spacing.s12.w,
+        Text(
+          "Terms of Service",
+          textAlign: TextAlign.center,
+          style: r14.copyWith(
+            color: Theme.of(context).textTheme.bodySmall!.color,
+          ),
+        ),
+      ],
     );
   }
 
@@ -140,7 +144,7 @@ class ContinueScreen extends GetView<ContinueController> {
         ),
         Spacing.s16.h,
         CustomOutlineButton(
-          label: "Continue  with Facebook",
+          label: "Continue  with X",
           height: 45.h,
           borderRadius: 50.r,
           borderSize: 1.2,
@@ -167,7 +171,9 @@ class ContinueScreen extends GetView<ContinueController> {
           disabledColor: primary.withValues(alpha: 0.5),
           isLoading: false,
           textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-          onPressed: () {},
+          onPressed: () {
+            Get.to(() => SignUpScreen(), transition: Transition.rightToLeft);
+          },
         ),
         Spacing.s16.h,
 
