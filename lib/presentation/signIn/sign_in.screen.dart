@@ -1,3 +1,4 @@
+import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
@@ -6,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:my_spacing/my_spacing.dart';
 import 'package:my_spacing/spacing.enum.dart';
-import 'package:my_spacing/spacing.extension.dart';
 
-import '../../infrastructure/theme/theme.dart';
-import 'controllers/sign_up.controller.dart';
+import 'controllers/sign_in.controller.dart';
 
-class SignUpScreen extends GetView<SignUpController> {
-  const SignUpScreen({super.key});
+class SignInScreen extends GetView<SignInController> {
+  const SignInScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,33 +22,6 @@ class SignUpScreen extends GetView<SignUpController> {
       body: Stack(
         alignment: AlignmentGeometry.bottomCenter,
         children: [buildForm(context), buildButton()],
-      ),
-    );
-  }
-
-  AppBar buildAppbar() => AppBar(
-    title: CustomBackButton(),
-    automaticallyImplyLeading: false,
-    surfaceTintColor: Colors.transparent,
-  );
-
-  Padding buildButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.vertical,
-      ),
-      child: CustomPrimaryButton(
-        text: "Sign up",
-        borderRadius: 50.r,
-        height: 45,
-        backgroundColor: primary,
-        disabledColor: primary.withValues(alpha: 0.5),
-        isLoading: false,
-        textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-        onPressed: () {
-          Get.to(() => SignUpScreen(), transition: Transition.rightToLeft);
-        },
       ),
     );
   }
@@ -65,7 +39,7 @@ class SignUpScreen extends GetView<SignUpController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Join Mentora Today",
+                "Welcome Back! 👋",
                 textAlign: TextAlign.center,
                 style: h3.copyWith(
                   fontWeight: FontWeight.w700,
@@ -73,7 +47,7 @@ class SignUpScreen extends GetView<SignUpController> {
                 ),
               ),
               Text(
-                "Start Your Journey to Better Mental Health",
+                "Sign in to continue your wellness journey",
                 textAlign: TextAlign.center,
                 style: r14.copyWith(
                   color: Theme.of(context).textTheme.bodySmall!.color,
@@ -171,59 +145,46 @@ class SignUpScreen extends GetView<SignUpController> {
               Spacing.s16.h,
 
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    height: 20.h,
-                    width: 20.w,
-                    child: CustomCheckBox(
-                      value: false,
-                      onChanged: (v) {},
-                      borderWidth: 1.2,
-                      borderColor: primary,
-                    ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 20.h,
+                        width: 20.w,
+                        child: CustomCheckBox(
+                          value: false,
+                          onChanged: (v) {},
+                          borderWidth: 1.2,
+                          borderColor: primary,
+                        ),
+                      ),
+                      Spacing.s12.w,
+                      Text(
+                        "Remember Me",
+                        textAlign: TextAlign.center,
+                        style: r14.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                  Spacing.s12.w,
-                  Text(
-                    "I agree to Mindify",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Spacing.s4.w,
-                  Text(
-                    "Terms & Conditions",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              Spacing.s32.h,
 
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Already have an account?",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w400,
+                  TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                  ),
-                  Spacing.s8.w,
-                  Text(
-                    "Sign in",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.w500,
+                    child: Text(
+                      "Forgot Password?",
+                      textAlign: TextAlign.center,
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -296,6 +257,25 @@ class SignUpScreen extends GetView<SignUpController> {
     );
   }
 
+  Padding buildButton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+        vertical: Spacing.s4.symmetric.vertical,
+      ),
+      child: CustomPrimaryButton(
+        text: "Sign up",
+        borderRadius: 50.r,
+        height: 45,
+        backgroundColor: primary,
+        disabledColor: primary.withValues(alpha: 0.5),
+        isLoading: false,
+        textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
+        onPressed: () {},
+      ),
+    );
+  }
+
   Material buildLoginOptionButton(
     BuildContext context,
     String image,
@@ -332,4 +312,10 @@ class SignUpScreen extends GetView<SignUpController> {
       ),
     );
   }
+
+  AppBar buildAppbar() => AppBar(
+    title: CustomBackButton(),
+    automaticallyImplyLeading: false,
+    surfaceTintColor: Colors.transparent,
+  );
 }

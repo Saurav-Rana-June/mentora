@@ -1,3 +1,4 @@
+import 'package:Mentora/presentation/signIn/sign_in.screen.dart';
 import 'package:Mentora/presentation/signUp/sign_up.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
@@ -175,7 +176,7 @@ class ContinueScreen extends GetView<ContinueController> {
             Get.to(() => SignUpScreen(), transition: Transition.rightToLeft);
           },
         ),
-        Spacing.s16.h,
+        Spacing.s8.h,
 
         CustomPrimaryButton(
           text: "Sign in",
@@ -185,7 +186,9 @@ class ContinueScreen extends GetView<ContinueController> {
           disabledColor: secondary.withValues(alpha: 0.5),
           isLoading: false,
           textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: primary),
-          onPressed: () {},
+          onPressed: () {
+            Get.to(() => SignInScreen(), transition: Transition.rightToLeft);
+          },
         ),
       ],
     );
