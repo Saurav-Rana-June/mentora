@@ -257,13 +257,15 @@ class AppTheme {
     ),
 
     // DIVIDERS
-    dividerTheme: DividerThemeData(color: slate[100], thickness: 1),
+    dividerTheme: DividerThemeData(color: slate[200], thickness: 1),
 
     // LIST TILE
     listTileTheme: ListTileThemeData(
       iconColor: slate[800],
       textColor: slate[800],
     ),
+
+    sliderTheme: SliderThemeData(inactiveTrackColor: slate[100]),
 
     // FAB
     floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -383,6 +385,8 @@ class AppTheme {
       backgroundColor: primary,
       foregroundColor: white,
     ),
+
+    sliderTheme: SliderThemeData(inactiveTrackColor: slate[700]),
 
     cardTheme: CardThemeData(
       color: Color(0xFF41423E),

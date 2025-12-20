@@ -1,3 +1,4 @@
+import 'package:Mentora/presentation/onboarding/onboarding.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
@@ -28,6 +29,7 @@ class SignUpScreen extends GetView<SignUpController> {
   AppBar buildAppbar() => AppBar(
     title: CustomBackButton(),
     automaticallyImplyLeading: false,
+    centerTitle: false,
     surfaceTintColor: Colors.transparent,
   );
 
@@ -46,7 +48,7 @@ class SignUpScreen extends GetView<SignUpController> {
         isLoading: false,
         textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
         onPressed: () {
-          Get.to(() => SignUpScreen(), transition: Transition.rightToLeft);
+          Get.to(() => OnboardingScreen(), transition: Transition.rightToLeft);
         },
       ),
     );
@@ -67,7 +69,7 @@ class SignUpScreen extends GetView<SignUpController> {
               Text(
                 "Join Mentora Today",
                 textAlign: TextAlign.center,
-                style: h3.copyWith(
+                style: h2.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).textTheme.headlineMedium!.color,
                 ),

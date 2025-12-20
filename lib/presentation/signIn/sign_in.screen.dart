@@ -41,7 +41,7 @@ class SignInScreen extends GetView<SignInController> {
               Text(
                 "Welcome Back! 👋",
                 textAlign: TextAlign.center,
-                style: h3.copyWith(
+                style: h2.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).textTheme.headlineMedium!.color,
                 ),
@@ -316,6 +316,7 @@ class SignInScreen extends GetView<SignInController> {
   AppBar buildAppbar() => AppBar(
     title: CustomBackButton(),
     automaticallyImplyLeading: false,
+    centerTitle: false,
     surfaceTintColor: Colors.transparent,
   );
 }
