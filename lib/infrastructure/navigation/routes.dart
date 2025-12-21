@@ -8,8 +8,10 @@ class Routes {
   static const HOME = '/home';
   static const INTRODUCTION = '/introduction';
   static const LOGIN = '/login';
+  static const ONBOARDING = '/onboarding';
+  static const PREPARE_PLAN = '/prepare-plan';
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const SPLASH = '/splash';
-  static const ONBOARDING = '/onboarding';
+  static const ALL_SET = '/all-set';
 }

@@ -8,6 +8,7 @@ import 'package:Mentora/presentation/onboarding/views/meditation.view.dart';
 import 'package:Mentora/presentation/onboarding/views/name.view.dart';
 import 'package:Mentora/presentation/onboarding/views/sleep_quality.view.dart';
 import 'package:Mentora/presentation/onboarding/views/status_update.view.dart';
+import 'package:Mentora/presentation/preparePlan/prepare_plan.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -120,7 +121,7 @@ class OnboardingController extends GetxController {
     if (currentStep.value < maxStep.value) {
       currentStep.value = currentStep.value + 1;
     } else {
-      print('Max Reached!!');
+      Get.to(() => PreparePlanScreen(), transition: Transition.rightToLeft);
     }
   }
 

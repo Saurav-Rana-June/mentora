@@ -64,5 +64,15 @@ class Nav {
       page: () => OnboardingScreen(),
       binding: OnboardingControllerBinding(),
     ),
+    GetPage(
+      name: Routes.PREPARE_PLAN,
+      page: () => PreparePlanScreen(),
+      binding: PreparePlanControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.ALL_SET,
+      page: () => const AllSetScreen(),
+      binding: AllSetControllerBinding(),
+    ),
   ];
 }
