@@ -1,4 +1,5 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
@@ -13,7 +14,10 @@ import 'package:my_spacing/spacing.enum.dart';
 import 'controllers/sign_in.controller.dart';
 
 class SignInScreen extends GetView<SignInController> {
-  const SignInScreen({super.key});
+  SignInScreen({super.key});
+
+  @override
+  final controller = Get.put(SignInController());
 
   @override
   Widget build(BuildContext context) {
@@ -101,46 +105,54 @@ class SignInScreen extends GetView<SignInController> {
                 ),
               ),
               Spacing.s8.h,
-              CustomTextFormField(
-                controller: TextEditingController(),
-                prefixIcon: Container(
-                  width: 20,
-                  padding: EdgeInsets.only(left: 8),
-                  child: Center(
-                    child: Text(
-                      "\u{f023}", // Change Icon :- lock
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeLight',
-                        fontSize: 20,
-                        color: primary,
+              Obx(
+                () => CustomTextFormField(
+                  controller: controller.passwordController,
+                  prefixIcon: Container(
+                    width: 20,
+                    padding: EdgeInsets.only(left: 8),
+                    child: Center(
+                      child: Text(
+                        "\u{f023}", // Change Icon :- lock
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeLight',
+                          fontSize: 20,
+                          color: primary,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    onPressed: () {},
-                    padding: EdgeInsets.zero,
-                    icon: Text(
-                      "\u{f06e}", // Change Icon :- eye, eye-slash
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeLight',
-                        fontSize: 20,
-                        color: primary,
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: IconButton(
+                      onPressed: () {
+                        controller.hidePassword.value =
+                            !controller.hidePassword.value;
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: Text(
+                        controller.hidePassword.value
+                            ? "\u{f06e}"
+                            : "\u{f070}", // Change Icon :- eye, eye-slash
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeLight',
+                          fontSize: 20,
+                          color: primary,
+                        ),
                       ),
                     ),
                   ),
+                  obscureText: controller.hidePassword.value,
+                  fillColor: Theme.of(context).canvasColor,
+                  hintText: "Password",
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return "Title is required";
+                    return null;
+                  },
                 ),
-                fillColor: Theme.of(context).canvasColor,
-                hintText: "Password",
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return "Title is required";
-                  return null;
-                },
               ),
               Spacing.s16.h,
 
@@ -172,7 +184,12 @@ class SignInScreen extends GetView<SignInController> {
                   ),
 
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(
+                        () => ForgotPasswordScreen(),
+                        transition: Transition.rightToLeft,
+                      );
+                    },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: Size.zero,

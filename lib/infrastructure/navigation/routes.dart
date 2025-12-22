@@ -4,6 +4,7 @@ class Routes {
     return SPLASH;
   }
 
+  static const ALL_SET = '/all-set';
   static const CONTINUE = '/continue';
   static const HOME = '/home';
   static const INTRODUCTION = '/introduction';
@@ -13,5 +14,5 @@ class Routes {
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const SPLASH = '/splash';
-  static const ALL_SET = '/all-set';
+  static const FORGOT_PASSWORD = '/forgot-password';
 }

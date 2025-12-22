@@ -14,7 +14,10 @@ import '../../infrastructure/theme/theme.dart';
 import 'controllers/sign_up.controller.dart';
 
 class SignUpScreen extends GetView<SignUpController> {
-  const SignUpScreen({super.key});
+  SignUpScreen({super.key});
+
+  @override
+  final controller = Get.put(SignUpController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +96,7 @@ class SignUpScreen extends GetView<SignUpController> {
               ),
               Spacing.s8.h,
               CustomTextFormField(
-                controller: TextEditingController(),
+                controller: controller.emailController,
                 prefixIcon: Container(
                   width: 20,
                   padding: EdgeInsets.only(left: 8),
@@ -129,46 +132,54 @@ class SignUpScreen extends GetView<SignUpController> {
                 ),
               ),
               Spacing.s8.h,
-              CustomTextFormField(
-                controller: TextEditingController(),
-                prefixIcon: Container(
-                  width: 20,
-                  padding: EdgeInsets.only(left: 8),
-                  child: Center(
-                    child: Text(
-                      "\u{f023}", // Change Icon :- lock
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeLight',
-                        fontSize: 20,
-                        color: primary,
+              Obx(
+                () => CustomTextFormField(
+                  controller: controller.passwordController,
+                  prefixIcon: Container(
+                    width: 20,
+                    padding: EdgeInsets.only(left: 8),
+                    child: Center(
+                      child: Text(
+                        "\u{f023}", // Change Icon :- lock
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeLight',
+                          fontSize: 20,
+                          color: primary,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    onPressed: () {},
-                    padding: EdgeInsets.zero,
-                    icon: Text(
-                      "\u{f06e}", // Change Icon :- eye, eye-slash
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeLight',
-                        fontSize: 20,
-                        color: primary,
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: IconButton(
+                      onPressed: () {
+                        controller.hidePassword.value =
+                            !controller.hidePassword.value;
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: Text(
+                        controller.hidePassword.value
+                            ? "\u{f06e}"
+                            : "\u{f070}", // Change Icon :- eye, eye-slash
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeLight',
+                          fontSize: 20,
+                          color: primary,
+                        ),
                       ),
                     ),
                   ),
+                  obscureText: controller.hidePassword.value,
+                  fillColor: Theme.of(context).canvasColor,
+                  hintText: "Password",
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return "Title is required";
+                    return null;
+                  },
                 ),
-                fillColor: Theme.of(context).canvasColor,
-                hintText: "Password",
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return "Title is required";
-                  return null;
-                },
               ),
               Spacing.s16.h,
 

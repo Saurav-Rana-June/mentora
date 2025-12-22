@@ -51,12 +51,12 @@ class Nav {
     ),
     GetPage(
       name: Routes.SIGN_UP,
-      page: () => const SignUpScreen(),
+      page: () => SignUpScreen(),
       binding: SignUpControllerBinding(),
     ),
     GetPage(
       name: Routes.SIGN_IN,
-      page: () => const SignInScreen(),
+      page: () => SignInScreen(),
       binding: SignInControllerBinding(),
     ),
     GetPage(
@@ -73,6 +73,11 @@ class Nav {
       name: Routes.ALL_SET,
       page: () => const AllSetScreen(),
       binding: AllSetControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD,
+      page: () => ForgotPasswordScreen(),
+      binding: ForgotPasswordControllerBinding(),
     ),
   ];
 }
