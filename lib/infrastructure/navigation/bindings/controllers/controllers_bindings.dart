@@ -2,7 +2,9 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/all_set.c
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/continue.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/forgot_password.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/home.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/home.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/introduction.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/onboarding.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/prepare_plan.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_in.controller.binding.dart'; 

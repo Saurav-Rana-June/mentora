@@ -1,3 +1,4 @@
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
@@ -288,7 +289,9 @@ class SignInScreen extends GetView<SignInController> {
         disabledColor: primary.withValues(alpha: 0.5),
         isLoading: false,
         textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-        onPressed: () {},
+        onPressed: () {
+          Get.toNamed(Routes.LANDING);
+        },
       ),
     );
   }

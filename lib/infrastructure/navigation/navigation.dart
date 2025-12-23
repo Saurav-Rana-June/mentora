@@ -79,5 +79,15 @@ class Nav {
       page: () => ForgotPasswordScreen(),
       binding: ForgotPasswordControllerBinding(),
     ),
+    GetPage(
+      name: Routes.HOME,
+      page: () => const HomeScreen(),
+      binding: HomeControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.LANDING,
+      page: () => LandingScreen(),
+      binding: LandingControllerBinding(),
+    ),
   ];
 }
