@@ -272,6 +272,8 @@ class AppTheme {
       backgroundColor: primary,
       foregroundColor: white,
     ),
+
+    primaryColorLight: const Color(0xFFF6F6F6),
   );
 
   // --------------------- Dark Theme ------------------------------ //
@@ -393,5 +395,7 @@ class AppTheme {
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
+
+    primaryColorLight: scaffoldColorDark,
   );
 }
