@@ -36,26 +36,11 @@ Color black = const Color(0xFF000000);
 Color primary = const Color(0xFFA5C67C);
 Color secondary = const Color(0xFFF8F9F2);
 
-Color red = const Color(0xFFF87171);
-Color red2 = const Color(0xFFEF4444);
-
-Color blue = const Color(0xFF60A5FA);
-Color blue2 = const Color(0xFF3B82F6);
-
-Color purple = const Color(0xFFC084FC);
-Color purple2 = const Color(0xFFA855F7);
-
-Color orange = const Color(0xFFFB923C);
-Color orange2 = const Color(0xFFF97316);
-
-Color pink = const Color(0xFFF472B6);
-Color pink2 = const Color(0xFFEC4899);
-
-Color green = const Color(0xFF4ADE80);
-Color green2 = const Color(0xFF22C55E);
-
-Color teal = const Color(0xFF2DD4BF);
-Color teal2 = const Color(0xFF14B8A6);
+Color red = const Color(0xFFF34538);
+Color orange = const Color(0xFFFF991C);
+Color grey = const Color(0xFF939393);
+Color lightGreen = const Color(0xFF8DC255);
+Color darkGreen = const Color(0xFF49AF58);
 
 Color scaffoldColorLight = white;
 Color scaffoldColorDark = Color(0xFF2D2E2B);

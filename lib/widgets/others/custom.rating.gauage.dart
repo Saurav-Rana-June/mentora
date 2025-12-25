@@ -1,17 +1,15 @@
 import 'dart:math';
-
+import 'package:Mentora/presentation/moodCheckin/controllers/mood_checkin.controller.dart';
 import 'package:flutter/material.dart';
 
-final segments = [
-  GaugeSegment(Colors.red, Icons.sentiment_very_dissatisfied),
-  GaugeSegment(Colors.deepOrange, Icons.sentiment_dissatisfied),
-  GaugeSegment(Colors.orange, Icons.sentiment_neutral),
-  GaugeSegment(Colors.lightGreen, Icons.sentiment_satisfied),
-  GaugeSegment(Colors.green, Icons.sentiment_very_satisfied),
-];
-
 class RatingGauge extends StatefulWidget {
-  const RatingGauge({super.key});
+  final List<GaugeSegment> segments;
+  final ValueChanged<GaugeSegment>? onSelect;
+  const RatingGauge({
+    super.key,
+    required this.segments,
+    required this.onSelect,
+  });
 
   @override
   State<RatingGauge> createState() => _RatingGaugeState();
@@ -21,6 +19,7 @@ class _RatingGaugeState extends State<RatingGauge>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   double needleAngle = -pi; // start left
+  int selectedIndex = 0;
 
   @override
   void initState() {
@@ -50,14 +49,25 @@ class _RatingGaugeState extends State<RatingGauge>
 
     final angle = atan2(local.dy - center.dy, local.dx - center.dx);
 
-    // limit to semi-circle
+    // Only allow upper semi-circle
     if (angle < -pi || angle > 0) return;
 
-    final segmentAngle = pi / segments.length;
-    final index = ((angle.abs()) ~/ segmentAngle).clamp(0, segments.length - 1);
+    final segmentAngle = pi / widget.segments.length;
 
-    final targetAngle = -pi + segmentAngle * index + segmentAngle / 2;
+    // Normalize angle from [-π..0] → [0..π]
+    final normalized = angle + pi;
+
+    final index = (normalized / segmentAngle).floor().clamp(
+      0,
+      widget.segments.length - 1,
+    );
+
+    // Center of selected segment
+    final targetAngle = -pi + (index + 0.5) * segmentAngle;
+
     moveNeedle(targetAngle);
+
+    widget.onSelect?.call(widget.segments[index]);
   }
 
   @override
@@ -70,7 +80,10 @@ class _RatingGaugeState extends State<RatingGauge>
           onTapDown: (d) => onTap(d, size),
           child: CustomPaint(
             size: size,
-            painter: GaugePainter(segments: segments, needleAngle: needleAngle),
+            painter: GaugePainter(
+              segments: widget.segments,
+              needleAngle: needleAngle,
+            ),
           ),
         );
       },
@@ -149,11 +162,4 @@ class GaugePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
-class GaugeSegment {
-  final Color color;
-  final IconData icon;
-
-  GaugeSegment(this.color, this.icon);
 }

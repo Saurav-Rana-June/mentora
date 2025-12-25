@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 
 class CustomBackButton extends StatefulWidget {
-  const CustomBackButton({super.key});
+  final String? icon;
+  const CustomBackButton({super.key, this.icon});
 
   @override
   State<CustomBackButton> createState() => _CustomBackButtonState();
@@ -32,7 +33,7 @@ class _CustomBackButtonState extends State<CustomBackButton> {
           ),
           child: Center(
             child: Text(
-              MyIcons.chevronLeft,
+              (widget.icon ?? MyIcons.chevronLeft).toString(),
               style: TextStyle(
                 fontFamily: 'FontAwesomeLight',
                 fontSize: 20,
