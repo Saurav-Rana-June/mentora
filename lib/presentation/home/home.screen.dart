@@ -1,3 +1,4 @@
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
@@ -250,55 +251,60 @@ class HomeScreen extends GetView<HomeController> {
   Column buildMoodCheckinSection(BuildContext context) {
     return Column(
       children: [
-        CustomPrimaryCard(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "How do you feel today?",
-                    textAlign: TextAlign.center,
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
+        InkWell(
+          onTap: () {
+            Get.toNamed(Routes.MOOD_CHECKIN);
+          },
+          child: CustomPrimaryCard(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "How do you feel today?",
+                      textAlign: TextAlign.center,
+                      style: r18.copyWith(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Spacing.s12.h,
+                  ],
+                ),
+                Spacing.s12.h,
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SvgPicture.asset(
-                    "assets/moods/Angry Face.svg",
-                    width: 45,
-                    height: 45,
-                  ),
-                  SvgPicture.asset(
-                    "assets/moods/Not Good Face.svg",
-                    width: 45,
-                    height: 45,
-                  ),
-                  SvgPicture.asset(
-                    "assets/moods/Normal Face.svg",
-                    width: 45,
-                    height: 45,
-                  ),
-                  SvgPicture.asset(
-                    "assets/moods/Happy Face.svg",
-                    width: 45,
-                    height: 45,
-                  ),
-                  SvgPicture.asset(
-                    "assets/moods/Very Happy Face.svg",
-                    width: 45,
-                    height: 45,
-                  ),
-                ],
-              ),
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/moods/Angry Face.svg",
+                      width: 45,
+                      height: 45,
+                    ),
+                    SvgPicture.asset(
+                      "assets/moods/Not Good Face.svg",
+                      width: 45,
+                      height: 45,
+                    ),
+                    SvgPicture.asset(
+                      "assets/moods/Normal Face.svg",
+                      width: 45,
+                      height: 45,
+                    ),
+                    SvgPicture.asset(
+                      "assets/moods/Happy Face.svg",
+                      width: 45,
+                      height: 45,
+                    ),
+                    SvgPicture.asset(
+                      "assets/moods/Very Happy Face.svg",
+                      width: 45,
+                      height: 45,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         Spacing.s20.h,

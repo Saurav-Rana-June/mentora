@@ -84,5 +84,10 @@ class Nav {
       page: () => LandingScreen(),
       binding: LandingControllerBinding(),
     ),
+    GetPage(
+      name: Routes.MOOD_CHECKIN,
+      page: () => const MoodCheckinScreen(),
+      binding: MoodCheckinControllerBinding(),
+    ),
   ];
 }

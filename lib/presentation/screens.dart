@@ -4,6 +4,7 @@ export 'package:Mentora/presentation/forgotPassword/forgot_password.screen.dart'
 export 'package:Mentora/presentation/home/home.screen.dart';
 export 'package:Mentora/presentation/introduction/introduction.screen.dart';
 export 'package:Mentora/presentation/landing/landing.screen.dart';
+export 'package:Mentora/presentation/moodCheckin/mood_checkin.screen.dart';
 export 'package:Mentora/presentation/onboarding/onboarding.screen.dart';
 export 'package:Mentora/presentation/preparePlan/prepare_plan.screen.dart';
 export 'package:Mentora/presentation/signIn/sign_in.screen.dart';
