@@ -1,6 +1,4 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'package:Mentora/presentation/onboarding/views/age.view.dart';
-import 'package:Mentora/presentation/onboarding/views/gender.view.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.linear.progress.bar.dart';

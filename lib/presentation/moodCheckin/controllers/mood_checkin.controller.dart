@@ -70,6 +70,8 @@ class MoodCheckinController extends GetxController {
     MoodReason('✨', 'Inspired'),
   ].obs;
 
+  TextEditingController notesController = TextEditingController();
+
   RxList<MoodReason> selectedMoodReasonsList = <MoodReason>[].obs;
   RxList<MoodReason> selectedExtactReasonsList = <MoodReason>[].obs;
 

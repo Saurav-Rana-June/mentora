@@ -1,4 +1,5 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_selection.veiw.dart';
 import 'package:Mentora/presentation/moodCheckin/views/reason_selection.view.dart';
@@ -22,7 +23,7 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: buildAppbar(context),
       body: Obx(() => bodyWidget(controller.currentIndex.value)),
-      bottomNavigationBar: buildButton(),
+      bottomNavigationBar: Obx(() => buildButton()),
     );
   }
 
@@ -33,7 +34,7 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
         vertical: Spacing.s4.symmetric.vertical,
       ),
       child: CustomPrimaryButton(
-        text: "Continue",
+        text: controller.currentIndex.value == 3 ? "Save" : "Continue",
         borderRadius: 50.r,
         height: 45,
         backgroundColor: primary,
@@ -69,6 +70,8 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
         return ReasonSelection();
       case 2:
         return ExtactFeelingView();
+      case 3:
+        return AddNotesView();
       default:
         return const SizedBox();
     }
