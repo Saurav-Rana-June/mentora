@@ -23,6 +23,12 @@ class CustomTextFormField extends StatelessWidget {
   final EdgeInsetsGeometry contentPadding;
   final Color? fillColor;
 
+  /// 🔥 New border customization
+  final Color? borderColor;
+  final double borderWidth;
+  final Color? focusedBorderColor;
+  final Color? errorBorderColor;
+
   const CustomTextFormField({
     super.key,
     this.controller,
@@ -48,7 +54,22 @@ class CustomTextFormField extends StatelessWidget {
       vertical: 14,
     ),
     this.fillColor,
+
+    /// defaults = no border
+    this.borderColor,
+    this.borderWidth = 0,
+    this.focusedBorderColor,
+    this.errorBorderColor,
   });
+
+  OutlineInputBorder _border(Color? color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: borderWidth == 0
+          ? BorderSide.none
+          : BorderSide(color: color ?? Colors.transparent, width: borderWidth),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,37 +114,19 @@ class CustomTextFormField extends StatelessWidget {
           minHeight: 32,
         ),
 
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: dangerColor),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: dangerColor),
-        ),
+        /// 🔥 Borders
+        border: _border(borderColor),
+        enabledBorder: _border(borderColor),
+        focusedBorder: _border(focusedBorderColor ?? borderColor),
+        disabledBorder: _border(borderColor),
+        errorBorder: _border(errorBorderColor ?? dangerColor),
+        focusedErrorBorder: _border(errorBorderColor ?? dangerColor),
 
-        // 👉 Filled background always on
         filled: true,
         fillColor:
             fillColor ??
             theme.inputDecorationTheme.fillColor ??
-            theme.colorScheme.surfaceContainerHighest.withOpacity(0.4),
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: .4),
       ),
     );
   }

@@ -89,5 +89,10 @@ class Nav {
       page: () => const MoodCheckinScreen(),
       binding: MoodCheckinControllerBinding(),
     ),
+    GetPage(
+      name: Routes.CHAT_A_I,
+      page: () => ChatAIScreen(),
+      binding: ChatAIControllerBinding(),
+    ),
   ];
 }

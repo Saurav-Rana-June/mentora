@@ -1,5 +1,6 @@
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:flutter/material.dart';
@@ -198,6 +199,12 @@ class HomeScreen extends GetView<HomeController> {
                 context,
                 '\u{f544}',
                 'Chat with Mentora',
+                () {
+                  Get.to(
+                    () => ChatAIScreen(),
+                    transition: Transition.rightToLeft,
+                  );
+                },
               ), // Change Icon :- robot
             ),
 
@@ -207,6 +214,12 @@ class HomeScreen extends GetView<HomeController> {
                 context,
                 '\u{f0f0}',
                 'Talk with Experts',
+                () {
+                  Get.to(
+                    () => ChatAIScreen(),
+                    transition: Transition.rightToLeft,
+                  );
+                },
               ), // Change Icon :- user-doctor
             ),
           ],
@@ -216,34 +229,45 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  CustomPrimaryCard buildConnectTile(
+  Material buildConnectTile(
     BuildContext context,
     String icon,
     String label,
+    Function()? onTap,
   ) {
-    return CustomPrimaryCard(
-      child: Row(
-        children: [
-          Text(
-            icon,
-            style: TextStyle(
-              fontFamily: 'FontAwesomeSolid',
-              fontSize: 35,
-              color: primary,
-            ),
-          ),
-          Spacing.s8.w,
-          Expanded(
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: r16.copyWith(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-                fontWeight: FontWeight.w600,
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(6),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        splashColor: primary.withValues(alpha: .2),
+        highlightColor: primary.withValues(alpha: .1),
+        onTap: onTap,
+        child: CustomPrimaryCard(
+          child: Row(
+            children: [
+              Text(
+                icon,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 35,
+                  color: primary,
+                ),
               ),
-            ),
+              Spacing.s8.w,
+              Expanded(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: r16.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

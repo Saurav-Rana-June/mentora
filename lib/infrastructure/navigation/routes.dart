@@ -11,10 +11,11 @@ class Routes {
   static const INTRODUCTION = '/introduction';
   static const LANDING = '/landing';
   static const LOGIN = '/login';
+  static const MOOD_CHECKIN = '/mood-checkin';
   static const ONBOARDING = '/onboarding';
   static const PREPARE_PLAN = '/prepare-plan';
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const SPLASH = '/splash';
-  static const MOOD_CHECKIN = '/mood-checkin';
+  static const CHAT_A_I = '/chat-a-i';
 }

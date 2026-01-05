@@ -5,8 +5,6 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:my_spacing/spacing.enum.dart';
 
-import '../../../widgets/fields/custom_textfield.widget.dart';
-
 class AddNotesView extends GetView<MoodCheckinController> {
   const AddNotesView({super.key});
 
