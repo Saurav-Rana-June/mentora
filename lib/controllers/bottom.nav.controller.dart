@@ -1,0 +1,56 @@
+import 'package:Mentora/data/model/extras/page.model.dart';
+import 'package:Mentora/presentation/home/home.screen.dart';
+import 'package:get/get.dart';
+import 'package:my_icons/icons.dart';
+import '../infrastructure/navigation/routes.dart';
+
+class BottamNavController extends GetxController {
+  static String TAG = "BottamNavController";
+  RxInt tabIndex = 0.obs;
+  List<PageModel> pages = <PageModel>[];
+
+  @override
+  void onInit() {
+    super.onInit();
+    prepareBottomNav();
+  }
+
+  prepareBottomNav() {
+    pages = [
+      PageModel(
+        title: 'Home',
+        icon: MyIcons.home,
+        route: Routes.HOME,
+        widget: HomeScreen(),
+      ),
+      PageModel(
+        title: 'Explore',
+        icon: '\u{f14e}', // Change Icon :- compass
+        route: Routes.HOME,
+        widget: HomeScreen(),
+      ),
+      PageModel(
+        title: 'Sleep',
+        icon: '\u{f186}', // Change Icon :- moon
+        route: Routes.HOME,
+        widget: HomeScreen(),
+      ),
+      PageModel(
+        title: 'Insights',
+        icon: '\u{f201}', // Change Icon :- chart-line
+        route: Routes.HOME,
+        widget: HomeScreen(),
+      ),
+      PageModel(
+        title: 'Account',
+        icon: MyIcons.user,
+        route: Routes.HOME,
+        widget: HomeScreen(),
+      ),
+    ];
+  }
+
+  void changeTabIndex(int index) {
+    tabIndex.value = index;
+  }
+}
