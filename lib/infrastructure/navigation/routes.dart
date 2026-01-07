@@ -5,6 +5,7 @@ class Routes {
   }
 
   static const ALL_SET = '/all-set';
+  static const CHAT_A_I = '/chat-a-i';
   static const CONTINUE = '/continue';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
@@ -17,5 +18,5 @@ class Routes {
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const SPLASH = '/splash';
-  static const CHAT_A_I = '/chat-a-i';
+  static const CHAT_EXPERTS = '/chat-experts';
 }

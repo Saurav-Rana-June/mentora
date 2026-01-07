@@ -94,5 +94,10 @@ class Nav {
       page: () => ChatAIScreen(),
       binding: ChatAIControllerBinding(),
     ),
+    GetPage(
+      name: Routes.CHAT_EXPERTS,
+      page: () => ChatExpertsScreen(),
+      binding: ChatExpertsControllerBinding(),
+    ),
   ];
 }

@@ -1,5 +1,6 @@
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/all_set.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_a_i.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_experts.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/continue.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/forgot_password.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/home.controller.binding.dart';
