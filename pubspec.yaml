@@ -24,6 +24,8 @@ dependencies:
       ref: my_spacing
   pinput: ^6.0.1
   flutter_svg: ^2.2.3
+  path_provider: ^2.1.5
+  share_plus: ^12.0.1
 
 dev_dependencies:
   flutter_test:

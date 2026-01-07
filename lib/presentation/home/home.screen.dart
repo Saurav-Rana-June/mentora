@@ -216,7 +216,7 @@ class HomeScreen extends GetView<HomeController> {
                 'Talk with Experts',
                 () {
                   Get.to(
-                    () => ChatAIScreen(),
+                    () => ChatExpertsScreen(),
                     transition: Transition.rightToLeft,
                   );
                 },
