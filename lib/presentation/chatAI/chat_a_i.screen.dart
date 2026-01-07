@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
+import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
 import 'controllers/chat_a_i.controller.dart';
@@ -16,10 +17,13 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      appBar: buildAppbar(context),
-      body: buildBody(context),
+    return RepaintBoundary(
+      key: controller.exportKey,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
+        appBar: buildAppbar(context),
+        body: buildBody(context),
+      ),
     );
   }
 
@@ -293,10 +297,14 @@ class ChatAIScreen extends GetView<ChatAIController> {
             controller.isSearching.value = true;
             break;
           case 'export':
-            // handle export chat
+            controller.exportChat(controller.exportKey);
             break;
           case 'clear':
-            // handle clear chat
+            Get.bottomSheet(
+              ClearChatBottomsheet(onConfirm: () {}),
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+            );
             break;
         }
       },

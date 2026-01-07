@@ -1,6 +1,14 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ChatAIController extends GetxController {
+  final GlobalKey exportKey = GlobalKey();
   final RxList<MessageModel> messages = <MessageModel>[
     MessageModel(
       message: "Hi 👋 I’m Mentora. I’m here to listen and support you.",
@@ -44,6 +52,29 @@ class ChatAIController extends GetxController {
   }
 
   RxBool isSearching = false.obs;
+
+  Future<void> exportChat(GlobalKey boundaryKey) async {
+    try {
+      final boundary =
+          boundaryKey.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
+
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final pngBytes = byteData!.buffer.asUint8List();
+
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/chat_export.png');
+
+      await file.writeAsBytes(pngBytes);
+
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: 'Chat Export'),
+      );
+    } catch (e) {
+      debugPrint('Export failed: $e');
+    }
+  }
 }
 
 class MessageModel {
