@@ -285,7 +285,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
       icon: Text(
         '\u{f142}', // Change Icon :-  ellipsis-vertical
         style: TextStyle(
-          fontFamily: 'FontAwesomeSolid',
+          fontFamily: 'FontAwesomeLight',
           fontSize: 20,
           color: Theme.of(context).textTheme.bodyMedium!.color,
         ),

@@ -143,6 +143,8 @@ class ChatExpertsController extends GetxController {
       videoCallFeature: true,
     ),
   ];
+
+  RxBool isChatsSelected = true.obs;
 }
 
 class Expert {

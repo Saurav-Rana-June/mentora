@@ -15,7 +15,11 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: buildAppbar(context), body: buildBody(context));
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColorLight,
+      appBar: buildAppbar(context),
+      body: buildBody(context),
+    );
   }
 
   Stack buildBody(BuildContext context) {
@@ -239,7 +243,7 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
                         style: TextStyle(
                           fontFamily: 'FontAwesomeLight',
                           fontSize: 20,
-                          color: Theme.of(context).textTheme.bodySmall!.color!,
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
                         ),
                       ),
                     ),

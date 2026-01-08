@@ -1,4 +1,5 @@
 import 'package:Mentora/presentation/chatExperts/views/chat_expert_chat.view.dart';
+import 'package:Mentora/presentation/chatExperts/views/chat_experts_history.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -190,7 +191,12 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
             child: InkWell(
               customBorder: const CircleBorder(),
               splashColor: primary.withValues(alpha: 0.3),
-              onTap: () {},
+              onTap: () {
+                Get.to(
+                  () => ChatExpertHistoryView(),
+                  transition: Transition.rightToLeft,
+                );
+              },
               child: SizedBox(
                 height: 30.h,
                 width: 30.h,
@@ -200,7 +206,7 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
                     style: TextStyle(
                       fontFamily: 'FontAwesomeLight',
                       fontSize: 20,
-                      color: Theme.of(context).textTheme.bodySmall!.color!,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
                     ),
                   ),
                 ),
