@@ -1,6 +1,41 @@
+import 'package:Mentora/presentation/chatAI/controllers/chat_a_i.controller.dart';
 import 'package:get/get.dart';
 
 class ChatExpertsController extends GetxController {
+  final RxList<MessageModel> messages = <MessageModel>[
+    MessageModel(
+      message: "Hi 👋 I’m Mentora. I’m here to listen and support you.",
+      isMe: false,
+    ),
+    MessageModel(message: "Hi… I’m not really sure how to start.", isMe: true),
+    MessageModel(
+      message:
+          "That’s completely okay. Take your time — there’s no pressure here.",
+      isMe: false,
+    ),
+    MessageModel(message: "I’ve been feeling overwhelmed lately.", isMe: true),
+    MessageModel(
+      message:
+          "Thank you for sharing that. Feeling overwhelmed can be really heavy. What’s been weighing on you the most?",
+      isMe: false,
+    ),
+    MessageModel(
+      message: "Work and personal things… it all feels like too much.",
+      isMe: true,
+    ),
+    MessageModel(
+      message:
+          "That sounds exhausting. When everything piles up at once, it can feel impossible to breathe. You’re not alone in this.",
+      isMe: false,
+    ),
+    MessageModel(message: "I just want to feel calm again.", isMe: true),
+    MessageModel(
+      message:
+          "Wanting peace is very human 💙 We can take this one small step at a time. Would you like to talk more, or try a short calming exercise together?",
+      isMe: false,
+    ),
+  ].obs;
+
   final List<Expert> expertsList = [
     Expert(
       image: 'https://randomuser.me/api/portraits/men/32.jpg',

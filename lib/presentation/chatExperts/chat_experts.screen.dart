@@ -1,3 +1,4 @@
+import 'package:Mentora/presentation/chatExperts/views/chat_expert_chat.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -36,120 +37,134 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
             expert.speciality ?? "",
             expert.callFeature ?? false,
             expert.videoCallFeature ?? false,
+            () {
+              Get.to(
+                () => ChatExpertChatView(expert: expert),
+                transition: Transition.rightToLeft,
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Column buildExpertTile(
+  InkWell buildExpertTile(
     BuildContext context,
     String image,
     String name,
     String speciality,
     bool callFeature,
     bool videoCallFeature,
+    void Function()? onTap,
   ) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            CircleAvatar(radius: 25, backgroundImage: NetworkImage(image)),
-            Spacing.s12.w,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Spacing.s4.h,
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 25,
+                backgroundImage: NetworkImage(image),
+                backgroundColor: Theme.of(context).cardTheme.color,
+              ),
+              Spacing.s12.w,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      textAlign: TextAlign.center,
+                      style: r16.copyWith(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      speciality,
+                      textAlign: TextAlign.center,
+                      style: r14.copyWith(
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Spacing.s12.w,
+
+              Row(
                 children: [
-                  Text(
-                    name,
-                    textAlign: TextAlign.center,
-                    style: r16.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w500,
+                  if (callFeature)
+                    Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        splashColor: primary.withValues(alpha: 0.3),
+                        onTap: () {},
+                        child: Container(
+                          height: 30.h,
+                          width: 30.h,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardTheme.color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '\u{f095}', // Change Icon :- phone
+                              style: TextStyle(
+                                fontFamily: 'FontAwesomeSolid',
+                                fontSize: 16,
+                                color: primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    speciality,
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodyMedium!.color,
-                      fontWeight: FontWeight.w400,
+                  if (callFeature) Spacing.s4.w,
+
+                  if (videoCallFeature)
+                    Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        splashColor: primary.withValues(alpha: 0.3),
+                        onTap: () {},
+                        child: Container(
+                          height: 30.h,
+                          width: 30.h,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardTheme.color,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '\u{f03d}', // Change Icon :- video
+                              style: TextStyle(
+                                fontFamily: 'FontAwesomeSolid',
+                                fontSize: 16,
+                                color: primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
-            ),
-            Spacing.s12.w,
+            ],
+          ),
+          Spacing.s4.h,
 
-            Row(
-              children: [
-                if (callFeature)
-                  Material(
-                    color: Colors.transparent,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      splashColor: primary.withValues(alpha: 0.3),
-                      onTap: () {},
-                      child: Container(
-                        height: 30.h,
-                        width: 30.h,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardTheme.color,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '\u{f095}', // Change Icon :- phone
-                            style: TextStyle(
-                              fontFamily: 'FontAwesomeSolid',
-                              fontSize: 16,
-                              color: primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (callFeature) Spacing.s4.w,
-
-                if (videoCallFeature)
-                  Material(
-                    color: Colors.transparent,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      splashColor: primary.withValues(alpha: 0.3),
-                      onTap: () {},
-                      child: Container(
-                        height: 30.h,
-                        width: 30.h,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardTheme.color,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '\u{f03d}', // Change Icon :- video
-                            style: TextStyle(
-                              fontFamily: 'FontAwesomeSolid',
-                              fontSize: 16,
-                              color: primary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
-        Spacing.s4.h,
-
-        Divider(),
-        Spacing.s4.h,
-      ],
+          Divider(),
+        ],
+      ),
     );
   }
 
@@ -158,7 +173,7 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomBackButton(icon: MyIcons.xmark),
+          CustomBackButton(icon: MyIcons.chevronLeft),
 
           Text(
             "Talk with Experts",

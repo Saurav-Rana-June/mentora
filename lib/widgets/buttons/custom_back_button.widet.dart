@@ -27,17 +27,14 @@ class _CustomBackButtonState extends State<CustomBackButton> {
         child: Container(
           height: 40.h,
           width: 40.h,
-          decoration: BoxDecoration(
-            color: primary.withValues(alpha: 0.25),
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle),
           child: Center(
             child: Text(
               (widget.icon ?? MyIcons.chevronLeft).toString(),
               style: TextStyle(
                 fontFamily: 'FontAwesomeLight',
                 fontSize: 20,
-                color: primary,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
           ),

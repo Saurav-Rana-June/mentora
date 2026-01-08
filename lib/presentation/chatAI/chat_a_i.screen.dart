@@ -264,7 +264,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomBackButton(icon: MyIcons.xmark),
+        CustomBackButton(icon: MyIcons.chevronLeft),
 
         Text(
           "Chat with Mentora",
