@@ -3,6 +3,7 @@ import 'package:Mentora/presentation/home/home.screen.dart';
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import '../infrastructure/navigation/routes.dart';
+import '../presentation/explore/explore.screen.dart';
 
 class BottamNavController extends GetxController {
   static String TAG = "BottamNavController";
@@ -27,7 +28,7 @@ class BottamNavController extends GetxController {
         title: 'Explore',
         icon: '\u{f14e}', // Change Icon :- compass
         route: Routes.HOME,
-        widget: HomeScreen(),
+        widget: ExploreScreen(),
       ),
       PageModel(
         title: 'Sleep',

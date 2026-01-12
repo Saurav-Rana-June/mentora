@@ -99,5 +99,10 @@ class Nav {
       page: () => ChatExpertsScreen(),
       binding: ChatExpertsControllerBinding(),
     ),
+    GetPage(
+      name: Routes.EXPLORE,
+      page: () => const ExploreScreen(),
+      binding: ExploreControllerBinding(),
+    ),
   ];
 }
