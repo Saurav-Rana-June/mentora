@@ -144,6 +144,110 @@ class ChatExpertsController extends GetxController {
     ),
   ];
 
+  final List<Chat> chatsList = [
+    Chat(
+      image: 'https://randomuser.me/api/portraits/men/32.jpg',
+      name: 'Dr. William Butcher',
+      lastMessage: 'How have you been feeling lately?',
+      time: '09:45 AM',
+      unreadCount: 2,
+    ),
+    Chat(
+      image: 'https://randomuser.me/api/portraits/women/44.jpg',
+      name: 'Dr. Emily Carter',
+      lastMessage: 'Let’s schedule our next session.',
+      time: 'Yesterday',
+      unreadCount: 0,
+    ),
+    Chat(
+      image: 'https://randomuser.me/api/portraits/men/76.jpg',
+      name: 'Dr. Michael Reed',
+      lastMessage: 'Try practicing that exercise daily.',
+      time: 'Mon',
+      unreadCount: 1,
+    ),
+    Chat(
+      image: 'https://randomuser.me/api/portraits/women/68.jpg',
+      name: 'Dr. Sophia Turner',
+      lastMessage: 'How is your child doing this week?',
+      time: 'Sun',
+      unreadCount: 0,
+    ),
+    Chat(
+      image: 'https://randomuser.me/api/portraits/men/15.jpg',
+      name: 'Dr. James Anderson',
+      lastMessage: 'Remember to track your mood.',
+      time: 'Sat',
+      unreadCount: 3,
+    ),
+    Chat(
+      image: 'https://randomuser.me/api/portraits/women/12.jpg',
+      name: 'Dr. Olivia Harris',
+      lastMessage: 'Breathing techniques can help.',
+      time: 'Fri',
+      unreadCount: 0,
+    ),
+  ];
+
+  final List<Call> callsList = [
+    Call(
+      image: 'https://randomuser.me/api/portraits/men/32.jpg',
+      name: 'Dr. William Butcher',
+      callOutgoing: true,
+      time: 'Today, 10:15 AM',
+      callFeature: true,
+      videoFeature: true,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/women/44.jpg',
+      name: 'Dr. Emily Carter',
+      callOutgoing: false,
+      time: 'Yesterday, 6:40 PM',
+      callFeature: true,
+      videoFeature: false,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/men/76.jpg',
+      name: 'Dr. Michael Reed',
+      callOutgoing: true,
+      time: 'Yesterday, 11:05 AM',
+      callFeature: false,
+      videoFeature: true,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/women/68.jpg',
+      name: 'Dr. Sophia Turner',
+      callOutgoing: false,
+      time: 'Mon, 4:20 PM',
+      callFeature: true,
+      videoFeature: true,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/men/15.jpg',
+      name: 'Dr. James Anderson',
+      callOutgoing: true,
+      time: 'Sun, 8:00 PM',
+      callFeature: true,
+      videoFeature: false,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/women/12.jpg',
+      name: 'Dr. Olivia Harris',
+      callOutgoing: false,
+      time: 'Sat, 3:10 PM',
+      callFeature: false,
+      videoFeature: true,
+    ),
+    Call(
+      image: 'https://randomuser.me/api/portraits/men/45.jpg',
+      name: 'Dr. Daniel Lewis',
+      callOutgoing: true,
+      time: 'Fri, 9:30 AM',
+      callFeature: true,
+      videoFeature: true,
+    ),
+  ];
+
   RxBool isChatsSelected = true.obs;
 }
 
@@ -160,5 +264,39 @@ class Expert {
     this.speciality,
     this.callFeature,
     this.videoCallFeature,
+  });
+}
+
+class Chat {
+  final String? image;
+  final String? name;
+  final String? lastMessage;
+  final String? time;
+  final int unreadCount;
+
+  Chat({
+    this.image,
+    this.name,
+    this.lastMessage,
+    this.time,
+    this.unreadCount = 0,
+  });
+}
+
+class Call {
+  final String? image;
+  final String? name;
+  final bool? callOutgoing;
+  final String? time;
+  final bool? callFeature;
+  final bool? videoFeature;
+
+  Call({
+    this.image,
+    this.name,
+    this.callOutgoing,
+    this.time,
+    this.callFeature,
+    this.videoFeature,
   });
 }
