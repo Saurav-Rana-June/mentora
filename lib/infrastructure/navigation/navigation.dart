@@ -104,5 +104,10 @@ class Nav {
       page: () => const ExploreScreen(),
       binding: ExploreControllerBinding(),
     ),
+    GetPage(
+      name: Routes.FAVORITE,
+      page: () => FavoriteScreen(),
+      binding: FavoriteControllerBinding(),
+    ),
   ];
 }

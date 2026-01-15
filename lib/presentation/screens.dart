@@ -3,6 +3,7 @@ export 'package:Mentora/presentation/chatAI/chat_a_i.screen.dart';
 export 'package:Mentora/presentation/chatExperts/chat_experts.screen.dart';
 export 'package:Mentora/presentation/continue/continue.screen.dart';
 export 'package:Mentora/presentation/explore/explore.screen.dart';
+export 'package:Mentora/presentation/favorite/favorite.screen.dart';
 export 'package:Mentora/presentation/forgotPassword/forgot_password.screen.dart';
 export 'package:Mentora/presentation/home/home.screen.dart';
 export 'package:Mentora/presentation/introduction/introduction.screen.dart';

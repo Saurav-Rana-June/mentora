@@ -1,5 +1,7 @@
+import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
@@ -20,106 +22,111 @@ class ExploreScreen extends GetView<ExploreController> {
           children: [
             buildTopFeatureSection(context),
             buildDiscoverMeditation(context),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-                vertical: Spacing.s4.symmetric.horizontal,
+            buildVideoSection(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding buildVideoSection(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+        vertical: Spacing.s4.symmetric.horizontal,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Video Sessions",
+                textAlign: TextAlign.center,
+                style: r18.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Column(
+              Text(
+                "View All",
+                style: r14.copyWith(
+                  color: primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          Spacing.s8.h,
+
+          buildVideoTile(context),
+          buildVideoTile(context),
+        ],
+      ),
+    );
+  }
+
+  Column buildVideoTile(BuildContext context) {
+    return Column(
+      children: [
+        CustomPrimaryCard(
+          child: Row(
+            children: [
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  Row(
+                  SizedBox(
+                    width: 100,
+                    height: 80,
+                    child: Image.asset(
+                      "assets/images/banner.png",
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Text(
+                    '\u{f144}', // Change icon :- circle-play
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 30,
+                    ),
+                  ),
+                ],
+              ),
+              Spacing.s12.w,
+              Expanded(
+                child: SizedBox(
+                  height: 70,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Video Sessions",
-                        textAlign: TextAlign.center,
-                        style: r18.copyWith(
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                        style: r14.copyWith(
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                           fontWeight: FontWeight.w600,
                         ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        "View All",
+                        "Stress Management",
+                        textAlign: TextAlign.center,
                         style: r14.copyWith(
-                          color: primary,
+                          color: Theme.of(context).textTheme.bodySmall!.color,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  Spacing.s8.h,
-
-                  Column(
-                    children: [
-                      CustomPrimaryCard(
-                        child: Row(
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                  height: 80,
-                                  child: Image.asset(
-                                    "assets/images/banner.png",
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                Text(
-                                  '\u{f144}', // Change icon :- circle-play
-                                  style: TextStyle(
-                                    fontFamily: 'FontAwesomeSolid',
-                                    fontSize: 30,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Spacing.s8.w,
-                            Expanded(
-                              child: SizedBox(
-                                height: 70,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                                      style: r14.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).textTheme.bodyLarge!.color,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      "Stress Management",
-                                      textAlign: TextAlign.center,
-                                      style: r14.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).textTheme.bodySmall!.color,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+        Spacing.s8.h,
+      ],
     );
   }
 
@@ -385,14 +392,34 @@ class ExploreScreen extends GetView<ExploreController> {
                   color: slate[500],
                 ),
               ),
-
               Spacing.s16.w,
-              Text(
-                MyIcons.heart,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
+
+              Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  splashColor: primary.withValues(alpha: 0.3),
+                  onTap: () {
+                    Get.to(
+                      () => FavoriteScreen(),
+                      transition: Transition.rightToLeft,
+                    );
+                  },
+                  child: SizedBox(
+                    height: 30.h,
+                    width: 30.h,
+                    child: Center(
+                      child: Text(
+                        MyIcons.heart,
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeLight',
+                          fontSize: 20,
+                          color: slate[500],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
