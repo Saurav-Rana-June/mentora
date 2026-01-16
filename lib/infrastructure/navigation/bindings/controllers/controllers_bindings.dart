@@ -13,4 +13,5 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/onboardin
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/prepare_plan.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_in.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_up.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';

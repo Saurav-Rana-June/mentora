@@ -9,6 +9,7 @@ class Routes {
   static const CHAT_EXPERTS = '/chat-experts';
   static const CONTINUE = '/continue';
   static const EXPLORE = '/explore';
+  static const FAVORITE = '/favorite';
   static const FAVOURITE = '/favourite';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
@@ -21,5 +22,5 @@ class Routes {
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
   static const SPLASH = '/splash';
-  static const FAVORITE = '/favorite';
+  static const SLEEP = '/sleep';
 }

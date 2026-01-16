@@ -1,5 +1,6 @@
 import 'package:Mentora/data/model/extras/page.model.dart';
 import 'package:Mentora/presentation/home/home.screen.dart';
+import 'package:Mentora/presentation/sleep/sleep.screen.dart';
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import '../infrastructure/navigation/routes.dart';
@@ -27,14 +28,14 @@ class BottamNavController extends GetxController {
       PageModel(
         title: 'Explore',
         icon: '\u{f14e}', // Change Icon :- compass
-        route: Routes.HOME,
+        route: Routes.EXPLORE,
         widget: ExploreScreen(),
       ),
       PageModel(
         title: 'Sleep',
         icon: '\u{f186}', // Change Icon :- moon
-        route: Routes.HOME,
-        widget: HomeScreen(),
+        route: Routes.SLEEP,
+        widget: SleepScreen(),
       ),
       PageModel(
         title: 'Insights',

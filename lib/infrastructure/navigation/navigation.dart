@@ -109,5 +109,10 @@ class Nav {
       page: () => FavoriteScreen(),
       binding: FavoriteControllerBinding(),
     ),
+    GetPage(
+      name: Routes.SLEEP,
+      page: () => SleepScreen(),
+      binding: SleepControllerBinding(),
+    ),
   ];
 }
