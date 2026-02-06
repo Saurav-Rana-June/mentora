@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import '../infrastructure/navigation/routes.dart';
 import '../presentation/explore/explore.screen.dart';
+import '../presentation/insights/insights.screen.dart';
 
 class BottamNavController extends GetxController {
   static String TAG = "BottamNavController";
@@ -40,8 +41,8 @@ class BottamNavController extends GetxController {
       PageModel(
         title: 'Insights',
         icon: '\u{f201}', // Change Icon :- chart-line
-        route: Routes.HOME,
-        widget: HomeScreen(),
+        route: Routes.INSIGHTS,
+        widget: InsightsScreen(),
       ),
       PageModel(
         title: 'Account',

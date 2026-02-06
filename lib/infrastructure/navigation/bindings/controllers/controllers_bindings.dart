@@ -6,6 +6,7 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/explore.c
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/favorite.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/forgot_password.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/home.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/insights.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/introduction.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/mood_checkin.controller.binding.dart';

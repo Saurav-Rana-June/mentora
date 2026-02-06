@@ -21,6 +21,7 @@ class Routes {
   static const PREPARE_PLAN = '/prepare-plan';
   static const SIGN_IN = '/sign-in';
   static const SIGN_UP = '/sign-up';
-  static const SPLASH = '/splash';
   static const SLEEP = '/sleep';
+  static const SPLASH = '/splash';
+  static const INSIGHTS = '/insights';
 }
