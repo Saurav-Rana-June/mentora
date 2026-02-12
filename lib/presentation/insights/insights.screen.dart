@@ -27,6 +27,8 @@ class InsightsScreen extends GetView<InsightsController> {
         ),
         child: Column(
           children: [
+            buildGrowthArea(context),
+            Spacing.s24.h,
             CustomPrimaryCard(
               child: Column(
                 children: [
@@ -34,7 +36,7 @@ class InsightsScreen extends GetView<InsightsController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Growth Area",
+                        "Mood Tracker",
                         textAlign: TextAlign.center,
                         style: r18.copyWith(
                           color: Theme.of(context).textTheme.bodyLarge!.color,
@@ -84,54 +86,86 @@ class InsightsScreen extends GetView<InsightsController> {
                   Spacing.s12.h,
                   Divider(),
                   Spacing.s12.h,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.7,
-                        "Mental Health",
-                      ),
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.5,
-                        "Growth Mindset",
-                      ),
-
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.9,
-                        "Relationships",
-                      ),
-                    ],
-                  ),
-                  Spacing.s12.h,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.7,
-                        "Personal Development",
-                      ),
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.5,
-                        "Self-awareness",
-                      ),
-
-                      buildGrowthProgressIndicators(
-                        context,
-                        0.9,
-                        "Stress Management",
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  CustomPrimaryCard buildGrowthArea(BuildContext context) {
+    return CustomPrimaryCard(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Growth Area",
+                textAlign: TextAlign.center,
+                style: r18.copyWith(fontWeight: FontWeight.w600),
+              ),
+
+              // Toggle Buttons
+              ToggleButtons(
+                isSelected: [
+                  controller.selectedIndex.value == 0,
+                  controller.selectedIndex.value == 1,
+                ],
+                onPressed: controller.toggleGrowthArea,
+                borderRadius: BorderRadius.circular(20),
+                fillColor: primary,
+                selectedColor: Colors.white,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+                constraints: const BoxConstraints(minHeight: 30, minWidth: 60),
+                children: [
+                  Text(
+                    '\u{f624}', // Change icon :- gauge
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    '\u{e0e7}', // Change icon :- chart-radar
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Spacing.s12.h,
+          Divider(),
+          Spacing.s12.h,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildGrowthProgressIndicators(context, 0.7, "Mental Health"),
+              buildGrowthProgressIndicators(context, 0.5, "Growth Mindset"),
+
+              buildGrowthProgressIndicators(context, 0.9, "Relationships"),
+            ],
+          ),
+          Spacing.s12.h,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildGrowthProgressIndicators(
+                context,
+                0.7,
+                "Personal Development",
+              ),
+              buildGrowthProgressIndicators(context, 0.5, "Self-awareness"),
+
+              buildGrowthProgressIndicators(context, 0.9, "Stress Management"),
+            ],
+          ),
+        ],
       ),
     );
   }

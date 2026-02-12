@@ -13,6 +13,7 @@ class Routes {
   static const FAVOURITE = '/favourite';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
+  static const INSIGHTS = '/insights';
   static const INTRODUCTION = '/introduction';
   static const LANDING = '/landing';
   static const LOGIN = '/login';
@@ -23,5 +24,5 @@ class Routes {
   static const SIGN_UP = '/sign-up';
   static const SLEEP = '/sleep';
   static const SPLASH = '/splash';
-  static const INSIGHTS = '/insights';
+  static const ACCOUNT = '/account';
 }

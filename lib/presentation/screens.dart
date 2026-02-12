@@ -1,3 +1,4 @@
+export 'package:Mentora/presentation/account/account.screen.dart';
 export 'package:Mentora/presentation/allSet/all_set.screen.dart';
 export 'package:Mentora/presentation/chatAI/chat_a_i.screen.dart';
 export 'package:Mentora/presentation/chatExperts/chat_experts.screen.dart';

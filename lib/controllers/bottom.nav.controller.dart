@@ -1,5 +1,6 @@
 import 'package:Mentora/data/model/extras/page.model.dart';
 import 'package:Mentora/presentation/home/home.screen.dart';
+import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/presentation/sleep/sleep.screen.dart';
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
@@ -47,8 +48,8 @@ class BottamNavController extends GetxController {
       PageModel(
         title: 'Account',
         icon: MyIcons.user,
-        route: Routes.HOME,
-        widget: HomeScreen(),
+        route: Routes.ACCOUNT,
+        widget: AccountScreen(),
       ),
     ];
   }

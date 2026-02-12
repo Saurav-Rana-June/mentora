@@ -1,3 +1,4 @@
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/account.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/all_set.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_a_i.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_experts.controller.binding.dart';

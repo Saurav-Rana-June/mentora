@@ -119,5 +119,10 @@ class Nav {
       page: () => InsightsScreen(),
       binding: InsightsControllerBinding(),
     ),
+    GetPage(
+      name: Routes.ACCOUNT,
+      page: () => const AccountScreen(),
+      binding: AccountControllerBinding(),
+    ),
   ];
 }
