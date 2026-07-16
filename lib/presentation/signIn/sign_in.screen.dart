@@ -24,9 +24,12 @@ class SignInScreen extends GetView<SignInController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppbar(),
-      body: Stack(
-        alignment: AlignmentGeometry.bottomCenter,
-        children: [buildForm(context), buildButton()],
+      body: SafeArea(
+        top: false,
+        child: Stack(
+          alignment: AlignmentGeometry.bottomCenter,
+          children: [buildForm(context), buildButton()],
+        ),
       ),
     );
   }

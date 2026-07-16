@@ -28,12 +28,15 @@ class IntroductionScreen extends GetView<IntroductionController> {
     );
 
     return Scaffold(
-      body: Container(
-        child: Stack(
-          children: [
-            buildBackgroundImageSection(),
-            buildMainContentSection(context),
-          ],
+      body: SafeArea(
+        top: false,
+        child: Container(
+          child: Stack(
+            children: [
+              buildBackgroundImageSection(),
+              buildMainContentSection(context),
+            ],
+          ),
         ),
       ),
     );

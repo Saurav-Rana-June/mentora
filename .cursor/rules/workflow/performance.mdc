@@ -1,0 +1,10 @@
+---
+description: Lists, pagination, debounce, rebuild scope
+globs:
+  - lib/**/*.dart
+alwaysApply: false
+---
+
+- Builders for long lists; guard `loadMore`; debounce search; dispose workers.
+
+Detail: skill `performance` or subagent `edward-perf`.

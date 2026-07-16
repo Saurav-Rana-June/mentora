@@ -1,0 +1,25 @@
+---
+description: Flutter + GetX project defaults; where rules, skills, and agents live
+globs:
+alwaysApply: true
+---
+
+## Stack
+
+Flutter app with **GetX**, **Dio**, and **clean-style layering** (`presentation` / `data` / `infrastructure`). Production quality: disposal, loading/error paths, centralized session/API behavior.
+
+## Cursor layout (official)
+
+- **Rules (this folder):** short, persistent policies — see [Rules](https://cursor.com/docs/rules).
+- **Skills:** `.cursor/skills/<name>/SKILL.md` — on-demand playbooks — see [Skills](https://cursor.com/docs/skills).
+- **Subagents:** `.cursor/agents/*.md` — specialized delegation — see [Subagents](https://cursor.com/docs/subagents).
+
+## Before coding
+
+1. Match patterns in `lib/`.
+2. Open relevant **skills** only when the task needs depth (Agent discovers them; or invoke with `/skill-name` in chat).
+3. For **Hey Team** mode, see root `AGENTS.md` and `agents/AGENTS.md`.
+
+## Do not
+
+Break architecture, scatter 401 handling, or use quick hacks that skip error/session rules.

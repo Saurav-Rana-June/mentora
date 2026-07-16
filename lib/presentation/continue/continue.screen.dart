@@ -26,7 +26,7 @@ class ContinueScreen extends GetView<ContinueController> {
       ),
     );
 
-    return Scaffold(body: SafeArea(child: buildBody(context)));
+    return Scaffold(body: SafeArea(top: false, child: buildBody(context)));
   }
 
   Padding buildBody(BuildContext context) {

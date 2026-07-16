@@ -1,0 +1,12 @@
+---
+description: Dart/GetX naming — files, types, routes, JSON keys
+globs:
+  - lib/**/*.dart
+alwaysApply: false
+---
+
+- Files: `snake_case.dart`; primary type **PascalCase**, aligned with file role (Screen, Controller, Repository, Binding).
+- Routes: central constants; must match `GetPage.name` exactly.
+- JSON: Dart names + `@JsonKey` — no raw `map['snake']` in presentation.
+
+Detail: skill `naming` in `.cursor/skills/naming/SKILL.md`.

@@ -20,12 +20,15 @@ class OnboardingScreen extends GetView<OnboardingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppbar(context),
-      body: Column(
-        children: [
-          Obx(() => Expanded(child: controller.getCurrentView())),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Obx(() => Expanded(child: controller.getCurrentView())),
 
-          buildButton(),
-        ],
+            buildButton(),
+          ],
+        ),
       ),
     );
   }
