@@ -19,11 +19,14 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
   const MoodCheckinScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      appBar: buildAppbar(context),
-      body: Obx(() => bodyWidget(controller.currentIndex.value)),
-      bottomNavigationBar: Obx(() => buildButton()),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
+        appBar: buildAppbar(context),
+        body: Obx(() => bodyWidget(controller.currentIndex.value)),
+        bottomNavigationBar: Obx(() => buildButton()),
+      ),
     );
   }
 
