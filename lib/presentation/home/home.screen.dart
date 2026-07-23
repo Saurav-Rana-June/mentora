@@ -115,7 +115,7 @@ class HomeScreen extends GetView<HomeController> {
                 children: [
                   Text(
                     title,
-                    style: r16.copyWith(
+                    style: r14.copyWith(
                       fontWeight: FontWeight.w700,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
@@ -252,21 +252,18 @@ class HomeScreen extends GetView<HomeController> {
             itemCount: total,
             itemBuilder: (context, index) {
               final plan = controller.plans[index];
-              return InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
+              return buildTodayPlanTimelineTile(
+                context,
+                plan.title,
+                plan.label,
+                plan.caption,
+                plan.icon,
+                index == 0 ? true : false,
+                index + 1 == total ? true : false,
+                plan.isComplete,
+                () {
                   controller.togglePlanCompletion(index);
                 },
-                child: buildTodayPlanTimelineTile(
-                  context,
-                  plan.title,
-                  plan.label,
-                  plan.caption,
-                  plan.icon,
-                  index == 0 ? true : false,
-                  index + 1 == total ? true : false,
-                  plan.isComplete,
-                ),
               );
             },
           ),
@@ -284,6 +281,7 @@ class HomeScreen extends GetView<HomeController> {
     bool isFirst,
     bool isLast,
     bool isComplete,
+    Function()? onTap,
   ) {
     return IntrinsicHeight(
       child: Row(
@@ -324,55 +322,63 @@ class HomeScreen extends GetView<HomeController> {
           Expanded(
             child: Column(
               children: [
-                CustomPrimaryCard(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title.toUpperCase(),
-                              style: r12.copyWith(
-                                color: primary,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.8,
-                              ),
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: onTap,
+                    child: CustomPrimaryCard(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title.toUpperCase(),
+                                  style: r12.copyWith(
+                                    color: primary,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                                Spacing.s8.h,
+                                Text(
+                                  label,
+                                  style: r16.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge!.color,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Spacing.s4.h,
+                                Text(
+                                  caption,
+                                  textAlign: TextAlign.center,
+                                  style: r14.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall!.color,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Spacing.s8.h,
-                            Text(
-                              label,
-                              style: r16.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodyLarge!.color,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          ),
+                          Text(
+                            icon,
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 30.sp,
+                              color: primary.withValues(alpha: 0.7),
                             ),
-                            Spacing.s4.h,
-                            Text(
-                              caption,
-                              textAlign: TextAlign.center,
-                              style: r14.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall!.color,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        icon,
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeSolid',
-                          fontSize: 30.sp,
-                          color: primary.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 Spacing.s16.h,
