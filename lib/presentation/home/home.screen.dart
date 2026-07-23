@@ -55,102 +55,82 @@ class HomeScreen extends GetView<HomeController> {
       final weeklyCount = controller.weeklyCheckInCount.value;
       return Row(
         children: [
-          Expanded(
-            child: CustomPrimaryCard(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100.withValues(alpha: 0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '\u{f06d}', // fire icon
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 16.sp,
-                        color: Colors.orange.shade800,
-                      ),
-                    ),
-                  ),
-                  Spacing.s12.w,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          streak > 0 ? "$streak Days" : "0 Days",
-                          style: r16.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
-                        ),
-                        Text(
-                          "Active Streak 🔥",
-                          style: r10.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          buildStatusCard(
+            context: context,
+            icon: '\u{f06d}', // fire icon
+            iconColor: Colors.orange.shade800,
+            iconBgColor: Colors.orange.shade100.withValues(alpha: 0.5),
+            title: streak > 0 ? "$streak Days" : "0 Days",
+            subtitle: "Active Streak 🔥",
           ),
           Spacing.s12.w,
-          Expanded(
-            child: CustomPrimaryCard(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-              child: Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '\u{f073}', // calendar icon
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 14.sp,
-                        color: primary.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ),
-                  Spacing.s12.w,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "$weeklyCount / 7",
-                          style: r16.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
-                        ),
-                        Text(
-                          "This Week",
-                          style: r10.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          buildStatusCard(
+            context: context,
+            icon: '\u{f073}', // calendar icon
+            iconColor: primary.withValues(alpha: 0.9),
+            iconBgColor: primary.withValues(alpha: 0.15),
+            title: "$weeklyCount / 7",
+            subtitle: "This Week",
           ),
         ],
       );
     });
+  }
+
+  Widget buildStatusCard({
+    required BuildContext context,
+    required String icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    required String subtitle,
+  }) {
+    return Expanded(
+      child: CustomPrimaryCard(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                icon,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 16.sp,
+                  color: iconColor,
+                ),
+              ),
+            ),
+            Spacing.s12.w,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: r16.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: r10.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildMoodTrendsCard(BuildContext context) {
@@ -461,7 +441,7 @@ class HomeScreen extends GetView<HomeController> {
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8.w),
+                padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
                   color: primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -470,7 +450,7 @@ class HomeScreen extends GetView<HomeController> {
                   icon,
                   style: TextStyle(
                     fontFamily: 'FontAwesomeSolid',
-                    fontSize: 20.sp,
+                    fontSize: 16.sp,
                     color: primary,
                   ),
                 ),
