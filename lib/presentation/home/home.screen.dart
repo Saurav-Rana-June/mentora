@@ -460,12 +460,19 @@ class HomeScreen extends GetView<HomeController> {
         child: CustomPrimaryCard(
           child: Row(
             children: [
-              Text(
-                icon,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeSolid',
-                  fontSize: 30.sp,
-                  color: primary,
+              Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  icon,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 20.sp,
+                    color: primary,
+                  ),
                 ),
               ),
               Spacing.s8.w,
@@ -475,7 +482,7 @@ class HomeScreen extends GetView<HomeController> {
                   textAlign: TextAlign.center,
                   style: r14.copyWith(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
