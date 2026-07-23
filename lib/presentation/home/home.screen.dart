@@ -37,15 +37,15 @@ class HomeScreen extends GetView<HomeController> {
       child: Column(
         children: [
           buildTopBanner(),
-          Spacing.s20.h,
+          Spacing.s16.h,
           buildStreakAndProgressRow(context),
-          Spacing.s20.h,
+          Spacing.s16.h,
           buildMoodCheckinSection(context),
-          Spacing.s20.h,
+          Spacing.s16.h,
           buildConnectSection(context),
-          Spacing.s20.h,
+          Spacing.s16.h,
           buildMoodTrendsCard(context),
-          Spacing.s20.h,
+          Spacing.s16.h,
           buildTodayPlanSection(context),
         ],
       ),
@@ -66,7 +66,7 @@ class HomeScreen extends GetView<HomeController> {
             title: streak > 0 ? "$streak Days" : "0 Days",
             subtitle: "Active Streak 🔥",
           ),
-          Spacing.s12.w,
+          Spacing.s16.w,
           buildStatusCard(
             context: context,
             icon: '\u{f073}', // calendar icon
