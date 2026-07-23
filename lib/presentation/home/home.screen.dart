@@ -39,7 +39,7 @@ class HomeScreen extends GetView<HomeController> {
           buildTopBanner(),
           Spacing.s20.h,
           buildStreakAndProgressRow(context),
-          Spacing.s16.h,
+          Spacing.s20.h,
           buildMoodCheckinSection(context),
           Spacing.s20.h,
           buildConnectSection(context),
@@ -162,13 +162,13 @@ class HomeScreen extends GetView<HomeController> {
                   Row(
                     children: [
                       Text(
-                        "View Insights",
+                        "View",
                         style: r12.copyWith(
                           color: primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Spacing.s4.w,
+                      Spacing.s8.w,
                       Text(
                         '\u{f054}', // angle-right
                         style: TextStyle(
@@ -390,32 +390,19 @@ class HomeScreen extends GetView<HomeController> {
       children: [
         SizedBox(
           width: Get.width / 2.3,
-          child: buildConnectTile(
-            context,
-            '\u{f544}',
-            'Chat with Mentora',
-            () {
-              Get.to(
-                () => ChatAIScreen(),
-                transition: Transition.rightToLeft,
-              );
-            },
-          ), // Change Icon :- robot
+          child: buildConnectTile(context, '\u{f544}', 'Chat with Mentora', () {
+            Get.to(() => ChatAIScreen(), transition: Transition.rightToLeft);
+          }), // Change Icon :- robot
         ),
 
         SizedBox(
           width: Get.width / 2.3,
-          child: buildConnectTile(
-            context,
-            '\u{f0f0}',
-            'Talk with Experts',
-            () {
-              Get.to(
-                () => ChatExpertsScreen(),
-                transition: Transition.rightToLeft,
-              );
-            },
-          ), // Change Icon :- user-doctor
+          child: buildConnectTile(context, '\u{f0f0}', 'Talk with Experts', () {
+            Get.to(
+              () => ChatExpertsScreen(),
+              transition: Transition.rightToLeft,
+            );
+          }), // Change Icon :- user-doctor
         ),
       ],
     );
