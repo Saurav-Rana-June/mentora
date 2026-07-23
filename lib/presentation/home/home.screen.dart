@@ -72,8 +72,8 @@ class HomeScreen extends GetView<HomeController> {
             icon: '\u{f073}', // calendar icon
             iconColor: infoColor.withValues(alpha: 0.9),
             iconBgColor: primary.withValues(alpha: 0.15),
-            title: "$weeklyCount of 7 Days",
-            subtitle: "Check-in Progress",
+            title: "$weeklyCount / 7 Days",
+            subtitle: "Weekly Progress",
           ),
         ],
       );
