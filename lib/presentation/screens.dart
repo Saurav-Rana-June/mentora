@@ -7,6 +7,7 @@ export 'package:Mentora/presentation/explore/explore.screen.dart';
 export 'package:Mentora/presentation/favorite/favorite.screen.dart';
 export 'package:Mentora/presentation/forgotPassword/forgot_password.screen.dart';
 export 'package:Mentora/presentation/home/home.screen.dart';
+export 'package:Mentora/presentation/home/views/crisis_support.screen.dart';
 export 'package:Mentora/presentation/insights/insights.screen.dart';
 export 'package:Mentora/presentation/introduction/introduction.screen.dart';
 export 'package:Mentora/presentation/landing/landing.screen.dart';

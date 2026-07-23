@@ -1,4 +1,5 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_selection.veiw.dart';
@@ -48,6 +49,9 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
           if (controller.currentIndex.value < 3) {
             controller.currentIndex.value++;
           } else {
+            if (Get.isRegistered<HomeController>()) {
+              Get.find<HomeController>().addMoodCheckin(controller.selectedMood.value);
+            }
             Get.back();
           }
         },

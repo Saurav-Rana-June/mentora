@@ -229,4 +229,3 @@ class FeatureScreen extends GetView<FeatureController> {
     );
   }
 }
-```
