@@ -59,7 +59,7 @@ class HomeScreen extends GetView<HomeController> {
             context: context,
             icon: '\u{f06d}', // fire icon
             iconColor: Colors.orange.shade800,
-            iconBgColor: Colors.orange.shade100.withValues(alpha: 0.5),
+            iconBgColor: primary.withValues(alpha: 0.15),
             title: streak > 0 ? "$streak Days" : "0 Days",
             subtitle: "Active Streak 🔥",
           ),
@@ -67,7 +67,7 @@ class HomeScreen extends GetView<HomeController> {
           buildStatusCard(
             context: context,
             icon: '\u{f073}', // calendar icon
-            iconColor: primary.withValues(alpha: 0.9),
+            iconColor: infoColor.withValues(alpha: 0.9),
             iconBgColor: primary.withValues(alpha: 0.15),
             title: "$weeklyCount / 7",
             subtitle: "This Week",
@@ -91,7 +91,7 @@ class HomeScreen extends GetView<HomeController> {
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8.w),
+              padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
                 color: iconBgColor,
                 shape: BoxShape.circle,
