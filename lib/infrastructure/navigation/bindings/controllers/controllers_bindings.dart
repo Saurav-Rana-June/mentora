@@ -17,3 +17,4 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_in.c
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_up.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/sessions.controller.binding.dart';

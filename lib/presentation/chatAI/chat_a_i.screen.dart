@@ -11,18 +11,32 @@ import '../../widgets/fields/custom_textfield.widget.dart';
 import 'controllers/chat_a_i.controller.dart';
 
 class ChatAIScreen extends GetView<ChatAIController> {
-  ChatAIScreen({super.key});
+  final bool showAppBar;
+  final bool showBackButton;
+
+  ChatAIScreen({super.key, this.showAppBar = true, this.showBackButton = true});
+
   @override
   final controller = Get.put(ChatAIController());
 
   @override
   Widget build(BuildContext context) {
+    final body = buildBody(context);
+    if (!showAppBar) {
+      return RepaintBoundary(
+        key: controller.exportKey,
+        child: Container(
+          color: Theme.of(context).primaryColorLight,
+          child: body,
+        ),
+      );
+    }
     return RepaintBoundary(
       key: controller.exportKey,
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColorLight,
         appBar: buildAppbar(context),
-        body: buildBody(context),
+        body: body,
       ),
     );
   }
@@ -264,8 +278,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomBackButton(icon: MyIcons.chevronLeft),
-
+        if (showBackButton) CustomBackButton(icon: MyIcons.chevronLeft),
         Text(
           "Chat with Mentora",
           textAlign: TextAlign.center,
@@ -274,7 +287,6 @@ class ChatAIScreen extends GetView<ChatAIController> {
             fontWeight: FontWeight.w600,
           ),
         ),
-
         buildOptionsDropdownButtton(context),
       ],
     );

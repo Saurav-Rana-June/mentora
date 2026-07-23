@@ -34,22 +34,22 @@ class BottamNavController extends GetxController {
         widget: ExploreScreen(),
       ),
       PageModel(
-        title: 'Sleep',
-        icon: '\u{f186}', // Change Icon :- moon
-        route: Routes.SLEEP,
-        widget: SleepScreen(),
+        title: 'AI',
+        icon: '\u{f544}', // Change Icon :- robot
+        route: Routes.CHAT_A_I,
+        widget: ChatAIScreen(showAppBar: true, showBackButton: false),
+      ),
+      PageModel(
+        title: 'Sessions',
+        icon: '\u{f073}', // Change Icon :- calendar
+        route: Routes.SESSIONS,
+        widget: SessionsScreen(),
       ),
       PageModel(
         title: 'Insights',
         icon: '\u{f201}', // Change Icon :- chart-line
         route: Routes.INSIGHTS,
         widget: InsightsScreen(),
-      ),
-      PageModel(
-        title: 'Account',
-        icon: MyIcons.user,
-        route: Routes.ACCOUNT,
-        widget: AccountScreen(),
       ),
     ];
   }

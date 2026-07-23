@@ -18,3 +18,4 @@ export 'package:Mentora/presentation/signIn/sign_in.screen.dart';
 export 'package:Mentora/presentation/signUp/sign_up.screen.dart';
 export 'package:Mentora/presentation/sleep/sleep.screen.dart';
 export 'package:Mentora/presentation/splash/splash.screen.dart';
+export 'package:Mentora/presentation/sessions/sessions.screen.dart';

@@ -25,4 +25,5 @@ class Routes {
   static const SLEEP = '/sleep';
   static const SPLASH = '/splash';
   static const ACCOUNT = '/account';
+  static const SESSIONS = '/sessions';
 }

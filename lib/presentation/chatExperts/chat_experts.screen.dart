@@ -13,40 +13,58 @@ import '../../widgets/buttons/custom_back_button.widet.dart';
 import 'controllers/chat_experts.controller.dart';
 
 class ChatExpertsScreen extends GetView<ChatExpertsController> {
-  ChatExpertsScreen({super.key});
+  final bool showAppBar;
+  final bool showBackButton;
+
+  ChatExpertsScreen({
+    super.key,
+    this.showAppBar = true,
+    this.showBackButton = true,
+  });
 
   @override
   final controller = Get.put(ChatExpertsController());
 
   @override
   Widget build(BuildContext context) {
+    final body = buildBody(context);
+    if (!showAppBar) {
+      return Container(
+        color: Theme.of(context).primaryColorLight,
+        child: body,
+      );
+    }
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: buildAppbar(context),
-      body: ListView.builder(
-        itemCount: controller.expertsList.length,
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s12.symmetric.horizontal,
-          vertical: Spacing.s4.symmetric.horizontal,
-        ),
-        itemBuilder: (context, index) {
-          final expert = controller.expertsList[index];
-          return buildExpertTile(
-            context,
-            expert.image ?? "",
-            expert.name ?? "",
-            expert.speciality ?? "",
-            expert.callFeature ?? false,
-            expert.videoCallFeature ?? false,
-            () {
-              Get.to(
-                () => ChatExpertChatView(expert: expert),
-                transition: Transition.rightToLeft,
-              );
-            },
-          );
-        },
+      body: body,
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return ListView.builder(
+      itemCount: controller.expertsList.length,
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s12.symmetric.horizontal,
+        vertical: Spacing.s4.symmetric.horizontal,
       ),
+      itemBuilder: (context, index) {
+        final expert = controller.expertsList[index];
+        return buildExpertTile(
+          context,
+          expert.image ?? "",
+          expert.name ?? "",
+          expert.speciality ?? "",
+          expert.callFeature ?? false,
+          expert.videoCallFeature ?? false,
+          () {
+            Get.to(
+              () => ChatExpertChatView(expert: expert),
+              transition: Transition.rightToLeft,
+            );
+          },
+        );
+      },
     );
   }
 

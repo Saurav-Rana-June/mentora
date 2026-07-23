@@ -115,6 +115,11 @@ class Nav {
       binding: SleepControllerBinding(),
     ),
     GetPage(
+      name: Routes.SESSIONS,
+      page: () => SessionsScreen(),
+      binding: SessionsControllerBinding(),
+    ),
+    GetPage(
       name: Routes.INSIGHTS,
       page: () => InsightsScreen(),
       binding: InsightsControllerBinding(),
