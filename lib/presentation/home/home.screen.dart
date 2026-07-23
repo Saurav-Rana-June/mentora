@@ -37,10 +37,13 @@ class HomeScreen extends GetView<HomeController> {
       child: Column(
         children: [
           buildTopBanner(),
+          Spacing.s20.h,
           buildStreakAndProgressRow(context),
           Spacing.s16.h,
           buildMoodCheckinSection(context),
+          Spacing.s20.h,
           buildConnectSection(context),
+          Spacing.s20.h,
           buildMoodTrendsCard(context),
           Spacing.s20.h,
           buildTodayPlanSection(context),
@@ -381,44 +384,39 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  Column buildConnectSection(BuildContext context) {
-    return Column(
+  Widget buildConnectSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: Get.width / 2.3,
-              child: buildConnectTile(
-                context,
-                '\u{f544}',
-                'Chat with Mentora',
-                () {
-                  Get.to(
-                    () => ChatAIScreen(),
-                    transition: Transition.rightToLeft,
-                  );
-                },
-              ), // Change Icon :- robot
-            ),
-
-            SizedBox(
-              width: Get.width / 2.3,
-              child: buildConnectTile(
-                context,
-                '\u{f0f0}',
-                'Talk with Experts',
-                () {
-                  Get.to(
-                    () => ChatExpertsScreen(),
-                    transition: Transition.rightToLeft,
-                  );
-                },
-              ), // Change Icon :- user-doctor
-            ),
-          ],
+        SizedBox(
+          width: Get.width / 2.3,
+          child: buildConnectTile(
+            context,
+            '\u{f544}',
+            'Chat with Mentora',
+            () {
+              Get.to(
+                () => ChatAIScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
+          ), // Change Icon :- robot
         ),
-        Spacing.s20.h,
+
+        SizedBox(
+          width: Get.width / 2.3,
+          child: buildConnectTile(
+            context,
+            '\u{f0f0}',
+            'Talk with Experts',
+            () {
+              Get.to(
+                () => ChatExpertsScreen(),
+                transition: Transition.rightToLeft,
+              );
+            },
+          ), // Change Icon :- user-doctor
+        ),
       ],
     );
   }
@@ -473,87 +471,77 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  Column buildMoodCheckinSection(BuildContext context) {
-    return Column(
-      children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            Get.toNamed(Routes.MOOD_CHECKIN);
-          },
-          child: CustomPrimaryCard(
-            child: Column(
+  Widget buildMoodCheckinSection(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        Get.toNamed(Routes.MOOD_CHECKIN);
+      },
+      child: CustomPrimaryCard(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "How do you feel today?",
-                      textAlign: TextAlign.center,
-                      style: r18.copyWith(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                Spacing.s12.h,
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SvgPicture.asset(
-                      "assets/moods/Angry Face.svg",
-                      width: 45,
-                      height: 45,
-                    ),
-                    SvgPicture.asset(
-                      "assets/moods/Not Good Face.svg",
-                      width: 45,
-                      height: 45,
-                    ),
-                    SvgPicture.asset(
-                      "assets/moods/Normal Face.svg",
-                      width: 45,
-                      height: 45,
-                    ),
-                    SvgPicture.asset(
-                      "assets/moods/Happy Face.svg",
-                      width: 45,
-                      height: 45,
-                    ),
-                    SvgPicture.asset(
-                      "assets/moods/Very Happy Face.svg",
-                      width: 45,
-                      height: 45,
-                    ),
-                  ],
+                Text(
+                  "How do you feel today?",
+                  textAlign: TextAlign.center,
+                  style: r18.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
-          ),
+            Spacing.s12.h,
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SvgPicture.asset(
+                  "assets/moods/Angry Face.svg",
+                  width: 45,
+                  height: 45,
+                ),
+                SvgPicture.asset(
+                  "assets/moods/Not Good Face.svg",
+                  width: 45,
+                  height: 45,
+                ),
+                SvgPicture.asset(
+                  "assets/moods/Normal Face.svg",
+                  width: 45,
+                  height: 45,
+                ),
+                SvgPicture.asset(
+                  "assets/moods/Happy Face.svg",
+                  width: 45,
+                  height: 45,
+                ),
+                SvgPicture.asset(
+                  "assets/moods/Very Happy Face.svg",
+                  width: 45,
+                  height: 45,
+                ),
+              ],
+            ),
+          ],
         ),
-        Spacing.s20.h,
-      ],
+      ),
     );
   }
 
-  Column buildTopBanner() {
-    return Column(
-      children: [
-        Container(
-          width: Get.width,
-          height: Get.height / 4.5,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: AssetImage("assets/images/banner.png"),
-              fit: BoxFit.fill,
-            ),
-          ),
+  Widget buildTopBanner() {
+    return Container(
+      width: Get.width,
+      height: Get.height / 4.5,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: AssetImage("assets/images/banner.png"),
+          fit: BoxFit.fill,
         ),
-        Spacing.s20.h,
-      ],
+      ),
     );
   }
 
