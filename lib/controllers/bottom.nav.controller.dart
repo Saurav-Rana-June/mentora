@@ -55,6 +55,13 @@ class BottamNavController extends GetxController {
   }
 
   void changeTabIndex(int index) {
+    if (index == 2) {
+      Get.to(
+        () => ChatAIScreen(showAppBar: true, showBackButton: true),
+        transition: Transition.rightToLeft,
+      );
+      return;
+    }
     tabIndex.value = index;
   }
 }

@@ -103,16 +103,15 @@ class InsightsScreen extends GetView<InsightsController> {
                         ),
                         child: Column(
                           children: [
-                            Text(
-                              "🌟",
-                              style: TextStyle(fontSize: 24.sp),
-                            ),
+                            Text("🌟", style: TextStyle(fontSize: 24.sp)),
                             Spacing.s8.h,
                             Text(
                               "Check in a few more days to see your trends",
                               textAlign: TextAlign.center,
                               style: r14.copyWith(
-                                color: Theme.of(context).textTheme.bodySmall!.color,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -127,7 +126,9 @@ class InsightsScreen extends GetView<InsightsController> {
                           painter: InsightsMoodLineChartPainter(
                             checkInMoods: homeController.checkInMoods,
                             primaryColor: primary,
-                            textColor: Theme.of(context).textTheme.bodySmall!.color ?? slate[500]!,
+                            textColor:
+                                Theme.of(context).textTheme.bodySmall!.color ??
+                                slate[500]!,
                           ),
                         ),
                       );
@@ -325,7 +326,8 @@ class InsightsMoodLineChartPainter extends CustomPainter {
         ? checkInMoods.sublist(checkInMoods.length - 7)
         : checkInMoods;
 
-    final double stepX = size.width / (moods.length - 1 == 0 ? 1 : moods.length - 1);
+    final double stepX =
+        size.width / (moods.length - 1 == 0 ? 1 : moods.length - 1);
     final double height = size.height;
     final double padding = 15;
 
@@ -358,9 +360,7 @@ class InsightsMoodLineChartPainter extends CustomPainter {
     drawDashedLine(minScoreY);
 
     // Draw small text labels next to the grid lines
-    final textPainter = TextPainter(
-      textDirection: TextDirection.ltr,
-    );
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     void drawLabel(String text, double y) {
       textPainter.text = TextSpan(
@@ -425,7 +425,7 @@ class InsightsMoodLineChartPainter extends CustomPainter {
         ],
       ).createShader(Rect.fromLTRB(0, 0, size.width, height))
       ..style = PaintingStyle.fill;
-    
+
     canvas.drawPath(path, gradientPaint);
 
     final linePaint = Paint()
@@ -442,9 +442,12 @@ class InsightsMoodLineChartPainter extends CustomPainter {
       final controlPoint1 = Offset(p0.dx + stepX / 2.0, p0.dy);
       final controlPoint2 = Offset(p1.dx - stepX / 2.0, p1.dy);
       linePath.cubicTo(
-        controlPoint1.dx, controlPoint1.dy,
-        controlPoint2.dx, controlPoint2.dy,
-        p1.dx, p1.dy,
+        controlPoint1.dx,
+        controlPoint1.dy,
+        controlPoint2.dx,
+        controlPoint2.dy,
+        p1.dx,
+        p1.dy,
       );
     }
     canvas.drawPath(linePath, linePaint);
