@@ -269,7 +269,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Feeling Anxious",
-            description: "Calm your mind and body",
+            description: "Calm your mind and body with guided relaxation",
             iconUnicode: '\u{f004}', // heart
             query:
                 "I'm feeling really anxious right now. Can you help me calm down?",
@@ -278,7 +278,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Breathing Exercise",
-            description: "Quick 2-minute breathing",
+            description: "Quick 2-minute deep breathing session",
             iconUnicode: '\u{f72e}', // wind
             query: "Could we do a quick breathing exercise together to relax?",
           ),
@@ -286,7 +286,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Stress Relief",
-            description: "Manage stress and pressure",
+            description: "Manage stress and pressure effectively",
             iconUnicode: '\u{f471}', // brain
             query:
                 "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
@@ -295,7 +295,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Mindfulness Quote",
-            description: "Get daily quote inspiration",
+            description: "Get daily quote inspiration and reflection",
             iconUnicode: '\u{f890}', // sparkles
             query:
                 "Give me a mindfulness quote and help me journal about my day.",
@@ -351,7 +351,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   ),
                 ),
               ),
-              Spacing.s8.w,
+              Spacing.s12.w,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -363,12 +363,14 @@ class ChatAIScreen extends GetView<ChatAIController> {
                       color: theme.textTheme.bodyLarge!.color,
                     ),
                   ),
-                  Spacing.s4.h,
+                  // Spacing.s4.h,
                   Text(
                     description,
                     style: r12.copyWith(
                       fontWeight: FontWeight.w400,
-                      color: theme.textTheme.bodySmall!.color!.withValues(alpha: 0.7),
+                      color: theme.textTheme.bodySmall!.color!.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ],
