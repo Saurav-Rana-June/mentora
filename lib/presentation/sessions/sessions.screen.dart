@@ -178,76 +178,89 @@ class SessionsScreen extends GetView<SessionsController> {
   }
 
   Widget buildSessionTile(BuildContext context, SessionModel session) {
+    final theme = Theme.of(context);
     final isCompleted = session.status == "Completed";
     final badgeColor = isCompleted ? successColor : primary;
 
     return Padding(
       padding: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
       child: CustomPrimaryCard(
-        padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
-        borderRadius: 12,
-        child: Row(
+        padding: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
+        borderRadius: 16,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 28.r,
-              backgroundImage: NetworkImage(session.imageUrl),
-              backgroundColor: Theme.of(context).primaryColorLight,
-            ),
-            Spacing.s12.w,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    session.expertName,
-                    style: r16.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: primary.withValues(alpha: 0.2),
+                      width: 1.5,
                     ),
                   ),
-                  Spacing.s4.h,
-                  Text(
-                    session.specialty,
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall!.color,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  child: CircleAvatar(
+                    radius: 28.r,
+                    backgroundImage: NetworkImage(session.imageUrl),
+                    backgroundColor: theme.primaryColorLight,
                   ),
-                  Spacing.s8.h,
-                  Row(
+                ),
+                Spacing.s16.w,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '\u{f073}', // calendar-alt
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeRegular',
-                          fontSize: 12,
-                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        session.expertName,
+                        style: r16.copyWith(
+                          color: theme.textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Spacing.s4.w,
-                      Expanded(
-                        child: Text(
-                          session.dateTime,
-                          style: r12.copyWith(
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Spacing.s4.h,
+                      Text(
+                        session.specialty,
+                        style: r14.copyWith(
+                          color: theme.textTheme.bodySmall!.color,
+                          fontWeight: FontWeight.w400,
                         ),
+                      ),
+                      Spacing.s8.h,
+                      Row(
+                        children: [
+                          Icon(
+                            session.callType == "Video Call"
+                                ? Icons.videocam_outlined
+                                : Icons.phone_outlined,
+                            size: 14,
+                            color: primary,
+                          ),
+                          Spacing.s8.w,
+                          Text(
+                            session.callType,
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            Spacing.s12.w,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+                ),
+                Spacing.s12.w,
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: badgeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: badgeColor.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     session.status,
@@ -257,29 +270,87 @@ class SessionsScreen extends GetView<SessionsController> {
                     ),
                   ),
                 ),
-                Spacing.s8.h,
-                Row(
-                  children: [
-                    Text(
-                      session.callType == "Video Call"
-                          ? '\u{f03d}' // video
-                          : '\u{f095}', // phone
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 12,
-                        color: primary,
-                      ),
+              ],
+            ),
+            Spacing.s16.h,
+            const Divider(height: 1),
+            Spacing.s12.h,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: theme.primaryColorLight,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.06),
+                      width: 0.8,
                     ),
-                    Spacing.s4.w,
-                    Text(
-                      session.callType,
-                      style: r12.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                        fontWeight: FontWeight.w500,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        '\u{f073}',
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeRegular',
+                          fontSize: 12,
+                          color: primary,
+                        ),
                       ),
-                    ),
-                  ],
+                      Spacing.s8.w,
+                      Text(
+                        session.dateTime,
+                        style: r12.copyWith(
+                          color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                if (!isCompleted)
+                  Material(
+                    color: primary,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {},
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        child: Text(
+                          "Join Session",
+                          style: r12.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {},
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: primary, width: 1.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Book Again",
+                          style: r12.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],
