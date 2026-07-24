@@ -743,7 +743,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   color: theme.cardTheme.color,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+                    color:
+                        theme.dividerTheme.color ??
+                        primary.withValues(alpha: 0.08),
                     width: 0.8,
                   ),
                 ),
@@ -760,14 +762,6 @@ class ChatAIScreen extends GetView<ChatAIController> {
               ),
             ),
           ),
-        Text(
-          "Mentora AI",
-          textAlign: TextAlign.center,
-          style: h3.copyWith(
-            color: theme.textTheme.bodyLarge!.color,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
         buildOptionsDropdownButtton(context),
       ],
     );
@@ -876,10 +870,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
       child: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: primary.withValues(alpha: 0.4),
-            width: 1.5,
-          ),
+          border: Border.all(color: primary.withValues(alpha: 0.4), width: 1.5),
         ),
         child: const CircleAvatar(
           radius: 17,
