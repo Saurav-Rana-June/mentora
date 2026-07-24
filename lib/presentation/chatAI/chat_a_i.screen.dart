@@ -57,12 +57,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             ],
           ),
           if (showAppBar)
-            Positioned(
-              top: topPadding,
-              left: 0,
-              right: 0,
-              child: buildAppbar(context),
-            ),
+            Positioned(top: 0, left: 0, right: 0, child: buildAppbar(context)),
         ],
       );
     });
@@ -72,12 +67,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
     return Center(
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(
-          0,
-          topPadding + 56.h,
-          0,
-          Spacing.s12.symmetric.horizontal,
-        ),
+        // padding: EdgeInsets.fromLTRB(0, 0, 0, Spacing.s12.symmetric.horizontal),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -747,6 +737,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           color: Colors.transparent,
           shape: const CircleBorder(),
           child: InkWell(
+            borderRadius: BorderRadius.circular(50),
             customBorder: const CircleBorder(),
             splashColor: primary.withValues(alpha: 0.3),
             onTap: () {
