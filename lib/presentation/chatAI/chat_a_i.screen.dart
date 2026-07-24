@@ -269,6 +269,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Feeling Anxious",
+            description: "Calm your mind and body",
             iconUnicode: '\u{f004}', // heart
             query:
                 "I'm feeling really anxious right now. Can you help me calm down?",
@@ -277,6 +278,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Breathing Exercise",
+            description: "Quick 2-minute breathing",
             iconUnicode: '\u{f72e}', // wind
             query: "Could we do a quick breathing exercise together to relax?",
           ),
@@ -284,6 +286,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Stress Relief",
+            description: "Manage stress and pressure",
             iconUnicode: '\u{f471}', // brain
             query:
                 "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
@@ -292,6 +295,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           buildCompactSuggestionChip(
             context,
             title: "Mindfulness Quote",
+            description: "Get daily quote inspiration",
             iconUnicode: '\u{f890}', // sparkles
             query:
                 "Give me a mindfulness quote and help me journal about my day.",
@@ -304,6 +308,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
   Widget buildCompactSuggestionChip(
     BuildContext context, {
     required String title,
+    required String description,
     required String iconUnicode,
     required String query,
   }) {
@@ -316,8 +321,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
         onTap: () => controller.sendMessage(query),
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s12.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
+            horizontal: Spacing.s8.symmetric.horizontal,
+            vertical: Spacing.s4.symmetric.vertical,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -332,7 +337,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
@@ -341,18 +346,32 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   iconUnicode,
                   style: TextStyle(
                     fontFamily: 'FontAwesomeSolid',
-                    fontSize: 10,
+                    fontSize: 16,
                     color: theme.colorScheme.primary,
                   ),
                 ),
               ),
               Spacing.s8.w,
-              Text(
-                title,
-                style: r12.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.textTheme.bodyLarge!.color,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: r14.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                  Spacing.s4.h,
+                  Text(
+                    description,
+                    style: r12.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: theme.textTheme.bodySmall!.color!.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
