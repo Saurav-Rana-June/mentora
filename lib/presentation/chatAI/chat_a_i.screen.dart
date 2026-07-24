@@ -165,8 +165,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
             controller: controller.messageController,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.send,
-            maxLines: 4,
-            minLines: 3,
+            maxLines: 2,
+            minLines: 2,
             borderWidth: 0,
             fillColor: Colors.transparent,
             contentPadding: EdgeInsets.symmetric(
@@ -189,28 +189,28 @@ class ChatAIScreen extends GetView<ChatAIController> {
             ),
             child: Row(
               children: [
-                Material(
-                  color: Colors.transparent,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Text(
-                        '\u{002b}',
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeRegular',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: theme.textTheme.bodyMedium!.color!.withValues(
-                            alpha: 0.6,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Material(
+                //   color: Colors.transparent,
+                //   shape: const CircleBorder(),
+                //   child: InkWell(
+                //     customBorder: const CircleBorder(),
+                //     onTap: () {},
+                //     child: Padding(
+                //       padding: const EdgeInsets.all(4),
+                //       child: Text(
+                //         '\u{002b}',
+                //         style: TextStyle(
+                //           fontFamily: 'FontAwesomeRegular',
+                //           fontSize: 20,
+                //           fontWeight: FontWeight.w300,
+                //           color: theme.textTheme.bodyMedium!.color!.withValues(
+                //             alpha: 0.6,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 const Spacer(),
                 Obx(() {
                   final text = controller.currentInputText.value;
@@ -233,9 +233,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
                           color: isNotEmpty
                               ? primary
                               : primary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(
-                            isNotEmpty ? 8 : 20,
-                          ),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
                           child: Text(
