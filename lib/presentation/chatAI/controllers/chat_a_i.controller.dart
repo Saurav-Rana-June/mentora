@@ -16,11 +16,23 @@ class ChatAIController extends GetxController {
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
+  final RxString currentInputText = "".obs;
+
   RxBool isSearching = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    messageController.addListener(() {
+      currentInputText.value = messageController.text;
+    });
+  }
 
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
     messages.add(MessageModel(message: text, isMe: true));
+    messageController.clear();
+    currentInputText.value = "";
     _scrollToBottom();
 
     // Simulate AI thinking and replying with a natural delay
