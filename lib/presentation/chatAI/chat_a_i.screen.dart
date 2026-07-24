@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,53 +22,153 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   @override
   Widget build(BuildContext context) {
-    final body = buildBody(context);
-    if (!showAppBar) {
-      return RepaintBoundary(
-        key: controller.exportKey,
-        child: Container(
-          color: Theme.of(context).primaryColorLight,
-          child: body,
-        ),
-      );
-    }
-    return RepaintBoundary(
-      key: controller.exportKey,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        appBar: buildAppbar(context),
-        body: body,
+    return Theme(
+      data: AppTheme.darkTheme,
+      child: Builder(
+        builder: (context) {
+          final body = buildBody(context);
+          if (!showAppBar) {
+            return RepaintBoundary(
+              key: controller.exportKey,
+              child: Container(
+                color: Theme.of(context).primaryColorLight,
+                child: body,
+              ),
+            );
+          }
+          return RepaintBoundary(
+            key: controller.exportKey,
+            child: Scaffold(
+              backgroundColor: Theme.of(context).primaryColorLight,
+              appBar: buildAppbar(context),
+              body: body,
+            ),
+          );
+        },
       ),
     );
   }
 
-  Stack buildBody(BuildContext context) {
+  Widget buildBody(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Obx(() {
+        final isEmpty = controller.messages.isEmpty;
+        return Column(
+          children: [
+            Expanded(
+              child: isEmpty ? buildLandingContent(context) : buildChatArea(),
+            ),
+            if (!isEmpty) buildMessageBoxArea(context),
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget buildLandingContent(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [buildChatArea(), buildMessageBoxArea(context)],
+      children: [
+        const Positioned.fill(child: _FuturisticBackground()),
+        Center(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s16.symmetric.horizontal,
+              vertical: Spacing.s20.symmetric.horizontal,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                buildGreeting(context),
+                Spacing.s32.h,
+                buildCenterMessageBoxArea(context),
+                Spacing.s24.h,
+                buildCompactSuggestions(context),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Container buildMessageBoxArea(BuildContext context) {
+  Widget buildGreeting(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      children: [
+        Container(
+          width: 60.h,
+          height: 60.h,
+          decoration: const BoxDecoration(shape: BoxShape.circle),
+          child: ClipOval(
+            child: Image.asset('assets/logos/logo.png', fit: BoxFit.contain),
+          ),
+        ),
+        Spacing.s16.h,
+        Text(
+          "Hello, I'm Mentora AI",
+          style: h2.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.w700,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        Spacing.s8.h,
+        Text(
+          "Your safe space for mental well-being.",
+          style: r18.copyWith(
+            color: textTheme.bodyLarge!.color,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        Spacing.s8.h,
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s16.symmetric.horizontal,
+          ),
+          child: Text(
+            "I'm here to listen, support, and guide you. Select a prompt below or type your own query to begin.",
+            style: r14.copyWith(color: textTheme.bodyMedium!.color),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildCenterMessageBoxArea(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.vertical,
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.15),
+            blurRadius: 16,
+            spreadRadius: 2,
+          ),
+        ],
       ),
-      decoration: BoxDecoration(color: Theme.of(context).primaryColorLight),
       child: Row(
         children: [
           Expanded(
             child: CustomTextFormField(
-              hintText: "Type a message...",
-              controller: TextEditingController(),
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              borderWidth: 1.2,
-              borderColor: primary,
-              validator: (value) {
-                if (value == null || value.isEmpty) return "Title is required";
-                return null;
+              hintText: "Ask Mentora anything...",
+              controller: controller.messageController,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.send,
+              borderWidth: 0,
+              fillColor: Colors.transparent,
+              onFieldSubmitted: (value) {
+                final text = value.trim();
+                if (text.isNotEmpty) {
+                  controller.sendMessage(text);
+                  controller.messageController.clear();
+                }
               },
             ),
           ),
@@ -78,20 +179,27 @@ class ChatAIScreen extends GetView<ChatAIController> {
             child: InkWell(
               customBorder: const CircleBorder(),
               splashColor: primary.withValues(alpha: 0.3),
-              onTap: () {},
+              onTap: () {
+                final text = controller.messageController.text.trim();
+                if (text.isNotEmpty) {
+                  controller.sendMessage(text);
+                  controller.messageController.clear();
+                }
+              },
               child: Container(
-                height: 43.h,
-                width: 43.h,
+                margin: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
+                height: 40.h,
+                width: 40.h,
                 decoration: BoxDecoration(
                   color: primary,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
-                    '\u{f1d8}', // Change icon :- paper-plane
+                    '\u{f1d8}', // paper-plane icon
                     style: TextStyle(
                       fontFamily: 'FontAwesomeSolid',
-                      fontSize: 18,
+                      fontSize: 16,
                       color: white,
                     ),
                   ),
@@ -104,59 +212,304 @@ class ChatAIScreen extends GetView<ChatAIController> {
     );
   }
 
-  ListView buildChatArea() {
+  Widget buildCompactSuggestions(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: buildCompactSuggestionChip(
+                context,
+                title: "Feeling Anxious",
+                iconUnicode: '\u{f004}', // heart
+                query:
+                    "I'm feeling really anxious right now. Can you help me calm down?",
+              ),
+            ),
+            Spacing.s12.w,
+            Expanded(
+              child: buildCompactSuggestionChip(
+                context,
+                title: "Breathing Exercise",
+                iconUnicode: '\u{f72e}', // wind
+                query:
+                    "Could we do a quick breathing exercise together to relax?",
+              ),
+            ),
+          ],
+        ),
+        Spacing.s12.h,
+        Row(
+          children: [
+            Expanded(
+              child: buildCompactSuggestionChip(
+                context,
+                title: "Stress Relief",
+                iconUnicode: '\u{f471}', // brain
+                query:
+                    "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
+              ),
+            ),
+            Spacing.s12.w,
+            Expanded(
+              child: buildCompactSuggestionChip(
+                context,
+                title: "Mindfulness Quote",
+                iconUnicode: '\u{f890}', // sparkles
+                query:
+                    "Give me a mindfulness quote and help me journal about my day.",
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildCompactSuggestionChip(
+    BuildContext context, {
+    required String title,
+    required String iconUnicode,
+    required String query,
+  }) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.cardTheme.color,
+      borderRadius: BorderRadius.circular(30),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: () => controller.sendMessage(query),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s12.symmetric.horizontal,
+            vertical: Spacing.s8.symmetric.vertical,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
+              width: 0.8,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                iconUnicode,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 12,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              Spacing.s8.w,
+              Expanded(
+                child: Text(
+                  title,
+                  style: r14.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge!.color,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildChatArea() {
     return ListView.builder(
+      controller: controller.scrollController,
       itemCount: controller.messages.length,
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s12.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
+        vertical: Spacing.s12.symmetric.vertical,
       ),
       itemBuilder: (context, index) {
         final message = controller.messages[index];
-        return Align(
-          alignment: message.isMe
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 270),
-            child: Container(
-              margin: EdgeInsets.only(
-                bottom: index + 1 == controller.messages.length
-                    ? Spacing.s32.symmetric.horizontal
-                    : Spacing.s8.symmetric.horizontal,
+        return buildChatBubble(context, message, index);
+      },
+    );
+  }
+
+  Widget buildChatBubble(
+    BuildContext context,
+    MessageModel message,
+    int index,
+  ) {
+    final theme = Theme.of(context);
+    final isMe = message.isMe;
+
+    if (isMe) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 0.75.sw),
+          child: Container(
+            margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s12.symmetric.horizontal,
+              vertical: Spacing.s8.symmetric.horizontal,
+            ),
+            decoration: BoxDecoration(
+              color: primary,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(4),
               ),
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-                vertical: Spacing.s4.symmetric.horizontal,
-              ),
-              decoration: BoxDecoration(
-                color: message.isMe
-                    ? Theme.of(context).cardTheme.color
-                    : primary,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                  bottomLeft: message.isMe
-                      ? Radius.circular(12)
-                      : Radius.circular(0),
-                  bottomRight: message.isMe
-                      ? Radius.circular(0)
-                      : Radius.circular(12),
+            ),
+            child: Text(
+              message.message,
+              style: r16.copyWith(color: white, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: Spacing.s8.symmetric.horizontal),
+                height: 32.h,
+                width: 32.h,
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '\u{f890}', // sparkles icon
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 14,
+                      color: primary,
+                    ),
+                  ),
                 ),
               ),
-              child: Text(
-                message.message,
-                style: r16.copyWith(
-                  color: message.isMe
-                      ? Theme.of(context).textTheme.bodyLarge!.color
-                      : white,
-                  fontWeight: FontWeight.w400,
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 0.7.sw),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s12.symmetric.horizontal,
+                      vertical: Spacing.s8.symmetric.horizontal,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.cardTheme.color,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                        bottomLeft: Radius.circular(4),
+                        bottomRight: Radius.circular(16),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromRGBO(0, 0, 0, 0.03),
+                          offset: const Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      message.message,
+                      style: r16.copyWith(
+                        color: theme.textTheme.bodyLarge!.color,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Container buildMessageBoxArea(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s12.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.vertical,
+      ),
+      decoration: BoxDecoration(
+        color: theme.primaryColorLight,
+        border: Border(
+          top: BorderSide(
+            color: theme.dividerTheme.color ?? theme.colorScheme.outlineVariant,
+            width: 0.8,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextFormField(
+              hintText: "Type a message...",
+              controller: controller.messageController,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.send,
+              borderWidth: 1.2,
+              borderColor: primary,
+              onFieldSubmitted: (value) {
+                final text = value.trim();
+                if (text.isNotEmpty) {
+                  controller.sendMessage(text);
+                  controller.messageController.clear();
+                }
+              },
+            ),
+          ),
+          Spacing.s8.w,
+          Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              splashColor: primary.withValues(alpha: 0.3),
+              onTap: () {
+                final text = controller.messageController.text.trim();
+                if (text.isNotEmpty) {
+                  controller.sendMessage(text);
+                  controller.messageController.clear();
+                }
+              },
+              child: Container(
+                height: 43.h,
+                width: 43.h,
+                decoration: BoxDecoration(
+                  color: primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '\u{f1d8}', // paper-plane icon
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 18,
+                      color: white,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -204,18 +557,13 @@ class ChatAIScreen extends GetView<ChatAIController> {
                     hintText: "Search here...",
                     fillColor: Colors.transparent,
                     controller: TextEditingController(),
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    contentPadding: EdgeInsetsGeometry.symmetric(horizontal: 6),
-                    validator: (value) {
-                      if (value == null || value.isEmpty)
-                        return "Title is required";
-                      return null;
-                    },
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.search,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 6),
                   ),
                 ),
                 Text(
-                  '\u{f078}', // Change Icon :-  chevron-down
+                  '\u{f078}', // chevron-down
                   style: TextStyle(
                     fontFamily: 'FontAwesomeLight',
                     fontSize: 14,
@@ -226,7 +574,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
                 ),
                 Spacing.s12.w,
                 Text(
-                  '\u{f077}', // Change Icon :-  chevron-up
+                  '\u{f077}', // chevron-up
                   style: TextStyle(
                     fontFamily: 'FontAwesomeLight',
                     fontSize: 14,
@@ -240,7 +588,6 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
         ),
         Spacing.s12.w,
-
         Material(
           color: Colors.transparent,
           shape: const CircleBorder(),
@@ -295,7 +642,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
   PopupMenuButton<String> buildOptionsDropdownButtton(BuildContext context) {
     return PopupMenuButton<String>(
       icon: Text(
-        '\u{f142}', // Change Icon :-  ellipsis-vertical
+        '\u{f142}', // ellipsis-vertical
         style: TextStyle(
           fontFamily: 'FontAwesomeLight',
           fontSize: 20,
@@ -313,7 +660,14 @@ class ChatAIScreen extends GetView<ChatAIController> {
             break;
           case 'clear':
             Get.bottomSheet(
-              ClearChatBottomsheet(onConfirm: () {}),
+              Theme(
+                data: AppTheme.darkTheme,
+                child: ClearChatBottomsheet(
+                  onConfirm: () {
+                    controller.clearChat();
+                  },
+                ),
+              ),
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
             );
@@ -349,7 +703,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           child: Row(
             children: [
               Text(
-                '\u{f08b}', // Change Icon :-  arrow-right-from-bracket
+                '\u{f08b}', // arrow-right-from-bracket
                 style: TextStyle(
                   fontFamily: 'FontAwesomeLight',
                   fontSize: 16,
@@ -392,5 +746,146 @@ class ChatAIScreen extends GetView<ChatAIController> {
         ),
       ],
     );
+  }
+}
+
+class _FuturisticBackground extends StatefulWidget {
+  const _FuturisticBackground();
+
+  @override
+  State<_FuturisticBackground> createState() => _FuturisticBackgroundState();
+}
+
+class _FuturisticBackgroundState extends State<_FuturisticBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 25),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _AuroraBackgroundPainter(
+              animationValue: _controller.value,
+              primaryColor: theme.colorScheme.primary,
+              cardColor: theme.cardColor,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _AuroraBackgroundPainter extends CustomPainter {
+  final double animationValue;
+  final Color primaryColor;
+  final Color cardColor;
+
+  _AuroraBackgroundPainter({
+    required this.animationValue,
+    required this.primaryColor,
+    required this.cardColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center1 = Offset(
+      size.width * 0.2 + cos(animationValue * 2 * pi) * size.width * 0.1,
+      size.height * 0.3 + sin(animationValue * 2 * pi) * size.height * 0.1,
+    );
+    final radius1 = size.width * 0.7;
+
+    final paint1 = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          primaryColor.withValues(alpha: 0.12),
+          primaryColor.withValues(alpha: 0.03),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromCircle(center: center1, radius: radius1))
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center1, radius1, paint1);
+
+    final center2 = Offset(
+      size.width * 0.8 + cos(-animationValue * 2 * pi + pi) * size.width * 0.15,
+      size.height * 0.6 +
+          sin(-animationValue * 2 * pi + pi) * size.height * 0.12,
+    );
+    final radius2 = size.width * 0.8;
+
+    final paint2 = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          primaryColor.withValues(alpha: 0.08),
+          primaryColor.withValues(alpha: 0.02),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromCircle(center: center2, radius: radius2))
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center2, radius2, paint2);
+
+    final particlePaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.15)
+      ..style = PaintingStyle.fill;
+
+    final linePaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.06)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+
+    final seedPoints = [
+      const Offset(0.15, 0.2),
+      const Offset(0.85, 0.25),
+      const Offset(0.5, 0.45),
+      const Offset(0.3, 0.6),
+      const Offset(0.7, 0.75),
+      const Offset(0.2, 0.8),
+    ];
+
+    final positions = <Offset>[];
+    for (int i = 0; i < seedPoints.length; i++) {
+      final pt = seedPoints[i];
+      final offset = Offset(
+        size.width * pt.dx + cos(animationValue * 2 * pi + i) * 12,
+        size.height * pt.dy + sin(animationValue * 3 * pi + i) * 12,
+      );
+      positions.add(offset);
+      canvas.drawCircle(offset, 3, particlePaint);
+    }
+
+    for (int i = 0; i < positions.length; i++) {
+      for (int j = i + 1; j < positions.length; j++) {
+        final dist = (positions[i] - positions[j]).distance;
+        if (dist < size.width * 0.45) {
+          canvas.drawLine(positions[i], positions[j], linePaint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _AuroraBackgroundPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue ||
+        oldDelegate.primaryColor != primaryColor ||
+        oldDelegate.cardColor != cardColor;
   }
 }

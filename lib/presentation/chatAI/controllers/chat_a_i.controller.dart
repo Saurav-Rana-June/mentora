@@ -9,49 +9,47 @@ import 'package:share_plus/share_plus.dart';
 
 class ChatAIController extends GetxController {
   final GlobalKey exportKey = GlobalKey();
-  final RxList<MessageModel> messages = <MessageModel>[
-    MessageModel(
-      message: "Hi 👋 I’m Mentora. I’m here to listen and support you.",
-      isMe: false,
-    ),
-    MessageModel(message: "Hi… I’m not really sure how to start.", isMe: true),
-    MessageModel(
-      message:
-          "That’s completely okay. Take your time — there’s no pressure here.",
-      isMe: false,
-    ),
-    MessageModel(message: "I’ve been feeling overwhelmed lately.", isMe: true),
-    MessageModel(
-      message:
-          "Thank you for sharing that. Feeling overwhelmed can be really heavy. What’s been weighing on you the most?",
-      isMe: false,
-    ),
-    MessageModel(
-      message: "Work and personal things… it all feels like too much.",
-      isMe: true,
-    ),
-    MessageModel(
-      message:
-          "That sounds exhausting. When everything piles up at once, it can feel impossible to breathe. You’re not alone in this.",
-      isMe: false,
-    ),
-    MessageModel(message: "I just want to feel calm again.", isMe: true),
-    MessageModel(
-      message:
-          "Wanting peace is very human 💙 We can take this one small step at a time. Would you like to talk more, or try a short calming exercise together?",
-      isMe: false,
-    ),
-  ].obs;
+  
+  // Start with empty messages so the landing view shows by default
+  final RxList<MessageModel> messages = <MessageModel>[].obs;
 
-  void sendMessage(String text) {
-    messages.add(MessageModel(message: text, isMe: true));
-
-    messages.add(
-      MessageModel(message: "This is a dummy AI response 🤖", isMe: false),
-    );
-  }
+  final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
 
   RxBool isSearching = false.obs;
+
+  void sendMessage(String text) {
+    if (text.trim().isEmpty) return;
+    messages.add(MessageModel(message: text, isMe: true));
+    _scrollToBottom();
+
+    // Simulate AI thinking and replying with a natural delay
+    Future.delayed(const Duration(milliseconds: 600), () {
+      messages.add(
+        MessageModel(
+          message: "Thank you for sharing that. Mentora is here to support you. Let's take it one step at a time. Tell me a bit more about how you're feeling?",
+          isMe: false,
+        ),
+      );
+      _scrollToBottom();
+    });
+  }
+
+  void clearChat() {
+    messages.clear();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   Future<void> exportChat(GlobalKey boundaryKey) async {
     try {
@@ -74,6 +72,13 @@ class ChatAIController extends GetxController {
     } catch (e) {
       debugPrint('Export failed: $e');
     }
+  }
+
+  @override
+  void onClose() {
+    messageController.dispose();
+    scrollController.dispose();
+    super.onClose();
   }
 }
 
