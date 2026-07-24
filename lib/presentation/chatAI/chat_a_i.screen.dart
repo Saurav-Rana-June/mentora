@@ -263,52 +263,58 @@ class ChatAIScreen extends GetView<ChatAIController> {
   Widget buildCompactSuggestions(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: buildCompactSuggestionChip(
-                context,
-                title: "Feeling Anxious",
-                iconUnicode: '\u{f004}', // heart
-                query:
-                    "I'm feeling really anxious right now. Can you help me calm down?",
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: buildCompactSuggestionChip(
+                  context,
+                  title: "Feeling Anxious",
+                  iconUnicode: '\u{f004}', // heart
+                  query:
+                      "I'm feeling really anxious right now. Can you help me calm down?",
+                ),
               ),
-            ),
-            Spacing.s12.w,
-            Expanded(
-              child: buildCompactSuggestionChip(
-                context,
-                title: "Breathing Exercise",
-                iconUnicode: '\u{f72e}', // wind
-                query:
-                    "Could we do a quick breathing exercise together to relax?",
+              Spacing.s12.w,
+              Expanded(
+                child: buildCompactSuggestionChip(
+                  context,
+                  title: "Breathing Exercise",
+                  iconUnicode: '\u{f72e}', // wind
+                  query:
+                      "Could we do a quick breathing exercise together to relax?",
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Spacing.s12.h,
-        Row(
-          children: [
-            Expanded(
-              child: buildCompactSuggestionChip(
-                context,
-                title: "Stress Relief",
-                iconUnicode: '\u{f471}', // brain
-                query:
-                    "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: buildCompactSuggestionChip(
+                  context,
+                  title: "Stress Relief",
+                  iconUnicode: '\u{f471}', // brain
+                  query:
+                      "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
+                ),
               ),
-            ),
-            Spacing.s12.w,
-            Expanded(
-              child: buildCompactSuggestionChip(
-                context,
-                title: "Mindfulness Quote",
-                iconUnicode: '\u{f890}', // sparkles
-                query:
-                    "Give me a mindfulness quote and help me journal about my day.",
+              Spacing.s12.w,
+              Expanded(
+                child: buildCompactSuggestionChip(
+                  context,
+                  title: "Mindfulness Quote",
+                  iconUnicode: '\u{f890}', // sparkles
+                  query:
+                      "Give me a mindfulness quote and help me journal about my day.",
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -341,6 +347,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 iconUnicode,
@@ -354,12 +361,10 @@ class ChatAIScreen extends GetView<ChatAIController> {
               Expanded(
                 child: Text(
                   title,
-                  style: r14.copyWith(
+                  style: r12.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.textTheme.bodyLarge!.color,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
