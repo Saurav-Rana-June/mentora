@@ -261,62 +261,44 @@ class ChatAIScreen extends GetView<ChatAIController> {
   }
 
   Widget buildCompactSuggestions(BuildContext context) {
-    return Column(
-      children: [
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: buildCompactSuggestionChip(
-                  context,
-                  title: "Feeling Anxious",
-                  iconUnicode: '\u{f004}', // heart
-                  query:
-                      "I'm feeling really anxious right now. Can you help me calm down?",
-                ),
-              ),
-              Spacing.s12.w,
-              Expanded(
-                child: buildCompactSuggestionChip(
-                  context,
-                  title: "Breathing Exercise",
-                  iconUnicode: '\u{f72e}', // wind
-                  query:
-                      "Could we do a quick breathing exercise together to relax?",
-                ),
-              ),
-            ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          buildCompactSuggestionChip(
+            context,
+            title: "Feeling Anxious",
+            iconUnicode: '\u{f004}', // heart
+            query:
+                "I'm feeling really anxious right now. Can you help me calm down?",
           ),
-        ),
-        Spacing.s12.h,
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: buildCompactSuggestionChip(
-                  context,
-                  title: "Stress Relief",
-                  iconUnicode: '\u{f471}', // brain
-                  query:
-                      "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
-                ),
-              ),
-              Spacing.s12.w,
-              Expanded(
-                child: buildCompactSuggestionChip(
-                  context,
-                  title: "Mindfulness Quote",
-                  iconUnicode: '\u{f890}', // sparkles
-                  query:
-                      "Give me a mindfulness quote and help me journal about my day.",
-                ),
-              ),
-            ],
+          Spacing.s8.w,
+          buildCompactSuggestionChip(
+            context,
+            title: "Breathing Exercise",
+            iconUnicode: '\u{f72e}', // wind
+            query:
+                "Could we do a quick breathing exercise together to relax?",
           ),
-        ),
-      ],
+          Spacing.s8.w,
+          buildCompactSuggestionChip(
+            context,
+            title: "Stress Relief",
+            iconUnicode: '\u{f471}', // brain
+            query:
+                "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
+          ),
+          Spacing.s8.w,
+          buildCompactSuggestionChip(
+            context,
+            title: "Mindfulness Quote",
+            iconUnicode: '\u{f890}', // sparkles
+            query:
+                "Give me a mindfulness quote and help me journal about my day.",
+          ),
+        ],
+      ),
     );
   }
 
@@ -329,27 +311,29 @@ class ChatAIScreen extends GetView<ChatAIController> {
     final theme = Theme.of(context);
     return Material(
       color: theme.cardTheme.color,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         onTap: () => controller.sendMessage(query),
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s12.symmetric.horizontal,
-            vertical: Spacing.s12.symmetric.vertical,
+            vertical: Spacing.s8.symmetric.vertical,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+              color:
+                  theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
               width: 0.8,
             ),
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
@@ -358,19 +342,17 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   iconUnicode,
                   style: TextStyle(
                     fontFamily: 'FontAwesomeSolid',
-                    fontSize: 14,
+                    fontSize: 10,
                     color: theme.colorScheme.primary,
                   ),
                 ),
               ),
-              Spacing.s12.w,
-              Expanded(
-                child: Text(
-                  title,
-                  style: r14.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.textTheme.bodyLarge!.color,
-                  ),
+              Spacing.s8.w,
+              Text(
+                title,
+                style: r12.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.textTheme.bodyLarge!.color,
                 ),
               ),
             ],
