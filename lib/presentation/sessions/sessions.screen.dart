@@ -52,7 +52,11 @@ class SessionsScreen extends GetView<SessionsController> {
                 ? controller.upcomingSessions
                 : controller.completedSessions;
 
-            return buildSessionList(context, sessionsList, isUpcoming: isUpcoming);
+            return buildSessionList(
+              context,
+              sessionsList,
+              isUpcoming: isUpcoming,
+            );
           }),
         ),
       ],
@@ -60,13 +64,18 @@ class SessionsScreen extends GetView<SessionsController> {
   }
 
   Widget buildTabbarSection(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: Spacing.s12.symmetric.horizontal,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        color: primary.withValues(alpha: 0.15),
+        color: primary.withValues(alpha: 0.08),
+        border: Border.all(
+          color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+          width: 0.8,
+        ),
       ),
       padding: EdgeInsets.all(4.w),
       child: Row(
@@ -242,7 +251,8 @@ class SessionsScreen extends GetView<SessionsController> {
                           Text(
                             session.callType,
                             style: r12.copyWith(
-                              color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
+                              color: theme.textTheme.bodyMedium!.color!
+                                  .withValues(alpha: 0.8),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -253,21 +263,38 @@ class SessionsScreen extends GetView<SessionsController> {
                 ),
                 Spacing.s12.w,
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 4.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: badgeColor.withValues(alpha: 0.1),
+                    color: badgeColor.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: badgeColor.withValues(alpha: 0.2),
+                      color: badgeColor.withValues(alpha: 0.15),
                       width: 1,
                     ),
                   ),
-                  child: Text(
-                    session.status,
-                    style: r12.copyWith(
-                      color: badgeColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6.r,
+                        height: 6.r,
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Spacing.s8.w,
+                      Text(
+                        session.status,
+                        style: r12.copyWith(
+                          color: badgeColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -279,12 +306,17 @@ class SessionsScreen extends GetView<SessionsController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 6.h,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.primaryColorLight,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.06),
+                      color:
+                          theme.dividerTheme.color ??
+                          primary.withValues(alpha: 0.06),
                       width: 0.8,
                     ),
                   ),
@@ -302,7 +334,9 @@ class SessionsScreen extends GetView<SessionsController> {
                       Text(
                         session.dateTime,
                         style: r12.copyWith(
-                          color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.85),
+                          color: theme.textTheme.bodyMedium!.color!.withValues(
+                            alpha: 0.85,
+                          ),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -312,18 +346,32 @@ class SessionsScreen extends GetView<SessionsController> {
                 if (!isCompleted)
                   Material(
                     color: primary,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                       onTap: () {},
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                        child: Text(
-                          "Join Session",
-                          style: r12.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.h,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Join Session",
+                              style: r12.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacing.s8.w,
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -331,22 +379,36 @@ class SessionsScreen extends GetView<SessionsController> {
                 else
                   Material(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                       onTap: () {},
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: primary, width: 1.2),
-                          borderRadius: BorderRadius.circular(10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.h,
                         ),
-                        child: Text(
-                          "Book Again",
-                          style: r12.copyWith(
-                            color: primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: primary.withValues(alpha: 0.5), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Book Again",
+                              style: r12.copyWith(
+                                color: primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacing.s8.w,
+                            Icon(
+                              Icons.refresh_rounded,
+                              size: 14,
+                              color: primary,
+                            ),
+                          ],
                         ),
                       ),
                     ),
