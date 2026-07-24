@@ -74,11 +74,11 @@ class ChatAIScreen extends GetView<ChatAIController> {
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
-              vertical: Spacing.s20.symmetric.horizontal,
+              vertical: Spacing.s12.symmetric.horizontal,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -94,6 +94,20 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   child: buildCenterMessageBoxArea(context),
                 ),
                 Spacing.s24.h,
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Spacing.s16.symmetric.horizontal,
+                  ),
+                  child: Text(
+                    "Suggestions",
+                    style: r18.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Spacing.s12.h,
                 buildCompactSuggestions(context),
               ],
             ),
@@ -286,7 +300,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             query:
                 "I'm feeling really anxious right now. Can you help me calm down?",
           ),
-          Spacing.s8.w,
+          Spacing.s16.w,
           buildCompactSuggestionChip(
             context,
             title: "Breathing Exercise",
@@ -294,16 +308,16 @@ class ChatAIScreen extends GetView<ChatAIController> {
             iconUnicode: '\u{f72e}', // wind
             query: "Could we do a quick breathing exercise together to relax?",
           ),
-          Spacing.s8.w,
+          Spacing.s16.w,
           buildCompactSuggestionChip(
             context,
             title: "Stress Relief",
-            description: "Manage stress and pressure effectively",
+            description: "Manage stress, anxiety, and pressure effectively",
             iconUnicode: '\u{f471}', // brain
             query:
                 "I have a lot of stress lately and feel overwhelmed. How should I handle it?",
           ),
-          Spacing.s8.w,
+          Spacing.s16.w,
           buildCompactSuggestionChip(
             context,
             title: "Mindfulness Quote",
@@ -333,10 +347,10 @@ class ChatAIScreen extends GetView<ChatAIController> {
         onTap: () => controller.sendMessage(query),
         child: Container(
           width: 200.w,
-          height: 105.h,
+          height: 120.h,
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s4.symmetric.vertical,
+            vertical: Spacing.s8.symmetric.vertical,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
