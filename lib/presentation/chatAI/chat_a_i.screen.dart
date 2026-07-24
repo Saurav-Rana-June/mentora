@@ -27,20 +27,10 @@ class ChatAIScreen extends GetView<ChatAIController> {
       child: Builder(
         builder: (context) {
           final body = buildBody(context);
-          if (!showAppBar) {
-            return RepaintBoundary(
-              key: controller.exportKey,
-              child: Container(
-                color: Theme.of(context).primaryColorLight,
-                child: body,
-              ),
-            );
-          }
           return RepaintBoundary(
             key: controller.exportKey,
             child: Scaffold(
               backgroundColor: Theme.of(context).primaryColorLight,
-              appBar: buildAppbar(context),
               body: body,
             ),
           );
@@ -50,70 +40,80 @@ class ChatAIScreen extends GetView<ChatAIController> {
   }
 
   Widget buildBody(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Obx(() {
-        final isEmpty = controller.messages.isEmpty;
-        return Column(
-          children: [
-            Expanded(
-              child: isEmpty ? buildLandingContent(context) : buildChatArea(),
+    final topPadding = MediaQuery.paddingOf(context).top;
+    return Obx(() {
+      final isEmpty = controller.messages.isEmpty;
+      return Stack(
+        children: [
+          const Positioned.fill(child: _FuturisticBackground()),
+          Column(
+            children: [
+              Expanded(
+                child: isEmpty
+                    ? buildLandingContent(context, topPadding)
+                    : buildChatArea(context, topPadding),
+              ),
+              if (!isEmpty) buildMessageBoxArea(context),
+            ],
+          ),
+          if (showAppBar)
+            Positioned(
+              top: topPadding,
+              left: 0,
+              right: 0,
+              child: buildAppbar(context),
             ),
-            if (!isEmpty) buildMessageBoxArea(context),
-          ],
-        );
-      }),
-    );
+        ],
+      );
+    });
   }
 
-  Widget buildLandingContent(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(child: _FuturisticBackground()),
-        Center(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(
-              vertical: Spacing.s12.symmetric.horizontal,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s16.symmetric.horizontal,
-                  ),
-                  child: buildGreeting(context),
-                ),
-                Spacing.s32.h,
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s16.symmetric.horizontal,
-                  ),
-                  child: buildCenterMessageBoxArea(context),
-                ),
-                Spacing.s24.h,
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s16.symmetric.horizontal,
-                  ),
-                  child: Text(
-                    "Suggestions",
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Spacing.s12.h,
-                buildCompactSuggestions(context),
-              ],
-            ),
-          ),
+  Widget buildLandingContent(BuildContext context, double topPadding) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          0,
+          topPadding + 56.h,
+          0,
+          Spacing.s12.symmetric.horizontal,
         ),
-      ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s16.symmetric.horizontal,
+              ),
+              child: buildGreeting(context),
+            ),
+            Spacing.s32.h,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s16.symmetric.horizontal,
+              ),
+              child: buildCenterMessageBoxArea(context),
+            ),
+            Spacing.s24.h,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s16.symmetric.horizontal,
+              ),
+              child: Text(
+                "Suggestions",
+                style: r18.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Spacing.s12.h,
+            buildCompactSuggestions(context),
+          ],
+        ),
+      ),
     );
   }
 
@@ -412,13 +412,15 @@ class ChatAIScreen extends GetView<ChatAIController> {
     );
   }
 
-  Widget buildChatArea() {
+  Widget buildChatArea(BuildContext context, double topPadding) {
     return ListView.builder(
       controller: controller.scrollController,
       itemCount: controller.messages.length,
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s12.symmetric.horizontal,
-        vertical: Spacing.s12.symmetric.vertical,
+      padding: EdgeInsets.fromLTRB(
+        Spacing.s12.symmetric.horizontal,
+        topPadding + 56.h + Spacing.s12.symmetric.vertical,
+        Spacing.s12.symmetric.horizontal,
+        Spacing.s12.symmetric.vertical,
       ),
       itemBuilder: (context, index) {
         final message = controller.messages[index];
@@ -675,7 +677,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
       surfaceTintColor: Colors.transparent,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
     );
   }
 
