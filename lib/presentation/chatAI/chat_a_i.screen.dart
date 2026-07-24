@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -66,6 +67,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
   Widget buildLandingContent(BuildContext context, double topPadding) {
     return Center(
       child: SingleChildScrollView(
+        controller: controller.landingScrollController,
         physics: const BouncingScrollPhysics(),
         // padding: EdgeInsets.fromLTRB(0, 0, 0, Spacing.s12.symmetric.horizontal),
         child: Column(
@@ -657,19 +659,35 @@ class ChatAIScreen extends GetView<ChatAIController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      title: Obx(
-        () => controller.isSearching.value
+  Widget buildAppbar(BuildContext context) {
+    final theme = Theme.of(context);
+    return Obx(() {
+      final isScrolled = controller.isScrolled.value;
+
+      final appBar = AppBar(
+        title: controller.isSearching.value
             ? buildSearchAppbar(context)
             : buildNormalAppbar(context),
-      ),
-      surfaceTintColor: Colors.transparent,
-      centerTitle: false,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-    );
+        surfaceTintColor: Colors.transparent,
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+        backgroundColor: isScrolled
+            ? theme.primaryColorLight.withValues(alpha: 0.8)
+            : Colors.transparent,
+        elevation: 0,
+      );
+
+      if (isScrolled) {
+        return ClipRect(
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: appBar,
+          ),
+        );
+      }
+
+      return appBar;
+    });
   }
 
   Row buildSearchAppbar(BuildContext context) {

@@ -15,10 +15,12 @@ class ChatAIController extends GetxController {
 
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  final ScrollController landingScrollController = ScrollController();
 
   final RxString currentInputText = "".obs;
 
   RxBool isSearching = false.obs;
+  final RxBool isScrolled = false.obs;
 
   @override
   void onInit() {
@@ -26,6 +28,20 @@ class ChatAIController extends GetxController {
     messageController.addListener(() {
       currentInputText.value = messageController.text;
     });
+    scrollController.addListener(_scrollListener);
+    landingScrollController.addListener(_landingScrollListener);
+  }
+
+  void _scrollListener() {
+    if (scrollController.hasClients) {
+      isScrolled.value = scrollController.offset > 5;
+    }
+  }
+
+  void _landingScrollListener() {
+    if (landingScrollController.hasClients) {
+      isScrolled.value = landingScrollController.offset > 5;
+    }
   }
 
   void sendMessage(String text) {
@@ -33,6 +49,7 @@ class ChatAIController extends GetxController {
     messages.add(MessageModel(message: text, isMe: true));
     messageController.clear();
     currentInputText.value = "";
+    isScrolled.value = false;
     _scrollToBottom();
 
     // Simulate AI thinking and replying with a natural delay
@@ -49,6 +66,7 @@ class ChatAIController extends GetxController {
 
   void clearChat() {
     messages.clear();
+    isScrolled.value = false;
   }
 
   void _scrollToBottom() {
@@ -90,6 +108,7 @@ class ChatAIController extends GetxController {
   void onClose() {
     messageController.dispose();
     scrollController.dispose();
+    landingScrollController.dispose();
     super.onClose();
   }
 }
