@@ -329,39 +329,45 @@ class ChatAIScreen extends GetView<ChatAIController> {
     final theme = Theme.of(context);
     return Material(
       color: theme.cardTheme.color,
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(16),
         onTap: () => controller.sendMessage(query),
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s12.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
+            vertical: Spacing.s12.symmetric.vertical,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
+              color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
               width: 0.8,
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                iconUnicode,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeSolid',
-                  fontSize: 12,
-                  color: theme.colorScheme.primary,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  iconUnicode,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 14,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
-              Spacing.s8.w,
+              Spacing.s12.w,
               Expanded(
                 child: Text(
                   title,
-                  style: r12.copyWith(
+                  style: r14.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.textTheme.bodyLarge!.color,
                   ),
