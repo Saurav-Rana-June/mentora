@@ -203,99 +203,61 @@ class ChatAIScreen extends GetView<ChatAIController> {
                           fontFamily: 'FontAwesomeRegular',
                           fontSize: 20,
                           fontWeight: FontWeight.w300,
-                          color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.6),
+                          color: theme.textTheme.bodyMedium!.color!.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
                 const Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Mentora AI",
-                          style: r12.copyWith(
-                            color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Spacing.s4.w,
-                        Text(
-                          '\u{f078}',
-                          style: TextStyle(
-                            fontFamily: 'FontAwesomeSolid',
-                            fontSize: 10,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
+                Obx(() {
+                  final text = controller.currentInputText.value;
+                  final isNotEmpty = text.trim().isNotEmpty;
+                  return Material(
+                    color: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        isNotEmpty ? 8 : 20,
+                      ),
                     ),
-                    Spacing.s16.w,
-                    Material(
-                      color: Colors.transparent,
-                      shape: const CircleBorder(),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        isNotEmpty ? 8 : 20,
+                      ),
+                      onTap: () {
+                        if (isNotEmpty) {
+                          controller.sendMessage(text);
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: 36.h,
+                        width: 36.h,
+                        decoration: BoxDecoration(
+                          color: isNotEmpty ? primary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(
+                            isNotEmpty ? 8 : 20,
+                          ),
+                        ),
+                        child: Center(
                           child: Text(
-                            '\u{f130}',
+                            isNotEmpty ? '\u{f062}' : '\u{f8c1}',
                             style: TextStyle(
-                              fontFamily: 'FontAwesomeRegular',
-                              fontSize: 16,
-                              color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 14,
+                              color: isNotEmpty
+                                  ? white
+                                  : theme.textTheme.bodyMedium!.color!
+                                        .withValues(alpha: 0.8),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    Spacing.s12.w,
-                    Obx(() {
-                      final text = controller.currentInputText.value;
-                      final isNotEmpty = text.trim().isNotEmpty;
-                      return Material(
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                          onTap: () {
-                            if (isNotEmpty) {
-                              controller.sendMessage(text);
-                            }
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            height: 36.h,
-                            width: 36.h,
-                            decoration: BoxDecoration(
-                              color: isNotEmpty ? primary : Colors.transparent,
-                              borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                            ),
-                            child: Center(
-                              child: Text(
-                                isNotEmpty ? '\u{f062}' : '\u{f8c1}',
-                                style: TextStyle(
-                                  fontFamily: 'FontAwesomeSolid',
-                                  fontSize: 14,
-                                  color: isNotEmpty 
-                                      ? white 
-                                      : theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
+                  );
+                }),
               ],
             ),
           ),
@@ -603,99 +565,62 @@ class ChatAIScreen extends GetView<ChatAIController> {
                             fontFamily: 'FontAwesomeRegular',
                             fontSize: 20,
                             fontWeight: FontWeight.w300,
-                            color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.6),
+                            color: theme.textTheme.bodyMedium!.color!
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                       ),
                     ),
                   ),
                   const Spacer(),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Mentora AI",
-                            style: r12.copyWith(
-                              color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Spacing.s4.w,
-                          Text(
-                            '\u{f078}',
-                            style: TextStyle(
-                              fontFamily: 'FontAwesomeSolid',
-                              fontSize: 10,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ],
+                  Obx(() {
+                    final text = controller.currentInputText.value;
+                    final isNotEmpty = text.trim().isNotEmpty;
+                    return Material(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          isNotEmpty ? 8 : 20,
+                        ),
                       ),
-                      Spacing.s16.w,
-                      Material(
-                        color: Colors.transparent,
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          isNotEmpty ? 8 : 20,
+                        ),
+                        onTap: () {
+                          if (isNotEmpty) {
+                            controller.sendMessage(text);
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          height: 36.h,
+                          width: 36.h,
+                          decoration: BoxDecoration(
+                            color: isNotEmpty
+                                ? primary
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(
+                              isNotEmpty ? 8 : 20,
+                            ),
+                          ),
+                          child: Center(
                             child: Text(
-                              '\u{f130}',
+                              isNotEmpty ? '\u{f062}' : '\u{f8c1}',
                               style: TextStyle(
-                                fontFamily: 'FontAwesomeRegular',
-                                fontSize: 16,
-                                color: theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
+                                  fontFamily: 'FontAwesomeSolid',
+                                  fontSize: 14,
+                                  color: isNotEmpty
+                                      ? white
+                                      : theme.textTheme.bodyMedium!.color!
+                                            .withValues(alpha: 0.8),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Spacing.s12.w,
-                      Obx(() {
-                        final text = controller.currentInputText.value;
-                        final isNotEmpty = text.trim().isNotEmpty;
-                        return Material(
-                          color: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                            onTap: () {
-                              if (isNotEmpty) {
-                                controller.sendMessage(text);
-                              }
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              height: 36.h,
-                              width: 36.h,
-                              decoration: BoxDecoration(
-                                color: isNotEmpty ? primary : Colors.transparent,
-                                borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  isNotEmpty ? '\u{f062}' : '\u{f8c1}',
-                                  style: TextStyle(
-                                    fontFamily: 'FontAwesomeSolid',
-                                    fontSize: 14,
-                                    color: isNotEmpty 
-                                        ? white 
-                                        : theme.textTheme.bodyMedium!.color!.withValues(alpha: 0.8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),
