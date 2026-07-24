@@ -165,8 +165,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
             controller: controller.messageController,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.send,
-            maxLines: 2,
-            minLines: 1,
+            maxLines: 4,
+            minLines: 3,
             borderWidth: 0,
             fillColor: Colors.transparent,
             contentPadding: EdgeInsets.symmetric(
@@ -218,39 +218,35 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   return Material(
                     color: Colors.transparent,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        isNotEmpty ? 8 : 20,
-                      ),
+                      borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
                     ),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        isNotEmpty ? 8 : 20,
-                      ),
-                      onTap: () {
-                        if (isNotEmpty) {
-                          controller.sendMessage(text);
-                        }
-                      },
+                      borderRadius: BorderRadius.circular(isNotEmpty ? 8 : 20),
+                      onTap: isNotEmpty
+                          ? () => controller.sendMessage(text)
+                          : null,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         height: 36.h,
                         width: 36.h,
                         decoration: BoxDecoration(
-                          color: isNotEmpty ? primary : Colors.transparent,
+                          color: isNotEmpty
+                              ? primary
+                              : primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(
                             isNotEmpty ? 8 : 20,
                           ),
                         ),
                         child: Center(
                           child: Text(
-                            isNotEmpty ? '\u{f062}' : '\u{f8c1}',
+                            '\u{f062}',
                             style: TextStyle(
                               fontFamily: 'FontAwesomeSolid',
                               fontSize: 14,
                               color: isNotEmpty
                                   ? white
                                   : theme.textTheme.bodyMedium!.color!
-                                        .withValues(alpha: 0.8),
+                                        .withValues(alpha: 0.3),
                             ),
                           ),
                         ),
@@ -587,11 +583,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
                         borderRadius: BorderRadius.circular(
                           isNotEmpty ? 8 : 20,
                         ),
-                        onTap: () {
-                          if (isNotEmpty) {
-                            controller.sendMessage(text);
-                          }
-                        },
+                        onTap: isNotEmpty
+                            ? () => controller.sendMessage(text)
+                            : null,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: 36.h,
@@ -599,21 +593,21 @@ class ChatAIScreen extends GetView<ChatAIController> {
                           decoration: BoxDecoration(
                             color: isNotEmpty
                                 ? primary
-                                : Colors.transparent,
+                                : primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(
                               isNotEmpty ? 8 : 20,
                             ),
                           ),
                           child: Center(
                             child: Text(
-                              isNotEmpty ? '\u{f062}' : '\u{f8c1}',
+                              '\u{f062}',
                               style: TextStyle(
-                                  fontFamily: 'FontAwesomeSolid',
-                                  fontSize: 14,
-                                  color: isNotEmpty
-                                      ? white
-                                      : theme.textTheme.bodyMedium!.color!
-                                            .withValues(alpha: 0.8),
+                                fontFamily: 'FontAwesomeSolid',
+                                fontSize: 14,
+                                color: isNotEmpty
+                                    ? white
+                                    : theme.textTheme.bodyMedium!.color!
+                                          .withValues(alpha: 0.3),
                               ),
                             ),
                           ),
