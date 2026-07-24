@@ -32,7 +32,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             key: controller.exportKey,
             child: Scaffold(
               backgroundColor: Theme.of(context).primaryColorLight,
-              body: body,
+              body: SafeArea(top: false, child: body),
             ),
           );
         },
@@ -74,6 +74,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Spacing.s40.h,
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: Spacing.s16.symmetric.horizontal,
@@ -185,8 +186,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
             borderWidth: 0,
             fillColor: Colors.transparent,
             contentPadding: EdgeInsets.symmetric(
-              horizontal: Spacing.s16.symmetric.horizontal,
-              vertical: Spacing.s12.symmetric.vertical,
+              horizontal: Spacing.s8.symmetric.horizontal,
+              vertical: Spacing.s8.symmetric.vertical,
             ),
             onFieldSubmitted: (value) {
               final text = value.trim();
@@ -542,28 +543,28 @@ class ChatAIScreen extends GetView<ChatAIController> {
       ),
       child: Row(
         children: [
-          Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  '\u{002b}',
-                  style: TextStyle(
-                    fontFamily: 'FontAwesomeRegular',
-                    fontSize: 22,
-                    color: theme.textTheme.bodyMedium!.color!.withValues(
-                      alpha: 0.6,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Spacing.s8.w,
+          // Material(
+          //   color: Colors.transparent,
+          //   shape: const CircleBorder(),
+          //   child: InkWell(
+          //     customBorder: const CircleBorder(),
+          //     onTap: () {},
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8),
+          //       child: Text(
+          //         '\u{002b}',
+          //         style: TextStyle(
+          //           fontFamily: 'FontAwesomeRegular',
+          //           fontSize: 22,
+          //           color: theme.textTheme.bodyMedium!.color!.withValues(
+          //             alpha: 0.6,
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // Spacing.s8.w,
           Expanded(
             child: CustomTextFormField(
               hintText: "Write a message...",
@@ -577,7 +578,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
               fillColor: theme.cardTheme.color,
               contentPadding: EdgeInsets.symmetric(
-                horizontal: Spacing.s16.symmetric.horizontal,
+                horizontal: Spacing.s8.symmetric.horizontal,
                 vertical: Spacing.s8.symmetric.vertical,
               ),
               onFieldSubmitted: (value) {
@@ -588,7 +589,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
               },
             ),
           ),
-          Spacing.s8.w,
+          Spacing.s16.w,
           Obx(() {
             final text = controller.currentInputText.value;
             final isNotEmpty = text.trim().isNotEmpty;
