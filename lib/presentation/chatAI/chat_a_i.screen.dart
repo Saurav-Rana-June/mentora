@@ -74,16 +74,25 @@ class ChatAIScreen extends GetView<ChatAIController> {
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s16.symmetric.horizontal,
               vertical: Spacing.s20.symmetric.horizontal,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                buildGreeting(context),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Spacing.s16.symmetric.horizontal,
+                  ),
+                  child: buildGreeting(context),
+                ),
                 Spacing.s32.h,
-                buildCenterMessageBoxArea(context),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Spacing.s16.symmetric.horizontal,
+                  ),
+                  child: buildCenterMessageBoxArea(context),
+                ),
                 Spacing.s24.h,
                 buildCompactSuggestions(context),
               ],
@@ -264,6 +273,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.symmetric.horizontal,
+      ),
       child: Row(
         children: [
           buildCompactSuggestionChip(
@@ -321,6 +333,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
         onTap: () => controller.sendMessage(query),
         child: Container(
           width: 200.w,
+          height: 105.h,
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s8.symmetric.horizontal,
             vertical: Spacing.s4.symmetric.vertical,
@@ -335,7 +348,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
@@ -352,7 +365,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   ),
                 ),
               ),
-              Spacing.s12.w,
+              Spacing.s16.w,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
