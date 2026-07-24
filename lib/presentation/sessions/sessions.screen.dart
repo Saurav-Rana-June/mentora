@@ -220,9 +220,8 @@ class SessionsScreen extends GetView<SessionsController> {
                         child: Text(
                           session.dateTime,
                           style: r12.copyWith(
-                            color: theme.textTheme.bodyMedium!.color!.withValues(
-                              alpha: 0.85,
-                            ),
+                            color: theme.textTheme.bodyMedium!.color!
+                                .withValues(alpha: 0.85),
                             fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
@@ -233,7 +232,7 @@ class SessionsScreen extends GetView<SessionsController> {
                   ),
                 ),
                 Spacing.s12.w,
-                
+
                 // Status Badge
                 Container(
                   padding: EdgeInsets.symmetric(
@@ -272,11 +271,11 @@ class SessionsScreen extends GetView<SessionsController> {
                 ),
               ],
             ),
-            
+
             Spacing.s12.h,
             const Divider(height: 1),
             Spacing.s16.h,
-            
+
             // Middle Row: Avatar and Details
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,11 +341,9 @@ class SessionsScreen extends GetView<SessionsController> {
                 ),
               ],
             ),
-            
-            Spacing.s20.h,
-            
-            // Bottom Action Button
-            if (!isCompleted)
+
+            if (!isCompleted) ...[
+              Spacing.s20.h,
               Material(
                 color: primary,
                 borderRadius: BorderRadius.circular(12),
@@ -376,45 +373,8 @@ class SessionsScreen extends GetView<SessionsController> {
                     ),
                   ),
                 ),
-              )
-            else
-              Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: primary.withValues(alpha: 0.5),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Book Again",
-                          style: r14.copyWith(
-                            color: primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Spacing.s8.w,
-                        Icon(
-                          Icons.refresh_rounded,
-                          size: 16,
-                          color: primary,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ),
+            ],
           ],
         ),
       ),
