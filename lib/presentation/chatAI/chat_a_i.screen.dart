@@ -278,8 +278,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             context,
             title: "Breathing Exercise",
             iconUnicode: '\u{f72e}', // wind
-            query:
-                "Could we do a quick breathing exercise together to relax?",
+            query: "Could we do a quick breathing exercise together to relax?",
           ),
           Spacing.s8.w,
           buildCompactSuggestionChip(
@@ -724,16 +723,49 @@ class ChatAIScreen extends GetView<ChatAIController> {
   }
 
   Row buildNormalAppbar(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (showBackButton) CustomBackButton(icon: MyIcons.chevronLeft),
+        if (showBackButton)
+          CustomBackButton(icon: MyIcons.chevronLeft)
+        else
+          Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {},
+              child: Container(
+                height: 38.h,
+                width: 38.h,
+                decoration: BoxDecoration(
+                  color: theme.cardTheme.color,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+                    width: 0.8,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '\u{f0c9}',
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 16,
+                      color: theme.textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         Text(
-          "Chat with Mentora",
+          "Mentora AI",
           textAlign: TextAlign.center,
           style: h3.copyWith(
-            color: Theme.of(context).textTheme.bodyLarge!.color,
-            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge!.color,
+            fontWeight: FontWeight.w700,
           ),
         ),
         buildOptionsDropdownButtton(context),
@@ -741,17 +773,11 @@ class ChatAIScreen extends GetView<ChatAIController> {
     );
   }
 
-  PopupMenuButton<String> buildOptionsDropdownButtton(BuildContext context) {
+  Widget buildOptionsDropdownButtton(BuildContext context) {
+    final theme = Theme.of(context);
     return PopupMenuButton<String>(
-      icon: Text(
-        '\u{f142}', // ellipsis-vertical
-        style: TextStyle(
-          fontFamily: 'FontAwesomeLight',
-          fontSize: 20,
-          color: Theme.of(context).textTheme.bodyMedium!.color,
-        ),
-      ),
-      color: Theme.of(context).cardColor,
+      color: theme.cardColor,
+      offset: const Offset(0, 48),
       onSelected: (value) {
         switch (value) {
           case 'search':
@@ -805,7 +831,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
           child: Row(
             children: [
               Text(
-                '\u{f08b}', // arrow-right-from-bracket
+                '\u{f08b}',
                 style: TextStyle(
                   fontFamily: 'FontAwesomeLight',
                   fontSize: 16,
@@ -847,6 +873,21 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
         ),
       ],
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: primary.withValues(alpha: 0.4),
+            width: 1.5,
+          ),
+        ),
+        child: const CircleAvatar(
+          radius: 17,
+          backgroundImage: NetworkImage(
+            "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+          ),
+        ),
+      ),
     );
   }
 }
