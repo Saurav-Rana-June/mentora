@@ -320,6 +320,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
         borderRadius: BorderRadius.circular(20),
         onTap: () => controller.sendMessage(query),
         child: Container(
+          width: 200.w,
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s8.symmetric.horizontal,
             vertical: Spacing.s4.symmetric.vertical,
@@ -352,28 +353,30 @@ class ChatAIScreen extends GetView<ChatAIController> {
                 ),
               ),
               Spacing.s12.w,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: r14.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                  // Spacing.s4.h,
-                  Text(
-                    description,
-                    style: r12.copyWith(
-                      fontWeight: FontWeight.w400,
-                      color: theme.textTheme.bodySmall!.color!.withValues(
-                        alpha: 0.7,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: r14.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge!.color,
                       ),
                     ),
-                  ),
-                ],
+                    // Spacing.s4.h,
+                    Text(
+                      description,
+                      style: r12.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodySmall!.color!.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
