@@ -1,6 +1,7 @@
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.toggle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -205,34 +206,18 @@ class InsightsScreen extends GetView<InsightsController> {
                 style: r18.copyWith(fontWeight: FontWeight.w600),
               ),
               Obx(
-                () => ToggleButtons(
-                  isSelected: [
-                    controller.selectedGrowthTab.value == 0,
-                    controller.selectedGrowthTab.value == 1,
-                  ],
-                  onPressed: controller.toggleGrowthTab,
-                  borderRadius: BorderRadius.circular(20),
-                  fillColor: primary,
-                  selectedColor: Colors.white,
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  constraints: const BoxConstraints(
-                    minHeight: 30,
-                    minWidth: 60,
-                  ),
-                  children: [
+                () => CustomToggle(
+                  selectedIndex: controller.selectedGrowthTab.value,
+                  onChanged: controller.toggleGrowthTab,
+                  width: 100.w,
+                  children: const [
                     Text(
                       '\u{f624}', // gauge icon
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(fontFamily: 'FontAwesomeSolid'),
                     ),
                     Text(
                       '\u{e0e7}', // chart-radar icon
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(fontFamily: 'FontAwesomeSolid'),
                     ),
                   ],
                 ),
@@ -427,38 +412,11 @@ class InsightsScreen extends GetView<InsightsController> {
                 ),
               ),
               Obx(
-                () => ToggleButtons(
-                  isSelected: [
-                    controller.selectedMoodTab.value == 0,
-                    controller.selectedMoodTab.value == 1,
-                  ],
-                  onPressed: controller.toggleMoodTab,
-                  borderRadius: BorderRadius.circular(20),
-                  fillColor: primary,
-                  selectedColor: Colors.white,
-                  color: theme.textTheme.bodyLarge!.color,
-                  borderColor: Colors.grey.shade300,
-                  selectedBorderColor: primary,
-                  constraints: const BoxConstraints(
-                    minHeight: 30,
-                    minWidth: 60,
-                  ),
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: Text(
-                        "Weekly",
-                        style: r12.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: Text(
-                        "Monthly",
-                        style: r12.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ],
+                () => CustomToggle(
+                  selectedIndex: controller.selectedMoodTab.value,
+                  onChanged: controller.toggleMoodTab,
+                  width: 140.w,
+                  children: const [Text("Weekly"), Text("Monthly")],
                 ),
               ),
             ],
