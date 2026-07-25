@@ -566,6 +566,15 @@ class HomeScreen extends GetView<HomeController> {
 
           Row(
             children: [
+              Text(
+                MyIcons.magnifyingGlass,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeLight',
+                  fontSize: 20,
+                  color: slate[500],
+                ),
+              ),
+              Spacing.s12.w,
               GestureDetector(
                 onTap: () => Get.to(
                   () => const AccountScreen(),
@@ -576,15 +585,6 @@ class HomeScreen extends GetView<HomeController> {
                   backgroundImage: NetworkImage(
                     "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
                   ),
-                ),
-              ),
-              Spacing.s12.w,
-              Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
                 ),
               ),
             ],
