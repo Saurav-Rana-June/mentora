@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
@@ -27,12 +28,37 @@ class SessionsScreen extends GetView<SessionsController> {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColorLight,
       surfaceTintColor: Colors.transparent,
-      title: Text(
-        "Sessions",
-        style: h2.copyWith(
-          color: Theme.of(context).textTheme.bodyLarge!.color,
-          fontWeight: FontWeight.w600,
-        ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            height: 25,
+            width: 25,
+            child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
+          ),
+          Text(
+            "Sessions",
+            textAlign: TextAlign.center,
+            style: h2.copyWith(
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(
+            height: 25,
+            width: 25,
+            child: Center(
+              child: Text(
+                MyIcons.magnifyingGlass,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeLight',
+                  fontSize: 20,
+                  color: slate[500],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       centerTitle: true,
       automaticallyImplyLeading: false,
