@@ -534,7 +534,7 @@ class InsightsScreen extends GetView<InsightsController> {
                 Spacing.s4.h,
                 Text(
                   dominant,
-                  style: r14.copyWith(
+                  style: r20.copyWith(
                     color: primary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -561,7 +561,7 @@ class InsightsScreen extends GetView<InsightsController> {
                 Spacing.s4.h,
                 Text(
                   consistencyPercentage,
-                  style: r14.copyWith(
+                  style: r20.copyWith(
                     color: primary,
                     fontWeight: FontWeight.bold,
                   ),
