@@ -241,7 +241,9 @@ class InsightsScreen extends GetView<InsightsController> {
                       painter: GrowthRadarChartPainter(
                         growthAreas: growthAreasList,
                         primaryColor: primary,
-                        textColor: Theme.of(context).textTheme.bodyLarge!.color ?? slate[900]!,
+                        textColor:
+                            Theme.of(context).textTheme.bodyLarge!.color ??
+                            slate[900]!,
                       ),
                     ),
                   ),
@@ -1009,7 +1011,7 @@ class GrowthRadarChartPainter extends CustomPainter {
     for (int i = 0; i < sides; i++) {
       final double angle = i * angleStep - pi / 2;
       final double labelRadius = maxRadius + 10.w;
-      
+
       final double x = center.dx + labelRadius * cos(angle);
       final double y = center.dy + labelRadius * sin(angle);
 
@@ -1033,7 +1035,7 @@ class GrowthRadarChartPainter extends CustomPainter {
       } else if (cos(angle) > 0.1) {
         paintX = x + 2.w;
       }
-      
+
       if (sin(angle) < -0.1) {
         paintY = y - textPainter.height;
       } else if (sin(angle) > 0.1) {
