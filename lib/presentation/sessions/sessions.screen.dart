@@ -66,9 +66,7 @@ class SessionsScreen extends GetView<SessionsController> {
   Widget buildTabbarSection(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: Spacing.s12.symmetric.horizontal,
-      ),
+      margin: EdgeInsets.symmetric(horizontal: Spacing.s8.symmetric.horizontal),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: primary.withValues(alpha: 0.08),
@@ -150,7 +148,7 @@ class SessionsScreen extends GetView<SessionsController> {
     return ListView.builder(
       itemCount: sessions.length,
       padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s12.symmetric.horizontal,
+        horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s4.symmetric.horizontal,
       ),
       itemBuilder: (context, index) {
@@ -189,7 +187,7 @@ class SessionsScreen extends GetView<SessionsController> {
   Widget buildSessionTile(BuildContext context, SessionModel session) {
     final theme = Theme.of(context);
     final isCompleted = session.status == "Completed";
-    
+
     final Color badgeColor;
     switch (session.status.toLowerCase()) {
       case 'completed':
@@ -218,39 +216,32 @@ class SessionsScreen extends GetView<SessionsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Row: Date-Time and Status Badge
+            // Top Row: Call Type and Status Badge
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Date-Time Info
-                Expanded(
-                  child: Row(
-                    children: [
-                      Text(
-                        '\u{f073}', // calendar icon
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeRegular',
-                          fontSize: 12,
-                          color: primary,
+                // Call Type Info
+                Row(
+                  children: [
+                    Icon(
+                      session.callType == "Video Call"
+                          ? Icons.videocam_outlined
+                          : Icons.phone_outlined,
+                      size: 18,
+                      color: primary,
+                    ),
+                    Spacing.s8.w,
+                    Text(
+                      session.callType,
+                      style: r12.copyWith(
+                        color: theme.textTheme.bodyMedium!.color!.withValues(
+                          alpha: 0.8,
                         ),
+                        fontWeight: FontWeight.w500,
                       ),
-                      Spacing.s8.w,
-                      Expanded(
-                        child: Text(
-                          session.dateTime,
-                          style: r12.copyWith(
-                            color: theme.textTheme.bodyMedium!.color!
-                                .withValues(alpha: 0.85),
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Spacing.s12.w,
 
                 // Status Badge
                 Container(
@@ -337,20 +328,23 @@ class SessionsScreen extends GetView<SessionsController> {
                       Spacing.s8.h,
                       Row(
                         children: [
-                          Icon(
-                            session.callType == "Video Call"
-                                ? Icons.videocam_outlined
-                                : Icons.phone_outlined,
-                            size: 14,
-                            color: primary,
+                          Text(
+                            '\u{f073}', // calendar icon
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeRegular',
+                              fontSize: 12,
+                              color: primary,
+                            ),
                           ),
                           Spacing.s8.w,
-                          Text(
-                            session.callType,
-                            style: r12.copyWith(
-                              color: theme.textTheme.bodyMedium!.color!
-                                  .withValues(alpha: 0.8),
-                              fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Text(
+                              session.dateTime,
+                              style: r12.copyWith(
+                                color: theme.textTheme.bodyMedium!.color!
+                                    .withValues(alpha: 0.85),
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
