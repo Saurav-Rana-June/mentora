@@ -189,12 +189,31 @@ class SessionsScreen extends GetView<SessionsController> {
   Widget buildSessionTile(BuildContext context, SessionModel session) {
     final theme = Theme.of(context);
     final isCompleted = session.status == "Completed";
-    final badgeColor = isCompleted ? successColor : primary;
+    
+    final Color badgeColor;
+    switch (session.status.toLowerCase()) {
+      case 'completed':
+        badgeColor = successColor;
+        break;
+      case 'confirmed':
+        badgeColor = infoColor;
+        break;
+      case 'scheduled':
+        badgeColor = warningColor;
+        break;
+      case 'cancelled':
+      case 'canceled':
+      case 'declined':
+        badgeColor = dangerColor;
+        break;
+      default:
+        badgeColor = primary;
+    }
 
     return Padding(
       padding: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
       child: CustomPrimaryCard(
-        padding: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
+        padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
         borderRadius: 16,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
