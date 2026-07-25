@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
@@ -231,7 +232,23 @@ class InsightsScreen extends GetView<InsightsController> {
             if (controller.selectedGrowthTab.value == 0) {
               return buildGrowthGridView(context);
             } else {
-              return buildGrowthDetailedView(context);
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 200.h,
+                    width: double.infinity,
+                    child: CustomPaint(
+                      painter: GrowthRadarChartPainter(
+                        growthAreas: growthAreasList,
+                        primaryColor: primary,
+                        textColor: Theme.of(context).textTheme.bodyLarge!.color ?? slate[900]!,
+                      ),
+                    ),
+                  ),
+                  Spacing.s20.h,
+                  buildGrowthDetailedView(context),
+                ],
+              );
             }
           }),
         ],
@@ -889,5 +906,146 @@ class InsightsMoodBarChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant InsightsMoodBarChartPainter oldDelegate) {
     return oldDelegate.checkInMoods != checkInMoods;
+  }
+}
+
+class GrowthRadarChartPainter extends CustomPainter {
+  final List<GrowthAreaModel> growthAreas;
+  final Color primaryColor;
+  final Color textColor;
+
+  GrowthRadarChartPainter({
+    required this.growthAreas,
+    required this.primaryColor,
+    required this.textColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (growthAreas.isEmpty) return;
+
+    final double width = size.width;
+    final double height = size.height;
+    final center = Offset(width / 2, height / 2);
+    final double maxRadius = (height / 2) - 25.h;
+
+    final int sides = growthAreas.length;
+    final double angleStep = (2 * pi) / sides;
+
+    final gridPaint = Paint()
+      ..color = textColor.withValues(alpha: 0.08)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    final int levels = 5;
+    for (int l = 1; l <= levels; l++) {
+      final double r = maxRadius * (l / levels);
+      final path = Path();
+      for (int i = 0; i < sides; i++) {
+        final double angle = i * angleStep - pi / 2;
+        final double x = center.dx + r * cos(angle);
+        final double y = center.dy + r * sin(angle);
+        if (i == 0) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
+      }
+      path.close();
+      canvas.drawPath(path, gridPaint);
+    }
+
+    for (int i = 0; i < sides; i++) {
+      final double angle = i * angleStep - pi / 2;
+      final double x = center.dx + maxRadius * cos(angle);
+      final double y = center.dy + maxRadius * sin(angle);
+      canvas.drawLine(center, Offset(x, y), gridPaint);
+    }
+
+    final progressPath = Path();
+    final points = <Offset>[];
+
+    for (int i = 0; i < sides; i++) {
+      final double progress = growthAreas[i].progress;
+      final double r = maxRadius * progress;
+      final double angle = i * angleStep - pi / 2;
+      final double x = center.dx + r * cos(angle);
+      final double y = center.dy + r * sin(angle);
+      points.add(Offset(x, y));
+
+      if (i == 0) {
+        progressPath.moveTo(x, y);
+      } else {
+        progressPath.lineTo(x, y);
+      }
+    }
+    progressPath.close();
+
+    final fillPaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.25)
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(progressPath, fillPaint);
+
+    final borderPaint = Paint()
+      ..color = primaryColor
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(progressPath, borderPaint);
+
+    final dotPaint = Paint()
+      ..color = primaryColor
+      ..style = PaintingStyle.fill;
+    final dotBorderPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    for (var point in points) {
+      canvas.drawCircle(point, 4.0, dotPaint);
+      canvas.drawCircle(point, 4.0, dotBorderPaint);
+    }
+
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+    for (int i = 0; i < sides; i++) {
+      final double angle = i * angleStep - pi / 2;
+      final double labelRadius = maxRadius + 10.w;
+      
+      final double x = center.dx + labelRadius * cos(angle);
+      final double y = center.dy + labelRadius * sin(angle);
+
+      final labelText = growthAreas[i].title;
+
+      textPainter.text = TextSpan(
+        text: labelText,
+        style: TextStyle(
+          color: textColor.withValues(alpha: 0.7),
+          fontSize: 8.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      textPainter.layout();
+
+      double paintX = x - (textPainter.width / 2);
+      double paintY = y - (textPainter.height / 2);
+
+      if (cos(angle) < -0.1) {
+        paintX = x - textPainter.width - 2.w;
+      } else if (cos(angle) > 0.1) {
+        paintX = x + 2.w;
+      }
+      
+      if (sin(angle) < -0.1) {
+        paintY = y - textPainter.height;
+      } else if (sin(angle) > 0.1) {
+        paintY = y + 2.h;
+      }
+
+      textPainter.paint(canvas, Offset(paintX, paintY));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GrowthRadarChartPainter oldDelegate) {
+    return oldDelegate.growthAreas != growthAreas;
   }
 }
