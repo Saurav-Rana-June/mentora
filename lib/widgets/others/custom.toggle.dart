@@ -8,6 +8,7 @@ class CustomToggle extends StatelessWidget {
   final List<Widget> children;
   final double? height;
   final double? width;
+  final Color? unselectedColor;
 
   const CustomToggle({
     super.key,
@@ -16,6 +17,7 @@ class CustomToggle extends StatelessWidget {
     required this.children,
     this.height,
     this.width,
+    this.unselectedColor,
   });
 
   @override
@@ -80,14 +82,14 @@ class CustomToggle extends StatelessWidget {
                       style: r12.copyWith(
                         color: isSelected
                             ? Colors.white
-                            : theme.textTheme.bodyLarge!.color,
+                            : (unselectedColor ?? theme.textTheme.bodyLarge!.color),
                         fontWeight: FontWeight.w600,
                       ),
                       child: IconTheme(
                         data: IconThemeData(
                           color: isSelected
                               ? Colors.white
-                              : theme.textTheme.bodyLarge!.color,
+                              : (unselectedColor ?? theme.textTheme.bodyLarge!.color),
                           size: 18,
                         ),
                         child: children[index],

@@ -211,6 +211,7 @@ class InsightsScreen extends GetView<InsightsController> {
                   selectedIndex: controller.selectedGrowthTab.value,
                   onChanged: controller.toggleGrowthTab,
                   width: 100.w,
+                  unselectedColor: primary,
                   children: const [
                     Text(
                       '\u{f624}', // gauge icon
@@ -435,6 +436,7 @@ class InsightsScreen extends GetView<InsightsController> {
                   selectedIndex: controller.selectedMoodTab.value,
                   onChanged: controller.toggleMoodTab,
                   width: 140.w,
+                  unselectedColor: primary,
                   children: const [Text("Weekly"), Text("Monthly")],
                 ),
               ),

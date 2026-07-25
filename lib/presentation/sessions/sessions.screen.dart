@@ -238,7 +238,7 @@ class SessionsScreen extends GetView<SessionsController> {
       padding: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
       child: CustomPrimaryCard(
         padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
-        borderRadius: 16,
+        borderRadius: 8,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
