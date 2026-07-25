@@ -129,7 +129,7 @@ class InsightsScreen extends GetView<InsightsController> {
     }
 
     return Container(
-      margin: EdgeInsets.only(bottom: Spacing.s16.symmetric.horizontal),
+      margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s12.symmetric.horizontal,
         vertical: Spacing.s12.symmetric.horizontal,

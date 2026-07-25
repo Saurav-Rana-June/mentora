@@ -568,38 +568,13 @@ class HomeScreen extends GetView<HomeController> {
             children: [
               GestureDetector(
                 onTap: () => Get.to(
-                  () => const CrisisSupportScreen(),
-                  transition: Transition.downToUp,
+                  () => const AccountScreen(),
+                  transition: Transition.rightToLeft,
                 ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10.w,
-                    vertical: 4.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: slate[100],
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: slate[200]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        '\u{f1cd}', // life-ring icon
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeSolid',
-                          fontSize: 12.sp,
-                          color: slate[600],
-                        ),
-                      ),
-                      Spacing.s4.w,
-                      Text(
-                        "Need help?",
-                        style: r12.copyWith(
-                          color: slate[700],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                child: const CircleAvatar(
+                  radius: 14,
+                  backgroundImage: NetworkImage(
+                    "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
                   ),
                 ),
               ),
