@@ -1,9 +1,11 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'controllers/account.controller.dart';
@@ -18,207 +20,210 @@ class AccountScreen extends GetView<AccountController> {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      appBar: buildAppbar(context),
-      body: SizedBox(
-        width: Get.width,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s16.value,
-            vertical: Spacing.s16.value,
-          ),
-          child: Column(
-            children: [
-              buildUpgradeBanner(context),
-              Spacing.s16.h,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
+        appBar: buildAppbar(context),
+        body: SizedBox(
+          width: Get.width,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s16.value,
+              vertical: Spacing.s16.value,
+            ),
+            child: Column(
+              children: [
+                buildUpgradeBanner(context),
+                Spacing.s16.h,
 
-              buildProfileDetailsSection(context),
-              Spacing.s16.h,
+                buildProfileDetailsSection(context),
+                Spacing.s16.h,
 
-              // Preferences & Badges
-              CustomPrimaryCard(
-                padding: EdgeInsets.symmetric(
-                  vertical: Spacing.s8.value,
-                  horizontal: Spacing.s8.value,
-                ),
-                child: Column(
-                  children: [
-                    buildOptionRow(
-                      context,
-                      '\u{f336}', // badge-check
-                      "My Badges",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f017}', // clock
-                      "Daily Reminder",
-                      trailing: Obx(
-                        () => CustomSwitch(
-                          value: controller.dailyReminder.value,
-                          onChanged: (val) =>
-                              controller.dailyReminder.value = val,
+                // Preferences & Badges
+                CustomPrimaryCard(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Spacing.s8.value,
+                    horizontal: Spacing.s8.value,
+                  ),
+                  child: Column(
+                    children: [
+                      buildOptionRow(
+                        context,
+                        '\u{f336}', // badge-check
+                        "My Badges",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f017}', // clock
+                        "Daily Reminder",
+                        trailing: Obx(
+                          () => CustomSwitch(
+                            value: controller.dailyReminder.value,
+                            onChanged: (val) =>
+                                controller.dailyReminder.value = val,
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f013}', // gear
-                      "Preferences",
-                      onTap: () {},
-                    ),
-                  ],
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f013}', // gear
+                        "Preferences",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Spacing.s16.h,
+                Spacing.s16.h,
 
-              // App & Security Settings
-              CustomPrimaryCard(
-                padding: EdgeInsets.symmetric(
-                  vertical: Spacing.s8.value,
-                  horizontal: Spacing.s8.value,
-                ),
-                child: Column(
-                  children: [
-                    buildOptionRow(
-                      context,
-                      '\u{f2f7}', // shield-check
-                      "Account & Security",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f0c1}', // link
-                      "Linked Accounts",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f186}', // moon (Dark Mode)
-                      "Dark Mode",
-                      trailing: Obx(
-                        () => CustomSwitch(
-                          value: controller.isDarkMode.value,
-                          onChanged: (val) => controller.toggleTheme(val),
+                // App & Security Settings
+                CustomPrimaryCard(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Spacing.s8.value,
+                    horizontal: Spacing.s8.value,
+                  ),
+                  child: Column(
+                    children: [
+                      buildOptionRow(
+                        context,
+                        '\u{f2f7}', // shield-check
+                        "Account & Security",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f0c1}', // link
+                        "Linked Accounts",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f186}', // moon (Dark Mode)
+                        "Dark Mode",
+                        trailing: Obx(
+                          () => CustomSwitch(
+                            value: controller.isDarkMode.value,
+                            onChanged: (val) => controller.toggleTheme(val),
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f1fe}', // chart-area
-                      "Data & Analytics",
-                      onTap: () {},
-                    ),
-                  ],
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f1fe}', // chart-area
+                        "Data & Analytics",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Spacing.s16.h,
+                Spacing.s16.h,
 
-              // Payments & Billing
-              CustomPrimaryCard(
-                padding: EdgeInsets.symmetric(
-                  vertical: Spacing.s8.value,
-                  horizontal: Spacing.s8.value,
+                // Payments & Billing
+                CustomPrimaryCard(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Spacing.s8.value,
+                    horizontal: Spacing.s8.value,
+                  ),
+                  child: Column(
+                    children: [
+                      buildOptionRow(
+                        context,
+                        '\u{f09d}', // credit-card
+                        "Payment Methods",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f005}', // star
+                        "Billing and Subscription",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    buildOptionRow(
-                      context,
-                      '\u{f09d}', // credit-card
-                      "Payment Methods",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f005}', // star
-                      "Billing and Subscription",
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-              Spacing.s16.h,
+                Spacing.s16.h,
 
-              // Support & Actions
-              CustomPrimaryCard(
-                padding: EdgeInsets.symmetric(
-                  vertical: Spacing.s8.value,
-                  horizontal: Spacing.s8.value,
+                // Support & Actions
+                CustomPrimaryCard(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Spacing.s8.value,
+                    horizontal: Spacing.s8.value,
+                  ),
+                  child: Column(
+                    children: [
+                      buildOptionRow(
+                        context,
+                        '\u{f059}', // question-circle
+                        "Help & Support",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f05a}', // info-circle
+                        "About Mentora",
+                        onTap: () {},
+                      ),
+                      Divider(
+                        height: 1,
+                        indent: 40.w,
+                        endIndent: 8.w,
+                        color: isDark ? slate[700]! : slate[100]!,
+                      ),
+                      buildOptionRow(
+                        context,
+                        '\u{f2f5}', // sign-out
+                        "Log Out",
+                        color: dangerColor,
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    buildOptionRow(
-                      context,
-                      '\u{f059}', // question-circle
-                      "Help & Support",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f05a}', // info-circle
-                      "About Mentora",
-                      onTap: () {},
-                    ),
-                    Divider(
-                      height: 1,
-                      indent: 40.w,
-                      endIndent: 8.w,
-                      color: isDark ? slate[700]! : slate[100]!,
-                    ),
-                    buildOptionRow(
-                      context,
-                      '\u{f2f5}', // sign-out
-                      "Log Out",
-                      color: dangerColor,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -464,15 +469,8 @@ class AccountScreen extends GetView<AccountController> {
       backgroundColor: Theme.of(context).primaryColorLight,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      leading: Padding(
-        padding: EdgeInsets.only(left: Spacing.s16.value),
-        child: Center(
-          child: SizedBox(
-            height: 28.h,
-            width: 28.h,
-            child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
-          ),
-        ),
+      leading: const Center(
+        child: CustomBackButton(icon: MyIcons.chevronLeft),
       ),
       title: Text(
         "Account",
