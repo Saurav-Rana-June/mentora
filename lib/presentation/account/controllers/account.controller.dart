@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AccountController extends GetxController {
-  //TODO: Implement AccountController
+  final dailyReminder = false.obs;
+  final isDarkMode = false.obs;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    isDarkMode.value = Get.isDarkMode;
   }
 
   @override
@@ -19,5 +21,8 @@ class AccountController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
+  void toggleTheme(bool value) {
+    isDarkMode.value = value;
+    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+  }
 }

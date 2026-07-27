@@ -2,7 +2,6 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
@@ -10,8 +9,11 @@ import 'controllers/account.controller.dart';
 
 class AccountScreen extends GetView<AccountController> {
   const AccountScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: buildAppbar(context),
@@ -19,149 +21,205 @@ class AccountScreen extends GetView<AccountController> {
         width: Get.width,
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s4.symmetric.horizontal,
+            horizontal: Spacing.s16.value,
+            vertical: Spacing.s16.value,
           ),
           child: Column(
             children: [
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: primary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '\u{f521}', // Change icon :- crown
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeSolid',
-                          fontSize: 22,
-                          color: primary,
-                        ),
-                      ),
-                    ),
-                    Spacing.s12.w,
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Upgrade Plan Now!",
-                            textAlign: TextAlign.center,
-                            style: r16.copyWith(
-                              color: white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Spacing.s4.h,
-                          Text(
-                            "Enjoy all the benefits and explore more possiblities",
-                            style: r12.copyWith(
-                              color: white,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              buildUpgradeBanner(context),
               Spacing.s16.h,
 
               buildProfileDetailsSection(context),
               Spacing.s16.h,
 
+              // Preferences & Badges
               CustomPrimaryCard(
+                padding: EdgeInsets.symmetric(
+                  vertical: Spacing.s8.value,
+                  horizontal: Spacing.s8.value,
+                ),
                 child: Column(
                   children: [
                     buildOptionRow(
                       context,
-                      '\u{f336}', // Change icon :- badge-check
+                      '\u{f336}', // badge-check
                       "My Badges",
+                      onTap: () {},
                     ),
-                    Spacing.s12.h,
-
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
                     buildOptionRow(
                       context,
-                      '\u{f017}', // Change icon :- clock
+                      '\u{f017}', // clock
                       "Daily Reminder",
+                      trailing: Obx(
+                        () => SizedBox(
+                          width: 45,
+                          height: 24,
+                          child: Switch.adaptive(
+                            value: controller.dailyReminder.value,
+                            activeColor: primary,
+                            onChanged: (val) =>
+                                controller.dailyReminder.value = val,
+                          ),
+                        ),
+                      ),
                     ),
-                    Spacing.s12.h,
-
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
                     buildOptionRow(
                       context,
-                      '\u{f013}', // Change icon :- gear
+                      '\u{f013}', // gear
                       "Preferences",
+                      onTap: () {},
                     ),
                   ],
                 ),
               ),
               Spacing.s16.h,
 
+              // App & Security Settings
               CustomPrimaryCard(
+                padding: EdgeInsets.symmetric(
+                  vertical: Spacing.s8.value,
+                  horizontal: Spacing.s8.value,
+                ),
                 child: Column(
                   children: [
                     buildOptionRow(
                       context,
-                      '\u{f2f7}', // Change icon :- shield-check
+                      '\u{f2f7}', // shield-check
                       "Account & Security",
+                      onTap: () {},
                     ),
-                    Spacing.s12.h,
-
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
                     buildOptionRow(
                       context,
-                      '\u{f09d}', // Change icon :- credit-card
-                      "Payment Methods",
-                    ),
-                    Spacing.s12.h,
-
-                    buildOptionRow(
-                      context,
-                      '\u{f005}', // Change icon :- star
-                      "Billing and Subscription",
-                    ),
-                    Spacing.s12.h,
-
-                    buildOptionRow(
-                      context,
-                      '\u{f0c1}', // Change icon :- link
+                      '\u{f0c1}', // link
                       "Linked Accounts",
+                      onTap: () {},
                     ),
-                    Spacing.s12.h,
-
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
                     buildOptionRow(
                       context,
-                      '\u{f06e}', // Change icon :- eye
-                      "App Appearance",
+                      '\u{f186}', // moon (Dark Mode)
+                      "Dark Mode",
+                      trailing: Obx(
+                        () => SizedBox(
+                          width: 45,
+                          height: 24,
+                          child: Switch.adaptive(
+                            value: controller.isDarkMode.value,
+                            activeColor: primary,
+                            onChanged: (val) => controller.toggleTheme(val),
+                          ),
+                        ),
+                      ),
                     ),
-                    Spacing.s12.h,
-
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
                     buildOptionRow(
                       context,
-                      '\u{f1fe}', // Change icon :- chart-area
+                      '\u{f1fe}', // chart-area
                       "Data & Analytics",
+                      onTap: () {},
                     ),
                   ],
                 ),
               ),
               Spacing.s16.h,
 
+              // Payments & Billing
               CustomPrimaryCard(
+                padding: EdgeInsets.symmetric(
+                  vertical: Spacing.s8.value,
+                  horizontal: Spacing.s8.value,
+                ),
                 child: Column(
                   children: [
                     buildOptionRow(
                       context,
-                      '\u{f336}', // Change icon :- badge-check
-                      "My Badges",
+                      '\u{f09d}', // credit-card
+                      "Payment Methods",
+                      onTap: () {},
+                    ),
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
+                    buildOptionRow(
+                      context,
+                      '\u{f005}', // star
+                      "Billing and Subscription",
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ),
+              Spacing.s16.h,
+
+              // Support & Actions
+              CustomPrimaryCard(
+                padding: EdgeInsets.symmetric(
+                  vertical: Spacing.s8.value,
+                  horizontal: Spacing.s8.value,
+                ),
+                child: Column(
+                  children: [
+                    buildOptionRow(
+                      context,
+                      '\u{f059}', // question-circle
+                      "Help & Support",
+                      onTap: () {},
+                    ),
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
+                    buildOptionRow(
+                      context,
+                      '\u{f05a}', // info-circle
+                      "About Mentora",
+                      onTap: () {},
+                    ),
+                    Divider(
+                      height: 1,
+                      indent: 40.w,
+                      endIndent: 8.w,
+                      color: isDark ? slate[700]! : slate[100]!,
+                    ),
+                    buildOptionRow(
+                      context,
+                      '\u{f2f5}', // sign-out
+                      "Log Out",
+                      color: dangerColor,
+                      onTap: () {},
                     ),
                   ],
                 ),
@@ -173,41 +231,171 @@ class AccountScreen extends GetView<AccountController> {
     );
   }
 
-  InkWell buildOptionRow(BuildContext context, String icon, String label) {
-    return InkWell(
-      onTap: () {},
-      child: Row(
-        children: [
-          Text(
-            icon,
-            style: TextStyle(
-              fontFamily: 'FontAwesomeRegular',
-              fontSize: 20,
-              color: primary,
-            ),
+  Widget buildUpgradeBanner(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.r),
+        gradient: LinearGradient(
+          colors: [primary, primary.withValues(alpha: 0.8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.2),
+            offset: const Offset(0, 4),
+            blurRadius: 16,
+            spreadRadius: 0,
           ),
-          Spacing.s12.w,
-          Expanded(
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(16.r),
+          splashColor: white.withValues(alpha: 0.15),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s16.value,
+              vertical: Spacing.s16.value,
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: r14.copyWith(
-                    color: Theme.of(context).textTheme.bodyLarge!.color,
-                    fontWeight: FontWeight.w600,
+                Container(
+                  padding: EdgeInsets.all(10.r),
+                  decoration: BoxDecoration(
+                    color: white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '\u{f521}', // Crown icon
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 22.sp,
+                      color: white,
+                    ),
                   ),
                 ),
+                Spacing.s16.w,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Upgrade Plan Now!",
+                        style: r16.copyWith(
+                          color: white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        "Enjoy all the benefits and explore more possibilities",
+                        style: r12.copyWith(
+                          color: white.withValues(alpha: 0.9),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Spacing.s8.w,
                 Text(
-                  '\u{f054}', // Change icon :- chevron-right
+                  '\u{f054}', // chevron-right
                   style: TextStyle(
                     fontFamily: 'FontAwesomeLight',
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.bodySmall!.color,
+                    fontSize: 16.sp,
+                    color: white.withValues(alpha: 0.8),
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  CustomPrimaryCard buildProfileDetailsSection(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return CustomPrimaryCard(
+      padding: EdgeInsets.all(Spacing.s16.value),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: primary, width: 2),
+            ),
+            child: CircleAvatar(
+              radius: 28.r,
+              backgroundImage: const NetworkImage(
+                "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+              ),
+            ),
+          ),
+          Spacing.s16.w,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "John Doe",
+                  style: r18.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Spacing.s8.h,
+                Text(
+                  "johndoe@example.com",
+                  style: r12.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall!.color,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Spacing.s8.h,
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 3.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Text(
+                    "PRO MEMBER",
+                    style: r10.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Spacing.s8.w,
+          Material(
+            color: isDark ? slate[800]! : slate[100]!,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {},
+              child: Padding(
+                padding: EdgeInsets.all(10.r),
+                child: Text(
+                  '\u{f304}', // Pen/Edit icon
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 14.sp,
+                    color: primary,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -215,169 +403,95 @@ class AccountScreen extends GetView<AccountController> {
     );
   }
 
-  CustomPrimaryCard buildProfileDetailsSection(BuildContext context) {
-    return CustomPrimaryCard(
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(
-              "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-            ),
-          ),
-          Spacing.s8.w,
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "John Doe",
-                      textAlign: TextAlign.center,
-                      style: r16.copyWith(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "johndoe@example.com",
-                      textAlign: TextAlign.center,
-                      style: r14.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+  Widget buildOptionRow(
+    BuildContext context,
+    String icon,
+    String label, {
+    Widget? trailing,
+    Color? color,
+    VoidCallback? onTap,
+  }) {
+    final Color itemColor = color ?? primary;
+    final Color textColor =
+        color ?? Theme.of(context).textTheme.bodyLarge!.color!;
 
-                Text(
-                  '\u{f054}', // Change icon :- chevron-right
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap ?? () {},
+        borderRadius: BorderRadius.circular(10.r),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: Spacing.s12.value,
+            horizontal: Spacing.s8.value,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 32.w,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  icon,
                   style: TextStyle(
-                    fontFamily: 'FontAwesomeLight',
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.bodySmall!.color,
+                    fontFamily: 'FontAwesomeRegular',
+                    fontSize: 18.sp,
+                    color: itemColor,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Text(
+                  label,
+                  style: r14.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Spacing.s8.w,
+              trailing ??
+                  Text(
+                    '\u{f054}', // chevron-right
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeLight',
+                      fontSize: 14.sp,
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
+                  ),
+            ],
           ),
-        ],
+        ),
       ),
     );
-    // return CustomPrimaryCard(
-    //   child: Column(
-    //     children: [
-    //       Stack(
-    //         alignment: Alignment.bottomRight,
-    //         children: [
-    //           Container(
-    //             decoration: BoxDecoration(
-    //               shape: BoxShape.circle,
-    //               boxShadow: [
-    //                 BoxShadow(
-    //                   color: const Color.fromRGBO(0, 0, 0, 0.05),
-    //                   offset: const Offset(0, 1),
-    //                   blurRadius: 10,
-    //                   spreadRadius: 0,
-    //                 ),
-    //                 BoxShadow(
-    //                   color: const Color.fromRGBO(0, 0, 0, 0.05),
-    //                   offset: const Offset(0, 1),
-    //                   blurRadius: 10,
-    //                   spreadRadius: 0,
-    //                 ),
-    //               ],
-    //             ),
-    //             child: const CircleAvatar(
-    //               radius: 60,
-    //               backgroundImage: NetworkImage(
-    //                 "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-    //               ),
-    //             ),
-    //           ),
-
-    //           IconButton(
-    //             onPressed: () {},
-    //             constraints: const BoxConstraints(minWidth: 35, minHeight: 35),
-    //             style: IconButton.styleFrom(
-    //               backgroundColor: Theme.of(context).primaryColor,
-    //               shape: const CircleBorder(),
-    //             ),
-    //             icon: Text(
-    //               '\u{f304}', // Change icon :- pen
-    //               style: TextStyle(
-    //                 fontFamily: 'FontAwesomeSolid',
-    //                 fontSize: 16,
-    //                 color: white,
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       Spacing.s8.h,
-
-    //       Text(
-    //         "John Doe",
-    //         textAlign: TextAlign.center,
-    //         style: r18.copyWith(
-    //           color: Theme.of(context).textTheme.bodyLarge!.color,
-    //           fontWeight: FontWeight.w600,
-    //         ),
-    //       ),
-    //       Text(
-    //         "johndoe@example.com",
-    //         textAlign: TextAlign.center,
-    //         style: r14.copyWith(
-    //           color: Theme.of(context).textTheme.bodySmall!.color,
-    //           fontWeight: FontWeight.w500,
-    //         ),
-    //       ),
-    //       Spacing.s8.h,
-
-    //       ElevatedButton(
-    //         onPressed: () {},
-    //         style: ElevatedButton.styleFrom(
-    //           elevation: 0,
-    //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    //           shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(30),
-    //           ),
-    //         ),
-    //         child: Text(
-    //           "Edit Profile",
-    //           textAlign: TextAlign.center,
-    //           style: r16.copyWith(color: white, fontWeight: FontWeight.w600),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   AppBar buildAppbar(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColorLight,
       surfaceTintColor: Colors.transparent,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            height: 25,
-            width: 25,
+      elevation: 0,
+      leading: Padding(
+        padding: EdgeInsets.only(left: Spacing.s16.value),
+        child: Center(
+          child: SizedBox(
+            height: 28.h,
+            width: 28.h,
             child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
           ),
-          Text(
-            "Account",
-            textAlign: TextAlign.center,
-            style: h2.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          Material(
+        ),
+      ),
+      title: Text(
+        "Account",
+        style: h2.copyWith(
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(right: Spacing.s8.value),
+          child: Material(
             color: Colors.transparent,
             shape: const CircleBorder(),
             child: InkWell(
@@ -385,11 +499,11 @@ class AccountScreen extends GetView<AccountController> {
               splashColor: primary.withValues(alpha: 0.3),
               onTap: () {},
               child: SizedBox(
-                height: 30.h,
-                width: 30.h,
+                height: 36.h,
+                width: 36.h,
                 child: Center(
                   child: Text(
-                    '\u{f142}', // Change Icon :-  ellipsis-vertical
+                    '\u{f142}', // ellipsis-vertical
                     style: TextStyle(
                       fontFamily: 'FontAwesomeLight',
                       fontSize: 20,
@@ -400,9 +514,8 @@ class AccountScreen extends GetView<AccountController> {
               ),
             ),
           ),
-        ],
-      ),
-      centerTitle: true,
+        ),
+      ],
       automaticallyImplyLeading: false,
     );
   }
