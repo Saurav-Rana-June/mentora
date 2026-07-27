@@ -469,9 +469,7 @@ class AccountScreen extends GetView<AccountController> {
       backgroundColor: Theme.of(context).primaryColorLight,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      leading: const Center(
-        child: CustomBackButton(icon: MyIcons.chevronLeft),
-      ),
+      leading: const Center(child: CustomBackButton(icon: MyIcons.chevronLeft)),
       title: Text(
         "Account",
         style: h2.copyWith(
