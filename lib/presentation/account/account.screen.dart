@@ -11,6 +11,9 @@ class AccountScreen extends GetView<AccountController> {
   const AccountScreen({super.key});
 
   @override
+  final controller = Get.put(AccountController());
+
+  @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
