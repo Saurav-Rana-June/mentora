@@ -577,7 +577,7 @@ class HomeScreen extends GetView<HomeController> {
               Spacing.s12.w,
               GestureDetector(
                 onTap: () => Get.to(
-                  () => const AccountScreen(),
+                  () => AccountScreen(),
                   transition: Transition.rightToLeft,
                 ),
                 child: const CircleAvatar(

@@ -1,5 +1,6 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'controllers/account.controller.dart';
 
 class AccountScreen extends GetView<AccountController> {
-  const AccountScreen({super.key});
+  AccountScreen({super.key});
 
   @override
   final controller = Get.put(AccountController());
@@ -60,15 +61,10 @@ class AccountScreen extends GetView<AccountController> {
                       '\u{f017}', // clock
                       "Daily Reminder",
                       trailing: Obx(
-                        () => SizedBox(
-                          width: 45,
-                          height: 24,
-                          child: Switch.adaptive(
-                            value: controller.dailyReminder.value,
-                            activeColor: primary,
-                            onChanged: (val) =>
-                                controller.dailyReminder.value = val,
-                          ),
+                        () => CustomSwitch(
+                          value: controller.dailyReminder.value,
+                          onChanged: (val) =>
+                              controller.dailyReminder.value = val,
                         ),
                       ),
                     ),
@@ -126,14 +122,9 @@ class AccountScreen extends GetView<AccountController> {
                       '\u{f186}', // moon (Dark Mode)
                       "Dark Mode",
                       trailing: Obx(
-                        () => SizedBox(
-                          width: 45,
-                          height: 24,
-                          child: Switch.adaptive(
-                            value: controller.isDarkMode.value,
-                            activeColor: primary,
-                            onChanged: (val) => controller.toggleTheme(val),
-                          ),
+                        () => CustomSwitch(
+                          value: controller.isDarkMode.value,
+                          onChanged: (val) => controller.toggleTheme(val),
                         ),
                       ),
                     ),

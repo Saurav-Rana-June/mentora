@@ -126,7 +126,7 @@ class Nav {
     ),
     GetPage(
       name: Routes.ACCOUNT,
-      page: () => const AccountScreen(),
+      page: () => AccountScreen(),
       binding: AccountControllerBinding(),
     ),
   ];
