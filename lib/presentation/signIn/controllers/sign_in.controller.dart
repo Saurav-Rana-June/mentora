@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../../data/methods/app_method.dart';
+import '../../../../data/enums/snackbar_enum.dart';
+import '../../../../data/utils/app_utils.dart';
 import '../../../../infrastructure/dal/services/auth_service.dart';
 import '../../../../infrastructure/navigation/routes.dart';
 
@@ -22,21 +24,19 @@ class SignInController extends GetxController {
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar(
+      AppUtils.snackbar(
         'Validation Error',
         'Email and password cannot be empty.',
-        backgroundColor: const Color(0xFFF44336),
-        colorText: const Color(0xffffffff),
+        SnackBarType.ERROR,
       );
       return;
     }
 
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar(
+      AppUtils.snackbar(
         'Validation Error',
         'Please enter a valid email address.',
-        backgroundColor: const Color(0xFFF44336),
-        colorText: const Color(0xffffffff),
+        SnackBarType.ERROR,
       );
       return;
     }
@@ -49,11 +49,10 @@ class SignInController extends GetxController {
         await AppMethod.saveUserToken(tokenData.accessToken);
         await AppMethod.saveUserEmail(email);
 
-        Get.snackbar(
+        AppUtils.snackbar(
           'Success',
           'Login successful!',
-          backgroundColor: const Color(0xFF4CAF50),
-          colorText: const Color(0xffffffff),
+          SnackBarType.SUCCESS,
         );
         Get.offAllNamed(Routes.LANDING);
       }

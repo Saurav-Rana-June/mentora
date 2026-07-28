@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:logger/logger.dart';
 
+import '../enums/snackbar_enum.dart';
+import '../utils/app_utils.dart';
 import '../../infrastructure/environment/environment.dart';
 import '../../infrastructure/navigation/routes.dart';
 import 'app_method.dart';
@@ -81,11 +83,10 @@ class ApiClient {
       rethrow;
     } catch (e) {
       log.e('General Request Error: $e');
-      Get.snackbar(
+      AppUtils.snackbar(
         'Error',
         'An unexpected error occurred.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackBarType.ERROR,
       );
       rethrow;
     }
@@ -98,11 +99,10 @@ class ApiClient {
     // Handle 401 Unauthorized globally - clear credentials and boot user out
     if (statusCode == 401) {
       AppMethod.clearUserSession();
-      Get.snackbar(
+      AppUtils.snackbar(
         'Session Expired',
         'Please sign in again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackBarType.WARNING,
       );
       Get.offAllNamed(Routes.SIGN_IN);
       return;
@@ -121,12 +121,10 @@ class ApiClient {
       errorMessage = error.message ?? 'Network connection issue';
     }
 
-    Get.snackbar(
+    AppUtils.snackbar(
       'Error',
       errorMessage,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
+      SnackBarType.ERROR,
     );
   }
 }
