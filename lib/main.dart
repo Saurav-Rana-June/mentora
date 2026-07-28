@@ -4,13 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
+import 'package:get_storage/get_storage.dart';
+
 import 'infrastructure/navigation/navigation.dart';
 import 'infrastructure/navigation/routes.dart';
 import 'infrastructure/theme/theme.dart';
 
 void main() async {
-  var initialRoute = await Routes.initialRoute;
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+  var initialRoute = await Routes.initialRoute;
 
   runApp(Main(initialRoute));
 }

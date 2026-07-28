@@ -73,7 +73,7 @@ class SignInScreen extends GetView<SignInController> {
               ),
               Spacing.s8.h,
               CustomTextFormField(
-                controller: TextEditingController(),
+                controller: controller.emailController,
                 prefixIcon: Container(
                   width: 20,
                   padding: EdgeInsets.only(left: 8),
@@ -271,6 +271,35 @@ class SignInScreen extends GetView<SignInController> {
                   ),
                 ],
               ),
+              Spacing.s32.h,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    textAlign: TextAlign.center,
+                    style: r14.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Spacing.s8.w,
+                  GestureDetector(
+                    onTap: () {
+                      Get.offAllNamed(Routes.SIGN_UP);
+                    },
+                    child: Text(
+                      "Sign up",
+                      textAlign: TextAlign.center,
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -278,23 +307,27 @@ class SignInScreen extends GetView<SignInController> {
     );
   }
 
-  Padding buildButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.vertical,
-      ),
-      child: CustomPrimaryButton(
-        text: "Sign up",
-        borderRadius: 50.r,
-        height: 45,
-        backgroundColor: primary,
-        disabledColor: primary.withValues(alpha: 0.5),
-        isLoading: false,
-        textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-        onPressed: () {
-          Get.toNamed(Routes.LANDING);
-        },
+  Widget buildButton() {
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s4.symmetric.vertical,
+        ),
+        child: CustomPrimaryButton(
+          text: "Sign in",
+          borderRadius: 50.r,
+          height: 45,
+          backgroundColor: primary,
+          disabledColor: primary.withValues(alpha: 0.5),
+          isLoading: controller.isLoading.value,
+          textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
+          onPressed: controller.isLoading.value
+              ? null
+              : () {
+                  controller.signIn();
+                },
+        ),
       ),
     );
   }

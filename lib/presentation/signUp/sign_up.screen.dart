@@ -1,4 +1,3 @@
-import 'package:Mentora/presentation/onboarding/onboarding.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
@@ -11,6 +10,7 @@ import 'package:my_spacing/spacing.enum.dart';
 import 'package:my_spacing/spacing.extension.dart';
 
 import '../../infrastructure/theme/theme.dart';
+import '../../infrastructure/navigation/routes.dart';
 import 'controllers/sign_up.controller.dart';
 
 class SignUpScreen extends GetView<SignUpController> {
@@ -39,23 +39,27 @@ class SignUpScreen extends GetView<SignUpController> {
     surfaceTintColor: Colors.transparent,
   );
 
-  Padding buildButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.vertical,
-      ),
-      child: CustomPrimaryButton(
-        text: "Sign up",
-        borderRadius: 50.r,
-        height: 45,
-        backgroundColor: primary,
-        disabledColor: primary.withValues(alpha: 0.5),
-        isLoading: false,
-        textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-        onPressed: () {
-          Get.to(() => OnboardingScreen(), transition: Transition.rightToLeft);
-        },
+  Widget buildButton() {
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s4.symmetric.vertical,
+        ),
+        child: CustomPrimaryButton(
+          text: "Sign up",
+          borderRadius: 50.r,
+          height: 45,
+          backgroundColor: primary,
+          disabledColor: primary.withValues(alpha: 0.5),
+          isLoading: controller.isLoading.value,
+          textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
+          onPressed: controller.isLoading.value
+              ? null
+              : () {
+                  controller.signUp();
+                },
+        ),
       ),
     );
   }
@@ -221,7 +225,7 @@ class SignUpScreen extends GetView<SignUpController> {
               ),
               Spacing.s32.h,
 
-              Row(
+               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -234,12 +238,17 @@ class SignUpScreen extends GetView<SignUpController> {
                     ),
                   ),
                   Spacing.s8.w,
-                  Text(
-                    "Sign in",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: () {
+                      Get.offAllNamed(Routes.SIGN_IN);
+                    },
+                    child: Text(
+                      "Sign in",
+                      textAlign: TextAlign.center,
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
