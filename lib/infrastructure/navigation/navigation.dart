@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 
-import '../../config.dart';
+import '../environment/environment.dart';
 import '../../presentation/screens.dart';
 import 'bindings/controllers/controllers_bindings.dart';
 import 'bindings/controllers/home.controller.binding.dart';
