@@ -1,5 +1,5 @@
-import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/presentation/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -42,17 +42,26 @@ class ExploreScreen extends GetView<ExploreController> {
             children: [
               Text(
                 "Video Sessions",
-                textAlign: TextAlign.center,
                 style: r18.copyWith(
                   color: Theme.of(context).textTheme.bodyLarge!.color,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                "View All",
-                style: r14.copyWith(
-                  color: primary,
-                  fontWeight: FontWeight.w500,
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    "View All",
+                    style: r14.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -88,6 +97,7 @@ class ExploreScreen extends GetView<ExploreController> {
                     style: TextStyle(
                       fontFamily: 'FontAwesomeSolid',
                       fontSize: 30,
+                      color: primary,
                     ),
                   ),
                 ],
@@ -106,13 +116,12 @@ class ExploreScreen extends GetView<ExploreController> {
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                           fontWeight: FontWeight.w600,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         "Stress Management",
-                        textAlign: TextAlign.center,
                         style: r14.copyWith(
                           color: Theme.of(context).textTheme.bodySmall!.color,
                           fontWeight: FontWeight.w500,
@@ -142,17 +151,26 @@ class ExploreScreen extends GetView<ExploreController> {
             children: [
               Text(
                 "Discover Meditations",
-                textAlign: TextAlign.center,
                 style: r18.copyWith(
                   color: Theme.of(context).textTheme.bodyLarge!.color,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                "View All",
-                style: r14.copyWith(
-                  color: primary,
-                  fontWeight: FontWeight.w500,
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    "View All",
+                    style: r14.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -389,7 +407,7 @@ class ExploreScreen extends GetView<ExploreController> {
                 style: TextStyle(
                   fontFamily: 'FontAwesomeLight',
                   fontSize: 20,
-                  color: slate[500],
+                  color: primary,
                 ),
               ),
               Spacing.s16.w,
@@ -415,7 +433,7 @@ class ExploreScreen extends GetView<ExploreController> {
                         style: TextStyle(
                           fontFamily: 'FontAwesomeLight',
                           fontSize: 20,
-                          color: slate[500],
+                          color: primary,
                         ),
                       ),
                     ),
