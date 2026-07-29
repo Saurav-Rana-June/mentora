@@ -9,7 +9,7 @@ class HomeController extends GetxController {
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
-  
+
   // Trusted Contact Info
   final RxString trustedContactName = 'Emma (Sister)'.obs;
   final RxString trustedContactPhone = '+1 (555) 019-2834'.obs;
@@ -24,7 +24,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     // Pre-populate with some mock check-ins so the chart and streak are populated for the demo,
     // while also handling empty state if history is empty.
     final today = DateTime.now();
@@ -34,13 +34,8 @@ class HomeController extends GetxController {
       today.subtract(const Duration(days: 2)),
       today.subtract(const Duration(days: 1)),
     ]);
-    checkInMoods.addAll([
-      "Good",
-      "Normal",
-      "Not Good",
-      "Good",
-    ]);
-    
+    checkInMoods.addAll(["Good", "Normal", "Not Good", "Good"]);
+
     calculateStreakAndWeekly();
     generateDynamicPlans();
     fetchStreakStats();
@@ -49,27 +44,31 @@ class HomeController extends GetxController {
   void addMoodCheckin(String mood) {
     latestMood.value = mood;
     final today = DateTime.now();
-    
+
     // Check if already checked in today
-    bool alreadyCheckedIn = checkInDates.any((date) =>
-        date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day);
+    bool alreadyCheckedIn = checkInDates.any(
+      (date) =>
+          date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day,
+    );
 
     if (!alreadyCheckedIn) {
       checkInDates.add(today);
       checkInMoods.add(mood);
     } else {
       // Update latest mood for today
-      int idx = checkInDates.indexWhere((date) =>
-          date.year == today.year &&
-          date.month == today.month &&
-          date.day == today.day);
+      int idx = checkInDates.indexWhere(
+        (date) =>
+            date.year == today.year &&
+            date.month == today.month &&
+            date.day == today.day,
+      );
       if (idx != -1) {
         checkInMoods[idx] = mood;
       }
     }
-    
+
     calculateStreakAndWeekly();
     generateDynamicPlans();
     fetchStreakStats();
@@ -103,7 +102,7 @@ class HomeController extends GetxController {
     int currentStreak = 1;
     final today = DateTime.now();
     final todayDateOnly = DateTime(today.year, today.month, today.day);
-    
+
     // Start calculating backward from the latest check-in
     DateTime lastChecked = DateTime(
       sortedDates.last.year,
@@ -140,9 +139,11 @@ class HomeController extends GetxController {
     final uniqueDaysThisWeek = <String>{};
     for (var date in checkInDates) {
       final dateOnly = DateTime(date.year, date.month, date.day);
-      if (dateOnly.isAfter(sevenDaysAgo.subtract(const Duration(seconds: 1))) && 
+      if (dateOnly.isAfter(sevenDaysAgo.subtract(const Duration(seconds: 1))) &&
           dateOnly.isBefore(todayDateOnly.add(const Duration(days: 1)))) {
-        uniqueDaysThisWeek.add("${dateOnly.year}-${dateOnly.month}-${dateOnly.day}");
+        uniqueDaysThisWeek.add(
+          "${dateOnly.year}-${dateOnly.month}-${dateOnly.day}",
+        );
       }
     }
     weeklyCheckInCount.value = uniqueDaysThisWeek.length;
@@ -172,80 +173,107 @@ class HomeController extends GetxController {
 
     // 2. Prioritize task based on mood check-in
     if (latestMood.value == 'Angry' || latestMood.value == 'Not Good') {
-      generated.add(PlanModel(
-        title: "stress",
-        label: "SOS Calm Breathing",
-        caption: "3 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
-    } else if (latestMood.value == 'Normal' || latestMood.value == 'Good' || latestMood.value == 'Very Good') {
-      generated.add(PlanModel(
-        title: "goal",
-        label: "Write Today's Intentions",
-        caption: "4 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
+      generated.add(
+        PlanModel(
+          title: "stress",
+          label: "SOS Calm Breathing",
+          caption: "3 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
+    } else if (latestMood.value == 'Normal' ||
+        latestMood.value == 'Good' ||
+        latestMood.value == 'Very Good') {
+      generated.add(
+        PlanModel(
+          title: "goal",
+          label: "Write Today's Intentions",
+          caption: "4 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
     }
 
     // 3. Add dynamic tasks from onboarding assessment
     final goals = onboarding.selectedMainGoalsList;
     if (goals.contains("Reduce stress") || goals.contains("Manage anxiety")) {
-      generated.add(PlanModel(
-        title: "stress",
-        label: "Quick Guided Meditation",
-        caption: "5 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
+      generated.add(
+        PlanModel(
+          title: "stress",
+          label: "Quick Guided Meditation",
+          caption: "5 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
     }
-    if (goals.contains("Improve sleep quality") || onboarding.selectedSleepQualityStatus.value == "Very Poor" || onboarding.selectedSleepQualityStatus.value == "Poor") {
-      generated.add(PlanModel(
-        title: "sleep",
-        label: "Deep Sleep Body Scan",
-        caption: "8 min",
-        icon: '\u{f186}',
-        isComplete: false,
-      ));
+    if (goals.contains("Improve sleep quality") ||
+        onboarding.selectedSleepQualityStatus.value == "Very Poor" ||
+        onboarding.selectedSleepQualityStatus.value == "Poor") {
+      generated.add(
+        PlanModel(
+          title: "sleep",
+          label: "Deep Sleep Body Scan",
+          caption: "8 min",
+          icon: '\u{f186}',
+          isComplete: false,
+        ),
+      );
     }
-    if (goals.contains("Improve mood") || goals.contains("Manage depression") || onboarding.selectedHappinessStatus.value == "Very Unhappy" || onboarding.selectedHappinessStatus.value == "Unhappy") {
-      generated.add(PlanModel(
-        title: "mindfulness",
-        label: "Three-Step Gratitude Practice",
-        caption: "5 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
+    if (goals.contains("Improve mood") ||
+        goals.contains("Manage depression") ||
+        onboarding.selectedHappinessStatus.value == "Very Unhappy" ||
+        onboarding.selectedHappinessStatus.value == "Unhappy") {
+      generated.add(
+        PlanModel(
+          title: "mindfulness",
+          label: "Three-Step Gratitude Practice",
+          caption: "5 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
     }
     if (goals.contains("Increase focus & productivity")) {
-      generated.add(PlanModel(
-        title: "focus",
-        label: "Focus Block & Mind Clearing",
-        caption: "10 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
+      generated.add(
+        PlanModel(
+          title: "focus",
+          label: "Focus Block & Mind Clearing",
+          caption: "10 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
     }
 
     final issues = onboarding.selectedMentalHealthIssuesCausesList;
-    if (issues.contains("Work pressure") || issues.contains("Academic stress") || onboarding.selectedHealthStatus.value == "Almost Daily" || onboarding.selectedHealthStatus.value == "Frequently") {
-      generated.add(PlanModel(
-        title: "stress",
-        label: "Progressive Muscle Relaxation",
-        caption: "7 min",
-        icon: '\u{f800}',
-        isComplete: false,
-      ));
+    if (issues.contains("Work pressure") ||
+        issues.contains("Academic stress") ||
+        onboarding.selectedHealthStatus.value == "Almost Daily" ||
+        onboarding.selectedHealthStatus.value == "Frequently") {
+      generated.add(
+        PlanModel(
+          title: "stress",
+          label: "Progressive Muscle Relaxation",
+          caption: "7 min",
+          icon: '\u{f800}',
+          isComplete: false,
+        ),
+      );
     }
-    if (issues.contains("Relationship problems") || issues.contains("Family conflicts")) {
-      generated.add(PlanModel(
-        title: "mindfulness",
-        label: "Loving-Kindness Meditation",
-        caption: "6 min",
-        icon: '\u{f004}',
-        isComplete: false,
-      ));
+    if (issues.contains("Relationship problems") ||
+        issues.contains("Family conflicts")) {
+      generated.add(
+        PlanModel(
+          title: "mindfulness",
+          label: "Loving-Kindness Meditation",
+          caption: "6 min",
+          icon: '\u{f004}',
+          isComplete: false,
+        ),
+      );
     }
 
     // 4. Fill in default plans if we have too few
