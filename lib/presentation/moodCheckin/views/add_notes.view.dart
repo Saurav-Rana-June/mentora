@@ -42,6 +42,7 @@ class AddNotesView extends GetView<MoodCheckinController> {
           ),
           Spacing.s8.h,
           TextFormField(
+            controller: controller.notesController,
             textAlignVertical: TextAlignVertical.center,
             style: r16.copyWith(fontWeight: FontWeight.w400),
             maxLines: 8,

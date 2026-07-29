@@ -54,7 +54,9 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
                   final success = await controller.saveCheckIn();
                   if (success) {
                     if (Get.isRegistered<HomeController>()) {
-                      Get.find<HomeController>().addMoodCheckin(controller.selectedMood.value);
+                      Get.find<HomeController>().addMoodCheckin(
+                        controller.selectedMood.value,
+                      );
                     }
                     Get.back();
                   }
