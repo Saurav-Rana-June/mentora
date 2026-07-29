@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import '../../../infrastructure/theme/theme.dart';
 
 class MoodCheckinController extends GetxController {
@@ -112,6 +113,34 @@ class MoodCheckinController extends GetxController {
     } else {
       selectedExtactReasonsList.add(reason);
     }
+  }
+
+  RxBool isLoading = false.obs;
+
+  Future<bool> saveCheckIn() async {
+    isLoading.value = true;
+    try {
+      final feeling = selectedMood.value;
+      final why = selectedMoodReasonsList.map((e) => e.label).toList();
+      final exactFeeling = selectedExtactReasonsList.map((e) => e.label).toList();
+      final notes = notesController.text.trim();
+
+      final response = await AssessmentService.createOrUpdateDailyMood(
+        feeling: feeling,
+        why: why.isNotEmpty ? why : null,
+        exactFeeling: exactFeeling.isNotEmpty ? exactFeeling : null,
+        notes: notes.isNotEmpty ? notes : null,
+      );
+
+      if (response != null && response.data != null) {
+        return true;
+      }
+    } catch (e) {
+      Get.log("Error saving daily mood check-in: $e");
+    } finally {
+      isLoading.value = false;
+    }
+    return false;
   }
 }
 
