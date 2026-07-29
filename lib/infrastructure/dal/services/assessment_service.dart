@@ -54,4 +54,57 @@ class AssessmentService {
       },
     );
   }
+
+  /// Get daily check-in history
+  static Future<ApiResponse<List<DailyMoodAssessmentModel>>?> getDailyMoods() async {
+    return client.request<ApiResponse<List<DailyMoodAssessmentModel>>>(
+      (dio) => dio.get(
+        'assessment/moods',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<List<DailyMoodAssessmentModel>>.fromJson(
+          json as Map<String, dynamic>,
+          (data) {
+            final list = data as List<dynamic>;
+            return list
+                .map((e) => DailyMoodAssessmentModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+          },
+        );
+      },
+    );
+  }
+
+  /// Update today's mood check-in
+  static Future<ApiResponse<DailyMoodAssessmentModel>?> updateDailyMood({
+    required String feeling,
+    List<String>? why,
+    List<String>? exactFeeling,
+    String? notes,
+    String timezone = "UTC",
+  }) async {
+    return client.request<ApiResponse<DailyMoodAssessmentModel>> (
+      (dio) => dio.put(
+        'assessment/mood',
+        queryParameters: {
+          'timezone': timezone,
+        },
+        data: {
+          'feeling': feeling,
+          if (why != null) 'why': why,
+          if (exactFeeling != null) 'exactFeeling': exactFeeling,
+          if (notes != null) 'notes': notes,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        final parsed = ApiResponse<DailyMoodAssessmentModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => DailyMoodAssessmentModel.fromJson(data as Map<String, dynamic>),
+        );
+        return parsed;
+      },
+    );
+  }
 }

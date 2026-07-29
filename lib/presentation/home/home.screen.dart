@@ -2,6 +2,7 @@ import 'package:Mentora/controllers/bottom.nav.controller.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
+import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +41,16 @@ class HomeScreen extends GetView<HomeController> {
           Spacing.s16.h,
           buildStreakAndProgressRow(context),
           Spacing.s16.h,
-          buildMoodCheckinSection(context),
+          Obx(() {
+            if (controller.todayCheckIn.value == null) {
+              return buildMoodCheckinSection(context);
+            } else {
+              return buildMoodCheckedInCard(context, controller.todayCheckIn.value!);
+            }
+          }),
           Spacing.s16.h,
-          buildConnectSection(context),
-          Spacing.s16.h,
+          // buildConnectSection(context),
+          // Spacing.s16.h,
           buildMoodTrendsCard(context),
           Spacing.s16.h,
           buildTodayPlanSection(context),
@@ -517,6 +524,77 @@ class HomeScreen extends GetView<HomeController> {
                   height: 45,
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildMoodCheckedInCard(
+    BuildContext context,
+    DailyMoodAssessmentModel checkIn,
+  ) {
+    final mood = checkIn.feeling;
+    final moodIcon = controller.moodImage(mood);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        Get.toNamed(Routes.MOOD_CHECKIN, arguments: checkIn);
+      },
+      child: CustomPrimaryCard(
+        child: Row(
+          children: [
+            if (moodIcon.isNotEmpty)
+              SvgPicture.asset(
+                moodIcon,
+                width: 50,
+                height: 50,
+              ),
+            Spacing.s16.w,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Today's Mood Check-in",
+                    style: r14.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Spacing.s4.h,
+                  Text(
+                    "You feel $mood",
+                    style: r18.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (checkIn.notes != null && checkIn.notes!.isNotEmpty) ...[
+                    Spacing.s4.h,
+                    Text(
+                      checkIn.notes!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: r12.copyWith(
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Spacing.s8.w,
+            Text(
+              '\u{f303}', // Pen/Edit icon in FontAwesomeSolid
+              style: TextStyle(
+                fontFamily: 'FontAwesomeSolid',
+                fontSize: 16.sp,
+                color: primary,
+              ),
             ),
           ],
         ),

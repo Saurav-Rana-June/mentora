@@ -2,11 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
+import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import '../../../infrastructure/theme/theme.dart';
 
 class MoodCheckinController extends GetxController {
   RxInt currentIndex = 0.obs;
   RxString selectedMood = 'Angry'.obs;
+  RxBool isUpdateMode = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    
+    // Check if we passed a DailyMoodAssessmentModel to update
+    if (Get.arguments != null && Get.arguments is DailyMoodAssessmentModel) {
+      final argument = Get.arguments as DailyMoodAssessmentModel;
+      isUpdateMode.value = true;
+      
+      // Pre-fill selected mood
+      selectedMood.value = argument.feeling;
+      
+      // Pre-fill reasons
+      selectedMoodReasonsList.clear();
+      for (var label in argument.why) {
+        final match = moodReasonsList.firstWhereOrNull((r) => r.label == label);
+        if (match != null) {
+          selectedMoodReasonsList.add(match);
+        }
+      }
+      
+      // Pre-fill exact feelings
+      selectedExtactReasonsList.clear();
+      for (var label in argument.exactFeeling) {
+        final match = exactReasonsList.firstWhereOrNull((r) => r.label == label);
+        if (match != null) {
+          selectedExtactReasonsList.add(match);
+        }
+      }
+      
+      // Pre-fill notes
+      notesController.text = argument.notes ?? "";
+    }
+  }
   final segments = [
     GaugeSegment(red, "assets/moods/Angry Face.svg", "Angry"),
     GaugeSegment(orange, "assets/moods/Not Good Face.svg", "Not Good"),
@@ -125,12 +162,19 @@ class MoodCheckinController extends GetxController {
       final exactFeeling = selectedExtactReasonsList.map((e) => e.label).toList();
       final notes = notesController.text.trim();
 
-      final response = await AssessmentService.createOrUpdateDailyMood(
-        feeling: feeling,
-        why: why.isNotEmpty ? why : null,
-        exactFeeling: exactFeeling.isNotEmpty ? exactFeeling : null,
-        notes: notes.isNotEmpty ? notes : null,
-      );
+      final response = isUpdateMode.value
+          ? await AssessmentService.updateDailyMood(
+              feeling: feeling,
+              why: why.isNotEmpty ? why : null,
+              exactFeeling: exactFeeling.isNotEmpty ? exactFeeling : null,
+              notes: notes.isNotEmpty ? notes : null,
+            )
+          : await AssessmentService.createOrUpdateDailyMood(
+              feeling: feeling,
+              why: why.isNotEmpty ? why : null,
+              exactFeeling: exactFeeling.isNotEmpty ? exactFeeling : null,
+              notes: notes.isNotEmpty ? notes : null,
+            );
 
       if (response != null && response.data != null) {
         return true;

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
+import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/presentation/onboarding/controllers/onboarding.controller.dart';
 
 class HomeController extends GetxController {
@@ -9,6 +10,7 @@ class HomeController extends GetxController {
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
+  final Rx<DailyMoodAssessmentModel?> todayCheckIn = Rx<DailyMoodAssessmentModel?>(null);
 
   // Trusted Contact Info
   final RxString trustedContactName = 'Emma (Sister)'.obs;
@@ -308,6 +310,60 @@ class HomeController extends GetxController {
     }
 
     plans.assignAll(generated.take(6).toList());
+  }
+
+  Future<void> fetchMoodHistory() async {
+    try {
+      final response = await AssessmentService.getDailyMoods();
+      if (response != null && response.data != null) {
+        final List<DailyMoodAssessmentModel> history = response.data!;
+        
+        checkInDates.clear();
+        checkInMoods.clear();
+        
+        final today = DateTime.now();
+        DailyMoodAssessmentModel? foundToday;
+        
+        for (var checkIn in history) {
+          final DateTime checkInDate = DateTime.parse(checkIn.createdAt).toLocal();
+          checkInDates.add(checkInDate);
+          checkInMoods.add(checkIn.feeling);
+          
+          if (checkInDate.year == today.year &&
+              checkInDate.month == today.month &&
+              checkInDate.day == today.day) {
+            foundToday = checkIn;
+          }
+        }
+        
+        todayCheckIn.value = foundToday;
+        if (foundToday != null) {
+          latestMood.value = foundToday.feeling;
+        }
+        
+        calculateStreakAndWeekly();
+        generateDynamicPlans();
+      }
+    } catch (e) {
+      Get.log("Error fetching mood history: $e");
+    }
+  }
+
+  String moodImage(String selectedMood) {
+    switch (selectedMood) {
+      case 'Angry':
+        return "assets/moods/Angry Face.svg";
+      case 'Not Good':
+        return "assets/moods/Not Good Face.svg";
+      case 'Normal':
+        return "assets/moods/Normal Face.svg";
+      case 'Good':
+        return "assets/moods/Happy Face.svg";
+      case 'Very Good':
+        return "assets/moods/Very Happy Face.svg";
+      default:
+        return "";
+    }
   }
 }
 
