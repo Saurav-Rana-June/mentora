@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Mentora/data/methods/app_method.dart';
+import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:get/get.dart';
 
@@ -8,13 +9,42 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    Timer(const Duration(seconds: 3), () {
-      final token = AppMethod.getUserToken();
-      if (token != null && token.isNotEmpty) {
-        Get.offAllNamed(Routes.LANDING);
-      } else {
-        Get.offAllNamed(Routes.INTRODUCTION);
+    _checkAuthentication();
+  }
+
+  Future<void> _checkAuthentication() async {
+    final stopwatch = Stopwatch()..start();
+    final token = AppMethod.getUserToken();
+    bool isAuthenticated = false;
+
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await AuthService.autoSignIn();
+        if (response != null && response.data != null) {
+          await AppMethod.saveUserEmail(response.data!.email);
+          isAuthenticated = true;
+        } else {
+          await AppMethod.clearUserSession();
+        }
+      } catch (e) {
+        Get.log('Auto Sign In Error: $e');
+        await AppMethod.clearUserSession();
       }
-    });
+    }
+
+    // Keep splash visible for at least 3 seconds for visual brand consistency
+    final elapsedMs = stopwatch.elapsedMilliseconds;
+    const minimumSplashDurationMs = 3000;
+    if (elapsedMs < minimumSplashDurationMs) {
+      await Future.delayed(
+        Duration(milliseconds: minimumSplashDurationMs - elapsedMs),
+      );
+    }
+
+    if (isAuthenticated) {
+      Get.offAllNamed(Routes.LANDING);
+    } else {
+      Get.offAllNamed(Routes.INTRODUCTION);
+    }
   }
 }

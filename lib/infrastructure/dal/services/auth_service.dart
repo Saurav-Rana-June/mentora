@@ -92,4 +92,20 @@ class AuthService {
       },
     );
   }
+
+  /// Auto Sign In user by token
+  static Future<ApiResponse<UserModel>?> autoSignIn() async {
+    return client.request<ApiResponse<UserModel>>(
+      (dio) => dio.post(
+        'users/auto-signin',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<UserModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => UserModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }
