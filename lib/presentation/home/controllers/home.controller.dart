@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:Mentora/presentation/onboarding/controllers/onboarding.controller.dart';
 
 class HomeController extends GetxController {
@@ -42,6 +43,7 @@ class HomeController extends GetxController {
     
     calculateStreakAndWeekly();
     generateDynamicPlans();
+    fetchStreakStats();
   }
 
   void addMoodCheckin(String mood) {
@@ -70,6 +72,20 @@ class HomeController extends GetxController {
     
     calculateStreakAndWeekly();
     generateDynamicPlans();
+    fetchStreakStats();
+  }
+
+  Future<void> fetchStreakStats() async {
+    try {
+      final response = await AssessmentService.getStreakStats();
+      if (response != null && response.data != null) {
+        final stats = response.data!;
+        streakCount.value = stats.currentStreak;
+        weeklyCheckInCount.value = stats.weeklyCheckInCount;
+      }
+    } catch (e) {
+      Get.log("Error fetching streak stats: $e");
+    }
   }
 
   void calculateStreakAndWeekly() {

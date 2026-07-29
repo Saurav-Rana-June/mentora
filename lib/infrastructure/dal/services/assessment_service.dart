@@ -1,6 +1,7 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
 import '../../../../data/model/assessment/daily_mood_assessment.model.dart';
+import '../../../../data/model/assessment/streak_stats.model.dart';
 
 class AssessmentService {
   AssessmentService._();
@@ -33,6 +34,22 @@ class AssessmentService {
         return ApiResponse<DailyMoodAssessmentModel>.fromJson(
           json as Map<String, dynamic>,
           (data) => DailyMoodAssessmentModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Get user check-in streak stats
+  static Future<ApiResponse<StreakStatsModel>?> getStreakStats() async {
+    return client.request<ApiResponse<StreakStatsModel>>(
+      (dio) => dio.get(
+        'assessment/streak',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<StreakStatsModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => StreakStatsModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );
