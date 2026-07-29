@@ -10,7 +10,8 @@ class HomeController extends GetxController {
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
-  final Rx<DailyMoodAssessmentModel?> todayCheckIn = Rx<DailyMoodAssessmentModel?>(null);
+  final Rx<DailyMoodAssessmentModel?> todayCheckIn =
+      Rx<DailyMoodAssessmentModel?>(null);
 
   // Trusted Contact Info
   final RxString trustedContactName = 'Emma (Sister)'.obs;
@@ -41,6 +42,7 @@ class HomeController extends GetxController {
     calculateStreakAndWeekly();
     generateDynamicPlans();
     fetchStreakStats();
+    fetchMoodHistory();
   }
 
   void addMoodCheckin(String mood) {
@@ -74,6 +76,7 @@ class HomeController extends GetxController {
     calculateStreakAndWeekly();
     generateDynamicPlans();
     fetchStreakStats();
+    fetchMoodHistory();
   }
 
   Future<void> fetchStreakStats() async {
@@ -317,30 +320,32 @@ class HomeController extends GetxController {
       final response = await AssessmentService.getDailyMoods();
       if (response != null && response.data != null) {
         final List<DailyMoodAssessmentModel> history = response.data!;
-        
+
         checkInDates.clear();
         checkInMoods.clear();
-        
+
         final today = DateTime.now();
         DailyMoodAssessmentModel? foundToday;
-        
+
         for (var checkIn in history) {
-          final DateTime checkInDate = DateTime.parse(checkIn.createdAt).toLocal();
+          final DateTime checkInDate = DateTime.parse(
+            checkIn.createdAt,
+          ).toLocal();
           checkInDates.add(checkInDate);
           checkInMoods.add(checkIn.feeling);
-          
+
           if (checkInDate.year == today.year &&
               checkInDate.month == today.month &&
               checkInDate.day == today.day) {
             foundToday = checkIn;
           }
         }
-        
+
         todayCheckIn.value = foundToday;
         if (foundToday != null) {
           latestMood.value = foundToday.feeling;
         }
-        
+
         calculateStreakAndWeekly();
         generateDynamicPlans();
       }

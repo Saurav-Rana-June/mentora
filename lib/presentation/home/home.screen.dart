@@ -45,7 +45,10 @@ class HomeScreen extends GetView<HomeController> {
             if (controller.todayCheckIn.value == null) {
               return buildMoodCheckinSection(context);
             } else {
-              return buildMoodCheckedInCard(context, controller.todayCheckIn.value!);
+              return buildMoodCheckedInCard(
+                context,
+                controller.todayCheckIn.value!,
+              );
             }
           }),
           Spacing.s16.h,
@@ -547,11 +550,7 @@ class HomeScreen extends GetView<HomeController> {
         child: Row(
           children: [
             if (moodIcon.isNotEmpty)
-              SvgPicture.asset(
-                moodIcon,
-                width: 50,
-                height: 50,
-              ),
+              SvgPicture.asset(moodIcon, width: 50, height: 50),
             Spacing.s16.w,
             Expanded(
               child: Column(
