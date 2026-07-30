@@ -26,6 +26,11 @@ dependencies:
   flutter_svg: ^2.2.3
   path_provider: ^2.1.5
   share_plus: ^12.0.1
+  cached_network_image: ^3.4.1
+  percent_indicator: ^4.2.5
+  dio: ^5.11.0
+  get_storage: ^2.1.1
+  logger: ^2.7.0
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,11 @@
+---
+description: Errors, logging, user feedback
+globs:
+  - lib/**/*.dart
+alwaysApply: false
+---
+
+- Controllers decide UX; repositories signal failures; `finally` clears loading flags.
+- No raw exception strings in production UI; no duplicate snackbars.
+
+Detail: skill `error-handling`.

@@ -1,0 +1,12 @@
+---
+description: Session, tokens, logout symmetry
+globs:
+  - lib/**/*auth*.dart
+  - lib/**/*session*.dart
+alwaysApply: false
+---
+
+- Single session coordinator; secure token storage; logout clears memory + persistence.
+- 401 handled in one place, not per-screen copies.
+
+Detail: skill `auth`.

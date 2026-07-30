@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 
-import '../../config.dart';
+import '../environment/environment.dart';
 import '../../presentation/screens.dart';
 import 'bindings/controllers/controllers_bindings.dart';
 import 'bindings/controllers/home.controller.binding.dart';
@@ -98,6 +98,36 @@ class Nav {
       name: Routes.CHAT_EXPERTS,
       page: () => ChatExpertsScreen(),
       binding: ChatExpertsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.EXPLORE,
+      page: () => const ExploreScreen(),
+      binding: ExploreControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.FAVORITE,
+      page: () => FavoriteScreen(),
+      binding: FavoriteControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SLEEP,
+      page: () => SleepScreen(),
+      binding: SleepControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SESSIONS,
+      page: () => SessionsScreen(),
+      binding: SessionsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.INSIGHTS,
+      page: () => InsightsScreen(),
+      binding: InsightsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.ACCOUNT,
+      page: () => AccountScreen(),
+      binding: AccountControllerBinding(),
     ),
   ];
 }

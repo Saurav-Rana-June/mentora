@@ -1,0 +1,12 @@
+---
+description: GetX registration, reactive UI, lifecycle
+globs:
+  - lib/**/*.dart
+alwaysApply: false
+---
+
+- Feature scope: `GetPage` + `Bindings` + `lazyPut` where the project already does.
+- Small `Obx` subtrees; dispose controllers, workers, and subscriptions in `onClose`.
+- No `Get.put` in `build`.
+
+Detail: skill `getx`.

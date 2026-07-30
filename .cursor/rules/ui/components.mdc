@@ -1,0 +1,12 @@
+---
+description: UI composition, async states, gates
+globs:
+  - lib/presentation/**/*.dart
+  - lib/widgets/**/*.dart
+alwaysApply: false
+---
+
+- Explicit loading / empty / error for async UI; reuse widgets; prefer theme spacing.
+- No heavy side effects in `build`.
+
+Detail: skill `ui`; theming: skill `theme`.

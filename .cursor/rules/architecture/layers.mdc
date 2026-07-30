@@ -1,0 +1,11 @@
+---
+description: Layers and dependency direction
+globs:
+  - lib/**/*
+alwaysApply: false
+---
+
+- **No** `data` → `presentation` imports. No `BuildContext` or routing in repositories/services.
+- Centralize routes, theme, env — match existing `lib/infrastructure/` and `lib/presentation/`.
+
+Detail: skill `project-architecture`.

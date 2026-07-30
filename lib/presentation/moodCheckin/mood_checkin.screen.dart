@@ -1,4 +1,5 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_selection.veiw.dart';
@@ -19,11 +20,14 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
   const MoodCheckinScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      appBar: buildAppbar(context),
-      body: Obx(() => bodyWidget(controller.currentIndex.value)),
-      bottomNavigationBar: Obx(() => buildButton()),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
+        appBar: buildAppbar(context),
+        body: Obx(() => bodyWidget(controller.currentIndex.value)),
+        bottomNavigationBar: Obx(() => buildButton()),
+      ),
     );
   }
 
@@ -39,15 +43,25 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
         height: 45,
         backgroundColor: primary,
         disabledColor: primary.withValues(alpha: 0.5),
-        isLoading: false,
+        isLoading: controller.isLoading.value,
         textStyle: r16.copyWith(fontWeight: FontWeight.w600, color: white),
-        onPressed: () {
-          if (controller.currentIndex.value < 3) {
-            controller.currentIndex.value++;
-          } else {
-            Get.back();
-          }
-        },
+        onPressed: controller.isLoading.value
+            ? null
+            : () async {
+                if (controller.currentIndex.value < 3) {
+                  controller.currentIndex.value++;
+                } else {
+                  final success = await controller.saveCheckIn();
+                  if (success) {
+                    if (Get.isRegistered<HomeController>()) {
+                      Get.find<HomeController>().addMoodCheckin(
+                        controller.selectedMood.value,
+                      );
+                    }
+                    Get.back();
+                  }
+                }
+              },
       ),
     );
   }
