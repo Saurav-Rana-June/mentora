@@ -1,0 +1,11 @@
+---
+description: Repositories — typed boundaries, no UI side effects
+globs:
+  - lib/data/**/*
+alwaysApply: false
+---
+
+- One configured HTTP client; parse at edge; typed results to controllers.
+- No snackbars, `Get.toNamed`, or widgets in repositories.
+
+Detail: skill `repository` + `api`.

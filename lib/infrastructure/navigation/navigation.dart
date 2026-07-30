@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../config.dart';
+import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
+
+import '../environment/environment.dart';
 import '../../presentation/screens.dart';
 import 'bindings/controllers/controllers_bindings.dart';
+import 'bindings/controllers/home.controller.binding.dart';
 import 'routes.dart';
 
 class EnvironmentsBadge extends StatelessWidget {
   final Widget child;
-  EnvironmentsBadge({required this.child});
+  const EnvironmentsBadge({super.key, required this.child});
   @override
   Widget build(BuildContext context) {
     var env = ConfigEnvironments.getEnvironments()['env'];
@@ -27,9 +30,104 @@ class EnvironmentsBadge extends StatelessWidget {
 class Nav {
   static List<GetPage> routes = [
     GetPage(
+      name: Routes.SPLASH,
+      page: () => SplashScreen(),
+      binding: SplashControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.INTRODUCTION,
+      page: () => IntroductionScreen(),
+      binding: IntroductionControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.CONTINUE,
+      page: () => const ContinueScreen(),
+      binding: ContinueControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SIGN_UP,
+      page: () => SignUpScreen(),
+      binding: SignUpControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SIGN_IN,
+      page: () => SignInScreen(),
+      binding: SignInControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.ONBOARDING,
+      page: () => OnboardingScreen(),
+      binding: OnboardingControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.PREPARE_PLAN,
+      page: () => PreparePlanScreen(),
+      binding: PreparePlanControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.ALL_SET,
+      page: () => const AllSetScreen(),
+      binding: AllSetControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD,
+      page: () => ForgotPasswordScreen(),
+      binding: ForgotPasswordControllerBinding(),
+    ),
+    GetPage(
       name: Routes.HOME,
-      page: () => const HomeScreen(),
+      page: () => HomeScreen(),
       binding: HomeControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.LANDING,
+      page: () => LandingScreen(),
+      binding: LandingControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.MOOD_CHECKIN,
+      page: () => const MoodCheckinScreen(),
+      binding: MoodCheckinControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.CHAT_A_I,
+      page: () => ChatAIScreen(),
+      binding: ChatAIControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.CHAT_EXPERTS,
+      page: () => ChatExpertsScreen(),
+      binding: ChatExpertsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.EXPLORE,
+      page: () => const ExploreScreen(),
+      binding: ExploreControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.FAVORITE,
+      page: () => FavoriteScreen(),
+      binding: FavoriteControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SLEEP,
+      page: () => SleepScreen(),
+      binding: SleepControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.SESSIONS,
+      page: () => SessionsScreen(),
+      binding: SessionsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.INSIGHTS,
+      page: () => InsightsScreen(),
+      binding: InsightsControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.ACCOUNT,
+      page: () => AccountScreen(),
+      binding: AccountControllerBinding(),
     ),
   ];
 }

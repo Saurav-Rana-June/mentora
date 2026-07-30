@@ -1,0 +1,11 @@
+---
+description: HTTP/Dio — timeouts, 401, errors
+globs:
+  - lib/data/**/*
+alwaysApply: false
+---
+
+- Explicit timeouts; single 401 → session policy; meaningful user messages from bodies when present.
+- No snackbars inside transport layer.
+
+Detail: skill `api` (+ `auth` for session).
