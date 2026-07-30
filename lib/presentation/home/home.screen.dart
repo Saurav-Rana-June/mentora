@@ -159,7 +159,7 @@ class HomeScreen extends GetView<HomeController> {
       return GestureDetector(
         onTap: () {
           if (Get.isRegistered<BottamNavController>()) {
-            Get.find<BottamNavController>().changeTabIndex(3);
+            Get.find<BottamNavController>().changeTabIndex(4);
           }
         },
         child: CustomPrimaryCard(
@@ -199,7 +199,7 @@ class HomeScreen extends GetView<HomeController> {
                 ],
               ),
               Spacing.s12.h,
-              if (historyLength < 3)
+              if (historyLength < 2)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 24.h),
@@ -740,7 +740,8 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ],
             ),
-            if ((checkIn.exactFeeling?.isNotEmpty ?? false) || (checkIn.why?.isNotEmpty ?? false)) ...[
+            if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
+                (checkIn.why?.isNotEmpty ?? false)) ...[
               Spacing.s12.h,
               Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
               Spacing.s12.h,
@@ -751,7 +752,9 @@ class HomeScreen extends GetView<HomeController> {
                   ...(checkIn.exactFeeling ?? []).map(
                     (e) => _buildMoodTag(context, e, moodColor),
                   ),
-                  ...(checkIn.why ?? []).map((w) => _buildMoodTag(context, w, primary)),
+                  ...(checkIn.why ?? []).map(
+                    (w) => _buildMoodTag(context, w, primary),
+                  ),
                 ],
               ),
             ],
