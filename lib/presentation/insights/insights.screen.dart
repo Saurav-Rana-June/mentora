@@ -8,74 +8,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
-
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/insights.controller.dart';
 import 'package:Mentora/controllers/global.controller.dart';
-
-class GrowthAreaModel {
-  final String title;
-  final double progress;
-  final String tip;
-  final IconData icon;
-
-  GrowthAreaModel({
-    required this.title,
-    required this.progress,
-    required this.tip,
-    required this.icon,
-  });
-}
+import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
 
 class InsightsScreen extends GetView<InsightsController> {
   InsightsScreen({super.key});
 
   @override
   final controller = Get.put(InsightsController());
-
-  final List<GrowthAreaModel> growthAreasList = [
-    GrowthAreaModel(
-      title: "Mental Health",
-      progress: 0.7,
-      tip: "Reflect on today's positives using your personal journal.",
-      icon: Icons.favorite_outline,
-    ),
-    GrowthAreaModel(
-      title: "Growth Mindset",
-      progress: 0.5,
-      tip:
-          "Choose one challenge today and approach it as a learning opportunity.",
-      icon: Icons.psychology_outlined,
-    ),
-    GrowthAreaModel(
-      title: "Relationships",
-      progress: 0.9,
-      tip:
-          "Reach out to your trusted contact or a close friend to stay connected.",
-      icon: Icons.people_outline,
-    ),
-    GrowthAreaModel(
-      title: "Personal Development",
-      progress: 0.7,
-      tip:
-          "Spend 10 minutes reading an educational or self-development article.",
-      icon: Icons.menu_book_outlined,
-    ),
-    GrowthAreaModel(
-      title: "Self-awareness",
-      progress: 0.5,
-      tip:
-          "Sit quietly for a minute and check-in on how you are feeling physically and emotionally.",
-      icon: Icons.self_improvement_outlined,
-    ),
-    GrowthAreaModel(
-      title: "Stress Management",
-      progress: 0.9,
-      tip:
-          "Try a 5-minute Box Breathing exercise to regulate your stress levels.",
-      icon: Icons.air_outlined,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +51,10 @@ class InsightsScreen extends GetView<InsightsController> {
     HomeController homeController,
   ) {
     final theme = Theme.of(context);
-    final consistency = controller.getCheckInConsistency(homeController);
-    final dominant = controller.getDominantMood(homeController);
+    final globalController = Get.find<GlobalController>();
+    final weeklyStats = globalController.weeklyMoodStats.value;
+    final consistency = weeklyStats?.consistency ?? 0.0;
+    final dominant = weeklyStats?.dominantMood ?? 'Normal';
 
     String title = "Consistency is Key!";
     String description =
@@ -231,87 +175,157 @@ class InsightsScreen extends GetView<InsightsController> {
           const Divider(),
           Spacing.s16.h,
           Obx(() {
-            if (controller.selectedGrowthTab.value == 0) {
-              return buildGrowthGridView(context);
-            } else {
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 200.h,
-                    width: double.infinity,
-                    child: CustomPaint(
-                      painter: GrowthRadarChartPainter(
-                        growthAreas: growthAreasList,
-                        primaryColor: primary,
-                        textColor:
-                            Theme.of(context).textTheme.bodyLarge!.color ??
-                            slate[900]!,
-                      ),
-                    ),
+            if (controller.isLoadingGrowth.value) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 36.h),
+                  child: CircularProgressIndicator(
+                    color: primary,
+                    strokeWidth: 2.5,
                   ),
-                  Spacing.s20.h,
-                  buildGrowthDetailedView(context),
-                ],
+                ),
               );
             }
+
+            final data = controller.growthAreasData.value;
+            if (data == null) {
+              return const SizedBox();
+            }
+
+            if (!data.hasSufficientData) {
+              return Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 16.w),
+                decoration: BoxDecoration(
+                  border: Border.all(color: slate[200]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    Text("🌱", style: TextStyle(fontSize: 24.sp)),
+                    Spacing.s8.h,
+                    Text(
+                      data.placeholderMessage ??
+                          "Check in a few more days to see your growth areas",
+                      textAlign: TextAlign.center,
+                      style: r14.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final areas = data.areas ?? [];
+            if (areas.length < 6) {
+              return const SizedBox();
+            }
+
+            return buildGrowthContent(context, areas);
           }),
         ],
       ),
     );
   }
 
-  Widget buildGrowthGridView(BuildContext context) {
+  Widget buildGrowthContent(BuildContext context, List<GrowthAreaModel> areas) {
+    return Column(
+      children: [
+        Obx(() {
+          if (controller.selectedGrowthTab.value == 0) {
+            return buildGrowthGridView(context, areas);
+          } else {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 200.h,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: GrowthRadarChartPainter(
+                      growthAreas: areas,
+                      primaryColor: primary,
+                      textColor:
+                          Theme.of(context).textTheme.bodyLarge!.color ??
+                          slate[900]!,
+                    ),
+                  ),
+                ),
+                Spacing.s20.h,
+                buildGrowthDetailedView(context, areas),
+              ],
+            );
+          }
+        }),
+      ],
+    );
+  }
+
+  Widget buildGrowthGridView(
+    BuildContext context,
+    List<GrowthAreaModel> areas,
+  ) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[0].progress,
-              growthAreasList[0].title,
-            ),
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[1].progress,
-              growthAreasList[1].title,
-            ),
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[2].progress,
-              growthAreasList[2].title,
-            ),
+            if (areas.isNotEmpty)
+              buildGrowthProgressIndicators(
+                context,
+                areas[0].progress,
+                areas[0].title,
+              ),
+            if (areas.length > 1)
+              buildGrowthProgressIndicators(
+                context,
+                areas[1].progress,
+                areas[1].title,
+              ),
+            if (areas.length > 2)
+              buildGrowthProgressIndicators(
+                context,
+                areas[2].progress,
+                areas[2].title,
+              ),
           ],
         ),
         Spacing.s16.h,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[3].progress,
-              growthAreasList[3].title,
-            ),
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[4].progress,
-              growthAreasList[4].title,
-            ),
-            buildGrowthProgressIndicators(
-              context,
-              growthAreasList[5].progress,
-              growthAreasList[5].title,
-            ),
+            if (areas.length > 3)
+              buildGrowthProgressIndicators(
+                context,
+                areas[3].progress,
+                areas[3].title,
+              ),
+            if (areas.length > 4)
+              buildGrowthProgressIndicators(
+                context,
+                areas[4].progress,
+                areas[4].title,
+              ),
+            if (areas.length > 5)
+              buildGrowthProgressIndicators(
+                context,
+                areas[5].progress,
+                areas[5].title,
+              ),
           ],
         ),
       ],
     );
   }
 
-  Widget buildGrowthDetailedView(BuildContext context) {
+  Widget buildGrowthDetailedView(
+    BuildContext context,
+    List<GrowthAreaModel> areas,
+  ) {
     final theme = Theme.of(context);
     return Column(
-      children: growthAreasList.map((area) {
+      children: areas.map((area) {
         return Container(
           margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
           padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
@@ -328,7 +342,7 @@ class InsightsScreen extends GetView<InsightsController> {
                 children: [
                   Row(
                     children: [
-                      Icon(area.icon, color: primary, size: 20),
+                      Icon(area.iconData, color: primary, size: 20),
                       Spacing.s8.w,
                       Text(
                         area.title,

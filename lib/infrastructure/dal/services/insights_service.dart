@@ -1,6 +1,7 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
 import '../../../../data/model/assessment/mood_tracker_stats.model.dart';
+import '../../../../data/model/assessment/growth_areas_response.model.dart';
 
 class InsightsService {
   InsightsService._();
@@ -25,6 +26,27 @@ class InsightsService {
         return ApiResponse<MoodTrackerStatsModel>.fromJson(
           json as Map<String, dynamic>,
           (data) => MoodTrackerStatsModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Retrieve Growth Areas Progress
+  static Future<ApiResponse<GrowthAreasResponseModel>?> getGrowthAreas({
+    String timezone = "UTC",
+  }) async {
+    return client.request<ApiResponse<GrowthAreasResponseModel>>(
+      (dio) => dio.get(
+        'insights/growth-areas',
+        queryParameters: {
+          'timezone': timezone,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<GrowthAreasResponseModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => GrowthAreasResponseModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );
