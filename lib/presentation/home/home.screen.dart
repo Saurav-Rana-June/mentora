@@ -248,6 +248,31 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget buildTodayPlanSection(BuildContext context) {
     return Obx(() {
+      if (controller.isLoadingPlans.value) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Your plan for today",
+              style: r18.copyWith(
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Spacing.s12.h,
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: CircularProgressIndicator(
+                  color: primary,
+                  strokeWidth: 2.5,
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+
       final total = controller.plans.length;
       final completed = controller.plans.where((p) => p.isComplete).length;
       return Column(
@@ -271,10 +296,10 @@ class HomeScreen extends GetView<HomeController> {
               final plan = controller.plans[index];
               return buildTodayPlanTimelineTile(
                 context,
-                plan.title,
+                plan.uiTitle,
                 plan.label,
-                plan.caption,
-                plan.icon,
+                plan.uiCaption,
+                plan.uiIcon,
                 index == 0 ? true : false,
                 index + 1 == total ? true : false,
                 plan.isComplete,
