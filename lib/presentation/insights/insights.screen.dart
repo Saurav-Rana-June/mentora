@@ -11,6 +11,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/insights.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 
 class GrowthAreaModel {
   final String title;
@@ -446,8 +447,32 @@ class InsightsScreen extends GetView<InsightsController> {
           const Divider(),
           Spacing.s16.h,
           Obx(() {
-            final historyLength = homeController.checkInDates.length;
-            if (historyLength < 3) {
+            final globalController = Get.find<GlobalController>();
+
+            if (globalController.isLoadingMoodTracker.value) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 36.h),
+                  child: CircularProgressIndicator(
+                    color: primary,
+                    strokeWidth: 2.5,
+                  ),
+                ),
+              );
+            }
+
+            final stats = controller.selectedMoodTab.value == 0
+                ? globalController.weeklyMoodStats.value
+                : globalController.monthlyMoodStats.value;
+
+            final apiMoods =
+                stats?.data
+                    ?.map((d) => d.feeling)
+                    .whereType<String>()
+                    .toList() ??
+                [];
+
+            if (apiMoods.isEmpty) {
               return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 36.h),
@@ -479,14 +504,14 @@ class InsightsScreen extends GetView<InsightsController> {
                     child: CustomPaint(
                       painter: controller.selectedMoodTab.value == 0
                           ? InsightsMoodLineChartPainter(
-                              checkInMoods: homeController.checkInMoods,
+                              checkInMoods: apiMoods,
                               primaryColor: primary,
                               textColor:
                                   theme.textTheme.bodySmall!.color ??
                                   slate[500]!,
                             )
                           : InsightsMoodBarChartPainter(
-                              checkInMoods: homeController.checkInMoods,
+                              checkInMoods: apiMoods,
                               primaryColor: primary,
                               textColor:
                                   theme.textTheme.bodySmall!.color ??
@@ -511,8 +536,14 @@ class InsightsScreen extends GetView<InsightsController> {
     HomeController homeController,
   ) {
     final theme = Theme.of(context);
-    final dominant = controller.getDominantMood(homeController);
-    final consistency = controller.getCheckInConsistency(homeController);
+    final globalController = Get.find<GlobalController>();
+    final isWeekly = controller.selectedMoodTab.value == 0;
+    final stats = isWeekly
+        ? globalController.weeklyMoodStats.value
+        : globalController.monthlyMoodStats.value;
+
+    final dominant = stats?.dominantMood ?? 'No data yet';
+    final consistency = stats?.consistency ?? 0.0;
     final consistencyPercentage = "${(consistency * 100).toInt()}%";
 
     return Row(
@@ -533,7 +564,7 @@ class InsightsScreen extends GetView<InsightsController> {
                 ),
                 Spacing.s4.h,
                 Text(
-                  dominant,
+                  dominant == 'Very Good' ? 'V. Good' : dominant,
                   style: r20.copyWith(
                     color: primary,
                     fontWeight: FontWeight.bold,

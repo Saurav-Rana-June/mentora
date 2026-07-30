@@ -5,6 +5,7 @@ import 'package:Mentora/presentation/onboarding/controllers/onboarding.controlle
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/data/model/tasks/plan.model.dart';
 import 'package:Mentora/infrastructure/dal/services/tasks_service.dart';
+import 'package:Mentora/data/methods/app_method.dart';
 
 class HomeController extends GetxController {
   // Check-in history
@@ -17,8 +18,8 @@ class HomeController extends GetxController {
       Rx<DailyMoodAssessmentModel?>(null);
 
   // Trusted Contact Info
-  final RxString trustedContactName = 'Emma (Sister)'.obs;
-  final RxString trustedContactPhone = '+1 (555) 019-2834'.obs;
+  final RxString trustedContactName = ''.obs;
+  final RxString trustedContactPhone = ''.obs;
 
   final RxList<PlanModel> plans = <PlanModel>[].obs;
   final RxBool isLoadingPlans = false.obs;
@@ -26,22 +27,16 @@ class HomeController extends GetxController {
   void updateTrustedContact(String name, String phone) {
     trustedContactName.value = name;
     trustedContactPhone.value = phone;
+    AppMethod.saveTrustedContact(name, phone);
   }
 
   @override
   void onInit() {
     super.onInit();
 
-    // Pre-populate with some mock check-ins so the chart and streak are populated for the demo,
-    // while also handling empty state if history is empty.
-    final today = DateTime.now();
-    checkInDates.addAll([
-      today.subtract(const Duration(days: 4)),
-      today.subtract(const Duration(days: 3)),
-      today.subtract(const Duration(days: 2)),
-      today.subtract(const Duration(days: 1)),
-    ]);
-    checkInMoods.addAll(["Good", "Normal", "Not Good", "Good"]);
+    // Load trusted contact info from storage (with defaults if empty)
+    trustedContactName.value = AppMethod.getTrustedContactName() ?? 'Emma (Sister)';
+    trustedContactPhone.value = AppMethod.getTrustedContactPhone() ?? '+1 (555) 019-2834';
 
     calculateStreakAndWeekly();
     generateDynamicPlans();
