@@ -1,5 +1,6 @@
+import 'package:Mentora/data/methods/app_method.dart';
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'package:Mentora/presentation/continue/continue.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -147,11 +148,9 @@ class IntroductionScreen extends GetView<IntroductionController> {
                 fontWeight: FontWeight.w600,
                 color: white,
               ),
-              onPressed: () {
-                Get.offAll(
-                  () => ContinueScreen(),
-                  transition: Transition.rightToLeft,
-                );
+              onPressed: () async {
+                await AppMethod.setHasSeenIntroduction(true);
+                Get.offAllNamed(Routes.CONTINUE);
               },
             ),
           ),

@@ -44,7 +44,11 @@ class SplashController extends GetxController {
     if (isAuthenticated) {
       Get.offAllNamed(Routes.LANDING);
     } else {
-      Get.offAllNamed(Routes.INTRODUCTION);
+      if (AppMethod.hasSeenIntroduction()) {
+        Get.offAllNamed(Routes.CONTINUE);
+      } else {
+        Get.offAllNamed(Routes.INTRODUCTION);
+      }
     }
   }
 }
