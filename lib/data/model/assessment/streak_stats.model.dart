@@ -1,16 +1,16 @@
 class StreakStatsModel {
-  final int currentStreak;
-  final int weeklyCheckInCount;
+  int? currentStreak;
+  int? weeklyCheckInCount;
 
   StreakStatsModel({
-    required this.currentStreak,
-    required this.weeklyCheckInCount,
+    this.currentStreak,
+    this.weeklyCheckInCount,
   });
 
   factory StreakStatsModel.fromJson(Map<String, dynamic> json) {
     return StreakStatsModel(
-      currentStreak: json['current_streak'] as int,
-      weeklyCheckInCount: json['weekly_checkin_count'] as int,
+      currentStreak: json['current_streak'] as int?,
+      weeklyCheckInCount: json['weekly_checkin_count'] as int?,
     );
   }
 

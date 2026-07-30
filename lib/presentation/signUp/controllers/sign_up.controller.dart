@@ -65,7 +65,7 @@ class SignUpController extends GetxController {
         );
         if (loginResponse != null && loginResponse.data != null) {
           final tokenData = loginResponse.data!;
-          await AppMethod.saveUserToken(tokenData.accessToken);
+          await AppMethod.saveUserToken(tokenData.accessToken ?? '');
           await AppMethod.saveUserEmail(email);
 
           AppUtils.snackbar(

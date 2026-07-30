@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:get_storage/get_storage.dart';
 
+import 'controllers/global.controller.dart';
 import 'infrastructure/navigation/navigation.dart';
 import 'infrastructure/navigation/routes.dart';
 import 'infrastructure/theme/theme.dart';
@@ -31,6 +32,9 @@ class Main extends StatelessWidget {
         return GetMaterialApp(
           title: "Mentora",
           initialRoute: initialRoute,
+          initialBinding: BindingsBuilder(() {
+            Get.put(GlobalController(), permanent: true);
+          }),
           debugShowCheckedModeBanner: false,
           getPages: Nav.routes,
           theme: AppTheme.lightTheme,

@@ -21,7 +21,7 @@ class SplashController extends GetxController {
       try {
         final response = await AuthService.autoSignIn();
         if (response != null && response.data != null) {
-          await AppMethod.saveUserEmail(response.data!.email);
+          await AppMethod.saveUserEmail(response.data!.email ?? '');
           isAuthenticated = true;
         } else {
           await AppMethod.clearUserSession();

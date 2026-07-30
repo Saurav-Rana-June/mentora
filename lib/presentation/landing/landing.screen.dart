@@ -93,7 +93,7 @@ class LandingScreen extends GetView<LandingController> {
           ),
           child: Center(
             child: Text(
-              page.icon,
+              page.icon ?? '',
               style: const TextStyle(
                 fontFamily: 'FontAwesomeSolid',
                 fontSize: 22,
@@ -121,7 +121,7 @@ class LandingScreen extends GetView<LandingController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              page.icon,
+              page.icon ?? '',
               style: TextStyle(
                 fontFamily: isSelected
                     ? 'FontAwesomeSolid'
@@ -132,7 +132,7 @@ class LandingScreen extends GetView<LandingController> {
             ),
             SizedBox(height: 4.h),
             Text(
-              page.title,
+              page.title ?? '',
               style: r10.copyWith(
                 color: isSelected ? primary : slate[500],
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,

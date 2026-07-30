@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/presentation/onboarding/controllers/onboarding.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 
 class HomeController extends GetxController {
   // Check-in history
@@ -84,8 +85,8 @@ class HomeController extends GetxController {
       final response = await AssessmentService.getStreakStats();
       if (response != null && response.data != null) {
         final stats = response.data!;
-        streakCount.value = stats.currentStreak;
-        weeklyCheckInCount.value = stats.weeklyCheckInCount;
+        streakCount.value = stats.currentStreak ?? 0;
+        weeklyCheckInCount.value = stats.weeklyCheckInCount ?? 0;
       }
     } catch (e) {
       Get.log("Error fetching streak stats: $e");
@@ -328,26 +329,32 @@ class HomeController extends GetxController {
         DailyMoodAssessmentModel? foundToday;
 
         for (var checkIn in history) {
-          final DateTime checkInDate = DateTime.parse(
-            checkIn.createdAt,
-          ).toLocal();
-          checkInDates.add(checkInDate);
-          checkInMoods.add(checkIn.feeling);
+          final DateTime? checkInDate = checkIn.createdAt != null
+              ? DateTime.tryParse(checkIn.createdAt!)?.toLocal()
+              : null;
+          if (checkInDate != null) {
+            checkInDates.add(checkInDate);
+            checkInMoods.add(checkIn.feeling ?? '');
 
-          if (checkInDate.year == today.year &&
-              checkInDate.month == today.month &&
-              checkInDate.day == today.day) {
-            foundToday = checkIn;
+            if (checkInDate.year == today.year &&
+                checkInDate.month == today.month &&
+                checkInDate.day == today.day) {
+              foundToday = checkIn;
+            }
           }
         }
 
         todayCheckIn.value = foundToday;
         if (foundToday != null) {
-          latestMood.value = foundToday.feeling;
+          latestMood.value = foundToday.feeling ?? '';
         }
 
         calculateStreakAndWeekly();
         generateDynamicPlans();
+
+        if (Get.isRegistered<GlobalController>()) {
+          Get.find<GlobalController>().fetchMoodTrackerStats();
+        }
       }
     } catch (e) {
       Get.log("Error fetching mood history: $e");

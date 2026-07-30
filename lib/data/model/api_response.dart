@@ -1,11 +1,11 @@
 class ApiResponse<T> {
-  final int status;
-  final String message;
-  final T? data;
+  int? status;
+  String? message;
+  T? data;
 
   ApiResponse({
-    required this.status,
-    required this.message,
+    this.status,
+    this.message,
     this.data,
   });
 
@@ -14,8 +14,8 @@ class ApiResponse<T> {
     T Function(Object? json)? fromJsonT,
   ) {
     return ApiResponse<T>(
-      status: json['status'] as int,
-      message: json['message'] as String? ?? '',
+      status: json['status'] as int?,
+      message: json['message'] as String?,
       data: json['data'] != null && fromJsonT != null
           ? fromJsonT(json['data'])
           : null,

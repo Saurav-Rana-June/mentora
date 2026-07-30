@@ -46,7 +46,7 @@ class SignInController extends GetxController {
       final response = await AuthService.login(email: email, password: password);
       if (response != null && response.data != null) {
         final tokenData = response.data!;
-        await AppMethod.saveUserToken(tokenData.accessToken);
+        await AppMethod.saveUserToken(tokenData.accessToken ?? '');
         await AppMethod.saveUserEmail(email);
 
         AppUtils.snackbar(

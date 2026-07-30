@@ -1,4 +1,5 @@
 import 'package:Mentora/controllers/bottom.nav.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
@@ -147,8 +148,14 @@ class HomeScreen extends GetView<HomeController> {
   }
 
   Widget buildMoodTrendsCard(BuildContext context) {
+    final globalController = Get.find<GlobalController>();
+
     return Obx(() {
-      final historyLength = controller.checkInDates.length;
+      final stats = globalController.moodTrackerStats.value;
+      final checkedInMoods =
+          stats?.data?.map((d) => d.feeling).whereType<String>().toList() ?? [];
+      final historyLength = checkedInMoods.length;
+
       return GestureDetector(
         onTap: () {
           if (Get.isRegistered<BottamNavController>()) {
@@ -223,7 +230,7 @@ class HomeScreen extends GetView<HomeController> {
                     padding: EdgeInsets.only(top: 8.h),
                     child: CustomPaint(
                       painter: MoodLineChartPainter(
-                        checkInMoods: controller.checkInMoods,
+                        checkInMoods: checkedInMoods,
                         primaryColor: primary,
                         textColor:
                             Theme.of(context).textTheme.bodySmall!.color ??
@@ -645,10 +652,10 @@ class HomeScreen extends GetView<HomeController> {
     BuildContext context,
     DailyMoodAssessmentModel checkIn,
   ) {
-    final mood = checkIn.feeling;
+    final mood = checkIn.feeling ?? '';
     final moodIcon = controller.moodImage(mood);
     final moodColor = _getMoodColor(mood);
-    final timeStr = _formatTime(checkIn.createdAt);
+    final timeStr = _formatTime(checkIn.createdAt ?? '');
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -733,7 +740,7 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ],
             ),
-            if (checkIn.exactFeeling.isNotEmpty || checkIn.why.isNotEmpty) ...[
+            if ((checkIn.exactFeeling?.isNotEmpty ?? false) || (checkIn.why?.isNotEmpty ?? false)) ...[
               Spacing.s12.h,
               Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
               Spacing.s12.h,
@@ -741,10 +748,10 @@ class HomeScreen extends GetView<HomeController> {
                 spacing: 8.w,
                 runSpacing: 8.h,
                 children: [
-                  ...checkIn.exactFeeling.map(
+                  ...(checkIn.exactFeeling ?? []).map(
                     (e) => _buildMoodTag(context, e, moodColor),
                   ),
-                  ...checkIn.why.map((w) => _buildMoodTag(context, w, primary)),
+                  ...(checkIn.why ?? []).map((w) => _buildMoodTag(context, w, primary)),
                 ],
               ),
             ],
