@@ -534,67 +534,263 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
+  static const Map<String, String> _moodReasonsEmojiMap = {
+    // Factors
+    'Work': '💼',
+    'School': '🎓',
+    'Family': '👨‍👩‍👧‍👦',
+    'Partner': '💑',
+    'Health': '🏥',
+    'Friends': '🧑‍🤝‍🧑',
+    'Weather': '🌦️',
+    'Hobbies': '🎨',
+    'Finances': '💰',
+    'Events': '🎉',
+    'Exercise': '🏋️‍♂️',
+    'Travel': '✈️',
+    'Nature': '🌳',
+    'Sleep': '😴',
+    'Stress': '😣',
+    'Time Pressure': '⏰',
+    'Deadlines': '📚',
+    'Money Worries': '💸',
+    'Relationship': '💔',
+    'Illness': '🤒',
+    'Overthinking': '📱',
+    'Traffic': '🚦',
+    'Mental Load': '🧠',
+    // Exact feelings
+    'Happy': '😄',
+    'Calm': '😊',
+    'Relaxed': '😌',
+    'Excited': '😁',
+    'Content': '🥰',
+    'Grateful': '🙏',
+    'Stressed': '😣',
+    'Anxious': '😰',
+    'Overwhelmed': '😓',
+    'Frustrated': '😤',
+    'Angry': '😠',
+    'Sad': '😔',
+    'Disappointed': '😞',
+    'Lonely': '🥺',
+    'Hurt': '😢',
+    'Tired': '😴',
+    'Exhausted': '🥱',
+    'Numb': '😐',
+    'Mentally Drained': '🤯',
+    'Motivated': '💪',
+    'Focused': '🧠',
+    'Inspired': '✨',
+  };
+
+  Color _getMoodColor(String feeling) {
+    switch (feeling) {
+      case 'Angry':
+        return const Color(0xFFF34538);
+      case 'Not Good':
+        return const Color(0xFFFF991C);
+      case 'Normal':
+        return const Color(0xFF939393);
+      case 'Good':
+        return const Color(0xFF8DC255);
+      case 'Very Good':
+        return const Color(0xFF49AF58);
+      default:
+        return const Color(0xFFA5C67C); // brand primary
+    }
+  }
+
+  String _formatTime(String createdAt) {
+    try {
+      final dateTime = DateTime.parse(createdAt).toLocal();
+      final hour = dateTime.hour > 12
+          ? dateTime.hour - 12
+          : (dateTime.hour == 0 ? 12 : dateTime.hour);
+      final minute = dateTime.minute.toString().padLeft(2, '0');
+      final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+      return '$hour:$minute $period';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  Widget _buildMoodTag(BuildContext context, String label, Color tintColor) {
+    final emoji = _moodReasonsEmojiMap[label] ?? '';
+    final displayLabel = emoji.isNotEmpty ? '$emoji $label' : label;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? tintColor.withValues(alpha: 0.12)
+            : tintColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: tintColor.withValues(alpha: 0.2), width: 1),
+      ),
+      child: Text(
+        displayLabel,
+        style: r12.copyWith(
+          color: isDarkMode
+              ? tintColor.withValues(alpha: 0.9)
+              : tintColor.withValues(alpha: 0.8),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget buildMoodCheckedInCard(
     BuildContext context,
     DailyMoodAssessmentModel checkIn,
   ) {
     final mood = checkIn.feeling;
     final moodIcon = controller.moodImage(mood);
-
+    final moodColor = _getMoodColor(mood);
+    final timeStr = _formatTime(checkIn.createdAt);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
         Get.toNamed(Routes.MOOD_CHECKIN, arguments: checkIn);
       },
       child: CustomPrimaryCard(
-        child: Row(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (moodIcon.isNotEmpty)
-              SvgPicture.asset(moodIcon, width: 50, height: 50),
-            Spacing.s16.w,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (moodIcon.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: moodColor.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      moodIcon,
+                      width: 38.w,
+                      height: 38.w,
+                    ),
+                  ),
+                Spacing.s12.w,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "TODAY'S CHECK-IN",
+                            style: r10.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          if (timeStr.isNotEmpty) ...[
+                            Spacing.s8.w,
+                            Container(
+                              width: 4.w,
+                              height: 4.w,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .color!
+                                    .withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Spacing.s8.w,
+                            Text(
+                              timeStr,
+                              style: r10.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        "You feel $mood",
+                        style: r16.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (checkIn.exactFeeling.isNotEmpty || checkIn.why.isNotEmpty) ...[
+              Spacing.s12.h,
+              Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
+              Spacing.s12.h,
+              Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
                 children: [
-                  Text(
-                    "Today's Mood Check-in",
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall!.color,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  ...checkIn.exactFeeling.map(
+                    (e) => _buildMoodTag(context, e, moodColor),
                   ),
-                  Spacing.s4.h,
-                  Text(
-                    "You feel $mood",
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  ...checkIn.why.map((w) => _buildMoodTag(context, w, primary)),
+                ],
+              ),
+            ],
+            if (checkIn.notes != null && checkIn.notes!.isNotEmpty) ...[
+              Spacing.s12.h,
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(16.r),
+                    bottomLeft: Radius.circular(16.r),
+                    bottomRight: Radius.circular(16.r),
                   ),
-                  if (checkIn.notes != null && checkIn.notes!.isNotEmpty) ...[
-                    Spacing.s4.h,
-                    Text(
-                      checkIn.notes!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: r12.copyWith(
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
-                        fontStyle: FontStyle.italic,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 2.h),
+                      child: Text(
+                        '\u{f10d}', // Open Quote icon in FontAwesomeSolid
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeSolid',
+                          fontSize: 9.sp,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color!.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                    Spacing.s8.w,
+                    Expanded(
+                      child: Text(
+                        checkIn.notes!,
+                        style: r12.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
-            Spacing.s8.w,
-            Text(
-              '\u{f303}', // Pen/Edit icon in FontAwesomeSolid
-              style: TextStyle(
-                fontFamily: 'FontAwesomeSolid',
-                fontSize: 16.sp,
-                color: primary,
-              ),
-            ),
+            ],
           ],
         ),
       ),
