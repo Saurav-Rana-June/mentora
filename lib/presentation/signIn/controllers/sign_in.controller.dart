@@ -12,12 +12,7 @@ class SignInController extends GetxController {
   final hidePassword = true.obs;
   final isLoading = false.obs;
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
+
 
   Future<void> signIn() async {
     final email = emailController.text.trim();

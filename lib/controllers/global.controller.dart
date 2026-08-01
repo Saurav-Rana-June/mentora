@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
+import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 
 class GlobalController extends GetxController {
+  bool _isFetchingHistory = false;
   final RxBool isLoadingMoodTracker = false.obs;
   final Rxn<MoodTrackerStatsModel> moodTrackerStats = Rxn<MoodTrackerStatsModel>();
   final Rxn<MoodTrackerStatsModel> weeklyMoodStats = Rxn<MoodTrackerStatsModel>();
@@ -15,8 +17,18 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchMoodTrackerStats() async {
+    if (_isFetchingHistory) return;
     try {
       isLoadingMoodTracker.value = true;
+
+      try {
+        _isFetchingHistory = true;
+        if (Get.isRegistered<HomeController>()) {
+          await Get.find<HomeController>().fetchMoodHistory();
+        }
+      } finally {
+        _isFetchingHistory = false;
+      }
       
       final weeklyRes = await InsightsService.getMoodTrackerStats(
         range: 'weekly',

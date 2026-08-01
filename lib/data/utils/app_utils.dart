@@ -10,6 +10,23 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 
 class AppUtils {
+  static Color getMoodColor(String feeling) {
+    switch (feeling) {
+      case 'Angry':
+        return const Color(0xFFF34538); // red
+      case 'Not Good':
+        return const Color(0xFFFF991C); // orange
+      case 'Normal':
+        return const Color(0xFF6CAAD8); // blue
+      case 'Good':
+        return const Color(0xFF8DC255); // lightGreen
+      case 'Very Good':
+        return const Color(0xFF49AF58); // darkGreen
+      default:
+        return const Color(0xFFA5C67C); // primary
+    }
+  }
+
   /// Parses common API error JSON shapes for user-visible messages.
   static String? messageFromApiErrorBody(dynamic data) {
     if (data is Map) {
@@ -112,10 +129,9 @@ class AppUtils {
 
     final lowerInput = input.toLowerCase().replaceAll(RegExp(r'\s+'), '');
 
-    String randomSuffix =
-        List.generate(suffixLength, (index) {
-          return chars[random.nextInt(chars.length)];
-        }).join();
+    String randomSuffix = List.generate(suffixLength, (index) {
+      return chars[random.nextInt(chars.length)];
+    }).join();
 
     return '${lowerInput}_$randomSuffix';
   }

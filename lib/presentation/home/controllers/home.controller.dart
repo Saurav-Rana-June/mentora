@@ -11,6 +11,8 @@ class HomeController extends GetxController {
   // Check-in history
   final RxList<DateTime> checkInDates = <DateTime>[].obs;
   final RxList<String> checkInMoods = <String>[].obs;
+  final RxList<DailyMoodAssessmentModel> moodHistoryList =
+      <DailyMoodAssessmentModel>[].obs;
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
@@ -35,8 +37,10 @@ class HomeController extends GetxController {
     super.onInit();
 
     // Load trusted contact info from storage (with defaults if empty)
-    trustedContactName.value = AppMethod.getTrustedContactName() ?? 'Emma (Sister)';
-    trustedContactPhone.value = AppMethod.getTrustedContactPhone() ?? '+1 (555) 019-2834';
+    trustedContactName.value =
+        AppMethod.getTrustedContactName() ?? 'Emma (Sister)';
+    trustedContactPhone.value =
+        AppMethod.getTrustedContactPhone() ?? '+1 (555) 019-2834';
 
     calculateStreakAndWeekly();
     generateDynamicPlans();
@@ -402,6 +406,8 @@ class HomeController extends GetxController {
       final response = await AssessmentService.getDailyMoods();
       if (response != null && response.data != null) {
         final List<DailyMoodAssessmentModel> history = response.data!;
+
+        moodHistoryList.assignAll(history);
 
         checkInDates.clear();
         checkInMoods.clear();

@@ -55,12 +55,7 @@ class GrowthAreaModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'progress': progress,
-      'tip': tip,
-      'icon': icon,
-    };
+    return {'title': title, 'progress': progress, 'tip': tip, 'icon': icon};
   }
 
   IconData get iconData {

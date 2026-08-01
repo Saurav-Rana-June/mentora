@@ -1,6 +1,7 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
+import 'package:Mentora/presentation/moodCheckin/views/mood_history.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_selection.veiw.dart';
 import 'package:Mentora/presentation/moodCheckin/views/reason_selection.view.dart';
@@ -73,6 +74,45 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
       centerTitle: false,
       automaticallyImplyLeading: false,
       backgroundColor: Theme.of(context).primaryColorLight,
+      actions: [
+        IconButton(
+          icon: Text(
+            MyIcons.arrowRotateRight,
+            style: TextStyle(
+              fontFamily: 'FontAwesomeSolid',
+              fontSize: 18.sp,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+            ),
+          ),
+          onPressed: () {
+            Get.to(
+              () => Scaffold(
+                backgroundColor: Theme.of(context).primaryColorLight,
+                appBar: AppBar(
+                  title: Text(
+                    "Mood History",
+                    style: r18.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                  leading: const Center(
+                    child: CustomBackButton(
+                      icon: MyIcons.chevronLeft,
+                    ),
+                  ),
+                  surfaceTintColor: Colors.transparent,
+                  centerTitle: true,
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                ),
+                body: const MoodHistoryView(),
+              ),
+              transition: Transition.rightToLeft,
+            );
+          },
+        ),
+      ],
     );
   }
 
