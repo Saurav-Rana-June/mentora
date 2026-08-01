@@ -1,5 +1,6 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
+import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_history.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
@@ -85,6 +86,9 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
             ),
           ),
           onPressed: () {
+            final homeController = Get.find<HomeController>();
+            homeController.selectedDateFilter.value = DateFilter.thisWeek;
+            homeController.fetchMoodHistory();
             Get.to(
               () => const MoodHistoryView(),
               transition: Transition.rightToLeft,

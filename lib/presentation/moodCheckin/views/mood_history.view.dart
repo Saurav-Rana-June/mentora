@@ -53,7 +53,9 @@ class MoodHistoryView extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
                       child: Container(
-                        padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
+                        padding: EdgeInsets.all(
+                          Spacing.s24.symmetric.horizontal,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.cardColor,
                           borderRadius: BorderRadius.circular(24),
@@ -168,7 +170,9 @@ class MoodHistoryView extends StatelessWidget {
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: moodColor.withValues(alpha: 0.35),
+                                        color: moodColor.withValues(
+                                          alpha: 0.35,
+                                        ),
                                         blurRadius: 6,
                                       ),
                                     ],
@@ -232,7 +236,8 @@ class MoodHistoryView extends StatelessWidget {
                                                           .textTheme
                                                           .bodySmall!
                                                           .color,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       letterSpacing: 1.0,
                                                     ),
                                                   ),
@@ -337,11 +342,14 @@ class MoodHistoryView extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsets.only(top: 2.h),
+                                              padding: EdgeInsets.only(
+                                                top: 2.h,
+                                              ),
                                               child: Text(
                                                 '\u{f10d}',
                                                 style: TextStyle(
-                                                  fontFamily: 'FontAwesomeSolid',
+                                                  fontFamily:
+                                                      'FontAwesomeSolid',
                                                   fontSize: 9.sp,
                                                   color: theme
                                                       .textTheme
