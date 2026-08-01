@@ -17,7 +17,9 @@ class MoodHistoryView extends StatelessWidget {
     final theme = Theme.of(context);
     final homeController = Get.find<HomeController>();
 
-    return Obx(() {
+    return SafeArea(
+      top: false,
+      child: Obx(() {
       if (homeController.moodHistoryList.isEmpty) {
         return Center(
           child: Padding(
@@ -313,7 +315,7 @@ class MoodHistoryView extends StatelessWidget {
           );
         },
       );
-    });
+    }));
   }
 
   static const Map<String, String> _moodReasonsEmojiMap = {
