@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
@@ -106,6 +107,10 @@ class MoodHistoryView extends StatelessWidget {
           final checkIn = sortedHistory[index];
           final feelingName = checkIn.feeling ?? 'Normal';
           final moodColor = AppUtils.getMoodColor(feelingName);
+          final moodIcon = homeController.moodImage(feelingName);
+          final dateStr = _formatDate(checkIn.createdAt);
+          final timeStr = _formatTime(checkIn.createdAt ?? '');
+          final isDarkMode = theme.brightness == Brightness.dark;
 
           return IntrinsicHeight(
             child: Row(
@@ -151,99 +156,167 @@ class MoodHistoryView extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 20.h),
-                    child: CustomPrimaryCard(
-                      borderRadius: 20,
-                      padding: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    homeController.moodImage(feelingName),
-                                    width: 32.h,
-                                    height: 32.h,
-                                  ),
-                                  Spacing.s12.w,
-                                  Text(
-                                    feelingName,
-                                    style: r16.copyWith(
-                                      color: theme.textTheme.bodyLarge!.color,
-                                      fontWeight: FontWeight.bold,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        Get.toNamed(Routes.MOOD_CHECKIN, arguments: checkIn);
+                      },
+                      child: CustomPrimaryCard(
+                        borderRadius: 8,
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (moodIcon.isNotEmpty)
+                                  Container(
+                                    padding: EdgeInsets.all(8.w),
+                                    decoration: BoxDecoration(
+                                      color: moodColor.withValues(alpha: 0.12),
+                                      shape: BoxShape.circle,
                                     ),
+                                    child: SvgPicture.asset(
+                                      moodIcon,
+                                      width: 38.w,
+                                      height: 38.w,
+                                    ),
+                                  ),
+                                Spacing.s12.w,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "CHECK-IN",
+                                            style: r10.copyWith(
+                                              color: theme
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 1.0,
+                                            ),
+                                          ),
+                                          if (dateStr.isNotEmpty) ...[
+                                            Spacing.s8.w,
+                                            Container(
+                                              width: 4.w,
+                                              height: 4.w,
+                                              decoration: BoxDecoration(
+                                                color: theme
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color!
+                                                    .withValues(alpha: 0.5),
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            Spacing.s8.w,
+                                            Text(
+                                              dateStr,
+                                              style: r10.copyWith(
+                                                color: theme
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      Spacing.s4.h,
+                                      Text(
+                                        "You feel $feelingName",
+                                        style: r16.copyWith(
+                                          color:
+                                              theme.textTheme.bodyLarge!.color,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
+                                (checkIn.why?.isNotEmpty ?? false)) ...[
+                              Spacing.s12.h,
+                              Divider(
+                                color: isDarkMode ? slate[700]! : slate[100]!,
+                                height: 1,
+                              ),
+                              Spacing.s12.h,
+                              Wrap(
+                                spacing: 8.w,
+                                runSpacing: 8.h,
+                                children: [
+                                  ...(checkIn.exactFeeling ?? []).map(
+                                    (e) => _buildMoodTag(context, e, moodColor),
+                                  ),
+                                  ...(checkIn.why ?? []).map(
+                                    (w) => _buildMoodTag(context, w, primary),
                                   ),
                                 ],
                               ),
-                              Text(
-                                _formatDate(checkIn.createdAt),
-                                style: r12.copyWith(
-                                  color: theme.textTheme.bodySmall!.color,
-                                  fontWeight: FontWeight.w600,
+                            ],
+                            if (checkIn.notes != null &&
+                                checkIn.notes!.trim().isNotEmpty) ...[
+                              Spacing.s12.h,
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 10.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.primaryColorLight,
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(16.r),
+                                    bottomLeft: Radius.circular(16.r),
+                                    bottomRight: Radius.circular(16.r),
+                                  ),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 2.h),
+                                      child: Text(
+                                        '\u{f10d}', // Open Quote icon in FontAwesomeSolid
+                                        style: TextStyle(
+                                          fontFamily: 'FontAwesomeSolid',
+                                          fontSize: 9.sp,
+                                          color: theme
+                                              .textTheme
+                                              .bodySmall!
+                                              .color!
+                                              .withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                    ),
+                                    Spacing.s8.w,
+                                    Expanded(
+                                      child: Text(
+                                        checkIn.notes!,
+                                        style: r12.copyWith(
+                                          color:
+                                              theme.textTheme.bodyMedium!.color,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
-                          ),
-                          if ((checkIn.exactFeeling != null &&
-                                  checkIn.exactFeeling!.isNotEmpty) ||
-                              (checkIn.why != null &&
-                                  checkIn.why!.isNotEmpty)) ...[
-                            Spacing.s12.h,
-                            Wrap(
-                              spacing: 6.w,
-                              runSpacing: 6.h,
-                              children: [
-                                if (checkIn.exactFeeling != null)
-                                  ...checkIn.exactFeeling!.map(
-                                    (feeling) => _buildChip(
-                                      feeling,
-                                      moodColor.withValues(alpha: 0.1),
-                                      moodColor,
-                                    ),
-                                  ),
-                                if (checkIn.why != null)
-                                  ...checkIn.why!.map(
-                                    (reason) => _buildChip(
-                                      reason,
-                                      theme.primaryColorLight,
-                                      theme.textTheme.bodyMedium!.color!,
-                                    ),
-                                  ),
-                              ],
-                            ),
                           ],
-                          if (checkIn.notes != null &&
-                              checkIn.notes!.trim().isNotEmpty) ...[
-                            Spacing.s12.h,
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(
-                                Spacing.s12.symmetric.horizontal,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.primaryColorLight.withValues(
-                                  alpha: 0.4,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border(
-                                  left: BorderSide(
-                                    color: moodColor.withValues(alpha: 0.8),
-                                    width: 3.w,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                checkIn.notes!,
-                                style: r14.copyWith(
-                                  color: theme.textTheme.bodyMedium!.color,
-                                  height: 1.4,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -256,23 +329,94 @@ class MoodHistoryView extends StatelessWidget {
     });
   }
 
-  Widget _buildChip(String label, Color bgColor, Color textColor) {
+  static const Map<String, String> _moodReasonsEmojiMap = {
+    // Factors
+    'Work': '💼',
+    'School': '🎓',
+    'Family': '👨‍👩‍👧‍👦',
+    'Partner': '💑',
+    'Health': '🏥',
+    'Friends': '🧑‍🤝‍🧑',
+    'Weather': '🌦️',
+    'Hobbies': '🎨',
+    'Finances': '💰',
+    'Events': '🎉',
+    'Exercise': '🏋️‍♂️',
+    'Travel': '✈️',
+    'Nature': '🌳',
+    'Sleep': '😴',
+    'Stress': '😣',
+    'Time Pressure': '⏰',
+    'Deadlines': '📚',
+    'Money Worries': '💸',
+    'Relationship': '💔',
+    'Illness': '🤒',
+    'Overthinking': '📱',
+    'Traffic': '🚦',
+    'Mental Load': '🧠',
+    // Exact feelings
+    'Happy': '😄',
+    'Calm': '😊',
+    'Relaxed': '😌',
+    'Excited': '😁',
+    'Content': '🥰',
+    'Grateful': '🙏',
+    'Stressed': '😣',
+    'Anxious': '😰',
+    'Overwhelmed': '😓',
+    'Frustrated': '😤',
+    'Angry': '😠',
+    'Sad': '😔',
+    'Disappointed': '😞',
+    'Lonely': '🥺',
+    'Hurt': '😢',
+    'Tired': '😴',
+    'Exhausted': '🥱',
+    'Numb': '😐',
+    'Mentally Drained': '🤯',
+    'Motivated': '💪',
+    'Focused': '🧠',
+    'Inspired': '✨',
+  };
+
+  Widget _buildMoodTag(BuildContext context, String label, Color tintColor) {
+    final emoji = _moodReasonsEmojiMap[label] ?? '';
+    final displayLabel = emoji.isNotEmpty ? '$emoji $label' : label;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        color: isDarkMode
+            ? tintColor.withValues(alpha: 0.12)
+            : tintColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: tintColor.withValues(alpha: 0.2), width: 1),
       ),
       child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Satoshi',
-          fontSize: 12.sp,
-          color: textColor,
-          fontWeight: FontWeight.bold,
+        displayLabel,
+        style: r12.copyWith(
+          color: isDarkMode
+              ? tintColor.withValues(alpha: 0.9)
+              : tintColor.withValues(alpha: 0.8),
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
+  }
+
+  String _formatTime(String createdAt) {
+    try {
+      final dateTime = DateTime.parse(createdAt).toLocal();
+      final hour = dateTime.hour > 12
+          ? dateTime.hour - 12
+          : (dateTime.hour == 0 ? 12 : dateTime.hour);
+      final minute = dateTime.minute.toString().padLeft(2, '0');
+      final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+      return '$hour:$minute $period';
+    } catch (_) {
+      return '';
+    }
   }
 
   String _formatDate(String? dateStr) {
