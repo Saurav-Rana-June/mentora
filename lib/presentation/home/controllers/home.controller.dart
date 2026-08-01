@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/presentation/onboarding/controllers/onboarding.controller.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/data/model/tasks/plan.model.dart';
@@ -13,6 +14,7 @@ class HomeController extends GetxController {
   final RxList<String> checkInMoods = <String>[].obs;
   final RxList<DailyMoodAssessmentModel> moodHistoryList =
       <DailyMoodAssessmentModel>[].obs;
+  final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
@@ -401,11 +403,17 @@ class HomeController extends GetxController {
     plans.assignAll(generated.take(6).toList());
   }
 
+  Future<void> changeDateFilter(DateFilter filter) async {
+    selectedDateFilter.value = filter;
+    await fetchMoodHistory();
+  }
+
   Future<void> fetchMoodHistory() async {
     try {
       final response = await AssessmentService.getDailyMoodsHistory(
         page: 1,
         size: 50,
+        dateFilter: selectedDateFilter.value,
       );
       if (response != null && response.data != null) {
         final List<DailyMoodAssessmentModel> history = response.data!.items;

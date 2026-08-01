@@ -7,6 +7,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 
 class MoodHistoryView extends StatelessWidget {
@@ -19,303 +20,381 @@ class MoodHistoryView extends StatelessWidget {
 
     return SafeArea(
       top: false,
-      child: Obx(() {
-      if (homeController.moodHistoryList.isEmpty) {
-        return Center(
-          child: Padding(
-            padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
-            child: Container(
-              padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-                border: Border.all(color: slate[100]!),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 72.h,
-                    height: 72.h,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          primary.withValues(alpha: 0.2),
-                          primary.withValues(alpha: 0.05),
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text("🌱", style: TextStyle(fontSize: 32.sp)),
-                    ),
-                  ),
-                  Spacing.s24.h,
-                  Text(
-                    "No check-ins logged yet",
-                    textAlign: TextAlign.center,
-                    style: r18.copyWith(
-                      color: theme.textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacing.s8.h,
-                  Text(
-                    "Log how you feel today and track your progress metrics over time.",
-                    textAlign: TextAlign.center,
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodySmall!.color,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-
-      // Sort history: latest first
-      final sortedHistory = List<DailyMoodAssessmentModel>.from(
-        homeController.moodHistoryList,
-      );
-      sortedHistory.sort((a, b) {
-        final aDate = a.createdAt != null
-            ? DateTime.tryParse(a.createdAt!)
-            : null;
-        final bDate = b.createdAt != null
-            ? DateTime.tryParse(b.createdAt!)
-            : null;
-        if (aDate == null) return 1;
-        if (bDate == null) return -1;
-        return bDate.compareTo(aDate);
-      });
-
-      return ListView.builder(
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s16.symmetric.horizontal,
-        ),
-        itemCount: sortedHistory.length,
-        itemBuilder: (context, index) {
-          final checkIn = sortedHistory[index];
-          final feelingName = checkIn.feeling ?? 'Normal';
-          final moodColor = AppUtils.getMoodColor(feelingName);
-          final moodIcon = homeController.moodImage(feelingName);
-          final dateStr = _formatDate(checkIn.createdAt);
-          final isDarkMode = theme.brightness == Brightness.dark;
-
-          return IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Journal Timeline Node
-                SizedBox(
-                  width: 24.w,
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 18.h),
-                        width: 12.h,
-                        height: 12.h,
-                        decoration: BoxDecoration(
-                          color: moodColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: theme.scaffoldBackgroundColor,
-                            width: 2.5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Filter Chips Section
+          Obx(() => _buildFilterChips(context, homeController)),
+          // Content Section (List or Empty state)
+          Expanded(
+            child: Obx(() {
+              if (homeController.moodHistoryList.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
+                    child: Container(
+                      padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: moodColor.withValues(alpha: 0.35),
-                              blurRadius: 6,
-                            ),
-                          ],
+                        ],
+                        border: Border.all(
+                          color: theme.brightness == Brightness.dark
+                              ? slate[800]!
+                              : slate[100]!,
                         ),
                       ),
-                      Expanded(
-                        child: index == sortedHistory.length - 1
-                            ? const SizedBox()
-                            : Container(
-                                width: 2.w,
-                                color: slate[200]!.withValues(alpha: 0.6),
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-                Spacing.s12.w,
-                // Check-in card body
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 20.h),
-                    child: CustomPrimaryCard(
-                      borderRadius: 8,
-                      padding: EdgeInsets.all(16.w),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          Container(
+                            width: 72.h,
+                            height: 72.h,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  primary.withValues(alpha: 0.2),
+                                  primary.withValues(alpha: 0.05),
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text("🌱", style: TextStyle(fontSize: 32.sp)),
+                            ),
+                          ),
+                          Spacing.s24.h,
+                          Text(
+                            "No check-ins logged yet",
+                            textAlign: TextAlign.center,
+                            style: r18.copyWith(
+                              color: theme.textTheme.bodyLarge!.color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Spacing.s8.h,
+                          Text(
+                            "Log how you feel today and track your progress metrics over time.",
+                            textAlign: TextAlign.center,
+                            style: r14.copyWith(
+                              color: theme.textTheme.bodySmall!.color,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              // Sort history: latest first
+              final sortedHistory = List<DailyMoodAssessmentModel>.from(
+                homeController.moodHistoryList,
+              );
+              sortedHistory.sort((a, b) {
+                final aDate = a.createdAt != null
+                    ? DateTime.tryParse(a.createdAt!)
+                    : null;
+                final bDate = b.createdAt != null
+                    ? DateTime.tryParse(b.createdAt!)
+                    : null;
+                if (aDate == null) return 1;
+                if (bDate == null) return -1;
+                return bDate.compareTo(aDate);
+              });
+
+              return ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s8.symmetric.horizontal,
+                  vertical: Spacing.s8.symmetric.horizontal,
+                ),
+                itemCount: sortedHistory.length,
+                itemBuilder: (context, index) {
+                  final checkIn = sortedHistory[index];
+                  final feelingName = checkIn.feeling ?? 'Normal';
+                  final moodColor = AppUtils.getMoodColor(feelingName);
+                  final moodIcon = homeController.moodImage(feelingName);
+                  final dateStr = _formatDate(checkIn.createdAt);
+                  final isDarkMode = theme.brightness == Brightness.dark;
+
+                  return IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Journal Timeline Node
+                        SizedBox(
+                          width: 24.w,
+                          child: Column(
                             children: [
-                              if (moodIcon.isNotEmpty)
-                                Container(
-                                  padding: EdgeInsets.all(8.w),
-                                  decoration: BoxDecoration(
-                                    color: moodColor.withValues(alpha: 0.12),
-                                    shape: BoxShape.circle,
+                              Container(
+                                width: 12.h,
+                                height: 12.h,
+                                decoration: BoxDecoration(
+                                  color: moodColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: theme.scaffoldBackgroundColor,
+                                    width: 2.5,
                                   ),
-                                  child: SvgPicture.asset(
-                                    moodIcon,
-                                    width: 38.w,
-                                    height: 38.w,
-                                  ),
-                                ),
-                              Spacing.s12.w,
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "CHECK-IN",
-                                          style: r10.copyWith(
-                                            color: theme
-                                                .textTheme
-                                                .bodySmall!
-                                                .color,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 1.0,
-                                          ),
-                                        ),
-                                        if (dateStr.isNotEmpty) ...[
-                                          Spacing.s8.w,
-                                          Container(
-                                            width: 4.w,
-                                            height: 4.w,
-                                            decoration: BoxDecoration(
-                                              color: theme
-                                                  .textTheme
-                                                  .bodySmall!
-                                                  .color!
-                                                  .withValues(alpha: 0.5),
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          Spacing.s8.w,
-                                          Text(
-                                            dateStr,
-                                            style: r10.copyWith(
-                                              color: theme
-                                                  .textTheme
-                                                  .bodySmall!
-                                                  .color,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                    Spacing.s4.h,
-                                    Text(
-                                      "You feel $feelingName",
-                                      style: r16.copyWith(
-                                        color: theme.textTheme.bodyLarge!.color,
-                                        fontWeight: FontWeight.w800,
-                                      ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: moodColor.withValues(alpha: 0.35),
+                                      blurRadius: 6,
                                     ),
                                   ],
                                 ),
                               ),
+                              Expanded(
+                                child: index == sortedHistory.length - 1
+                                    ? const SizedBox()
+                                    : Container(
+                                        width: 2.w,
+                                        color: slate[200]!.withValues(alpha: 0.6),
+                                      ),
+                              ),
                             ],
                           ),
-                          if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
-                              (checkIn.why?.isNotEmpty ?? false)) ...[
-                            Spacing.s12.h,
-                            Divider(
-                              color: isDarkMode ? slate[700]! : slate[100]!,
-                              height: 1,
-                            ),
-                            Spacing.s12.h,
-                            Wrap(
-                              spacing: 8.w,
-                              runSpacing: 8.h,
-                              children: [
-                                ...(checkIn.exactFeeling ?? []).map(
-                                  (e) => _buildMoodTag(context, e, moodColor),
-                                ),
-                                ...(checkIn.why ?? []).map(
-                                  (w) => _buildMoodTag(context, w, primary),
-                                ),
-                              ],
-                            ),
-                          ],
-                          if (checkIn.notes != null &&
-                              checkIn.notes!.trim().isNotEmpty) ...[
-                            Spacing.s12.h,
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 10.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.primaryColorLight,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(16.r),
-                                  bottomLeft: Radius.circular(16.r),
-                                  bottomRight: Radius.circular(16.r),
-                                ),
-                              ),
-                              child: Row(
+                        ),
+                        Spacing.s12.w,
+                        // Check-in card body
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 20.h),
+                            child: CustomPrimaryCard(
+                              borderRadius: 8,
+                              padding: EdgeInsets.all(16.w),
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 2.h),
-                                    child: Text(
-                                      '\u{f10d}', // Open Quote icon in FontAwesomeSolid
-                                      style: TextStyle(
-                                        fontFamily: 'FontAwesomeSolid',
-                                        fontSize: 9.sp,
-                                        color: theme.textTheme.bodySmall!.color!
-                                            .withValues(alpha: 0.6),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (moodIcon.isNotEmpty)
+                                        Container(
+                                          padding: EdgeInsets.all(8.w),
+                                          decoration: BoxDecoration(
+                                            color: moodColor.withValues(alpha: 0.12),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: SvgPicture.asset(
+                                            moodIcon,
+                                            width: 38.w,
+                                            height: 38.w,
+                                          ),
+                                        ),
+                                      Spacing.s12.w,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "CHECK-IN",
+                                                  style: r10.copyWith(
+                                                    color: theme
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color,
+                                                    fontWeight: FontWeight.w700,
+                                                    letterSpacing: 1.0,
+                                                  ),
+                                                ),
+                                                if (dateStr.isNotEmpty) ...[
+                                                  Spacing.s8.w,
+                                                  Container(
+                                                    width: 4.w,
+                                                    height: 4.w,
+                                                    decoration: BoxDecoration(
+                                                      color: theme
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .color!
+                                                          .withValues(alpha: 0.5),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                  Spacing.s8.w,
+                                                  Text(
+                                                    dateStr,
+                                                    style: r10.copyWith(
+                                                      color: theme
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .color,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+                                            Spacing.s4.h,
+                                            Text(
+                                              "You feel $feelingName",
+                                              style: r16.copyWith(
+                                                color:
+                                                    theme.textTheme.bodyLarge!.color,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
+                                      (checkIn.why?.isNotEmpty ?? false)) ...[
+                                    Spacing.s12.h,
+                                    Divider(
+                                      color: isDarkMode ? slate[700]! : slate[100]!,
+                                      height: 1,
+                                    ),
+                                    Spacing.s12.h,
+                                    Wrap(
+                                      spacing: 8.w,
+                                      runSpacing: 8.h,
+                                      children: [
+                                        ...(checkIn.exactFeeling ?? []).map(
+                                          (e) => _buildMoodTag(context, e, moodColor),
+                                        ),
+                                        ...(checkIn.why ?? []).map(
+                                          (w) => _buildMoodTag(context, w, primary),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                  if (checkIn.notes != null &&
+                                      checkIn.notes!.trim().isNotEmpty) ...[
+                                    Spacing.s12.h,
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                        vertical: 10.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.primaryColorLight,
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(16.r),
+                                          bottomLeft: Radius.circular(16.r),
+                                          bottomRight: Radius.circular(16.r),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 2.h),
+                                            child: Text(
+                                              '\u{f10d}',
+                                              style: TextStyle(
+                                                fontFamily: 'FontAwesomeSolid',
+                                                fontSize: 9.sp,
+                                                color: theme
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color!
+                                                    .withValues(alpha: 0.6),
+                                              ),
+                                            ),
+                                          ),
+                                          Spacing.s8.w,
+                                          Expanded(
+                                            child: Text(
+                                              checkIn.notes!,
+                                              style: r12.copyWith(
+                                                color:
+                                                    theme.textTheme.bodyMedium!.color,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  Spacing.s8.w,
-                                  Expanded(
-                                    child: Text(
-                                      checkIn.notes!,
-                                      style: r12.copyWith(
-                                        color:
-                                            theme.textTheme.bodyMedium!.color,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                  ),
+                                  ],
                                 ],
                               ),
                             ),
-                          ],
-                        ],
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChips(BuildContext context, HomeController controller) {
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.horizontal,
+      ),
+      child: Row(
+        children: DateFilter.values.map((filter) {
+          final isSelected = controller.selectedDateFilter.value == filter;
+          return Padding(
+            padding: EdgeInsets.only(right: 8.w),
+            child: GestureDetector(
+              onTap: () => controller.changeDateFilter(filter),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 14.w,
+                  vertical: 8.h,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? primary : theme.cardColor,
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(
+                    color: isSelected
+                        ? primary
+                        : (theme.brightness == Brightness.dark
+                            ? slate[800]!
+                            : slate[100]!),
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: primary.withValues(alpha: 0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          )
+                        ]
+                      : null,
+                ),
+                child: Text(
+                  filter.value,
+                  style: r12.copyWith(
+                    color: isSelected
+                        ? Colors.white
+                        : theme.textTheme.bodyMedium!.color,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
-              ],
+              ),
             ),
           );
-        },
-      );
-    }));
+        }).toList(),
+      ),
+    );
   }
 
   static const Map<String, String> _moodReasonsEmojiMap = {
