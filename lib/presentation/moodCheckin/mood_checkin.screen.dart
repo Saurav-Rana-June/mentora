@@ -86,26 +86,7 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
           ),
           onPressed: () {
             Get.to(
-              () => Scaffold(
-                backgroundColor: Theme.of(context).primaryColorLight,
-                appBar: AppBar(
-                  title: Text(
-                    "Mood History",
-                    style: r18.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                  leading: const Center(
-                    child: CustomBackButton(icon: MyIcons.chevronLeft),
-                  ),
-                  surfaceTintColor: Colors.transparent,
-                  centerTitle: true,
-                  automaticallyImplyLeading: false,
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                ),
-                body: const MoodHistoryView(),
-              ),
+              () => const MoodHistoryView(),
               transition: Transition.rightToLeft,
             );
           },
