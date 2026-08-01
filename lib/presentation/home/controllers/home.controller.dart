@@ -403,9 +403,12 @@ class HomeController extends GetxController {
 
   Future<void> fetchMoodHistory() async {
     try {
-      final response = await AssessmentService.getDailyMoods();
+      final response = await AssessmentService.getDailyMoodsHistory(
+        page: 1,
+        size: 50,
+      );
       if (response != null && response.data != null) {
-        final List<DailyMoodAssessmentModel> history = response.data!;
+        final List<DailyMoodAssessmentModel> history = response.data!.items;
 
         moodHistoryList.assignAll(history);
 

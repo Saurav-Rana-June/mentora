@@ -77,9 +77,9 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
       actions: [
         IconButton(
           icon: Text(
-            MyIcons.arrowRotateRight,
+            '\u{f1da}',
             style: TextStyle(
-              fontFamily: 'FontAwesomeSolid',
+              fontFamily: 'FontAwesomeLight',
               fontSize: 18.sp,
               color: Theme.of(context).textTheme.bodyLarge!.color,
             ),
@@ -97,9 +97,7 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
                     ),
                   ),
                   leading: const Center(
-                    child: CustomBackButton(
-                      icon: MyIcons.chevronLeft,
-                    ),
+                    child: CustomBackButton(icon: MyIcons.chevronLeft),
                   ),
                   surfaceTintColor: Colors.transparent,
                   centerTitle: true,
@@ -112,6 +110,7 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
             );
           },
         ),
+        Spacing.s16.w,
       ],
     );
   }
