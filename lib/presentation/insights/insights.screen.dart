@@ -42,9 +42,12 @@ class InsightsScreen extends GetView<InsightsController> {
           children: [
             Padding(
               padding: horizontalPadding,
-              child: Obx(() => buildPersonalizedCoachingCard(context, homeController)),
+              child: Obx(
+                () => buildPersonalizedCoachingCard(context, homeController),
+              ),
             ),
             buildDateFilters(context),
+            Spacing.s20.h,
             Padding(
               padding: horizontalPadding,
               child: Column(
@@ -449,7 +452,7 @@ class InsightsScreen extends GetView<InsightsController> {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(
           horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s12.symmetric.horizontal,
+          // vertical: Spacing.s12.symmetric.horizontal,
         ),
         child: Row(
           children: DateFilter.values.map((filter) {
