@@ -26,23 +26,36 @@ class InsightsScreen extends GetView<InsightsController> {
         ? Get.find<HomeController>()
         : Get.put(HomeController());
 
+    final horizontalPadding = EdgeInsets.symmetric(
+      horizontal: Spacing.s8.symmetric.horizontal,
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: buildAppbar(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
           vertical: Spacing.s4.symmetric.horizontal,
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(() => buildPersonalizedCoachingCard(context, homeController)),
+            Padding(
+              padding: horizontalPadding,
+              child: Obx(() => buildPersonalizedCoachingCard(context, homeController)),
+            ),
             buildDateFilters(context),
-            Spacing.s20.h,
-            buildGrowthAreaCard(context),
-            Spacing.s20.h,
-            buildMoodTrackerCard(context, homeController),
-            Spacing.s12.h,
+            Padding(
+              padding: horizontalPadding,
+              child: Column(
+                children: [
+                  buildGrowthAreaCard(context),
+                  Spacing.s20.h,
+                  buildMoodTrackerCard(context, homeController),
+                  Spacing.s12.h,
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -434,6 +447,10 @@ class InsightsScreen extends GetView<InsightsController> {
     return Obx(() {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s12.symmetric.horizontal,
+        ),
         child: Row(
           children: DateFilter.values.map((filter) {
             final isSelected = controller.selectedDateFilter.value == filter;
