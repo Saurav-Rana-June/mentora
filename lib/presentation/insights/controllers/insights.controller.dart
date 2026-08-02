@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
+import 'package:Mentora/data/model/assessment/coaching_banner_response.model.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 
 class InsightsController extends GetxController {
@@ -15,11 +16,29 @@ class InsightsController extends GetxController {
   final Rxn<MoodTrackerStatsModel> moodStats = Rxn<MoodTrackerStatsModel>();
   final RxBool isLoadingMoodStats = false.obs;
 
+  final Rxn<CoachingBannerResponseModel> coachingBannerData = Rxn<CoachingBannerResponseModel>();
+  final RxBool isLoadingCoachingBanner = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchGrowthAreas();
     fetchMoodStats();
+    fetchCoachingBanner();
+  }
+
+  Future<void> fetchCoachingBanner() async {
+    try {
+      isLoadingCoachingBanner.value = true;
+      final response = await InsightsService.getCoachingBanner(timezone: 'UTC');
+      if (response != null && response.data != null) {
+        coachingBannerData.value = response.data;
+      }
+    } catch (e) {
+      Get.log("Error fetching coaching banner: $e");
+    } finally {
+      isLoadingCoachingBanner.value = false;
+    }
   }
 
   Future<void> fetchGrowthAreas() async {

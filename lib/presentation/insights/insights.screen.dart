@@ -70,26 +70,36 @@ class InsightsScreen extends GetView<InsightsController> {
     HomeController homeController,
   ) {
     final theme = Theme.of(context);
-    final globalController = Get.find<GlobalController>();
-    final weeklyStats = globalController.weeklyMoodStats.value;
-    final consistency = weeklyStats?.consistency ?? 0.0;
-    final dominant = weeklyStats?.dominantMood ?? 'Normal';
+    final banner = controller.coachingBannerData.value;
 
-    String title = "Consistency is Key!";
-    String description =
-        "Excellent job! You are building a powerful habit of self-awareness. Try out a new meditation class today.";
-    String icon = '\u{f058}'; // circle-check solid
+    if (controller.isLoadingCoachingBanner.value) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24.h),
+          child: CircularProgressIndicator(
+            color: primary,
+            strokeWidth: 2.5,
+          ),
+        ),
+      );
+    }
 
-    if (consistency < 0.5) {
-      title = "Let's Check In More Often!";
-      description =
-          "Daily check-ins help us paint a clearer picture of your emotional trends. Try setting a reminder!";
-      icon = '\u{f073}'; // calendar solid
-    } else if (dominant == "Not Good" || dominant == "Angry") {
-      title = "Mindful Healing Support";
-      description =
-          "We noticed your mood has been a bit low lately. Consider exploring the Stress Management sessions.";
-      icon = '\u{f06c}'; // leaf solid
+    if (banner == null) {
+      return const SizedBox.shrink();
+    }
+
+    final title = banner.title;
+    final description = banner.description;
+
+    // Map backend icon tag to FontAwesome solid unicode string:
+    // 'calendar' -> \u{f073}
+    // 'leaf' -> \u{f06c}
+    // 'checkmark' -> \u{f058}
+    String icon = '\u{f058}';
+    if (banner.icon == 'calendar') {
+      icon = '\u{f073}';
+    } else if (banner.icon == 'leaf') {
+      icon = '\u{f06c}';
     }
 
     return Container(
