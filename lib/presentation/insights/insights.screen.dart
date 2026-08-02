@@ -11,6 +11,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/insights.controller.dart';
 import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
 
 class InsightsScreen extends GetView<InsightsController> {
@@ -36,6 +37,8 @@ class InsightsScreen extends GetView<InsightsController> {
         child: Column(
           children: [
             Obx(() => buildPersonalizedCoachingCard(context, homeController)),
+            buildDateFilters(context),
+            Spacing.s20.h,
             buildGrowthAreaCard(context),
             Spacing.s20.h,
             buildMoodTrackerCard(context, homeController),
@@ -426,6 +429,65 @@ class InsightsScreen extends GetView<InsightsController> {
     );
   }
 
+  Widget buildDateFilters(BuildContext context) {
+    final theme = Theme.of(context);
+    return Obx(() {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: DateFilter.values.map((filter) {
+            final isSelected = controller.selectedDateFilter.value == filter;
+            return Padding(
+              padding: EdgeInsets.only(right: 8.w),
+              child: GestureDetector(
+                onTap: () => controller.changeDateFilter(filter),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? primary
+                        : theme.cardTheme.color ?? theme.primaryColorLight,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: isSelected
+                          ? primary
+                          : theme.dividerTheme.color ?? slate[100]!,
+                      width: 1,
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: primary.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : [],
+                  ),
+                  child: Text(
+                    filter.value,
+                    style: r12.copyWith(
+                      color: isSelected
+                          ? Colors.white
+                          : theme.textTheme.bodyMedium!.color,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
+  }
+
   Widget buildMoodTrackerCard(
     BuildContext context,
     HomeController homeController,
@@ -466,7 +528,8 @@ class InsightsScreen extends GetView<InsightsController> {
           Obx(() {
             final globalController = Get.find<GlobalController>();
 
-            if (globalController.isLoadingMoodTracker.value) {
+            if (globalController.isLoadingMoodTracker.value ||
+                controller.isLoadingMoodStats.value) {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 36.h),
@@ -478,7 +541,7 @@ class InsightsScreen extends GetView<InsightsController> {
               );
             }
 
-            final stats = globalController.weeklyMoodStats.value;
+            final stats = controller.moodStats.value;
 
             final apiMoods =
                 stats?.data
@@ -551,8 +614,7 @@ class InsightsScreen extends GetView<InsightsController> {
     HomeController homeController,
   ) {
     final theme = Theme.of(context);
-    final globalController = Get.find<GlobalController>();
-    final stats = globalController.weeklyMoodStats.value;
+    final stats = controller.moodStats.value;
 
     final dominant = stats?.dominantMood ?? 'No data yet';
     final consistency = stats?.consistency ?? 0.0;
