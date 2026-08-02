@@ -450,9 +450,12 @@ class InsightsScreen extends GetView<InsightsController> {
                 () => CustomToggle(
                   selectedIndex: controller.selectedMoodTab.value,
                   onChanged: controller.toggleMoodTab,
-                  width: 140.w,
+                  width: 100.w,
                   unselectedColor: primary,
-                  children: const [Text("Weekly"), Text("Monthly")],
+                  children: const [
+                    Icon(Icons.show_chart),
+                    Icon(Icons.bar_chart),
+                  ],
                 ),
               ),
             ],
@@ -475,9 +478,7 @@ class InsightsScreen extends GetView<InsightsController> {
               );
             }
 
-            final stats = controller.selectedMoodTab.value == 0
-                ? globalController.weeklyMoodStats.value
-                : globalController.monthlyMoodStats.value;
+            final stats = globalController.weeklyMoodStats.value;
 
             final apiMoods =
                 stats?.data
@@ -551,10 +552,7 @@ class InsightsScreen extends GetView<InsightsController> {
   ) {
     final theme = Theme.of(context);
     final globalController = Get.find<GlobalController>();
-    final isWeekly = controller.selectedMoodTab.value == 0;
-    final stats = isWeekly
-        ? globalController.weeklyMoodStats.value
-        : globalController.monthlyMoodStats.value;
+    final stats = globalController.weeklyMoodStats.value;
 
     final dominant = stats?.dominantMood ?? 'No data yet';
     final consistency = stats?.consistency ?? 0.0;

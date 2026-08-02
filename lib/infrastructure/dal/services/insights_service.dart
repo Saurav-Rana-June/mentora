@@ -27,7 +27,8 @@ class InsightsService {
       parser: (json) {
         return ApiResponse<MoodTrackerStatsModel>.fromJson(
           json as Map<String, dynamic>,
-          (data) => MoodTrackerStatsModel.fromJson(data as Map<String, dynamic>),
+          (data) =>
+              MoodTrackerStatsModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );
@@ -52,7 +53,8 @@ class InsightsService {
       parser: (json) {
         return ApiResponse<GrowthAreasResponseModel>.fromJson(
           json as Map<String, dynamic>,
-          (data) => GrowthAreasResponseModel.fromJson(data as Map<String, dynamic>),
+          (data) =>
+              GrowthAreasResponseModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );
