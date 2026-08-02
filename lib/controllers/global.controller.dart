@@ -29,9 +29,17 @@ class GlobalController extends GetxController {
       } finally {
         _isFetchingHistory = false;
       }
+      final now = DateTime.now().toUtc();
       
+      // Weekly range (Monday to Sunday)
+      final monday = now.subtract(Duration(days: now.weekday - 1));
+      final sunday = monday.add(const Duration(days: 6));
+      final weeklyFrom = "${monday.year}-${monday.month.toString().padLeft(2, '0')}-${monday.day.toString().padLeft(2, '0')}";
+      final weeklyTo = "${sunday.year}-${sunday.month.toString().padLeft(2, '0')}-${sunday.day.toString().padLeft(2, '0')}";
+
       final weeklyRes = await InsightsService.getMoodTrackerStats(
-        range: 'weekly',
+        fromDate: weeklyFrom,
+        toDate: weeklyTo,
         timezone: 'UTC',
       );
       if (weeklyRes != null && weeklyRes.data != null) {
@@ -39,8 +47,15 @@ class GlobalController extends GetxController {
         moodTrackerStats.value = weeklyRes.data;
       }
 
+      // Monthly range (1st to last day of current month)
+      final monthlyFrom = "${now.year}-${now.month.toString().padLeft(2, '0')}-01";
+      final nextMonthFirstDay = DateTime(now.year, now.month + 1, 1);
+      final lastDayOfMonth = nextMonthFirstDay.subtract(const Duration(days: 1));
+      final monthlyTo = "${lastDayOfMonth.year}-${lastDayOfMonth.month.toString().padLeft(2, '0')}-${lastDayOfMonth.day.toString().padLeft(2, '0')}";
+
       final monthlyRes = await InsightsService.getMoodTrackerStats(
-        range: 'monthly',
+        fromDate: monthlyFrom,
+        toDate: monthlyTo,
         timezone: 'UTC',
       );
       if (monthlyRes != null && monthlyRes.data != null) {

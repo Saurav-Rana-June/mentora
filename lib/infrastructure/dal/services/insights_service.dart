@@ -10,14 +10,16 @@ class InsightsService {
 
   /// Retrieve Mood Tracker Calendar statistics
   static Future<ApiResponse<MoodTrackerStatsModel>?> getMoodTrackerStats({
-    String? range,
+    String? fromDate,
+    String? toDate,
     String? timezone,
   }) async {
     return client.request<ApiResponse<MoodTrackerStatsModel>>(
       (dio) => dio.get(
         'insights/mood-tracker',
         queryParameters: {
-          if (range != null) 'range': range,
+          if (fromDate != null) 'fromDate': fromDate,
+          if (toDate != null) 'toDate': toDate,
           if (timezone != null) 'timezone': timezone,
         },
       ),
@@ -33,12 +35,16 @@ class InsightsService {
 
   /// Retrieve Growth Areas Progress
   static Future<ApiResponse<GrowthAreasResponseModel>?> getGrowthAreas({
+    String? fromDate,
+    String? toDate,
     String timezone = "UTC",
   }) async {
     return client.request<ApiResponse<GrowthAreasResponseModel>>(
       (dio) => dio.get(
         'insights/growth-areas',
         queryParameters: {
+          if (fromDate != null) 'fromDate': fromDate,
+          if (toDate != null) 'toDate': toDate,
           'timezone': timezone,
         },
       ),
