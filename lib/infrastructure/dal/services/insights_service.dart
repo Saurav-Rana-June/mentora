@@ -12,6 +12,7 @@ class InsightsService {
   static Future<ApiResponse<MoodTrackerStatsModel>?> getMoodTrackerStats({
     String? fromDate,
     String? toDate,
+    String? dateFilter,
     String? timezone,
   }) async {
     return client.request<ApiResponse<MoodTrackerStatsModel>>(
@@ -20,6 +21,7 @@ class InsightsService {
         queryParameters: {
           if (fromDate != null) 'fromDate': fromDate,
           if (toDate != null) 'toDate': toDate,
+          if (dateFilter != null) 'dateFilter': dateFilter,
           if (timezone != null) 'timezone': timezone,
         },
       ),
@@ -38,6 +40,7 @@ class InsightsService {
   static Future<ApiResponse<GrowthAreasResponseModel>?> getGrowthAreas({
     String? fromDate,
     String? toDate,
+    String? dateFilter,
     String timezone = "UTC",
   }) async {
     return client.request<ApiResponse<GrowthAreasResponseModel>>(
@@ -46,6 +49,7 @@ class InsightsService {
         queryParameters: {
           if (fromDate != null) 'fromDate': fromDate,
           if (toDate != null) 'toDate': toDate,
+          if (dateFilter != null) 'dateFilter': dateFilter,
           'timezone': timezone,
         },
       ),
