@@ -38,7 +38,7 @@ class EditAccountController extends GetxController {
     addressController = TextEditingController(text: profile?.address);
     heightController = TextEditingController(text: profile?.height?.toString());
     weightController = TextEditingController(text: profile?.weight?.toString());
-    
+
     pictureUrl.value = profile?.profilePictureUrl ?? "";
     pictureController = TextEditingController(text: pictureUrl.value);
   }
@@ -112,14 +112,17 @@ class EditAccountController extends GetxController {
 
   Future<void> pickAndUploadImage(ImageSource source) async {
     try {
+      Get.log("pickAndUploadImage: picking image from source=$source");
       final XFile? image = await _picker.pickImage(
         source: source,
         maxWidth: 512,
         maxHeight: 512,
         imageQuality: 85,
       );
+      Get.log("pickAndUploadImage: picked image path: ${image?.path}");
       if (image == null) return;
 
+      Get.log("pickAndUploadImage: opening cropper for path: ${image.path}");
       final CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: image.path,
         uiSettings: [
@@ -129,37 +132,36 @@ class EditAccountController extends GetxController {
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
+            aspectRatioPresets: [CropAspectRatioPreset.square],
           ),
           IOSUiSettings(
             title: 'Crop Profile Picture',
             aspectRatioLockEnabled: true,
             resetAspectRatioEnabled: false,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-            ],
+            aspectRatioPresets: [CropAspectRatioPreset.square],
           ),
         ],
       );
-
+      Get.log("pickAndUploadImage: cropped file path: ${croppedFile?.path}");
       if (croppedFile == null) return;
 
       isUploadingPicture.value = true;
 
       final String fileName = croppedFile.path.split('/').last;
+      Get.log("pickAndUploadImage: uploading fileName=$fileName path=${croppedFile.path}");
 
       final success = await globalController.uploadProfilePicture(
         croppedFile.path,
         fileName,
       );
+      Get.log("pickAndUploadImage: upload finished with success=$success");
 
       if (success) {
-        final newUrl = globalController.userProfile.value?.profilePictureUrl ?? "";
+        final newUrl =
+            globalController.userProfile.value?.profilePictureUrl ?? "";
         pictureUrl.value = newUrl;
         pictureController.text = newUrl;
-        
+
         AppUtils.snackbar(
           "Success",
           "Profile picture updated successfully",
@@ -191,7 +193,7 @@ class EditAccountController extends GetxController {
       if (success) {
         pictureUrl.value = "";
         pictureController.text = "";
-        
+
         AppUtils.snackbar(
           "Success",
           "Profile picture removed successfully",

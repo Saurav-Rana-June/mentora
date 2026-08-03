@@ -74,14 +74,24 @@ class GlobalController extends GetxController {
   }
 
   Future<bool> uploadProfilePicture(String filePath, String fileName) async {
+    Get.log("globalController: uploadProfilePicture called with path=$filePath, name=$fileName");
     final userId = userProfile.value?.userId;
-    if (userId == null) return false;
+    Get.log("globalController: userProfile is ${userProfile.value?.toJson()}, userId is $userId");
+    if (userId == null) {
+      Get.log("globalController: userId is null!");
+      return false;
+    }
+    if (userId == 0) {
+      Get.log("globalController: Warning! userId is 0, which might indicate a parsing error or missing ID.");
+    }
     try {
+      Get.log("globalController: calling ProfileService.uploadProfilePicture for userId=$userId");
       final picRes = await ProfileService.uploadProfilePicture(
         userId: userId,
         filePath: filePath,
         fileName: fileName,
       );
+      Get.log("globalController: ProfileService.uploadProfilePicture response: $picRes");
       if (picRes != null && picRes.data != null) {
         userProfile.value = picRes.data;
         return true;
