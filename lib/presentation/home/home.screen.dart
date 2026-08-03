@@ -229,7 +229,7 @@ class HomeScreen extends GetView<HomeController> {
                       Text("🌟", style: TextStyle(fontSize: 24.sp)),
                       Spacing.s8.h,
                       Text(
-                        "Check in a few more days to see your trends",
+                        "Check in a few more days to see your\ntrends",
                         textAlign: TextAlign.center,
                         style: r12.copyWith(
                           color: Theme.of(context).textTheme.bodySmall!.color,
@@ -248,7 +248,9 @@ class HomeScreen extends GetView<HomeController> {
                     child: CustomLineChart(
                       checkInMoods: checkedInMoods,
                       primaryColor: primary,
-                      textColor: Theme.of(context).textTheme.bodySmall!.color ?? slate[500]!,
+                      textColor:
+                          Theme.of(context).textTheme.bodySmall!.color ??
+                          slate[500]!,
                       padding: 12.0,
                     ),
                   ),

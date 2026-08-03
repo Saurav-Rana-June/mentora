@@ -574,7 +574,7 @@ class InsightsScreen extends GetView<InsightsController> {
                     .toList() ??
                 [];
 
-            if (apiMoods.isEmpty) {
+            if (apiMoods.length < 2) {
               return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 36.h),
@@ -587,7 +587,7 @@ class InsightsScreen extends GetView<InsightsController> {
                     Text("🌟", style: TextStyle(fontSize: 24.sp)),
                     Spacing.s8.h,
                     Text(
-                      "Check in a few more days see your\ntrends",
+                      "Check in a few more days to see your\ntrends",
                       textAlign: TextAlign.center,
                       style: r14.copyWith(
                         color: theme.textTheme.bodySmall!.color,
