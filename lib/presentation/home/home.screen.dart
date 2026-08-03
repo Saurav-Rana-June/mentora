@@ -170,12 +170,27 @@ class HomeScreen extends GetView<HomeController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Mood Trends",
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Mood Trends",
+                        style: r18.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        "This Week (resets weekly)",
+                        style: r12.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color!.withValues(alpha: 0.65),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     children: [
