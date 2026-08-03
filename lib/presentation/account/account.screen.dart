@@ -9,6 +9,9 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'controllers/account.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
+import 'views/edit_account.dart';
 
 class AccountScreen extends GetView<AccountController> {
   AccountScreen({super.key});
@@ -37,7 +40,7 @@ class AccountScreen extends GetView<AccountController> {
                 buildUpgradeBanner(context),
                 Spacing.s16.h,
 
-                buildProfileDetailsSection(context),
+                Obx(() => buildProfileDetailsSection(context)),
                 Spacing.s16.h,
 
                 // Preferences & Badges
@@ -318,6 +321,20 @@ class AccountScreen extends GetView<AccountController> {
 
   CustomPrimaryCard buildProfileDetailsSection(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final globalController = Get.find<GlobalController>();
+    final profile = globalController.userProfile.value;
+
+    if (globalController.isLoadingProfile.value) {
+      return CustomPrimaryCard(
+        padding: EdgeInsets.symmetric(vertical: 24.h),
+        child: const Center(child: Loader(strokeWidth: 2.5)),
+      );
+    }
+
+    final String name = profile?.name ?? "John Doe";
+    final String email = profile?.email ?? "johndoe@example.com";
+    final String? profilePictureUrl = profile?.profilePictureUrl;
+
     return CustomPrimaryCard(
       padding: EdgeInsets.all(Spacing.s16.value),
       child: Row(
@@ -330,9 +347,13 @@ class AccountScreen extends GetView<AccountController> {
             ),
             child: CircleAvatar(
               radius: 28.r,
-              backgroundImage: const NetworkImage(
-                "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-              ),
+              backgroundImage:
+                  profilePictureUrl != null && profilePictureUrl.isNotEmpty
+                  ? NetworkImage(profilePictureUrl)
+                  : const NetworkImage(
+                          "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+                        )
+                        as ImageProvider,
             ),
           ),
           Spacing.s16.w,
@@ -341,7 +362,7 @@ class AccountScreen extends GetView<AccountController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "John Doe",
+                  name,
                   style: r18.copyWith(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                     fontWeight: FontWeight.bold,
@@ -349,7 +370,7 @@ class AccountScreen extends GetView<AccountController> {
                 ),
                 Spacing.s8.h,
                 Text(
-                  "johndoe@example.com",
+                  email,
                   style: r12.copyWith(
                     color: Theme.of(context).textTheme.bodySmall!.color,
                     fontWeight: FontWeight.w500,
@@ -383,7 +404,10 @@ class AccountScreen extends GetView<AccountController> {
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: () {},
+              onTap: () => Get.to(
+                () => const EditAccountScreen(),
+                transition: Transition.rightToLeft,
+              ),
               child: Padding(
                 padding: EdgeInsets.all(10.r),
                 child: Text(

@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
+import 'package:Mentora/data/model/auth/profile.model.dart';
+import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 
 class GlobalController extends GetxController {
   bool _isFetchingHistory = false;
@@ -10,10 +12,72 @@ class GlobalController extends GetxController {
   final Rxn<MoodTrackerStatsModel> weeklyMoodStats = Rxn<MoodTrackerStatsModel>();
   final Rxn<MoodTrackerStatsModel> monthlyMoodStats = Rxn<MoodTrackerStatsModel>();
 
+  final Rxn<ProfileModel> userProfile = Rxn<ProfileModel>();
+  final RxBool isLoadingProfile = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchMoodTrackerStats();
+    fetchUserProfile();
+  }
+
+  Future<void> fetchUserProfile() async {
+    try {
+      isLoadingProfile.value = true;
+      final response = await ProfileService.getProfile();
+      if (response != null && response.data != null) {
+        userProfile.value = response.data;
+      }
+    } catch (e) {
+      Get.log("Error fetching user profile: $e");
+    } finally {
+      isLoadingProfile.value = false;
+    }
+  }
+
+  Future<bool> updateUserProfile({
+    String? name,
+    String? gender,
+    int? age,
+    String? email,
+    String? address,
+    double? height,
+    double? weight,
+    String? phoneNumber,
+    String? profilePictureUrl,
+  }) async {
+    try {
+      isLoadingProfile.value = true;
+      
+      // Update attributes
+      final profileRes = await ProfileService.updateProfile(
+        name: name,
+        gender: gender,
+        age: age,
+        email: email,
+        address: address,
+        height: height,
+        weight: weight,
+        phoneNumber: phoneNumber,
+      );
+
+      // If profile picture is changed, update picture url as well
+      if (profilePictureUrl != null && profilePictureUrl != userProfile.value?.profilePictureUrl) {
+        final picRes = await ProfileService.updateProfilePicture(profilePictureUrl);
+        if (picRes != null && picRes.data != null) {
+          userProfile.value = picRes.data;
+        }
+      } else if (profileRes != null && profileRes.data != null) {
+        userProfile.value = profileRes.data;
+      }
+      return true;
+    } catch (e) {
+      Get.log("Error updating user profile: $e");
+      return false;
+    } finally {
+      isLoadingProfile.value = false;
+    }
   }
 
   Future<void> fetchMoodTrackerStats() async {
