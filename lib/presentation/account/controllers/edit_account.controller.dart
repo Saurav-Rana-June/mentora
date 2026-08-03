@@ -148,7 +148,9 @@ class EditAccountController extends GetxController {
       isUploadingPicture.value = true;
 
       final String fileName = croppedFile.path.split('/').last;
-      Get.log("pickAndUploadImage: uploading fileName=$fileName path=${croppedFile.path}");
+      Get.log(
+        "pickAndUploadImage: uploading fileName=$fileName path=${croppedFile.path}",
+      );
 
       final success = await globalController.uploadProfilePicture(
         croppedFile.path,
