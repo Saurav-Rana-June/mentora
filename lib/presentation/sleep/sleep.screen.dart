@@ -8,6 +8,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/sleep.controller.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 
 class SleepScreen extends GetView<SleepController> {
   SleepScreen({super.key});
@@ -104,7 +105,7 @@ class SleepScreen extends GetView<SleepController> {
                     child: const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: Loader(strokeWidth: 2),
                     ),
                   ),
                   errorWidget: (context, url, error) => Container(
@@ -203,7 +204,7 @@ class SleepScreen extends GetView<SleepController> {
                     child: const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: Loader(strokeWidth: 2),
                     ),
                   ),
                   errorWidget: (context, url, error) => Container(

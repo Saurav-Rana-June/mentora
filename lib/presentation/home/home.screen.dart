@@ -15,6 +15,7 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'controllers/home.controller.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 
 class HomeScreen extends GetView<HomeController> {
   HomeScreen({super.key});
@@ -263,10 +264,7 @@ class HomeScreen extends GetView<HomeController> {
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 24.h),
-                child: CircularProgressIndicator(
-                  color: primary,
-                  strokeWidth: 2.5,
-                ),
+                child: const Loader(),
               ),
             ),
           ],

@@ -19,11 +19,16 @@ class InsightsController extends GetxController {
   final Rxn<CoachingBannerResponseModel> coachingBannerData = Rxn<CoachingBannerResponseModel>();
   final RxBool isLoadingCoachingBanner = false.obs;
 
+  // In-memory cache for date filters
+  final Map<DateFilter, GrowthAreasResponseModel> _growthAreasCache = {};
+  final Map<DateFilter, MoodTrackerStatsModel> _moodStatsCache = {};
+
   @override
   void onInit() {
     super.onInit();
-    fetchGrowthAreas();
-    fetchMoodStats();
+    final initialFilter = selectedDateFilter.value;
+    fetchGrowthAreas(initialFilter);
+    fetchMoodStats(initialFilter);
     fetchCoachingBanner();
   }
 
@@ -41,44 +46,64 @@ class InsightsController extends GetxController {
     }
   }
 
-  Future<void> fetchGrowthAreas() async {
+  Future<void> fetchGrowthAreas(DateFilter filter) async {
+    if (_growthAreasCache.containsKey(filter)) {
+      growthAreasData.value = _growthAreasCache[filter];
+      return;
+    }
+
     try {
       isLoadingGrowth.value = true;
       final response = await InsightsService.getGrowthAreas(
-        dateFilter: selectedDateFilter.value.name,
+        dateFilter: filter.name,
         timezone: 'UTC',
       );
       if (response != null && response.data != null) {
-        growthAreasData.value = response.data;
+        _growthAreasCache[filter] = response.data!;
+        if (selectedDateFilter.value == filter) {
+          growthAreasData.value = response.data;
+        }
       }
     } catch (e) {
       Get.log("Error fetching growth areas: $e");
     } finally {
-      isLoadingGrowth.value = false;
+      if (selectedDateFilter.value == filter) {
+        isLoadingGrowth.value = false;
+      }
     }
   }
 
-  Future<void> fetchMoodStats() async {
+  Future<void> fetchMoodStats(DateFilter filter) async {
+    if (_moodStatsCache.containsKey(filter)) {
+      moodStats.value = _moodStatsCache[filter];
+      return;
+    }
+
     try {
       isLoadingMoodStats.value = true;
       final response = await InsightsService.getMoodTrackerStats(
-        dateFilter: selectedDateFilter.value.name,
+        dateFilter: filter.name,
         timezone: 'UTC',
       );
       if (response != null && response.data != null) {
-        moodStats.value = response.data;
+        _moodStatsCache[filter] = response.data!;
+        if (selectedDateFilter.value == filter) {
+          moodStats.value = response.data;
+        }
       }
     } catch (e) {
       Get.log("Error fetching mood stats: $e");
     } finally {
-      isLoadingMoodStats.value = false;
+      if (selectedDateFilter.value == filter) {
+        isLoadingMoodStats.value = false;
+      }
     }
   }
 
   void changeDateFilter(DateFilter filter) {
     selectedDateFilter.value = filter;
-    fetchMoodStats();
-    fetchGrowthAreas();
+    fetchMoodStats(filter);
+    fetchGrowthAreas(filter);
   }
 
   void toggleGrowthTab(int index) {

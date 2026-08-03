@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/insights.controller.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
@@ -76,10 +77,7 @@ class InsightsScreen extends GetView<InsightsController> {
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 24.h),
-          child: CircularProgressIndicator(
-            color: primary,
-            strokeWidth: 2.5,
-          ),
+          child: const Loader(),
         ),
       );
     }
@@ -208,10 +206,7 @@ class InsightsScreen extends GetView<InsightsController> {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 36.h),
-                  child: CircularProgressIndicator(
-                    color: primary,
-                    strokeWidth: 2.5,
-                  ),
+                  child: const Loader(),
                 ),
               );
             }
@@ -563,10 +558,7 @@ class InsightsScreen extends GetView<InsightsController> {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 36.h),
-                  child: CircularProgressIndicator(
-                    color: primary,
-                    strokeWidth: 2.5,
-                  ),
+                  child: const Loader(),
                 ),
               );
             }
@@ -593,7 +585,7 @@ class InsightsScreen extends GetView<InsightsController> {
                     Text("🌟", style: TextStyle(fontSize: 24.sp)),
                     Spacing.s8.h,
                     Text(
-                      "Check in a few more days to see your trends",
+                      "Check in a few more days see your\ntrends",
                       textAlign: TextAlign.center,
                       style: r14.copyWith(
                         color: theme.textTheme.bodySmall!.color,
