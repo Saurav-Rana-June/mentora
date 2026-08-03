@@ -309,7 +309,8 @@ class EditAccountScreen extends GetView<EditAccountController> {
     Get.bottomSheet(
       ChangeProfilePictureBottomsheet(
         onTakePhoto: () => controller.pickAndUploadImage(ImageSource.camera),
-        onChooseFromGallery: () => controller.pickAndUploadImage(ImageSource.gallery),
+        onChooseFromGallery: () =>
+            controller.pickAndUploadImage(ImageSource.gallery),
         showRemoveOption: hasPhoto,
         onRemovePhoto: () => controller.deleteCurrentPicture(),
       ),

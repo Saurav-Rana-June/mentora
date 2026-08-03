@@ -32,6 +32,7 @@ dependencies:
   get_storage: ^2.1.1
   logger: ^2.7.0
   image_picker: ^1.1.2
+  image_cropper: ^8.0.2
 
 dev_dependencies:
   flutter_test:

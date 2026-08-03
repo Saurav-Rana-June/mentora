@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
@@ -120,11 +121,39 @@ class EditAccountController extends GetxController {
       );
       if (image == null) return;
 
+      final CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Profile Picture',
+            toolbarColor: primary,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+            ],
+          ),
+          IOSUiSettings(
+            title: 'Crop Profile Picture',
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+            ],
+          ),
+        ],
+      );
+
+      if (croppedFile == null) return;
+
       isUploadingPicture.value = true;
 
+      final String fileName = croppedFile.path.split('/').last;
+
       final success = await globalController.uploadProfilePicture(
-        image.path,
-        image.name,
+        croppedFile.path,
+        fileName,
       );
 
       if (success) {
