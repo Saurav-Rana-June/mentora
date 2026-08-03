@@ -3,6 +3,8 @@ import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.toggle.dart';
+import 'package:Mentora/widgets/charts/custom.line.chart.dart';
+import 'package:Mentora/widgets/charts/custom.bar.chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -596,28 +598,63 @@ class InsightsScreen extends GetView<InsightsController> {
                 ),
               );
             } else {
+              final Map<String, int> counts = {
+                'Great': 0,
+                'Good': 0,
+                'Normal': 0,
+                'Low': 0,
+                'Angry': 0,
+              };
+
+              for (var m in apiMoods) {
+                switch (m) {
+                  case 'Very Good':
+                  case 'Very Happy':
+                    counts['Great'] = counts['Great']! + 1;
+                    break;
+                  case 'Good':
+                  case 'Happy':
+                    counts['Good'] = counts['Good']! + 1;
+                    break;
+                  case 'Normal':
+                    counts['Normal'] = counts['Normal']! + 1;
+                    break;
+                  case 'Not Good':
+                    counts['Low'] = counts['Low']! + 1;
+                    break;
+                  case 'Angry':
+                    counts['Angry'] = counts['Angry']! + 1;
+                    break;
+                }
+              }
+
+              final chartColor = primary;
+              final textChartColor =
+                  theme.textTheme.bodySmall!.color ?? slate[500]!;
+
               return Column(
                 children: [
                   SizedBox(
                     height: 150.h,
                     width: double.infinity,
-                    child: CustomPaint(
-                      painter: controller.selectedMoodTab.value == 0
-                          ? InsightsMoodLineChartPainter(
-                              checkInMoods: apiMoods,
-                              primaryColor: primary,
-                              textColor:
-                                  theme.textTheme.bodySmall!.color ??
-                                  slate[500]!,
-                            )
-                          : InsightsMoodBarChartPainter(
-                              checkInMoods: apiMoods,
-                              primaryColor: primary,
-                              textColor:
-                                  theme.textTheme.bodySmall!.color ??
-                                  slate[500]!,
-                            ),
-                    ),
+                    child: controller.selectedMoodTab.value == 0
+                        ? CustomLineChart(
+                            checkInMoods: apiMoods,
+                            primaryColor: chartColor,
+                            textColor: textChartColor,
+                          )
+                        : CustomBarChart(
+                            data: counts,
+                            orderKeys: const [
+                              'Angry',
+                              'Low',
+                              'Normal',
+                              'Good',
+                              'Great',
+                            ],
+                            primaryColor: chartColor,
+                            textColor: textChartColor,
+                          ),
                   ),
                   Spacing.s20.h,
                   buildMoodStatsRow(context, homeController),
@@ -749,294 +786,6 @@ class InsightsScreen extends GetView<InsightsController> {
       centerTitle: true,
       automaticallyImplyLeading: false,
     );
-  }
-}
-
-class InsightsMoodLineChartPainter extends CustomPainter {
-  final List<String> checkInMoods;
-  final Color primaryColor;
-  final Color textColor;
-
-  InsightsMoodLineChartPainter({
-    required this.checkInMoods,
-    required this.primaryColor,
-    required this.textColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (checkInMoods.isEmpty) return;
-
-    final moods = checkInMoods.length > 7
-        ? checkInMoods.sublist(checkInMoods.length - 7)
-        : checkInMoods;
-
-    final double stepX =
-        size.width / (moods.length - 1 == 0 ? 1 : moods.length - 1);
-    final double height = size.height;
-    final double padding = 15;
-
-    final gridPaint = Paint()
-      ..color = textColor.withValues(alpha: 0.1)
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    final double maxScoreY = padding;
-    final double midScoreY = padding + 2.0 * (height - 2 * padding) / 4.0;
-    final double minScoreY = padding + 4.0 * (height - 2 * padding) / 4.0;
-
-    void drawDashedLine(double y) {
-      double startX = 0;
-      const dashWidth = 5.0;
-      const dashSpace = 4.0;
-      while (startX < size.width) {
-        canvas.drawLine(
-          Offset(startX, y),
-          Offset(startX + dashWidth, y),
-          gridPaint,
-        );
-        startX += dashWidth + dashSpace;
-      }
-    }
-
-    drawDashedLine(maxScoreY);
-    drawDashedLine(midScoreY);
-    drawDashedLine(minScoreY);
-
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-
-    void drawLabel(String text, double y) {
-      textPainter.text = TextSpan(
-        text: text,
-        style: TextStyle(
-          color: textColor.withValues(alpha: 0.4),
-          fontSize: 8.sp,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(4.w, y - 12.h));
-    }
-
-    drawLabel("GREAT", maxScoreY);
-    drawLabel("CALM", midScoreY);
-    drawLabel("LOW", minScoreY);
-
-    final points = <Offset>[];
-    for (int i = 0; i < moods.length; i++) {
-      double score = 3.0;
-      switch (moods[i]) {
-        case 'Very Good':
-        case 'Very Happy':
-          score = 5.0;
-          break;
-        case 'Good':
-        case 'Happy':
-          score = 4.0;
-          break;
-        case 'Normal':
-          score = 3.0;
-          break;
-        case 'Not Good':
-          score = 2.0;
-          break;
-        case 'Angry':
-          score = 1.0;
-          break;
-      }
-
-      final double y = padding + (5.0 - score) * (height - 2 * padding) / 4.0;
-      final double x = i * stepX;
-      points.add(Offset(x, y));
-    }
-
-    final path = Path();
-    path.moveTo(points.first.dx, height);
-    for (var point in points) {
-      path.lineTo(point.dx, point.dy);
-    }
-    path.lineTo(points.last.dx, height);
-    path.close();
-
-    final gradientPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          primaryColor.withValues(alpha: 0.25),
-          primaryColor.withValues(alpha: 0.0),
-        ],
-      ).createShader(Rect.fromLTRB(0, 0, size.width, height))
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(path, gradientPaint);
-
-    final linePaint = Paint()
-      ..color = primaryColor
-      ..strokeWidth = 3.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final linePath = Path();
-    linePath.moveTo(points.first.dx, points.first.dy);
-    for (int i = 1; i < points.length; i++) {
-      final p0 = points[i - 1];
-      final p1 = points[i];
-      final controlPoint1 = Offset(p0.dx + stepX / 2.0, p0.dy);
-      final controlPoint2 = Offset(p1.dx - stepX / 2.0, p1.dy);
-      linePath.cubicTo(
-        controlPoint1.dx,
-        controlPoint1.dy,
-        controlPoint2.dx,
-        controlPoint2.dy,
-        p1.dx,
-        p1.dy,
-      );
-    }
-    canvas.drawPath(linePath, linePaint);
-
-    final dotPaint = Paint()
-      ..color = primaryColor
-      ..style = PaintingStyle.fill;
-    final dotBorderPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke;
-
-    for (var point in points) {
-      canvas.drawCircle(point, 6.0, dotPaint);
-      canvas.drawCircle(point, 6.0, dotBorderPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant InsightsMoodLineChartPainter oldDelegate) {
-    return oldDelegate.checkInMoods != checkInMoods;
-  }
-}
-
-class InsightsMoodBarChartPainter extends CustomPainter {
-  final List<String> checkInMoods;
-  final Color primaryColor;
-  final Color textColor;
-
-  InsightsMoodBarChartPainter({
-    required this.checkInMoods,
-    required this.primaryColor,
-    required this.textColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (checkInMoods.isEmpty) return;
-
-    final moods = checkInMoods.length > 30
-        ? checkInMoods.sublist(checkInMoods.length - 30)
-        : checkInMoods;
-
-    final Map<String, int> counts = {
-      'Great': 0,
-      'Good': 0,
-      'Normal': 0,
-      'Low': 0,
-      'Angry': 0,
-    };
-
-    for (var m in moods) {
-      switch (m) {
-        case 'Very Good':
-        case 'Very Happy':
-          counts['Great'] = counts['Great']! + 1;
-          break;
-        case 'Good':
-        case 'Happy':
-          counts['Good'] = counts['Good']! + 1;
-          break;
-        case 'Normal':
-          counts['Normal'] = counts['Normal']! + 1;
-          break;
-        case 'Not Good':
-          counts['Low'] = counts['Low']! + 1;
-          break;
-        case 'Angry':
-          counts['Angry'] = counts['Angry']! + 1;
-          break;
-      }
-    }
-
-    final keys = ['Angry', 'Low', 'Normal', 'Good', 'Great'];
-    int maxVal = counts.values.reduce((a, b) => a > b ? a : b);
-    if (maxVal == 0) maxVal = 1;
-
-    final double width = size.width;
-    final double height = size.height;
-    final double padding = 20;
-
-    final double chartWidth = width - 2 * padding;
-    final double chartHeight = height - 2 * padding;
-
-    final double barSpacing = chartWidth / (keys.length * 2);
-    final double barWidth = chartWidth / keys.length - barSpacing;
-
-    final paint = Paint()..style = PaintingStyle.fill;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-
-    for (int i = 0; i < keys.length; i++) {
-      final key = keys[i];
-      final count = counts[key]!;
-
-      final double x = padding + i * (barWidth + barSpacing) + barSpacing / 2;
-      final double barValHeight = (count / maxVal) * chartHeight;
-      final double y = height - padding - barValHeight;
-
-      final rect = RRect.fromRectAndRadius(
-        Rect.fromLTRB(x, y, x + barWidth, height - padding),
-        const Radius.circular(6),
-      );
-
-      paint.shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [primaryColor, primaryColor.withValues(alpha: 0.4)],
-      ).createShader(Rect.fromLTRB(x, y, x + barWidth, height - padding));
-
-      canvas.drawRRect(rect, paint);
-
-      if (count > 0) {
-        textPainter.text = TextSpan(
-          text: '$count',
-          style: TextStyle(
-            color: textColor,
-            fontSize: 9.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        );
-        textPainter.layout();
-        textPainter.paint(
-          canvas,
-          Offset(x + (barWidth - textPainter.width) / 2, y - 12.h),
-        );
-      }
-
-      textPainter.text = TextSpan(
-        text: key,
-        style: TextStyle(
-          color: textColor.withValues(alpha: 0.6),
-          fontSize: 9.sp,
-          fontWeight: FontWeight.w600,
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(x + (barWidth - textPainter.width) / 2, height - padding + 4.h),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant InsightsMoodBarChartPainter oldDelegate) {
-    return oldDelegate.checkInMoods != checkInMoods;
   }
 }
 
