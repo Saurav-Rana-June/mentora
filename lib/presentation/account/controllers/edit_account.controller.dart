@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/data/enums/snackbar_enum.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
 
 class EditAccountController extends GetxController {
   final globalController = Get.find<GlobalController>();
@@ -94,19 +96,16 @@ class EditAccountController extends GetxController {
 
     if (success) {
       Get.back();
-      Get.snackbar(
+      AppUtils.snackbar(
         "Success",
         "Profile updated successfully",
-        backgroundColor: primary.withValues(alpha: 0.15),
-        colorText: Get.theme.textTheme.bodyLarge?.color,
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.SUCCESS,
       );
     } else {
-      Get.snackbar(
+      AppUtils.snackbar(
         "Error",
         "Failed to update profile",
-        backgroundColor: Colors.red.withValues(alpha: 0.15),
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.ERROR,
       );
     }
   }
@@ -161,28 +160,24 @@ class EditAccountController extends GetxController {
         pictureUrl.value = newUrl;
         pictureController.text = newUrl;
         
-        Get.snackbar(
+        AppUtils.snackbar(
           "Success",
           "Profile picture updated successfully",
-          backgroundColor: primary.withValues(alpha: 0.15),
-          colorText: Get.theme.textTheme.bodyLarge?.color,
-          snackPosition: SnackPosition.BOTTOM,
+          SnackBarType.SUCCESS,
         );
       } else {
-        Get.snackbar(
+        AppUtils.snackbar(
           "Error",
           "Failed to upload image",
-          backgroundColor: Colors.red.withValues(alpha: 0.15),
-          snackPosition: SnackPosition.BOTTOM,
+          SnackBarType.ERROR,
         );
       }
     } catch (e) {
       Get.log("Error in pickAndUploadImage: $e");
-      Get.snackbar(
+      AppUtils.snackbar(
         "Error",
         "Failed to pick or upload image",
-        backgroundColor: Colors.red.withValues(alpha: 0.15),
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.ERROR,
       );
     } finally {
       isUploadingPicture.value = false;
@@ -197,19 +192,16 @@ class EditAccountController extends GetxController {
         pictureUrl.value = "";
         pictureController.text = "";
         
-        Get.snackbar(
+        AppUtils.snackbar(
           "Success",
           "Profile picture removed successfully",
-          backgroundColor: primary.withValues(alpha: 0.15),
-          colorText: Get.theme.textTheme.bodyLarge?.color,
-          snackPosition: SnackPosition.BOTTOM,
+          SnackBarType.SUCCESS,
         );
       } else {
-        Get.snackbar(
+        AppUtils.snackbar(
           "Error",
           "Failed to remove profile picture",
-          backgroundColor: Colors.red.withValues(alpha: 0.15),
-          snackPosition: SnackPosition.BOTTOM,
+          SnackBarType.ERROR,
         );
       }
     } catch (e) {
