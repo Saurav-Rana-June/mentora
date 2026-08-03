@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
 import '../../../../data/model/auth/profile.model.dart';
@@ -56,15 +57,41 @@ class ProfileService {
     );
   }
 
-  /// Update Profile Picture URL
-  static Future<ApiResponse<ProfileModel>?> updateProfilePicture(String url) async {
+  /// Upload and Update Profile Picture (Multipart)
+  static Future<ApiResponse<ProfileModel>?> uploadProfilePicture({
+    required int userId,
+    required String filePath,
+    required String fileName,
+  }) async {
     return client.request<ApiResponse<ProfileModel>>(
-      (dio) => dio.put(
-        'profile/picture',
-        data: {
-          'profilePictureUrl': url,
-        },
-      ),
+      (dio) async {
+        final formData = FormData.fromMap({
+          'data': await MultipartFile.fromFile(
+            filePath,
+            filename: fileName,
+          ),
+        });
+        return dio.put(
+          'profile/update-profile-picture/$userId',
+          data: formData,
+        );
+      },
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<ProfileModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => ProfileModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete Profile Picture
+  static Future<ApiResponse<ProfileModel>?> deleteProfilePicture({
+    required int userId,
+  }) async {
+    return client.request<ApiResponse<ProfileModel>>(
+      (dio) => dio.delete('profile/delete-profile-picture/$userId'),
       withAccessToken: true,
       parser: (json) {
         return ApiResponse<ProfileModel>.fromJson(

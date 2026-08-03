@@ -45,7 +45,6 @@ class GlobalController extends GetxController {
     double? height,
     double? weight,
     String? phoneNumber,
-    String? profilePictureUrl,
   }) async {
     try {
       isLoadingProfile.value = true;
@@ -62,13 +61,7 @@ class GlobalController extends GetxController {
         phoneNumber: phoneNumber,
       );
 
-      // If profile picture is changed, update picture url as well
-      if (profilePictureUrl != null && profilePictureUrl != userProfile.value?.profilePictureUrl) {
-        final picRes = await ProfileService.updateProfilePicture(profilePictureUrl);
-        if (picRes != null && picRes.data != null) {
-          userProfile.value = picRes.data;
-        }
-      } else if (profileRes != null && profileRes.data != null) {
+      if (profileRes != null && profileRes.data != null) {
         userProfile.value = profileRes.data;
       }
       return true;
@@ -78,6 +71,40 @@ class GlobalController extends GetxController {
     } finally {
       isLoadingProfile.value = false;
     }
+  }
+
+  Future<bool> uploadProfilePicture(String filePath, String fileName) async {
+    final userId = userProfile.value?.userId;
+    if (userId == null) return false;
+    try {
+      final picRes = await ProfileService.uploadProfilePicture(
+        userId: userId,
+        filePath: filePath,
+        fileName: fileName,
+      );
+      if (picRes != null && picRes.data != null) {
+        userProfile.value = picRes.data;
+        return true;
+      }
+    } catch (e) {
+      Get.log("Error uploading profile picture: $e");
+    }
+    return false;
+  }
+
+  Future<bool> deleteProfilePicture() async {
+    final userId = userProfile.value?.userId;
+    if (userId == null) return false;
+    try {
+      final picRes = await ProfileService.deleteProfilePicture(userId: userId);
+      if (picRes != null && picRes.data != null) {
+        userProfile.value = picRes.data;
+        return true;
+      }
+    } catch (e) {
+      Get.log("Error deleting profile picture: $e");
+    }
+    return false;
   }
 
   Future<void> fetchMoodTrackerStats() async {

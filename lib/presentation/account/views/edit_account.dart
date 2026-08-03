@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
@@ -9,6 +10,7 @@ import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:my_icons/icons.dart';
 
+import 'package:Mentora/widgets/bottomsheets/change_profile_picture.bottomsheet.dart';
 import '../controllers/edit_account.controller.dart';
 
 class EditAccountScreen extends GetView<EditAccountController> {
@@ -100,39 +102,60 @@ class EditAccountScreen extends GetView<EditAccountController> {
             ),
             child: Obx(() {
               final pictureUrl = controller.pictureUrl.value;
-              return CircleAvatar(
-                radius: 54.r,
-                backgroundImage: pictureUrl.isNotEmpty
-                    ? NetworkImage(pictureUrl)
-                    : const NetworkImage(
-                            "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-                          )
-                          as ImageProvider,
+              final isUploading = controller.isUploadingPicture.value;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 54.r,
+                    backgroundImage: pictureUrl.isNotEmpty
+                        ? NetworkImage(pictureUrl)
+                        : const NetworkImage(
+                                "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+                              )
+                              as ImageProvider,
+                  ),
+                  if (isUploading)
+                    Container(
+                      width: 108.r,
+                      height: 108.r,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    ),
+                ],
               );
             }),
           ),
-          GestureDetector(
-            onTap: () => _showAvatarEditSheet(context),
-            child: Container(
-              padding: EdgeInsets.all(8.r),
-              decoration: BoxDecoration(
-                color: primary,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDark ? slate[900]! : Colors.white,
-                  width: 2,
+          Obx(() {
+            final isUploading = controller.isUploadingPicture.value;
+            return GestureDetector(
+              onTap: isUploading ? null : () => _showAvatarEditSheet(context),
+              child: Container(
+                padding: EdgeInsets.all(8.r),
+                decoration: BoxDecoration(
+                  color: primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? slate[900]! : Colors.white,
+                    width: 2,
+                  ),
+                ),
+                child: Text(
+                  '\u{f030}', // camera
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              child: Text(
-                '\u{f030}', // camera
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeSolid',
-                  fontSize: 14.sp,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -281,107 +304,14 @@ class EditAccountScreen extends GetView<EditAccountController> {
   }
 
   void _showAvatarEditSheet(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final tempController = TextEditingController(
-      text: controller.pictureController.text,
-    );
+    final hasPhoto = controller.pictureUrl.value.isNotEmpty;
 
     Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(Spacing.s20.value),
-        decoration: BoxDecoration(
-          color: isDark ? slate[900] : Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-          border: Border(
-            top: BorderSide(
-              color: isDark ? slate[800]! : slate[100]!,
-              width: 1,
-            ),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Update Profile Picture",
-                style: r16.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacing.s8.h,
-              Text(
-                "Enter a web link (URL) of the image you want to use as your avatar.",
-                style: r12.copyWith(
-                  color: Theme.of(context).textTheme.bodySmall?.color,
-                ),
-              ),
-              Spacing.s16.h,
-              CustomTextFormField(
-                controller: tempController,
-                labelText: "Image URL",
-                hintText: "https://example.com/image.png",
-                borderColor: isDark ? slate[700] : slate[200],
-                borderWidth: 1,
-                focusedBorderColor: primary,
-                prefixIcon: Container(
-                  width: 20,
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Center(
-                    child: Text(
-                      "\u{f0c1}", // link
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeLight',
-                        fontSize: 16.sp,
-                        color: primary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Spacing.s24.h,
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Get.back(),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? white : slate[800],
-                        side: BorderSide(
-                          color: isDark ? slate[700]! : slate[200]!,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 14.h),
-                      ),
-                      child: Text(
-                        "Cancel",
-                        style: r14.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ),
-                  Spacing.s16.w,
-                  Expanded(
-                    child: CustomPrimaryButton(
-                      text: "Apply",
-                      onPressed: () {
-                        controller.updatePictureUrl(tempController.text.trim());
-                        Get.back();
-                      },
-                      height: 48.h,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      ChangeProfilePictureBottomsheet(
+        onTakePhoto: () => controller.pickAndUploadImage(ImageSource.camera),
+        onChooseFromGallery: () => controller.pickAndUploadImage(ImageSource.gallery),
+        showRemoveOption: hasPhoto,
+        onRemovePhoto: () => controller.deleteCurrentPicture(),
       ),
       isScrollControlled: true,
     );
