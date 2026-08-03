@@ -405,7 +405,7 @@ class AccountScreen extends GetView<AccountController> {
             child: InkWell(
               customBorder: const CircleBorder(),
               onTap: () => Get.to(
-                () => const EditAccountScreen(),
+                () => EditAccountScreen(),
                 transition: Transition.rightToLeft,
               ),
               child: Padding(
