@@ -3,6 +3,7 @@ import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
@@ -896,18 +897,21 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ),
               Spacing.s12.w,
-              GestureDetector(
-                onTap: () => Get.to(
-                  () => AccountScreen(),
-                  transition: Transition.rightToLeft,
-                ),
-                child: const CircleAvatar(
-                  radius: 14,
-                  backgroundImage: NetworkImage(
-                    "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+              Obx(() {
+                final globalController = Get.find<GlobalController>();
+                final profile = globalController.userProfile.value;
+                return GestureDetector(
+                  onTap: () => Get.to(
+                    () => AccountScreen(),
+                    transition: Transition.rightToLeft,
                   ),
-                ),
-              ),
+                  child: CustomAvatar(
+                    radius: 14.r,
+                    imageUrl: profile?.profilePictureUrl,
+                    name: profile?.name,
+                  ),
+                );
+              }),
             ],
           ),
         ],

@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
+import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
@@ -909,12 +911,15 @@ class ChatAIScreen extends GetView<ChatAIController> {
           shape: BoxShape.circle,
           border: Border.all(color: primary.withValues(alpha: 0.4), width: 1.5),
         ),
-        child: const CircleAvatar(
-          radius: 17,
-          backgroundImage: NetworkImage(
-            "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-          ),
-        ),
+        child: Obx(() {
+          final globalController = Get.find<GlobalController>();
+          final profile = globalController.userProfile.value;
+          return CustomAvatar(
+            radius: 17,
+            imageUrl: profile?.profilePictureUrl,
+            name: profile?.name,
+          );
+        }),
       ),
     );
   }

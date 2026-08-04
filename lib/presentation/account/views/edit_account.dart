@@ -6,9 +6,11 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
+import 'package:Mentora/widgets/fields/custom_dropdownfield.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:my_icons/icons.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 
 import 'package:Mentora/widgets/bottomsheets/change_profile_picture.bottomsheet.dart';
 import '../controllers/edit_account.controller.dart';
@@ -106,14 +108,10 @@ class EditAccountScreen extends GetView<EditAccountController> {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  CircleAvatar(
+                  CustomAvatar(
                     radius: 54.r,
-                    backgroundImage: pictureUrl.isNotEmpty
-                        ? NetworkImage(pictureUrl)
-                        : const NetworkImage(
-                                "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-                              )
-                              as ImageProvider,
+                    imageUrl: pictureUrl,
+                    name: controller.nameController.text,
                   ),
                   if (isUploading)
                     Container(
@@ -180,15 +178,35 @@ class EditAccountScreen extends GetView<EditAccountController> {
                 val == null || val.isEmpty ? "Name cannot be empty" : null,
           ),
           Spacing.s16.h,
-          CustomTextFormField(
-            controller: controller.genderController,
-            labelText: "Gender",
-            hintText: "Enter gender (e.g. Male, Female)",
-            borderColor: isDark ? slate[800] : slate[200],
-            borderWidth: 1,
-            focusedBorderColor: primary,
-            prefixIcon: _buildFieldIcon("\u{f228}"), // genderless
-          ),
+          Obx(() {
+            final currentGender = controller.selectedGender.value;
+            final Map<String, String> genderLabels = {
+              "MALE": "Male",
+              "FEMALE": "Female",
+              "OTHER": "Other",
+            };
+            return CustomDropdownField<String>(
+              value: genderLabels.containsKey(currentGender)
+                  ? currentGender
+                  : null,
+              labelText: "Gender",
+              hintText: "Select Gender",
+              borderColor: isDark ? slate[800] : slate[200],
+              borderWidth: 1,
+              focusedBorderColor: primary,
+              prefixIcon: _buildFieldIcon("\u{f228}"), // genderless
+              items: const [
+                DropdownMenuItem(value: "MALE", child: Text("Male")),
+                DropdownMenuItem(value: "FEMALE", child: Text("Female")),
+                DropdownMenuItem(value: "OTHER", child: Text("Other")),
+              ],
+              onChanged: (val) {
+                if (val != null) {
+                  controller.updateGender(val);
+                }
+              },
+            );
+          }),
           Spacing.s16.h,
           CustomTextFormField(
             controller: controller.ageController,

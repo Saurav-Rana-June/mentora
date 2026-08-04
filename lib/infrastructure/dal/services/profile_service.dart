@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
 import '../../../../data/model/auth/profile.model.dart';
@@ -63,19 +64,21 @@ class ProfileService {
     required String filePath,
     required String fileName,
   }) async {
+    final safeName = fileName.isEmpty ? 'profile.jpg' : fileName;
+    final formData = FormData.fromMap({
+      'data': MultipartFile.fromFileSync(
+        filePath,
+        filename: safeName,
+        contentType: _mediaTypeForImagePath(filePath),
+      ),
+    });
+
     return client.request<ApiResponse<ProfileModel>>(
-      (dio) async {
-        final formData = FormData.fromMap({
-          'data': await MultipartFile.fromFile(
-            filePath,
-            filename: fileName,
-          ),
-        });
-        return dio.put(
-          'profile/update-profile-picture/$userId',
-          data: formData,
-        );
-      },
+      (dio) => dio.put(
+        'profile/update-profile-picture/$userId',
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      ),
       withAccessToken: true,
       parser: (json) {
         return ApiResponse<ProfileModel>.fromJson(
@@ -84,6 +87,28 @@ class ProfileService {
         );
       },
     );
+  }
+
+  static MediaType _mediaTypeForImagePath(String path) {
+    final ext = path
+        .replaceAll(r'\', '/')
+        .split('/')
+        .last
+        .split('.')
+        .last
+        .toLowerCase();
+    switch (ext) {
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'gif':
+        return MediaType('image', 'gif');
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return MediaType('image', 'jpeg');
+    }
   }
 
   /// Delete Profile Picture

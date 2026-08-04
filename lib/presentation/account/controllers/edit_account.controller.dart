@@ -20,7 +20,8 @@ class EditAccountController extends GetxController {
   late final TextEditingController weightController;
   late final TextEditingController pictureController;
 
-  final RxString pictureUrl = "".obs;
+   final RxString pictureUrl = "".obs;
+  final RxString selectedGender = "".obs;
   final RxBool isUploadingPicture = false.obs;
   final ImagePicker _picker = ImagePicker();
 
@@ -30,8 +31,9 @@ class EditAccountController extends GetxController {
   void onInit() {
     super.onInit();
     final profile = globalController.userProfile.value;
+    selectedGender.value = profile?.gender ?? "MALE";
     nameController = TextEditingController(text: profile?.name);
-    genderController = TextEditingController(text: profile?.gender);
+    genderController = TextEditingController(text: selectedGender.value);
     ageController = TextEditingController(text: profile?.age?.toString());
     phoneController = TextEditingController(text: profile?.phoneNumber);
     emailController = TextEditingController(text: profile?.email);
@@ -41,6 +43,11 @@ class EditAccountController extends GetxController {
 
     pictureUrl.value = profile?.profilePictureUrl ?? "";
     pictureController = TextEditingController(text: pictureUrl.value);
+  }
+
+  void updateGender(String val) {
+    selectedGender.value = val;
+    genderController.text = val;
   }
 
   @override

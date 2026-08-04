@@ -2,6 +2,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.switch.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -345,15 +346,10 @@ class AccountScreen extends GetView<AccountController> {
               shape: BoxShape.circle,
               border: Border.all(color: primary, width: 2),
             ),
-            child: CircleAvatar(
+            child: CustomAvatar(
               radius: 28.r,
-              backgroundImage:
-                  profilePictureUrl != null && profilePictureUrl.isNotEmpty
-                  ? NetworkImage(profilePictureUrl)
-                  : const NetworkImage(
-                          "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
-                        )
-                        as ImageProvider,
+              imageUrl: profilePictureUrl,
+              name: name,
             ),
           ),
           Spacing.s16.w,
