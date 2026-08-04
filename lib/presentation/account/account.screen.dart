@@ -364,7 +364,6 @@ class AccountScreen extends GetView<AccountController> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Spacing.s8.h,
                 Text(
                   email,
                   style: r12.copyWith(
@@ -372,25 +371,25 @@ class AccountScreen extends GetView<AccountController> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Spacing.s8.h,
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10.w,
-                    vertical: 3.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Text(
-                    "PRO MEMBER",
-                    style: r10.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
+                // Spacing.s8.h,
+                // Container(
+                //   padding: EdgeInsets.symmetric(
+                //     horizontal: 10.w,
+                //     vertical: 3.h,
+                //   ),
+                //   decoration: BoxDecoration(
+                //     color: primary.withValues(alpha: 0.12),
+                //     borderRadius: BorderRadius.circular(20.r),
+                //   ),
+                //   child: Text(
+                //     "PRO MEMBER",
+                //     style: r10.copyWith(
+                //       color: primary,
+                //       fontWeight: FontWeight.bold,
+                //       letterSpacing: 0.5,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -452,7 +451,7 @@ class AccountScreen extends GetView<AccountController> {
                 child: Text(
                   icon,
                   style: TextStyle(
-                    fontFamily: 'FontAwesomeRegular',
+                    fontFamily: 'FontAwesomeLight',
                     fontSize: 18.sp,
                     color: itemColor,
                   ),
@@ -463,7 +462,7 @@ class AccountScreen extends GetView<AccountController> {
                   label,
                   style: r14.copyWith(
                     color: textColor,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
