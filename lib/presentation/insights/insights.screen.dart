@@ -555,8 +555,7 @@ class InsightsScreen extends GetView<InsightsController> {
           Obx(() {
             final globalController = Get.find<GlobalController>();
 
-            if (globalController.isLoadingMoodTracker.value ||
-                controller.isLoadingMoodStats.value) {
+            if (globalController.isLoadingMoodTracker.value) {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 36.h),
@@ -565,7 +564,7 @@ class InsightsScreen extends GetView<InsightsController> {
               );
             }
 
-            final stats = controller.moodStats.value;
+            final stats = globalController.moodTrackerStats.value;
 
             final apiMoods =
                 stats?.data
@@ -673,7 +672,8 @@ class InsightsScreen extends GetView<InsightsController> {
     HomeController homeController,
   ) {
     final theme = Theme.of(context);
-    final stats = controller.moodStats.value;
+    final globalController = Get.find<GlobalController>();
+    final stats = globalController.moodTrackerStats.value;
 
     final dominant = stats?.dominantMood ?? 'No data yet';
     final consistency = stats?.consistency ?? 0.0;

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
 import 'package:Mentora/data/model/assessment/coaching_banner_response.model.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 
@@ -10,25 +10,26 @@ class InsightsController extends GetxController {
   final RxInt selectedMoodTab = 0.obs;
 
   final RxBool isLoadingGrowth = false.obs;
-  final Rxn<GrowthAreasResponseModel> growthAreasData = Rxn<GrowthAreasResponseModel>();
+  final Rxn<GrowthAreasResponseModel> growthAreasData =
+      Rxn<GrowthAreasResponseModel>();
 
   final Rx<DateFilter> selectedDateFilter = DateFilter.thisWeek.obs;
-  final Rxn<MoodTrackerStatsModel> moodStats = Rxn<MoodTrackerStatsModel>();
-  final RxBool isLoadingMoodStats = false.obs;
 
-  final Rxn<CoachingBannerResponseModel> coachingBannerData = Rxn<CoachingBannerResponseModel>();
+  final Rxn<CoachingBannerResponseModel> coachingBannerData =
+      Rxn<CoachingBannerResponseModel>();
   final RxBool isLoadingCoachingBanner = false.obs;
 
   // In-memory cache for date filters
   final Map<DateFilter, GrowthAreasResponseModel> _growthAreasCache = {};
-  final Map<DateFilter, MoodTrackerStatsModel> _moodStatsCache = {};
 
   @override
   void onInit() {
     super.onInit();
     final initialFilter = selectedDateFilter.value;
     fetchGrowthAreas(initialFilter);
-    fetchMoodStats(initialFilter);
+    Get.find<GlobalController>().fetchMoodTrackerStats(
+      dateFilter: initialFilter.name,
+    );
     fetchCoachingBanner();
   }
 
@@ -73,36 +74,9 @@ class InsightsController extends GetxController {
     }
   }
 
-  Future<void> fetchMoodStats(DateFilter filter) async {
-    if (_moodStatsCache.containsKey(filter)) {
-      moodStats.value = _moodStatsCache[filter];
-      return;
-    }
-
-    try {
-      isLoadingMoodStats.value = true;
-      final response = await InsightsService.getMoodTrackerStats(
-        dateFilter: filter.name,
-        timezone: 'UTC',
-      );
-      if (response != null && response.data != null) {
-        _moodStatsCache[filter] = response.data!;
-        if (selectedDateFilter.value == filter) {
-          moodStats.value = response.data;
-        }
-      }
-    } catch (e) {
-      Get.log("Error fetching mood stats: $e");
-    } finally {
-      if (selectedDateFilter.value == filter) {
-        isLoadingMoodStats.value = false;
-      }
-    }
-  }
-
   void changeDateFilter(DateFilter filter) {
     selectedDateFilter.value = filter;
-    fetchMoodStats(filter);
+    Get.find<GlobalController>().fetchMoodTrackerStats(dateFilter: filter.name);
     fetchGrowthAreas(filter);
   }
 
