@@ -332,8 +332,8 @@ class AccountScreen extends GetView<AccountController> {
       );
     }
 
-    final String name = profile?.name ?? "John Doe";
-    final String email = profile?.email ?? "johndoe@example.com";
+    final String name = profile?.name ?? "User Name";
+    final String email = profile?.email ?? "username@example.com";
     final String? profilePictureUrl = profile?.profilePictureUrl;
 
     return CustomPrimaryCard(

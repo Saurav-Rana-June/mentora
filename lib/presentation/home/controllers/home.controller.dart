@@ -49,6 +49,14 @@ class HomeController extends GetxController {
     fetchStreakStats();
     fetchMoodHistory();
     fetchDailyPlan();
+
+    if (Get.isRegistered<GlobalController>()) {
+      final globalController = Get.find<GlobalController>();
+      if (globalController.userProfile.value == null &&
+          !globalController.isLoadingProfile.value) {
+        globalController.fetchUserProfile();
+      }
+    }
   }
 
   void addMoodCheckin(String mood) {
