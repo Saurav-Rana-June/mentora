@@ -87,10 +87,12 @@ class MeditationScreen extends GetView<MeditationController> {
               Spacing.s8.h,
 
               // Horizontal Category Chips
-              Obx(() => MeditationFilterChips(
-                    selectedCategory: controller.selectedCategory.value,
-                    onCategorySelected: (cat) => controller.changeCategory(cat),
-                  )),
+              Obx(
+                () => MeditationFilterChips(
+                  selectedCategory: controller.selectedCategory.value,
+                  onCategorySelected: (cat) => controller.changeCategory(cat),
+                ),
+              ),
               Spacing.s16.h,
 
               // Horizontally Scrolling Featured Carousel
@@ -113,9 +115,7 @@ class MeditationScreen extends GetView<MeditationController> {
         Obx(() => buildAllMeditationsList(context)),
 
         // Bottom Safe Padding spacing
-        SliverToBoxAdapter(
-          child: Spacing.s32.h,
-        ),
+        SliverToBoxAdapter(child: Spacing.s32.h),
       ],
     );
   }
@@ -147,10 +147,7 @@ class MeditationScreen extends GetView<MeditationController> {
                   session: session,
                   isFavorited: isFav,
                   onTap: () {
-                    Get.toNamed(
-                      Routes.MEDITATION_PLAYER,
-                      arguments: session,
-                    );
+                    Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
                   },
                   onFavoriteTap: () => controller.toggleFavorite(session.id),
                 );
@@ -177,26 +174,20 @@ class MeditationScreen extends GetView<MeditationController> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final session = sessionsList[index];
-          return Obx(() {
-            final isFav = controller.favoritedIds.contains(session.id);
-            return MeditationCard(
-              session: session,
-              isFavorited: isFav,
-              onTap: () {
-                Get.toNamed(
-                  Routes.MEDITATION_PLAYER,
-                  arguments: session,
-                );
-              },
-              onFavoriteTap: () => controller.toggleFavorite(session.id),
-            );
-          });
-        },
-        childCount: sessionsList.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final session = sessionsList[index];
+        return Obx(() {
+          final isFav = controller.favoritedIds.contains(session.id);
+          return MeditationCard(
+            session: session,
+            isFavorited: isFav,
+            onTap: () {
+              Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
+            },
+            onFavoriteTap: () => controller.toggleFavorite(session.id),
+          );
+        });
+      }, childCount: sessionsList.length),
     );
   }
 }
