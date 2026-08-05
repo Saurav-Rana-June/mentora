@@ -4,16 +4,18 @@ import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
-class MeditationSearchBar extends StatelessWidget {
+class CustomSearchBar extends StatelessWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
+  final String hintText;
 
-  const MeditationSearchBar({
+  const CustomSearchBar({
     super.key,
     this.controller,
     this.onChanged,
     this.focusNode,
+    this.hintText = "Search...",
   });
 
   @override
@@ -33,7 +35,7 @@ class MeditationSearchBar extends StatelessWidget {
           color: Theme.of(context).textTheme.bodyLarge!.color,
         ),
         decoration: InputDecoration(
-          hintText: "Search meditations...",
+          hintText: hintText,
           hintStyle: r14.copyWith(
             color: slate[400],
           ),

@@ -7,7 +7,7 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 
 import 'controllers/meditation.controller.dart';
 import 'widgets/meditation_header.dart';
-import 'widgets/meditation_search_bar.dart';
+import 'package:Mentora/widgets/others/custom.searchbar.widget.dart';
 import 'widgets/meditation_filter_chips.dart';
 import 'widgets/meditation_section_title.dart';
 import 'widgets/featured_meditation_card.dart';
@@ -43,27 +43,29 @@ class MeditationScreen extends GetView<MeditationController> {
               ),
 
               if (controller.isLoading.value)
-                const SliverFillRemaining(
-                  child: MeditationLoading(),
-                )
+                const SliverFillRemaining(child: MeditationLoading())
               else ...[
                 // Search Input & Category Filters
                 SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      MeditationSearchBar(
+                      CustomSearchBar(
                         controller: _searchController,
                         focusNode: _searchFocusNode,
                         onChanged: (val) => controller.updateSearchQuery(val),
+                        hintText: "Search meditations...",
                       ),
                       Spacing.s8.h,
 
                       // Category Pill Filter
-                      Obx(() => MeditationFilterChips(
-                            selectedCategory: controller.selectedCategory.value,
-                            onCategorySelected: (cat) => controller.changeCategory(cat),
-                          )),
+                      Obx(
+                        () => MeditationFilterChips(
+                          selectedCategory: controller.selectedCategory.value,
+                          onCategorySelected: (cat) =>
+                              controller.changeCategory(cat),
+                        ),
+                      ),
                       Spacing.s16.h,
 
                       // Horizontally Scrolling Featured Carousel
@@ -76,7 +78,9 @@ class MeditationScreen extends GetView<MeditationController> {
                 SliverToBoxAdapter(
                   child: Obx(() {
                     if (controller.filteredSessions.isNotEmpty) {
-                      return const MeditationSectionTitle(title: "All Meditations");
+                      return const MeditationSectionTitle(
+                        title: "All Meditations",
+                      );
                     }
                     return const SizedBox.shrink();
                   }),
@@ -149,23 +153,20 @@ class MeditationScreen extends GetView<MeditationController> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final session = sessionsList[index];
-          return Obx(() {
-            final isFav = controller.favoritedIds.contains(session.id);
-            return MeditationCard(
-              session: session,
-              isFavorited: isFav,
-              onTap: () {
-                Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
-              },
-              onFavoriteTap: () => controller.toggleFavorite(session.id),
-            );
-          });
-        },
-        childCount: sessionsList.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final session = sessionsList[index];
+        return Obx(() {
+          final isFav = controller.favoritedIds.contains(session.id);
+          return MeditationCard(
+            session: session,
+            isFavorited: isFav,
+            onTap: () {
+              Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
+            },
+            onFavoriteTap: () => controller.toggleFavorite(session.id),
+          );
+        });
+      }, childCount: sessionsList.length),
     );
   }
 }
