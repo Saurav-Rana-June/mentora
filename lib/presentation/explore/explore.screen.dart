@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
   const ExploreScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,128 +21,177 @@ class ExploreScreen extends GetView<ExploreController> {
       appBar: buildAppbar(context),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // buildWelcomeHeader(context),
             buildTopFeatureSection(context),
+            Spacing.s12.h,
             buildDiscoverMeditation(context),
+            Spacing.s16.h,
             buildVideoSection(context),
+            Spacing.s20.h,
           ],
         ),
       ),
     );
   }
 
-  Padding buildVideoSection(BuildContext context) {
+  Widget buildWelcomeHeader(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.vertical,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Video Sessions",
-                style: r18.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              InkWell(
-                onTap: () {},
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  child: Text(
-                    "View All",
-                    style: r14.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            "Hello, Mindful One",
+            style: r14.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          Spacing.s8.h,
-
-          buildVideoTile(context),
-          buildVideoTile(context),
+          Spacing.s4.h,
+          Text(
+            "Discover Peace & Clarity",
+            style: h2.copyWith(
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Column buildVideoTile(BuildContext context) {
-    return Column(
-      children: [
-        CustomPrimaryCard(
-          child: Row(
+  Padding buildTopFeatureSection(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.vertical,
+      ),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 100,
-                    height: 80,
-                    child: Image.asset(
-                      "assets/images/banner.png",
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  Text(
-                    '\u{f144}', // Change icon :- circle-play
-                    style: TextStyle(
-                      fontFamily: 'FontAwesomeSolid',
-                      fontSize: 30,
-                      color: primary,
-                    ),
-                  ),
-                ],
+              Expanded(
+                child: buildFeatureTile(
+                  context,
+                  icon: '\u{f5bb}',
+                  title: 'Meditation',
+                  subtitle: 'Calm your mind',
+                ),
               ),
               Spacing.s12.w,
               Expanded(
-                child: SizedBox(
-                  height: 70,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                        style: r14.copyWith(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "Stress Management",
-                        style: r14.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: buildFeatureTile(
+                  context,
+                  icon: '\u{e480}',
+                  title: 'Breathing',
+                  subtitle: 'Find your focus',
                 ),
               ),
             ],
           ),
-        ),
-        Spacing.s8.h,
-      ],
+          Spacing.s12.h,
+          Row(
+            children: [
+              Expanded(
+                child: buildFeatureTile(
+                  context,
+                  icon: '\u{f236}',
+                  title: 'Sleep',
+                  subtitle: 'Sleep deeply',
+                  onTap: () => Get.toNamed(Routes.SLEEP),
+                ),
+              ),
+              Spacing.s12.w,
+              Expanded(
+                child: buildFeatureTile(
+                  context,
+                  icon: '\u{f328}',
+                  title: 'Journaling',
+                  subtitle: 'Reflect on today',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  Column buildDiscoverMeditation(BuildContext context) {
+  Widget buildFeatureTile(
+    BuildContext context, {
+    required String icon,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap ?? () {},
+      borderRadius: BorderRadius.circular(16),
+      child: CustomPrimaryCard(
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s12.symmetric.horizontal,
+          vertical: Spacing.s12.symmetric.vertical,
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 50.h,
+              width: 50.h,
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  icon,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 24.sp,
+                    color: primary,
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s12.h,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: r14.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  subtitle,
+                  style: r12.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall!.color,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDiscoverMeditation(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
@@ -176,9 +227,10 @@ class ExploreScreen extends GetView<ExploreController> {
             ],
           ),
         ),
-        Spacing.s4.h,
+        Spacing.s8.h,
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s8.symmetric.horizontal,
             vertical: Spacing.s4.symmetric.horizontal,
@@ -187,30 +239,34 @@ class ExploreScreen extends GetView<ExploreController> {
             children: [
               buildDiscoverFeatureTile(
                 context,
-                '\u{f119}', // Change icon :- face-frown
-                'Stress Management',
-                '11 mins',
+                category: 'STRESS',
+                icon: '\u{f119}', // Change icon :- face-frown
+                title: 'Stress Management',
+                duration: '11 mins',
               ),
-              Spacing.s8.w,
+              Spacing.s12.w,
               buildDiscoverFeatureTile(
                 context,
-                '\u{e027}', // Change icon :- rocket-launch
-                'Mood Boost Blueprint',
-                '25 mins',
+                category: 'MOOD',
+                icon: '\u{e027}', // Change icon :- rocket-launch
+                title: 'Mood Boost Blueprint',
+                duration: '25 mins',
               ),
-              Spacing.s8.w,
+              Spacing.s12.w,
               buildDiscoverFeatureTile(
                 context,
-                '\u{e36a}', // Change icon :- face-anxious-sweat
-                'Anxiety Reducing Meditation',
-                '45 mins',
+                category: 'ANXIETY',
+                icon: '\u{e36a}', // Change icon :- face-anxious-sweat
+                title: 'Anxiety Reducing',
+                duration: '45 mins',
               ),
-              Spacing.s8.w,
+              Spacing.s12.w,
               buildDiscoverFeatureTile(
                 context,
-                '\u{e480}', // Change icon :- face-exhaling
-                'Wim Hoff Technique',
-                '10 mins',
+                category: 'BREATH',
+                icon: '\u{e480}', // Change icon :- face-exhaling
+                title: 'Wim Hoff Technique',
+                duration: '10 mins',
               ),
             ],
           ),
@@ -219,45 +275,123 @@ class ExploreScreen extends GetView<ExploreController> {
     );
   }
 
-  InkWell buildDiscoverFeatureTile(
-    BuildContext context,
-    String icon,
-    String title,
-    String caption,
-  ) {
+  Widget buildDiscoverFeatureTile(
+    BuildContext context, {
+    required String category,
+    required String icon,
+    required String title,
+    required String duration,
+  }) {
     return InkWell(
       onTap: () {},
+      borderRadius: BorderRadius.circular(16),
       child: CustomPrimaryCard(
+        padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
         child: SizedBox(
-          width: Get.width / 4.2,
+          width: 180.w,
+          height: 125.h,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                icon,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeSolid',
-                  fontSize: 45,
-                  color: primary,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s8.symmetric.horizontal,
+                      vertical: Spacing.s4.symmetric.horizontal,
+                    ),
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      category,
+                      style: r10.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 11.sp,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
+                      Spacing.s4.w,
+                      Text(
+                        duration,
+                        style: r10.copyWith(
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Spacing.s8.h,
+              Expanded(
+                child: Text(
+                  title,
+                  style: r14.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Spacing.s4.h,
-              Text(
-                title,
-                style: r14.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                caption,
-                textAlign: TextAlign.center,
-                style: r14.copyWith(
-                  color: Theme.of(context).textTheme.bodySmall!.color,
-                  fontWeight: FontWeight.w500,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 28.h,
+                        width: 28.h,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            icon,
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 14.sp,
+                              color: primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Spacing.s8.w,
+                      Text(
+                        "Guided",
+                        style: r10.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 28.h,
+                    width: 28.h,
+                    decoration: BoxDecoration(
+                      color: primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(Icons.play_arrow, color: white, size: 16.sp),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -266,109 +400,161 @@ class ExploreScreen extends GetView<ExploreController> {
     );
   }
 
-  Padding buildTopFeatureSection(BuildContext context) {
+  Widget buildVideoSection(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              buildFeatureTile(
-                context,
-                '\u{f5bb}',
-                'Meditations',
-              ), // Change Icon :- person-meditating
-              buildFeatureTile(
-                context,
-                '\u{e480}',
-                'Breathing',
-              ), // Change Icon :- face-exhaling
-              buildFeatureTile(
-                context,
-                '\u{f1ea}',
-                'Articles',
-              ), // Change Icon :- newspaper
+              Text(
+                "Video Sessions",
+                style: r18.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    "View All",
+                    style: r14.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
           Spacing.s8.h,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              buildFeatureTile(
-                context,
-                '\u{e4f3}',
-                'Tests',
-              ), // Change Icon :- flask-vial
-              buildFeatureTile(
-                context,
-                '\u{f37e}',
-                'Smart Journey',
-              ), // Change Icon :- browser
-              buildFeatureTile(
-                context,
-                '\u{f328}',
-                'Notepad',
-              ), // Change Icon :- clipboard
-            ],
+          buildVideoTile(
+            context,
+            category: "STRESS MANAGEMENT",
+            title: "10-Minute Morning Yoga Flow for Beginners",
+            duration: "10 mins",
+            author: "Coach Jessica",
           ),
-          Spacing.s8.h,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              buildFeatureTile(
-                context,
-                '\u{f4b4}',
-                'Affirmations',
-              ), // Change Icon :- comment-smile
-              buildFeatureTile(
-                context,
-                '\u{e234}',
-                'Quotes',
-              ), // Change Icon :- quotes
-              buildFeatureTile(
-                context,
-                '\u{f0eb}',
-                'Tips',
-              ), // Change Icon :- lightbulb
-            ],
+          buildVideoTile(
+            context,
+            category: "SLEEP SCIENCE",
+            title: "Deep Sleep Guided Visualization & Breathing",
+            duration: "25 mins",
+            author: "Dr. Sarah Cole",
           ),
-          Spacing.s20.h,
         ],
       ),
     );
   }
 
-  InkWell buildFeatureTile(BuildContext context, String icon, String title) {
-    return InkWell(
-      onTap: () {},
+  Widget buildVideoTile(
+    BuildContext context, {
+    required String title,
+    required String category,
+    required String duration,
+    required String author,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
       child: CustomPrimaryCard(
-        child: SizedBox(
-          width: Get.width / 5,
-          child: Column(
-            children: [
-              Text(
-                icon,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeSolid',
-                  fontSize: 33,
-                  color: primary,
+        padding: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
+        child: Row(
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 100.w,
+                    height: 75.h,
+                    child: Image.asset(
+                      "assets/images/banner.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 32.h,
+                  width: 32.h,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 18.sp,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Spacing.s12.w,
+            Expanded(
+              child: SizedBox(
+                height: 75.h,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category,
+                      style: r10.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.h),
+                        child: Text(
+                          title,
+                          style: r14.copyWith(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 11.sp,
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                        Spacing.s4.w,
+                        Text(
+                          "$duration • by $author",
+                          style: r10.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                title,
-                style: r14.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -386,61 +572,22 @@ class ExploreScreen extends GetView<ExploreController> {
             width: 25,
             child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
           ),
-          Row(
-            children: [
-              Spacing.s24.w,
-              Text(
-                "Explore",
-                textAlign: TextAlign.center,
-                style: h2.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-
-          Row(
-            children: [
-              Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: primary,
-                ),
-              ),
-              Spacing.s16.w,
-
-              Material(
-                color: Colors.transparent,
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  splashColor: primary.withValues(alpha: 0.3),
-                  onTap: () {
-                    Get.to(
-                      () => FavoriteScreen(),
-                      transition: Transition.rightToLeft,
-                    );
-                  },
-                  child: SizedBox(
-                    height: 30.h,
-                    width: 30.h,
-                    child: Center(
-                      child: Text(
-                        MyIcons.heart,
-                        style: TextStyle(
-                          fontFamily: 'FontAwesomeLight',
-                          fontSize: 20,
-                          color: primary,
-                        ),
-                      ),
-                    ),
+          Expanded(
+            child: Row(
+              children: [
+                Spacing.s40.w,
+                Spacing.s40.w,
+                Spacing.s16.w,
+                Text(
+                  "Explore",
+                  textAlign: TextAlign.center,
+                  style: h2.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

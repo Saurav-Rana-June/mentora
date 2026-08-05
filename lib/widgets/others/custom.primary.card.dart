@@ -30,7 +30,7 @@ class _CustomPrimaryCardState extends State<CustomPrimaryCard> {
           ),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(widget.borderRadius ?? 6),
+        borderRadius: BorderRadius.circular(widget.borderRadius ?? 16),
         boxShadow: [
           BoxShadow(
             color: const Color.fromRGBO(0, 0, 0, 0.05),
