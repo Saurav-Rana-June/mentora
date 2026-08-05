@@ -91,17 +91,23 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Obx(() => IconButton(
-                onPressed: () => controller.toggleFavorite(),
-                icon: Text(
-                  controller.isFavorited.value ? '\u{f004}' : '\u{f004}',
-                  style: TextStyle(
-                    fontFamily: controller.isFavorited.value ? 'FontAwesomeSolid' : 'FontAwesomeLight',
-                    fontSize: 20.sp,
-                    color: controller.isFavorited.value ? red : Theme.of(context).iconTheme.color,
-                  ),
+          Obx(
+            () => IconButton(
+              onPressed: () => controller.toggleFavorite(),
+              icon: Text(
+                controller.isFavorited.value ? '\u{f004}' : '\u{f004}',
+                style: TextStyle(
+                  fontFamily: controller.isFavorited.value
+                      ? 'FontAwesomeSolid'
+                      : 'FontAwesomeLight',
+                  fontSize: 20.sp,
+                  color: controller.isFavorited.value
+                      ? red
+                      : Theme.of(context).iconTheme.color,
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -114,28 +120,34 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
 
   // Decompose Progress slider UI
   Widget buildProgress(BuildContext context) {
-    return Obx(() => PlayerProgressBar(
-          progress: controller.progress.value,
-          totalDurationString: controller.session.duration,
-          onChanged: (val) => controller.updateProgress(val),
-        ));
+    return Obx(
+      () => PlayerProgressBar(
+        progress: controller.progress.value,
+        totalDurationString: controller.session.duration,
+        onChanged: (val) => controller.updateProgress(val),
+      ),
+    );
   }
 
   // Decompose Playback controls UI
   Widget buildControls(BuildContext context) {
-    return Obx(() => PlayerControls(
-          isPlaying: controller.isPlaying.value,
-          onPlayPauseTap: () => controller.togglePlayPause(),
-          onPreviousTap: () => controller.seekToBeginning(),
-          onNextTap: () => controller.seekToBeginning(),
-        ));
+    return Obx(
+      () => PlayerControls(
+        isPlaying: controller.isPlaying.value,
+        onPlayPauseTap: () => controller.togglePlayPause(),
+        onPreviousTap: () => controller.seekToBeginning(),
+        onNextTap: () => controller.seekToBeginning(),
+      ),
+    );
   }
 
   // Decompose Bottom actions UI
   Widget buildBottomActions(BuildContext context) {
-    return Obx(() => PlayerBottomActions(
-          isFavorited: controller.isFavorited.value,
-          onFavoriteTap: () => controller.toggleFavorite(),
-        ));
+    return Obx(
+      () => PlayerBottomActions(
+        isFavorited: controller.isFavorited.value,
+        onFavoriteTap: () => controller.toggleFavorite(),
+      ),
+    );
   }
 }
