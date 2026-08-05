@@ -9,6 +9,7 @@ import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:my_icons/icons.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
@@ -395,57 +396,14 @@ class MoodHistoryView extends StatelessWidget {
   }
 
   Widget _buildFilterChips(BuildContext context, HomeController controller) {
-    final theme = Theme.of(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
+    return CustomHorizontalScrollableFilter<DateFilter>(
+      items: DateFilter.values,
+      selectedItem: controller.selectedDateFilter.value,
+      labelBuilder: (filter) => filter.value,
+      onItemSelected: (filter) => controller.changeDateFilter(filter),
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s16.symmetric.horizontal,
         vertical: Spacing.s8.symmetric.horizontal,
-      ),
-      child: Row(
-        children: DateFilter.values.map((filter) {
-          final isSelected = controller.selectedDateFilter.value == filter;
-          return Padding(
-            padding: EdgeInsets.only(right: 8.w),
-            child: GestureDetector(
-              onTap: () => controller.changeDateFilter(filter),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: isSelected ? primary : theme.cardColor,
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(
-                    color: isSelected
-                        ? primary
-                        : (theme.brightness == Brightness.dark
-                              ? slate[800]!
-                              : slate[100]!),
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: primary.withValues(alpha: 0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Text(
-                  filter.value,
-                  style: r12.copyWith(
-                    color: isSelected
-                        ? Colors.white
-                        : theme.textTheme.bodyMedium!.color,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
       ),
     );
   }
