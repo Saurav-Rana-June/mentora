@@ -42,72 +42,65 @@ class MeditationScreen extends GetView<MeditationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
+      appBar: MeditationHeader(
+        onSearchTap: () {
+          _searchFocusNode.requestFocus();
+        },
+      ),
       body: SafeArea(
-        top: false, // SliverAppBar handles top safe area
         child: Obx(() {
-          return CustomScrollView(
+          if (controller.isLoading.value) {
+            return const MeditationLoading();
+          }
+
+          return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            slivers: [
-              // Consistent pinned App Bar across loading and loaded states
-              MeditationHeader(
-                onSearchTap: () {
-                  _searchFocusNode.requestFocus();
-                },
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Search Input
+                CustomSearchBar(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  onChanged: (val) => controller.updateSearchQuery(val),
+                  hintText: "Search meditations...",
+                ),
+                Spacing.s8.h,
 
-              if (controller.isLoading.value)
-                const SliverFillRemaining(child: MeditationLoading())
-              else ...[
-                // Search Input & Category Filters
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomSearchBar(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                        onChanged: (val) => controller.updateSearchQuery(val),
-                        hintText: "Search meditations...",
-                      ),
-                      Spacing.s8.h,
-
-                      // Category Pill Filter
-                      Obx(
-                        () => CustomHorizontalScrollableFilter<String>(
-                          items: _categories,
-                          selectedItem: controller.selectedCategory.value,
-                          labelBuilder: (cat) => cat,
-                          onItemSelected: (cat) => controller.changeCategory(cat),
-                          padding: EdgeInsets.symmetric(horizontal: Spacing.s16.value.w),
-                        ),
-                      ),
-                      Spacing.s16.h,
-
-                      // Horizontally Scrolling Featured Carousel
-                      Obx(() => buildFeaturedSection(context)),
-                    ],
+                // Category Pill Filter
+                Obx(
+                  () => CustomHorizontalScrollableFilter<String>(
+                    items: _categories,
+                    selectedItem: controller.selectedCategory.value,
+                    labelBuilder: (cat) => cat,
+                    onItemSelected: (cat) => controller.changeCategory(cat),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s16.value.w,
+                    ),
                   ),
                 ),
+                Spacing.s16.h,
+
+                // Horizontally Scrolling Featured Carousel
+                Obx(() => buildFeaturedSection(context)),
 
                 // Vertical List Section Title
-                SliverToBoxAdapter(
-                  child: Obx(() {
-                    if (controller.filteredSessions.isNotEmpty) {
-                      return const MeditationSectionTitle(
-                        title: "All Meditations",
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                ),
+                Obx(() {
+                  if (controller.filteredSessions.isNotEmpty) {
+                    return const MeditationSectionTitle(
+                      title: "All Meditations",
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
 
                 // Vertical List of Sessions
                 Obx(() => buildAllMeditationsList(context)),
 
                 // Bottom Safe Spacing
-                SliverToBoxAdapter(child: Spacing.s32.h),
+                Spacing.s32.h,
               ],
-            ],
+            ),
           );
         }),
       ),
@@ -159,17 +152,15 @@ class MeditationScreen extends GetView<MeditationController> {
     final sessionsList = controller.filteredSessions;
 
     if (sessionsList.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.only(top: 40.h),
-          child: const MeditationEmptyView(),
-        ),
+      return Padding(
+        padding: EdgeInsets.only(top: 40.h),
+        child: const MeditationEmptyView(),
       );
     }
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final session = sessionsList[index];
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: sessionsList.map((session) {
         return Obx(() {
           final isFav = controller.favoritedIds.contains(session.id);
           return MeditationCard(
@@ -181,7 +172,7 @@ class MeditationScreen extends GetView<MeditationController> {
             onFavoriteTap: () => controller.toggleFavorite(session.id),
           );
         });
-      }, childCount: sessionsList.length),
+      }).toList(),
     );
   }
 }

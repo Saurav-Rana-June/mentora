@@ -6,7 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
-class MeditationHeader extends StatelessWidget {
+class MeditationHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onSearchTap;
 
   const MeditationHeader({
@@ -15,11 +15,13 @@ class MeditationHeader extends StatelessWidget {
   });
 
   @override
+  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+
+  @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
+    return AppBar(
       backgroundColor: Theme.of(context).primaryColorLight,
       surfaceTintColor: Colors.transparent,
-      pinned: true,
       elevation: 0,
       centerTitle: true,
       leading: const Center(
