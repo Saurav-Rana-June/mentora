@@ -8,7 +8,7 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'controllers/meditation.controller.dart';
 import 'widgets/meditation_header.dart';
 import 'package:Mentora/widgets/others/custom.searchbar.widget.dart';
-import 'widgets/meditation_filter_chips.dart';
+import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'widgets/meditation_section_title.dart';
 import 'widgets/featured_meditation_card.dart';
 import 'widgets/meditation_card.dart';
@@ -24,6 +24,19 @@ class MeditationScreen extends GetView<MeditationController> {
   // Instantiate controller and focus nodes once at class level to optimize performance
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
+
+  static const List<String> _categories = [
+    'All',
+    'Sleep',
+    'Stress Relief',
+    'Anxiety',
+    'Focus',
+    'Self-Esteem',
+    'Kindness',
+    'Gratitude',
+    'Anger',
+    'Grief',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +73,12 @@ class MeditationScreen extends GetView<MeditationController> {
 
                       // Category Pill Filter
                       Obx(
-                        () => MeditationFilterChips(
-                          selectedCategory: controller.selectedCategory.value,
-                          onCategorySelected: (cat) =>
-                              controller.changeCategory(cat),
+                        () => CustomHorizontalScrollableFilter<String>(
+                          items: _categories,
+                          selectedItem: controller.selectedCategory.value,
+                          labelBuilder: (cat) => cat,
+                          onItemSelected: (cat) => controller.changeCategory(cat),
+                          padding: EdgeInsets.symmetric(horizontal: Spacing.s16.value.w),
                         ),
                       ),
                       Spacing.s16.h,
