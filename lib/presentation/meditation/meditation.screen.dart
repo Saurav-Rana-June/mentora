@@ -54,7 +54,6 @@ class MeditationScreen extends GetView<MeditationController> {
           }
 
           return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -79,7 +78,7 @@ class MeditationScreen extends GetView<MeditationController> {
                     ),
                   ),
                 ),
-                Spacing.s16.h,
+                Spacing.s12.h,
 
                 // Horizontally Scrolling Featured Carousel
                 Obx(() => buildFeaturedSection(context)),
@@ -142,7 +141,7 @@ class MeditationScreen extends GetView<MeditationController> {
             },
           ),
         ),
-        Spacing.s16.h,
+        Spacing.s12.h,
       ],
     );
   }
