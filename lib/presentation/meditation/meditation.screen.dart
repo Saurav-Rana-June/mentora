@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
-import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 
 import 'controllers/meditation.controller.dart';
@@ -22,6 +21,10 @@ class MeditationScreen extends GetView<MeditationController> {
   @override
   final controller = Get.put(MeditationController());
 
+  // Instantiate controller and focus nodes once at class level to optimize performance
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,98 +32,70 @@ class MeditationScreen extends GetView<MeditationController> {
       body: SafeArea(
         top: false, // SliverAppBar handles top safe area
         child: Obx(() {
-          if (controller.isLoading.value) {
-            return buildLoadingView(context);
-          }
-          return buildBody(context);
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // Consistent pinned App Bar across loading and loaded states
+              MeditationHeader(
+                onSearchTap: () {
+                  _searchFocusNode.requestFocus();
+                },
+              ),
+
+              if (controller.isLoading.value)
+                const SliverFillRemaining(
+                  child: MeditationLoading(),
+                )
+              else ...[
+                // Search Input & Category Filters
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MeditationSearchBar(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        onChanged: (val) => controller.updateSearchQuery(val),
+                      ),
+                      Spacing.s8.h,
+
+                      // Category Pill Filter
+                      Obx(() => MeditationFilterChips(
+                            selectedCategory: controller.selectedCategory.value,
+                            onCategorySelected: (cat) => controller.changeCategory(cat),
+                          )),
+                      Spacing.s16.h,
+
+                      // Horizontally Scrolling Featured Carousel
+                      Obx(() => buildFeaturedSection(context)),
+                    ],
+                  ),
+                ),
+
+                // Vertical List Section Title
+                SliverToBoxAdapter(
+                  child: Obx(() {
+                    if (controller.filteredSessions.isNotEmpty) {
+                      return const MeditationSectionTitle(title: "All Meditations");
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                ),
+
+                // Vertical List of Sessions
+                Obx(() => buildAllMeditationsList(context)),
+
+                // Bottom Safe Spacing
+                SliverToBoxAdapter(child: Spacing.s32.h),
+              ],
+            ],
+          );
         }),
       ),
     );
   }
 
-  // Loading skeleton view decomposition
-  Widget buildLoadingView(BuildContext context) {
-    return Column(
-      children: [
-        AppBar(
-          backgroundColor: Theme.of(context).primaryColorLight,
-          elevation: 0,
-          leading: const Center(child: BackButton()),
-          title: Text(
-            "Meditation",
-            style: h2.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        const Expanded(child: MeditationLoading()),
-      ],
-    );
-  }
-
-  // Core content layout decomposition using CustomScrollView
-  Widget buildBody(BuildContext context) {
-    final searchFocusNode = FocusNode();
-
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        // App Bar Header
-        MeditationHeader(
-          onSearchTap: () {
-            searchFocusNode.requestFocus();
-          },
-        ),
-
-        // Search Bar, Filter Chips & Featured Section
-        SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Search Input
-              MeditationSearchBar(
-                focusNode: searchFocusNode,
-                onChanged: (val) => controller.updateSearchQuery(val),
-              ),
-              Spacing.s8.h,
-
-              // Horizontal Category Chips
-              Obx(
-                () => MeditationFilterChips(
-                  selectedCategory: controller.selectedCategory.value,
-                  onCategorySelected: (cat) => controller.changeCategory(cat),
-                ),
-              ),
-              Spacing.s16.h,
-
-              // Horizontally Scrolling Featured Carousel
-              Obx(() => buildFeaturedSection(context)),
-            ],
-          ),
-        ),
-
-        // Vertical List Section Title
-        SliverToBoxAdapter(
-          child: Obx(() {
-            if (controller.filteredSessions.isNotEmpty) {
-              return const MeditationSectionTitle(title: "All Meditations");
-            }
-            return const SizedBox.shrink();
-          }),
-        ),
-
-        // Vertical Scrollable List
-        Obx(() => buildAllMeditationsList(context)),
-
-        // Bottom Safe Padding spacing
-        SliverToBoxAdapter(child: Spacing.s32.h),
-      ],
-    );
-  }
-
-  // Decompose Featured horizontal scroll segment
+  // Decompose Featured Section
   Widget buildFeaturedSection(BuildContext context) {
     final featuredList = controller.featuredSessions;
     if (featuredList.isEmpty) {
@@ -160,7 +135,7 @@ class MeditationScreen extends GetView<MeditationController> {
     );
   }
 
-  // Decompose All Meditations vertical list segment
+  // Decompose Vertical List Section
   Widget buildAllMeditationsList(BuildContext context) {
     final sessionsList = controller.filteredSessions;
 
@@ -174,20 +149,23 @@ class MeditationScreen extends GetView<MeditationController> {
     }
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final session = sessionsList[index];
-        return Obx(() {
-          final isFav = controller.favoritedIds.contains(session.id);
-          return MeditationCard(
-            session: session,
-            isFavorited: isFav,
-            onTap: () {
-              Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
-            },
-            onFavoriteTap: () => controller.toggleFavorite(session.id),
-          );
-        });
-      }, childCount: sessionsList.length),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final session = sessionsList[index];
+          return Obx(() {
+            final isFav = controller.favoritedIds.contains(session.id);
+            return MeditationCard(
+              session: session,
+              isFavorited: isFav,
+              onTap: () {
+                Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
+              },
+              onFavoriteTap: () => controller.toggleFavorite(session.id),
+            );
+          });
+        },
+        childCount: sessionsList.length,
+      ),
     );
   }
 }
