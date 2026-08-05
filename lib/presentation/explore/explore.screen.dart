@@ -81,6 +81,7 @@ class ExploreScreen extends GetView<ExploreController> {
                   icon: '\u{f5bb}',
                   title: 'Meditation',
                   subtitle: 'Calm your mind',
+                  onTap: () => Get.toNamed(Routes.MEDITATION),
                 ),
               ),
               Spacing.s12.w,
