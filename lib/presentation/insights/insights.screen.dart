@@ -3,6 +3,7 @@ import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.toggle.dart';
+import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:Mentora/widgets/charts/custom.bar.chart.dart';
 import 'package:flutter/material.dart';
@@ -453,64 +454,12 @@ class InsightsScreen extends GetView<InsightsController> {
   }
 
   Widget buildDateFilters(BuildContext context) {
-    final theme = Theme.of(context);
     return Obx(() {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          // vertical: Spacing.s12.symmetric.horizontal,
-        ),
-        child: Row(
-          children: DateFilter.values.map((filter) {
-            final isSelected = controller.selectedDateFilter.value == filter;
-            return Padding(
-              padding: EdgeInsets.only(right: 8.w),
-              child: GestureDetector(
-                onTap: () => controller.changeDateFilter(filter),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? primary
-                        : theme.cardTheme.color ?? theme.primaryColorLight,
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: isSelected
-                          ? primary
-                          : theme.dividerTheme.color ?? slate[100]!,
-                      width: 1,
-                    ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: primary.withValues(alpha: 0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : [],
-                  ),
-                  child: Text(
-                    filter.value,
-                    style: r12.copyWith(
-                      color: isSelected
-                          ? Colors.white
-                          : theme.textTheme.bodyMedium!.color,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+      return CustomHorizontalScrollableFilter<DateFilter>(
+        items: DateFilter.values,
+        selectedItem: controller.selectedDateFilter.value,
+        labelBuilder: (filter) => filter.value,
+        onItemSelected: (filter) => controller.changeDateFilter(filter),
       );
     });
   }
