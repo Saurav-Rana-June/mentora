@@ -48,23 +48,23 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
           child: Column(
             children: [
               // Top Bar Header
-              buildTopBar(context),
+              _buildTopBar(context),
               const Spacer(flex: 1),
 
               // Artwork & Content Labels
-              buildArtwork(context),
+              _buildArtwork(context),
               const Spacer(flex: 2),
 
               // Progress slider
-              buildProgress(context),
+              _buildProgress(context),
               Spacing.s16.h,
 
               // Playback controls
-              buildControls(context),
+              _buildControls(context),
               const Spacer(flex: 2),
 
               // Bottom Panel actions
-              buildBottomActions(context),
+              _buildBottomActions(context),
               Spacing.s16.h,
             ],
           ),
@@ -73,8 +73,8 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     );
   }
 
-  // Decompose Top Bar Header UI
-  Widget buildTopBar(BuildContext context) {
+  // Decompose Top Bar Header UI to private builder
+  Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s16.value.w,
@@ -113,13 +113,13 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     );
   }
 
-  // Decompose Artwork UI
-  Widget buildArtwork(BuildContext context) {
+  // Decompose Artwork UI to private builder
+  Widget _buildArtwork(BuildContext context) {
     return PlayerArtwork(session: controller.session);
   }
 
-  // Decompose Progress slider UI
-  Widget buildProgress(BuildContext context) {
+  // Decompose Progress slider UI to private builder
+  Widget _buildProgress(BuildContext context) {
     return Obx(
       () => PlayerProgressBar(
         progress: controller.progress.value,
@@ -129,8 +129,8 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     );
   }
 
-  // Decompose Playback controls UI
-  Widget buildControls(BuildContext context) {
+  // Decompose Playback controls UI to private builder
+  Widget _buildControls(BuildContext context) {
     return Obx(
       () => PlayerControls(
         isPlaying: controller.isPlaying.value,
@@ -141,8 +141,8 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     );
   }
 
-  // Decompose Bottom actions UI
-  Widget buildBottomActions(BuildContext context) {
+  // Decompose Bottom actions UI to private builder
+  Widget _buildBottomActions(BuildContext context) {
     return Obx(
       () => PlayerBottomActions(
         isFavorited: controller.isFavorited.value,

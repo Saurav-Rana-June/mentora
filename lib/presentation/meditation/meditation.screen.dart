@@ -72,7 +72,8 @@ class MeditationScreen extends GetView<MeditationController> {
                     items: _categories,
                     selectedItem: controller.selectedCategory.value,
                     labelBuilder: (cat) => cat,
-                    onItemSelected: (cat) => controller.changeCategory(cat),
+                    onItemSelected: (cat) =>
+                        controller.changeCategory(cat),
                     padding: EdgeInsets.symmetric(
                       horizontal: Spacing.s16.value.w,
                     ),
@@ -81,7 +82,7 @@ class MeditationScreen extends GetView<MeditationController> {
                 Spacing.s12.h,
 
                 // Horizontally Scrolling Featured Carousel
-                Obx(() => buildFeaturedSection(context)),
+                Obx(() => _buildFeaturedSection(context)),
 
                 // Vertical List Section Title
                 Obx(() {
@@ -94,7 +95,7 @@ class MeditationScreen extends GetView<MeditationController> {
                 }),
 
                 // Vertical List of Sessions
-                Obx(() => buildAllMeditationsList(context)),
+                Obx(() => _buildAllMeditationsList(context)),
 
                 // Bottom Safe Spacing
                 Spacing.s32.h,
@@ -107,7 +108,7 @@ class MeditationScreen extends GetView<MeditationController> {
   }
 
   // Decompose Featured Section
-  Widget buildFeaturedSection(BuildContext context) {
+  Widget _buildFeaturedSection(BuildContext context) {
     final featuredList = controller.featuredSessions;
     if (featuredList.isEmpty) {
       return const SizedBox.shrink();
@@ -147,7 +148,7 @@ class MeditationScreen extends GetView<MeditationController> {
   }
 
   // Decompose Vertical List Section
-  Widget buildAllMeditationsList(BuildContext context) {
+  Widget _buildAllMeditationsList(BuildContext context) {
     final sessionsList = controller.filteredSessions;
 
     if (sessionsList.isEmpty) {
