@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,90 +6,22 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
-import '../widgets/meditation_session.dart';
+import 'controllers/meditation_player.controller.dart';
 import 'widgets/player_artwork.dart';
 import 'widgets/player_progress_bar.dart';
 import 'widgets/player_controls.dart';
 import 'widgets/player_bottom_actions.dart';
 
-class MeditationPlayerScreen extends StatefulWidget {
-  final MeditationSession? session;
-
-  const MeditationPlayerScreen({
-    super.key,
-    this.session,
-  });
+class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
+  MeditationPlayerScreen({super.key});
 
   @override
-  State<MeditationPlayerScreen> createState() => _MeditationPlayerScreenState();
-}
-
-class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
-  late MeditationSession _session;
-  bool _isPlaying = false;
-  double _progress = 0.35; // Start at 35% progress
-  bool _isFavorited = false;
-  Timer? _playbackTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    // Resolve arguments from GetX or use the constructor parameter or a default fallback
-    _session = widget.session ?? Get.arguments as MeditationSession? ?? mockMeditationSessions.first;
-    // Set initial favorite status
-    _isFavorited = _session.id == '1' || _session.id == '3';
-  }
-
-  @override
-  void dispose() {
-    _stopTimer();
-    super.dispose();
-  }
-
-  // Toggle playback timer
-  void _togglePlayPause() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-      if (_isPlaying) {
-        _startTimer();
-      } else {
-        _stopTimer();
-      }
-    });
-  }
-
-  // Start dummy timer to increment progress
-  void _startTimer() {
-    _stopTimer();
-    _playbackTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      setState(() {
-        _progress += 0.002; // Increment slightly
-        if (_progress >= 1.0) {
-          _progress = 0.0;
-          _isPlaying = false;
-          _stopTimer();
-        }
-      });
-    });
-  }
-
-  void _stopTimer() {
-    _playbackTimer?.cancel();
-    _playbackTimer = null;
-  }
-
-  // Toggle favorite
-  void _toggleFavorite() {
-    setState(() {
-      _isFavorited = !_isFavorited;
-    });
-  }
+  final controller = Get.put(MeditationPlayerController());
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Soothing ambient gradient
     final gradientColors = isDark
         ? [
@@ -116,82 +47,95 @@ class _MeditationPlayerScreenState extends State<MeditationPlayerScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Top Bar
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Spacing.s16.value.w,
-                  vertical: Spacing.s8.value.h,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CustomBackButton(),
-                    Text(
-                      "Now Playing",
-                      style: r16.copyWith(
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _toggleFavorite,
-                      icon: Text(
-                        _isFavorited ? '\u{f004}' : '\u{f004}', // heart icon
-                        style: TextStyle(
-                          fontFamily: _isFavorited ? 'FontAwesomeSolid' : 'FontAwesomeLight',
-                          fontSize: 20.sp,
-                          color: _isFavorited ? red : Theme.of(context).iconTheme.color,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Top Bar Header
+              buildTopBar(context),
               const Spacer(flex: 1),
 
-              // Artwork & Text Info
-              PlayerArtwork(session: _session),
+              // Artwork & Content Labels
+              buildArtwork(context),
               const Spacer(flex: 2),
 
-              // Progress Bar
-              PlayerProgressBar(
-                progress: _progress,
-                totalDurationString: _session.duration,
-                onChanged: (val) {
-                  setState(() {
-                    _progress = val;
-                  });
-                },
-              ),
+              // Progress slider
+              buildProgress(context),
               Spacing.s16.h,
 
-              // Playback Controls
-              PlayerControls(
-                isPlaying: _isPlaying,
-                onPlayPauseTap: _togglePlayPause,
-                onPreviousTap: () {
-                  setState(() {
-                    _progress = 0.0;
-                  });
-                },
-                onNextTap: () {
-                  setState(() {
-                    _progress = 0.0;
-                  });
-                },
-              ),
+              // Playback controls
+              buildControls(context),
               const Spacer(flex: 2),
 
-              // Bottom Panel Utility Actions
-              PlayerBottomActions(
-                isFavorited: _isFavorited,
-                onFavoriteTap: _toggleFavorite,
-              ),
+              // Bottom Panel actions
+              buildBottomActions(context),
               Spacing.s16.h,
             ],
           ),
         ),
       ),
     );
+  }
+
+  // Decompose Top Bar Header UI
+  Widget buildTopBar(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.value.w,
+        vertical: Spacing.s8.value.h,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const CustomBackButton(),
+          Text(
+            "Now Playing",
+            style: r16.copyWith(
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Obx(() => IconButton(
+                onPressed: () => controller.toggleFavorite(),
+                icon: Text(
+                  controller.isFavorited.value ? '\u{f004}' : '\u{f004}',
+                  style: TextStyle(
+                    fontFamily: controller.isFavorited.value ? 'FontAwesomeSolid' : 'FontAwesomeLight',
+                    fontSize: 20.sp,
+                    color: controller.isFavorited.value ? red : Theme.of(context).iconTheme.color,
+                  ),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  // Decompose Artwork UI
+  Widget buildArtwork(BuildContext context) {
+    return PlayerArtwork(session: controller.session);
+  }
+
+  // Decompose Progress slider UI
+  Widget buildProgress(BuildContext context) {
+    return Obx(() => PlayerProgressBar(
+          progress: controller.progress.value,
+          totalDurationString: controller.session.duration,
+          onChanged: (val) => controller.updateProgress(val),
+        ));
+  }
+
+  // Decompose Playback controls UI
+  Widget buildControls(BuildContext context) {
+    return Obx(() => PlayerControls(
+          isPlaying: controller.isPlaying.value,
+          onPlayPauseTap: () => controller.togglePlayPause(),
+          onPreviousTap: () => controller.seekToBeginning(),
+          onNextTap: () => controller.seekToBeginning(),
+        ));
+  }
+
+  // Decompose Bottom actions UI
+  Widget buildBottomActions(BuildContext context) {
+    return Obx(() => PlayerBottomActions(
+          isFavorited: controller.isFavorited.value,
+          onFavoriteTap: () => controller.toggleFavorite(),
+        ));
   }
 }
