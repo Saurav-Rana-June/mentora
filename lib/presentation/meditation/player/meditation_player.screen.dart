@@ -63,8 +63,6 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
               _buildControls(context),
               const Spacer(flex: 2),
 
-              // Bottom Panel actions
-              _buildBottomActions(context),
               Spacing.s16.h,
             ],
           ),

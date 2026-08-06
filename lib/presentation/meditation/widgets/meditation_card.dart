@@ -131,6 +131,15 @@ class MeditationCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      Spacing.s8.h,
+                      Text(
+                        session.description,
+                        style: r12.copyWith(
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
