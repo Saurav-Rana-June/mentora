@@ -28,9 +28,9 @@ class MeditationSectionTitle extends StatelessWidget {
         children: [
           Text(
             title,
-            style: h3.copyWith(
+            style: r18.copyWith(
               color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
           ),
           if (actionText != null)
