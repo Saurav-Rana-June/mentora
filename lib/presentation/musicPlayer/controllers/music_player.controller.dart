@@ -45,28 +45,54 @@ class MusicPlayerController extends GetxController {
       final cachePath = await _getCacheFilePath(audioUrl);
       final cacheFile = File(cachePath);
 
-      if (await cacheFile.exists()) {
+      // Verify that local file exists and is not empty or corrupt (must be > 100 KB)
+      if (await cacheFile.exists() && await cacheFile.length() > 100 * 1024) {
         Get.log("Loading audio from local cache: $cachePath");
         await _audioPlayer.setAudioSource(AudioSource.file(cachePath));
       } else {
-        Get.log("No local cache found. Resolving and streaming: $audioUrl");
+        // Delete potentially corrupt/incomplete cache file from previous runs
+        if (await cacheFile.exists()) {
+          try {
+            await cacheFile.delete();
+          } catch (_) {}
+        }
+
+        Get.log("No valid local cache found. Resolving: $audioUrl");
         String resolvedUrl = audioUrl;
+        bool canCache = false;
+
         if (audioUrl.contains('soundcloud.com')) {
           final track = await _soundcloudClient.tracks.getByUrl(audioUrl);
           final streams = await _soundcloudClient.tracks.getStreams(track.id);
+          
           if (streams.isNotEmpty) {
-            final stream = streams.firstWhere(
-              (s) => s.container == 'mp3',
-              orElse: () => streams.first,
+            // Find a progressive download stream (typically direct MP3)
+            var selectedStream = streams.firstWhereOrNull(
+              (s) => s.protocol == 'progressive',
             );
-            resolvedUrl = stream.url;
+
+            if (selectedStream != null) {
+              resolvedUrl = selectedStream.url;
+              canCache = true;
+              Get.log("Selected progressive stream: ${selectedStream.url.substring(0, 50)}...");
+            } else {
+              // Fallback to first stream (usually HLS)
+              resolvedUrl = streams.first.url;
+              canCache = false;
+              Get.log("No progressive stream found. Playing HLS stream directly.");
+            }
           }
+        } else {
+          // Non-Soundcloud direct link
+          canCache = true;
         }
 
         await _audioPlayer.setUrl(resolvedUrl);
 
-        // Start background download
-        _startBackgroundDownload(resolvedUrl, cachePath);
+        // Start background download only if it is a cacheable progressive stream
+        if (canCache) {
+          _startBackgroundDownload(resolvedUrl, cachePath);
+        }
       }
 
       _positionSubscription = _audioPlayer.positionStream.listen((pos) {
