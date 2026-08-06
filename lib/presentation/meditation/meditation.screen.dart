@@ -14,6 +14,7 @@ import 'widgets/featured_meditation_card.dart';
 import 'widgets/meditation_card.dart';
 import 'widgets/meditation_empty_view.dart';
 import 'widgets/meditation_loading.dart';
+import 'widgets/meditation_content_loading.dart';
 
 class MeditationScreen extends GetView<MeditationController> {
   MeditationScreen({super.key});
@@ -58,7 +59,11 @@ class MeditationScreen extends GetView<MeditationController> {
   SafeArea buildBody(BuildContext context) {
     return SafeArea(
       child: Obx(() {
-        if (controller.isLoading.value) {
+        final isInitialLoad = controller.isLoading.value &&
+            controller.allSessionsList.isEmpty &&
+            controller.featuredSessionsList.isEmpty;
+
+        if (isInitialLoad) {
           return const MeditationLoading();
         }
 
@@ -91,19 +96,27 @@ class MeditationScreen extends GetView<MeditationController> {
               ),
               Spacing.s12.h,
 
-              // Horizontally Scrolling Featured Carousel
-              Obx(() => buildFeaturedSection(context)),
-
-              // Vertical List Section Title
+              // Content Area
               Obx(() {
-                if (controller.filteredSessions.isNotEmpty) {
-                  return const MeditationSectionTitle(title: "All Meditations");
+                if (controller.isLoading.value) {
+                  return const MeditationContentLoading();
                 }
-                return const SizedBox.shrink();
-              }),
 
-              // Vertical List of Sessions
-              Obx(() => buildAllMeditationsList(context)),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Horizontally Scrolling Featured Carousel
+                    buildFeaturedSection(context),
+
+                    // Vertical List Section Title
+                    if (controller.filteredSessions.isNotEmpty)
+                      const MeditationSectionTitle(title: "All Meditations"),
+
+                    // Vertical List of Sessions
+                    buildAllMeditationsList(context),
+                  ],
+                );
+              }),
 
               // Bottom Safe Spacing
               Spacing.s32.h,
