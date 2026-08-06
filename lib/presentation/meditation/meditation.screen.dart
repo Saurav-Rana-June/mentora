@@ -59,7 +59,8 @@ class MeditationScreen extends GetView<MeditationController> {
   SafeArea buildBody(BuildContext context) {
     return SafeArea(
       child: Obx(() {
-        final isInitialLoad = controller.isLoading.value &&
+        final isInitialLoad =
+            controller.isLoading.value &&
             controller.allSessionsList.isEmpty &&
             controller.featuredSessionsList.isEmpty;
 
