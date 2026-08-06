@@ -143,4 +143,13 @@ class MeditationController extends GetxController {
   // UI-compatible getters pointing to reactive API datasets
   List<MeditationSession> get filteredSessions => allSessionsList;
   List<MeditationSession> get featuredSessions => featuredSessionsList;
+
+  // Derived RxBool that synchronizes with the favoritedIds reactive set
+  RxBool getIsFavoritedRx(String id) {
+    final rx = favoritedIds.contains(id).obs;
+    favoritedIds.listen((set) {
+      rx.value = set.contains(id);
+    });
+    return rx;
+  }
 }

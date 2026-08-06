@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
-import 'package:Mentora/infrastructure/navigation/routes.dart';
+import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 
 import 'controllers/meditation.controller.dart';
 import 'widgets/meditation_header.dart';
@@ -143,7 +143,19 @@ class MeditationScreen extends GetView<MeditationController> {
                   session: session,
                   isFavorited: isFav,
                   onTap: () {
-                    Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
+                    Get.to(
+                      () => MusicPlayerView(
+                        audioUrl: session.soundTrack,
+                        title: session.title,
+                        category: session.category,
+                        imageUrl: session.imageUrl,
+                        description: session.description,
+                        duration: session.duration,
+                        isFavorited: controller.getIsFavoritedRx(session.id),
+                        onFavoriteTap: () => controller.toggleFavorite(session.id),
+                      ),
+                      transition: Transition.rightToLeft,
+                    );
                   },
                   onFavoriteTap: () => controller.toggleFavorite(session.id),
                 );
@@ -176,7 +188,19 @@ class MeditationScreen extends GetView<MeditationController> {
             session: session,
             isFavorited: isFav,
             onTap: () {
-              Get.toNamed(Routes.MEDITATION_PLAYER, arguments: session);
+              Get.to(
+                () => MusicPlayerView(
+                  audioUrl: session.soundTrack,
+                  title: session.title,
+                  category: session.category,
+                  imageUrl: session.imageUrl,
+                  description: session.description,
+                  duration: session.duration,
+                  isFavorited: controller.getIsFavoritedRx(session.id),
+                  onFavoriteTap: () => controller.toggleFavorite(session.id),
+                ),
+                transition: Transition.rightToLeft,
+              );
             },
             onFavoriteTap: () => controller.toggleFavorite(session.id),
           );
