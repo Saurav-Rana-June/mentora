@@ -26,4 +26,6 @@ class Routes {
   static const SPLASH = '/splash';
   static const ACCOUNT = '/account';
   static const SESSIONS = '/sessions';
+  static const MEDITATION = '/meditation';
+  static const MEDITATION_PLAYER = '/meditation-player';
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart' hide Response, FormData;
 import 'package:logger/logger.dart';
 
 import '../enums/snackbar_enum.dart';
@@ -37,7 +37,18 @@ class ApiClient {
         onRequest: (options, handler) {
           log.i('API REQUEST [${options.method}] => ${options.uri}');
           if (options.data != null) {
-            log.i('Request Body: ${jsonEncode(options.data)}');
+            if (options.data is FormData) {
+              final formData = options.data as FormData;
+              final fields = formData.fields.map((e) => '${e.key}: ${e.value}').join(', ');
+              final files = formData.files.map((e) => '${e.key}: ${e.value.filename}').join(', ');
+              log.i('Request Body (FormData): Fields: [$fields], Files: [$files]');
+            } else {
+              try {
+                log.i('Request Body: ${jsonEncode(options.data)}');
+              } catch (_) {
+                log.i('Request Body: ${options.data}');
+              }
+            }
           }
           return handler.next(options);
         },
@@ -48,7 +59,11 @@ class ApiClient {
         onError: (DioException e, handler) {
           log.e('API ERROR [${e.response?.statusCode}] <= ${e.requestOptions.uri}');
           if (e.response?.data != null) {
-            log.e('Error Response Data: ${jsonEncode(e.response?.data)}');
+            try {
+              log.e('Error Response Data: ${jsonEncode(e.response?.data)}');
+            } catch (_) {
+              log.e('Error Response Data: ${e.response?.data}');
+            }
           }
           return handler.next(e);
         },

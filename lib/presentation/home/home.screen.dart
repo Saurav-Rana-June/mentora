@@ -1,10 +1,13 @@
 import 'package:Mentora/controllers/bottom.nav.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +17,7 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'controllers/home.controller.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 
 class HomeScreen extends GetView<HomeController> {
   HomeScreen({super.key});
@@ -147,12 +151,18 @@ class HomeScreen extends GetView<HomeController> {
   }
 
   Widget buildMoodTrendsCard(BuildContext context) {
+    final globalController = Get.find<GlobalController>();
+
     return Obx(() {
-      final historyLength = controller.checkInDates.length;
+      final stats = globalController.moodTrackerStats.value;
+      final checkedInMoods =
+          stats?.data?.map((d) => d.feeling).whereType<String>().toList() ?? [];
+      final historyLength = checkedInMoods.length;
+
       return GestureDetector(
         onTap: () {
           if (Get.isRegistered<BottamNavController>()) {
-            Get.find<BottamNavController>().changeTabIndex(3);
+            Get.find<BottamNavController>().changeTabIndex(4);
           }
         },
         child: CustomPrimaryCard(
@@ -162,12 +172,27 @@ class HomeScreen extends GetView<HomeController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Mood Trends",
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Mood Trends",
+                        style: r18.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        "This Week (resets weekly)",
+                        style: r12.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color!.withValues(alpha: 0.65),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                   Row(
                     children: [
@@ -192,7 +217,7 @@ class HomeScreen extends GetView<HomeController> {
                 ],
               ),
               Spacing.s12.h,
-              if (historyLength < 3)
+              if (historyLength < 2)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 24.h),
@@ -205,7 +230,7 @@ class HomeScreen extends GetView<HomeController> {
                       Text("🌟", style: TextStyle(fontSize: 24.sp)),
                       Spacing.s8.h,
                       Text(
-                        "Check in a few more days to see your trends",
+                        "Check in a few more days to see your\ntrends",
                         textAlign: TextAlign.center,
                         style: r12.copyWith(
                           color: Theme.of(context).textTheme.bodySmall!.color,
@@ -221,14 +246,13 @@ class HomeScreen extends GetView<HomeController> {
                   width: double.infinity,
                   child: Padding(
                     padding: EdgeInsets.only(top: 8.h),
-                    child: CustomPaint(
-                      painter: MoodLineChartPainter(
-                        checkInMoods: controller.checkInMoods,
-                        primaryColor: primary,
-                        textColor:
-                            Theme.of(context).textTheme.bodySmall!.color ??
-                            slate[500]!,
-                      ),
+                    child: CustomLineChart(
+                      checkInMoods: checkedInMoods,
+                      primaryColor: primary,
+                      textColor:
+                          Theme.of(context).textTheme.bodySmall!.color ??
+                          slate[500]!,
+                      padding: 12.0,
                     ),
                   ),
                 ),
@@ -241,6 +265,28 @@ class HomeScreen extends GetView<HomeController> {
 
   Widget buildTodayPlanSection(BuildContext context) {
     return Obx(() {
+      if (controller.isLoadingPlans.value) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Your plan for today",
+              style: r18.copyWith(
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Spacing.s12.h,
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: const Loader(),
+              ),
+            ),
+          ],
+        );
+      }
+
       final total = controller.plans.length;
       final completed = controller.plans.where((p) => p.isComplete).length;
       return Column(
@@ -264,10 +310,10 @@ class HomeScreen extends GetView<HomeController> {
               final plan = controller.plans[index];
               return buildTodayPlanTimelineTile(
                 context,
-                plan.title,
+                plan.uiTitle,
                 plan.label,
-                plan.caption,
-                plan.icon,
+                plan.uiCaption,
+                plan.uiIcon,
                 index == 0 ? true : false,
                 index + 1 == total ? true : false,
                 plan.isComplete,
@@ -534,67 +580,266 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
+  static const Map<String, String> _moodReasonsEmojiMap = {
+    // Factors
+    'Work': '💼',
+    'School': '🎓',
+    'Family': '👨‍👩‍👧‍👦',
+    'Partner': '💑',
+    'Health': '🏥',
+    'Friends': '🧑‍🤝‍🧑',
+    'Weather': '🌦️',
+    'Hobbies': '🎨',
+    'Finances': '💰',
+    'Events': '🎉',
+    'Exercise': '🏋️‍♂️',
+    'Travel': '✈️',
+    'Nature': '🌳',
+    'Sleep': '😴',
+    'Stress': '😣',
+    'Time Pressure': '⏰',
+    'Deadlines': '📚',
+    'Money Worries': '💸',
+    'Relationship': '💔',
+    'Illness': '🤒',
+    'Overthinking': '📱',
+    'Traffic': '🚦',
+    'Mental Load': '🧠',
+    // Exact feelings
+    'Happy': '😄',
+    'Calm': '😊',
+    'Relaxed': '😌',
+    'Excited': '😁',
+    'Content': '🥰',
+    'Grateful': '🙏',
+    'Stressed': '😣',
+    'Anxious': '😰',
+    'Overwhelmed': '😓',
+    'Frustrated': '😤',
+    'Angry': '😠',
+    'Sad': '😔',
+    'Disappointed': '😞',
+    'Lonely': '🥺',
+    'Hurt': '😢',
+    'Tired': '😴',
+    'Exhausted': '🥱',
+    'Numb': '😐',
+    'Mentally Drained': '🤯',
+    'Motivated': '💪',
+    'Focused': '🧠',
+    'Inspired': '✨',
+  };
+
+  Color _getMoodColor(String feeling) {
+    switch (feeling) {
+      case 'Angry':
+        return const Color(0xFFF34538);
+      case 'Not Good':
+        return const Color(0xFFFF991C);
+      case 'Normal':
+        return const Color(0xFF939393);
+      case 'Good':
+        return const Color(0xFF8DC255);
+      case 'Very Good':
+        return const Color(0xFF49AF58);
+      default:
+        return const Color(0xFFA5C67C); // brand primary
+    }
+  }
+
+  String _formatTime(String createdAt) {
+    try {
+      final dateTime = DateTime.parse(createdAt).toLocal();
+      final hour = dateTime.hour > 12
+          ? dateTime.hour - 12
+          : (dateTime.hour == 0 ? 12 : dateTime.hour);
+      final minute = dateTime.minute.toString().padLeft(2, '0');
+      final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+      return '$hour:$minute $period';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  Widget _buildMoodTag(BuildContext context, String label, Color tintColor) {
+    final emoji = _moodReasonsEmojiMap[label] ?? '';
+    final displayLabel = emoji.isNotEmpty ? '$emoji $label' : label;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? tintColor.withValues(alpha: 0.12)
+            : tintColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: tintColor.withValues(alpha: 0.2), width: 1),
+      ),
+      child: Text(
+        displayLabel,
+        style: r12.copyWith(
+          color: isDarkMode
+              ? tintColor.withValues(alpha: 0.9)
+              : tintColor.withValues(alpha: 0.8),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget buildMoodCheckedInCard(
     BuildContext context,
     DailyMoodAssessmentModel checkIn,
   ) {
-    final mood = checkIn.feeling;
+    final mood = checkIn.feeling ?? '';
     final moodIcon = controller.moodImage(mood);
-
+    final moodColor = _getMoodColor(mood);
+    final timeStr = _formatTime(checkIn.createdAt ?? '');
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
         Get.toNamed(Routes.MOOD_CHECKIN, arguments: checkIn);
       },
       child: CustomPrimaryCard(
-        child: Row(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (moodIcon.isNotEmpty)
-              SvgPicture.asset(moodIcon, width: 50, height: 50),
-            Spacing.s16.w,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (moodIcon.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: moodColor.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      moodIcon,
+                      width: 38.w,
+                      height: 38.w,
+                    ),
+                  ),
+                Spacing.s12.w,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "TODAY'S CHECK-IN",
+                            style: r10.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          if (timeStr.isNotEmpty) ...[
+                            Spacing.s8.w,
+                            Container(
+                              width: 4.w,
+                              height: 4.w,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .color!
+                                    .withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Spacing.s8.w,
+                            Text(
+                              timeStr,
+                              style: r10.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        "You feel $mood",
+                        style: r16.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
+                (checkIn.why?.isNotEmpty ?? false)) ...[
+              Spacing.s12.h,
+              Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
+              Spacing.s12.h,
+              Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
                 children: [
-                  Text(
-                    "Today's Mood Check-in",
-                    style: r14.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall!.color,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  ...(checkIn.exactFeeling ?? []).map(
+                    (e) => _buildMoodTag(context, e, moodColor),
                   ),
-                  Spacing.s4.h,
-                  Text(
-                    "You feel $mood",
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  ...(checkIn.why ?? []).map(
+                    (w) => _buildMoodTag(context, w, primary),
                   ),
-                  if (checkIn.notes != null && checkIn.notes!.isNotEmpty) ...[
-                    Spacing.s4.h,
-                    Text(
-                      checkIn.notes!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: r12.copyWith(
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
-                        fontStyle: FontStyle.italic,
+                ],
+              ),
+            ],
+            if (checkIn.notes != null && checkIn.notes!.isNotEmpty) ...[
+              Spacing.s12.h,
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(16.r),
+                    bottomLeft: Radius.circular(16.r),
+                    bottomRight: Radius.circular(16.r),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 2.h),
+                      child: Text(
+                        '\u{f10d}', // Open Quote icon in FontAwesomeSolid
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeSolid',
+                          fontSize: 9.sp,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color!.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                    Spacing.s8.w,
+                    Expanded(
+                      child: Text(
+                        checkIn.notes!,
+                        style: r12.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
-            Spacing.s8.w,
-            Text(
-              '\u{f303}', // Pen/Edit icon in FontAwesomeSolid
-              style: TextStyle(
-                fontFamily: 'FontAwesomeSolid',
-                fontSize: 16.sp,
-                color: primary,
-              ),
-            ),
+            ],
           ],
         ),
       ),
@@ -652,18 +897,21 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ),
               Spacing.s12.w,
-              GestureDetector(
-                onTap: () => Get.to(
-                  () => AccountScreen(),
-                  transition: Transition.rightToLeft,
-                ),
-                child: const CircleAvatar(
-                  radius: 14,
-                  backgroundImage: NetworkImage(
-                    "https://austinfilm.s3.us-east-2.amazonaws.com/wp-content/uploads/2019/07/29115643/john-doe-jim-herrington-cropped-1024x675.jpg",
+              Obx(() {
+                final globalController = Get.find<GlobalController>();
+                final profile = globalController.userProfile.value;
+                return GestureDetector(
+                  onTap: () => Get.to(
+                    () => AccountScreen(),
+                    transition: Transition.rightToLeft,
                   ),
-                ),
-              ),
+                  child: CustomAvatar(
+                    radius: 14.r,
+                    imageUrl: profile?.profilePictureUrl,
+                    name: profile?.name,
+                  ),
+                );
+              }),
             ],
           ),
         ],
@@ -671,170 +919,5 @@ class HomeScreen extends GetView<HomeController> {
       centerTitle: true,
       automaticallyImplyLeading: false,
     );
-  }
-}
-
-class MoodLineChartPainter extends CustomPainter {
-  final List<String> checkInMoods;
-  final Color primaryColor;
-  final Color textColor;
-
-  MoodLineChartPainter({
-    required this.checkInMoods,
-    required this.primaryColor,
-    required this.textColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (checkInMoods.isEmpty) return;
-
-    final moods = checkInMoods.length > 7
-        ? checkInMoods.sublist(checkInMoods.length - 7)
-        : checkInMoods;
-
-    final double stepX =
-        size.width / (moods.length - 1 == 0 ? 1 : moods.length - 1);
-    final double height = size.height;
-    final double padding = 12;
-
-    // Draw horizontal dashed grid lines for mood levels
-    final gridPaint = Paint()
-      ..color = textColor.withValues(alpha: 0.1)
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    final double maxScoreY = padding;
-    final double midScoreY = padding + 2.0 * (height - 2 * padding) / 4.0;
-    final double minScoreY = padding + 4.0 * (height - 2 * padding) / 4.0;
-
-    void drawDashedLine(double y) {
-      double startX = 0;
-      const dashWidth = 5.0;
-      const dashSpace = 4.0;
-      while (startX < size.width) {
-        canvas.drawLine(
-          Offset(startX, y),
-          Offset(startX + dashWidth, y),
-          gridPaint,
-        );
-        startX += dashWidth + dashSpace;
-      }
-    }
-
-    drawDashedLine(maxScoreY);
-    drawDashedLine(midScoreY);
-    drawDashedLine(minScoreY);
-
-    // Draw small text labels next to the grid lines
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-
-    void drawLabel(String text, double y) {
-      textPainter.text = TextSpan(
-        text: text,
-        style: TextStyle(
-          color: textColor.withValues(alpha: 0.4),
-          fontSize: 8.sp,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(4.w, y - 12.h));
-    }
-
-    drawLabel("GREAT", maxScoreY);
-    drawLabel("CALM", midScoreY);
-    drawLabel("LOW", minScoreY);
-
-    final points = <Offset>[];
-    for (int i = 0; i < moods.length; i++) {
-      double score = 3.0; // default normal
-      switch (moods[i]) {
-        case 'Very Good':
-        case 'Very Happy':
-          score = 5.0;
-          break;
-        case 'Good':
-        case 'Happy':
-          score = 4.0;
-          break;
-        case 'Normal':
-          score = 3.0;
-          break;
-        case 'Not Good':
-          score = 2.0;
-          break;
-        case 'Angry':
-          score = 1.0;
-          break;
-      }
-
-      final double y = padding + (5.0 - score) * (height - 2 * padding) / 4.0;
-      final double x = i * stepX;
-      points.add(Offset(x, y));
-    }
-
-    final path = Path();
-    path.moveTo(points.first.dx, height);
-    for (var point in points) {
-      path.lineTo(point.dx, point.dy);
-    }
-    path.lineTo(points.last.dx, height);
-    path.close();
-
-    final gradientPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          primaryColor.withValues(alpha: 0.25),
-          primaryColor.withValues(alpha: 0.0),
-        ],
-      ).createShader(Rect.fromLTRB(0, 0, size.width, height))
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(path, gradientPaint);
-
-    final linePaint = Paint()
-      ..color = primaryColor
-      ..strokeWidth = 3.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final linePath = Path();
-    linePath.moveTo(points.first.dx, points.first.dy);
-    for (int i = 1; i < points.length; i++) {
-      final p0 = points[i - 1];
-      final p1 = points[i];
-      final controlPoint1 = Offset(p0.dx + stepX / 2.0, p0.dy);
-      final controlPoint2 = Offset(p1.dx - stepX / 2.0, p1.dy);
-      linePath.cubicTo(
-        controlPoint1.dx,
-        controlPoint1.dy,
-        controlPoint2.dx,
-        controlPoint2.dy,
-        p1.dx,
-        p1.dy,
-      );
-    }
-    canvas.drawPath(linePath, linePaint);
-
-    final dotPaint = Paint()
-      ..color = primaryColor
-      ..style = PaintingStyle.fill;
-    final dotBorderPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke;
-
-    for (var point in points) {
-      canvas.drawCircle(point, 5.0, dotPaint);
-      canvas.drawCircle(point, 5.0, dotBorderPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant MoodLineChartPainter oldDelegate) {
-    return oldDelegate.checkInMoods != checkInMoods;
   }
 }

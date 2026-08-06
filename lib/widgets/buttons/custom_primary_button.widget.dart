@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 
 class CustomPrimaryButton extends StatelessWidget {
   final String text;
@@ -63,11 +64,9 @@ class CustomPrimaryButton extends StatelessWidget {
                       const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(
+                        child: Loader(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
+                          color: Colors.white,
                         ),
                       ))
                 : Row(

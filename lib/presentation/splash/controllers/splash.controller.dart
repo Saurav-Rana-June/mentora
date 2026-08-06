@@ -1,9 +1,9 @@
 import 'dart:async';
-
+import 'package:get/get.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
-import 'package:get/get.dart';
+import 'package:Mentora/controllers/global.controller.dart';
 
 class SplashController extends GetxController {
   @override
@@ -21,7 +21,7 @@ class SplashController extends GetxController {
       try {
         final response = await AuthService.autoSignIn();
         if (response != null && response.data != null) {
-          await AppMethod.saveUserEmail(response.data!.email);
+          await AppMethod.saveUserEmail(response.data!.email ?? '');
           isAuthenticated = true;
         } else {
           await AppMethod.clearUserSession();
@@ -42,6 +42,9 @@ class SplashController extends GetxController {
     }
 
     if (isAuthenticated) {
+      if (Get.isRegistered<GlobalController>()) {
+        Get.find<GlobalController>().fetchUserProfile();
+      }
       Get.offAllNamed(Routes.LANDING);
     } else {
       if (AppMethod.hasSeenIntroduction()) {

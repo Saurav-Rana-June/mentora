@@ -20,11 +20,11 @@ class MoodCheckinController extends GetxController {
       isUpdateMode.value = true;
       
       // Pre-fill selected mood
-      selectedMood.value = argument.feeling;
+      selectedMood.value = argument.feeling ?? 'Angry';
       
       // Pre-fill reasons
       selectedMoodReasonsList.clear();
-      for (var label in argument.why) {
+      for (var label in argument.why ?? []) {
         final match = moodReasonsList.firstWhereOrNull((r) => r.label == label);
         if (match != null) {
           selectedMoodReasonsList.add(match);
@@ -33,7 +33,7 @@ class MoodCheckinController extends GetxController {
       
       // Pre-fill exact feelings
       selectedExtactReasonsList.clear();
-      for (var label in argument.exactFeeling) {
+      for (var label in argument.exactFeeling ?? []) {
         final match = exactReasonsList.firstWhereOrNull((r) => r.label == label);
         if (match != null) {
           selectedExtactReasonsList.add(match);

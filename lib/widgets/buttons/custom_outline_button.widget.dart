@@ -1,5 +1,6 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:my_spacing/spacing.enum.dart';
 
@@ -61,10 +62,8 @@ class CustomOutlineButton extends StatelessWidget {
                 ? SizedBox(
                     height: 18,
                     width: 18,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(
-                        borderColor ?? Theme.of(context).primaryColor,
-                      ),
+                    child: Loader(
+                      color: borderColor ?? Theme.of(context).primaryColor,
                       strokeWidth: 2.3,
                     ),
                   )

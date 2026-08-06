@@ -1,4 +1,5 @@
 export 'package:Mentora/presentation/account/account.screen.dart';
+export 'package:Mentora/presentation/account/views/edit_account.dart';
 export 'package:Mentora/presentation/allSet/all_set.screen.dart';
 export 'package:Mentora/presentation/chatAI/chat_a_i.screen.dart';
 export 'package:Mentora/presentation/chatExperts/chat_experts.screen.dart';
@@ -19,3 +20,5 @@ export 'package:Mentora/presentation/signUp/sign_up.screen.dart';
 export 'package:Mentora/presentation/sleep/sleep.screen.dart';
 export 'package:Mentora/presentation/splash/splash.screen.dart';
 export 'package:Mentora/presentation/sessions/sessions.screen.dart';
+export 'package:Mentora/presentation/meditation/meditation.screen.dart';
+export 'package:Mentora/presentation/meditation/player/meditation_player.screen.dart';

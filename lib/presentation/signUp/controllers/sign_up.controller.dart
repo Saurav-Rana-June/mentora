@@ -6,18 +6,15 @@ import '../../../../data/utils/app_utils.dart';
 import '../../../../infrastructure/dal/services/auth_service.dart';
 import '../../../../infrastructure/navigation/routes.dart';
 
+import 'package:Mentora/controllers/global.controller.dart';
+
 class SignUpController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final hidePassword = true.obs;
   final isLoading = false.obs;
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
+
 
   Future<void> signUp() async {
     final email = emailController.text.trim();
@@ -65,8 +62,12 @@ class SignUpController extends GetxController {
         );
         if (loginResponse != null && loginResponse.data != null) {
           final tokenData = loginResponse.data!;
-          await AppMethod.saveUserToken(tokenData.accessToken);
+          await AppMethod.saveUserToken(tokenData.accessToken ?? '');
           await AppMethod.saveUserEmail(email);
+
+          if (Get.isRegistered<GlobalController>()) {
+            Get.find<GlobalController>().fetchUserProfile();
+          }
 
           AppUtils.snackbar(
             'Success',

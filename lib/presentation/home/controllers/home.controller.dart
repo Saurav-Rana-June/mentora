@@ -1,12 +1,20 @@
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/presentation/onboarding/controllers/onboarding.controller.dart';
+import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/data/model/tasks/plan.model.dart';
+import 'package:Mentora/infrastructure/dal/services/tasks_service.dart';
+import 'package:Mentora/data/methods/app_method.dart';
 
 class HomeController extends GetxController {
   // Check-in history
   final RxList<DateTime> checkInDates = <DateTime>[].obs;
   final RxList<String> checkInMoods = <String>[].obs;
+  final RxList<DailyMoodAssessmentModel> moodHistoryList =
+      <DailyMoodAssessmentModel>[].obs;
+  final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
   final RxString latestMood = ''.obs;
@@ -14,35 +22,41 @@ class HomeController extends GetxController {
       Rx<DailyMoodAssessmentModel?>(null);
 
   // Trusted Contact Info
-  final RxString trustedContactName = 'Emma (Sister)'.obs;
-  final RxString trustedContactPhone = '+1 (555) 019-2834'.obs;
+  final RxString trustedContactName = ''.obs;
+  final RxString trustedContactPhone = ''.obs;
 
   final RxList<PlanModel> plans = <PlanModel>[].obs;
+  final RxBool isLoadingPlans = false.obs;
 
   void updateTrustedContact(String name, String phone) {
     trustedContactName.value = name;
     trustedContactPhone.value = phone;
+    AppMethod.saveTrustedContact(name, phone);
   }
 
   @override
   void onInit() {
     super.onInit();
 
-    // Pre-populate with some mock check-ins so the chart and streak are populated for the demo,
-    // while also handling empty state if history is empty.
-    final today = DateTime.now();
-    checkInDates.addAll([
-      today.subtract(const Duration(days: 4)),
-      today.subtract(const Duration(days: 3)),
-      today.subtract(const Duration(days: 2)),
-      today.subtract(const Duration(days: 1)),
-    ]);
-    checkInMoods.addAll(["Good", "Normal", "Not Good", "Good"]);
+    // Load trusted contact info from storage (with defaults if empty)
+    trustedContactName.value =
+        AppMethod.getTrustedContactName() ?? 'Emma (Sister)';
+    trustedContactPhone.value =
+        AppMethod.getTrustedContactPhone() ?? '+1 (555) 019-2834';
 
     calculateStreakAndWeekly();
     generateDynamicPlans();
     fetchStreakStats();
     fetchMoodHistory();
+    fetchDailyPlan();
+
+    if (Get.isRegistered<GlobalController>()) {
+      final globalController = Get.find<GlobalController>();
+      if (globalController.userProfile.value == null &&
+          !globalController.isLoadingProfile.value) {
+        globalController.fetchUserProfile();
+      }
+    }
   }
 
   void addMoodCheckin(String mood) {
@@ -84,8 +98,8 @@ class HomeController extends GetxController {
       final response = await AssessmentService.getStreakStats();
       if (response != null && response.data != null) {
         final stats = response.data!;
-        streakCount.value = stats.currentStreak;
-        weeklyCheckInCount.value = stats.weeklyCheckInCount;
+        streakCount.value = stats.currentStreak ?? 0;
+        weeklyCheckInCount.value = stats.weeklyCheckInCount ?? 0;
       }
     } catch (e) {
       Get.log("Error fetching streak stats: $e");
@@ -154,17 +168,55 @@ class HomeController extends GetxController {
     weeklyCheckInCount.value = uniqueDaysThisWeek.length;
   }
 
-  void togglePlanCompletion(int index) {
+  Future<void> fetchDailyPlan() async {
+    try {
+      isLoadingPlans.value = true;
+      final response = await TasksService.getDailyPlan(timezone: 'UTC');
+      if (response != null && response.data != null) {
+        plans.assignAll(response.data!);
+      }
+    } catch (e) {
+      Get.log("Error fetching daily plan: $e");
+    } finally {
+      isLoadingPlans.value = false;
+    }
+  }
+
+  Future<void> togglePlanCompletion(int index) async {
     if (index >= 0 && index < plans.length) {
       final plan = plans[index];
-      plans[index] = PlanModel(
+      final newStatus = !plan.isComplete;
+
+      // Optimistically update UI
+      final updatedPlan = PlanModel(
+        id: plan.id,
+        activityId: plan.activityId,
         title: plan.title,
-        label: plan.label,
         caption: plan.caption,
         icon: plan.icon,
-        isComplete: !plan.isComplete,
+        duration: plan.duration,
+        category: plan.category,
+        sortOrder: plan.sortOrder,
+        isComplete: newStatus,
       );
+      plans[index] = updatedPlan;
       plans.refresh();
+
+      try {
+        final response = await TasksService.updatePlanItemCompletion(
+          planItemId: plan.id,
+          isComplete: newStatus,
+        );
+        if (response != null && response.data != null) {
+          plans[index] = response.data!;
+          plans.refresh();
+        }
+      } catch (e) {
+        Get.log("Error updating plan item status: $e");
+        // Revert back on error
+        plans[index] = plan;
+        plans.refresh();
+      }
     }
   }
 
@@ -180,10 +232,14 @@ class HomeController extends GetxController {
     if (latestMood.value == 'Angry' || latestMood.value == 'Not Good') {
       generated.add(
         PlanModel(
-          title: "stress",
-          label: "SOS Calm Breathing",
-          caption: "3 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "SOS Calm Breathing",
+          caption: "Calming breaths",
+          duration: "3 min",
+          category: "stress",
+          icon: 'breathing',
+          sortOrder: 1,
           isComplete: false,
         ),
       );
@@ -192,10 +248,14 @@ class HomeController extends GetxController {
         latestMood.value == 'Very Good') {
       generated.add(
         PlanModel(
-          title: "goal",
-          label: "Write Today's Intentions",
-          caption: "4 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "Write Today's Intentions",
+          caption: "Write intentions",
+          duration: "4 min",
+          category: "goal",
+          icon: 'lotus',
+          sortOrder: 1,
           isComplete: false,
         ),
       );
@@ -206,10 +266,14 @@ class HomeController extends GetxController {
     if (goals.contains("Reduce stress") || goals.contains("Manage anxiety")) {
       generated.add(
         PlanModel(
-          title: "stress",
-          label: "Quick Guided Meditation",
-          caption: "5 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "Quick Guided Meditation",
+          caption: "Guided meditation",
+          duration: "5 min",
+          category: "stress",
+          icon: 'lotus',
+          sortOrder: 2,
           isComplete: false,
         ),
       );
@@ -219,10 +283,14 @@ class HomeController extends GetxController {
         onboarding.selectedSleepQualityStatus.value == "Poor") {
       generated.add(
         PlanModel(
-          title: "sleep",
-          label: "Deep Sleep Body Scan",
-          caption: "8 min",
-          icon: '\u{f186}',
+          id: -1,
+          activityId: -1,
+          title: "Deep Sleep Body Scan",
+          caption: "Body scan",
+          duration: "8 min",
+          category: "sleep",
+          icon: 'sleep',
+          sortOrder: 3,
           isComplete: false,
         ),
       );
@@ -233,10 +301,14 @@ class HomeController extends GetxController {
         onboarding.selectedHappinessStatus.value == "Unhappy") {
       generated.add(
         PlanModel(
-          title: "mindfulness",
-          label: "Three-Step Gratitude Practice",
-          caption: "5 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "Three-Step Gratitude Practice",
+          caption: "Gratitude practice",
+          duration: "5 min",
+          category: "mindfulness",
+          icon: 'heart',
+          sortOrder: 4,
           isComplete: false,
         ),
       );
@@ -244,10 +316,14 @@ class HomeController extends GetxController {
     if (goals.contains("Increase focus & productivity")) {
       generated.add(
         PlanModel(
-          title: "focus",
-          label: "Focus Block & Mind Clearing",
-          caption: "10 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "Focus Block & Mind Clearing",
+          caption: "Mind clearing",
+          duration: "10 min",
+          category: "focus",
+          icon: 'lotus',
+          sortOrder: 5,
           isComplete: false,
         ),
       );
@@ -260,10 +336,14 @@ class HomeController extends GetxController {
         onboarding.selectedHealthStatus.value == "Frequently") {
       generated.add(
         PlanModel(
-          title: "stress",
-          label: "Progressive Muscle Relaxation",
-          caption: "7 min",
-          icon: '\u{f800}',
+          id: -1,
+          activityId: -1,
+          title: "Progressive Muscle Relaxation",
+          caption: "Muscle relaxation",
+          duration: "7 min",
+          category: "stress",
+          icon: 'lotus',
+          sortOrder: 6,
           isComplete: false,
         ),
       );
@@ -272,10 +352,14 @@ class HomeController extends GetxController {
         issues.contains("Family conflicts")) {
       generated.add(
         PlanModel(
-          title: "mindfulness",
-          label: "Loving-Kindness Meditation",
-          caption: "6 min",
-          icon: '\u{f004}',
+          id: -1,
+          activityId: -1,
+          title: "Loving-Kindness Meditation",
+          caption: "Loving-kindness",
+          duration: "6 min",
+          category: "mindfulness",
+          icon: 'heart',
+          sortOrder: 7,
           isComplete: false,
         ),
       );
@@ -284,30 +368,42 @@ class HomeController extends GetxController {
     // 4. Fill in default plans if we have too few
     final defaultPlans = [
       PlanModel(
-        title: "Meditation",
-        label: "Introduction to Meditation",
-        caption: "8 min",
-        icon: '\u{f800}',
+        id: -1,
+        activityId: -1,
+        title: "Introduction to Meditation",
+        caption: "Intro to meditation",
+        duration: "8 min",
+        category: "Meditation",
+        icon: 'lotus',
+        sortOrder: 8,
         isComplete: false,
       ),
       PlanModel(
-        title: "Breathing",
-        label: "Relax your mind and body",
-        caption: "5 min",
-        icon: '\u{f800}',
+        id: -1,
+        activityId: -1,
+        title: "Relax your mind and body",
+        caption: "Mind and body",
+        duration: "5 min",
+        category: "Breathing",
+        icon: 'lotus',
+        sortOrder: 9,
         isComplete: false,
       ),
       PlanModel(
-        title: "Gratitude",
-        label: "Start your day with positivity",
-        caption: "4 min",
-        icon: '\u{f800}',
+        id: -1,
+        activityId: -1,
+        title: "Start your day with positivity",
+        caption: "Positivity",
+        duration: "4 min",
+        category: "Gratitude",
+        icon: 'lotus',
+        sortOrder: 10,
         isComplete: false,
       ),
     ];
 
     for (var def in defaultPlans) {
-      if (generated.length < 5 && !generated.any((p) => p.label == def.label)) {
+      if (generated.length < 5 && !generated.any((p) => p.title == def.title)) {
         generated.add(def);
       }
     }
@@ -315,11 +411,22 @@ class HomeController extends GetxController {
     plans.assignAll(generated.take(6).toList());
   }
 
+  Future<void> changeDateFilter(DateFilter filter) async {
+    selectedDateFilter.value = filter;
+    await fetchMoodHistory();
+  }
+
   Future<void> fetchMoodHistory() async {
     try {
-      final response = await AssessmentService.getDailyMoods();
+      final response = await AssessmentService.getDailyMoodsHistory(
+        page: 1,
+        size: 50,
+        dateFilter: selectedDateFilter.value,
+      );
       if (response != null && response.data != null) {
-        final List<DailyMoodAssessmentModel> history = response.data!;
+        final List<DailyMoodAssessmentModel> history = response.data!.items;
+
+        moodHistoryList.assignAll(history);
 
         checkInDates.clear();
         checkInMoods.clear();
@@ -328,26 +435,32 @@ class HomeController extends GetxController {
         DailyMoodAssessmentModel? foundToday;
 
         for (var checkIn in history) {
-          final DateTime checkInDate = DateTime.parse(
-            checkIn.createdAt,
-          ).toLocal();
-          checkInDates.add(checkInDate);
-          checkInMoods.add(checkIn.feeling);
+          final DateTime? checkInDate = checkIn.createdAt != null
+              ? DateTime.tryParse(checkIn.createdAt!)?.toLocal()
+              : null;
+          if (checkInDate != null) {
+            checkInDates.add(checkInDate);
+            checkInMoods.add(checkIn.feeling ?? '');
 
-          if (checkInDate.year == today.year &&
-              checkInDate.month == today.month &&
-              checkInDate.day == today.day) {
-            foundToday = checkIn;
+            if (checkInDate.year == today.year &&
+                checkInDate.month == today.month &&
+                checkInDate.day == today.day) {
+              foundToday = checkIn;
+            }
           }
         }
 
         todayCheckIn.value = foundToday;
         if (foundToday != null) {
-          latestMood.value = foundToday.feeling;
+          latestMood.value = foundToday.feeling ?? '';
         }
 
         calculateStreakAndWeekly();
-        generateDynamicPlans();
+        fetchDailyPlan();
+
+        if (Get.isRegistered<GlobalController>()) {
+          Get.find<GlobalController>().fetchMoodTrackerStats();
+        }
       }
     } catch (e) {
       Get.log("Error fetching mood history: $e");
@@ -369,41 +482,5 @@ class HomeController extends GetxController {
       default:
         return "";
     }
-  }
-}
-
-class PlanModel {
-  final String title;
-  final String label;
-  final String caption;
-  final String icon;
-  final bool isComplete;
-
-  PlanModel({
-    required this.title,
-    required this.label,
-    required this.caption,
-    required this.icon,
-    required this.isComplete,
-  });
-
-  factory PlanModel.fromJson(Map<String, dynamic> json) {
-    return PlanModel(
-      title: json['title'] as String,
-      label: json['label'] as String,
-      caption: json['caption'] as String,
-      icon: json['icon'] as String,
-      isComplete: json['isComplete'] as bool,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'label': label,
-      'caption': caption,
-      'icon': icon,
-      'isComplete': isComplete,
-    };
   }
 }

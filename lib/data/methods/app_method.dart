@@ -8,6 +8,8 @@ class AppMethod {
   static const String _userTokenKey = 'user_token';
   static const String _userEmailKey = 'user_email';
   static const String _hasSeenIntroductionKey = 'has_seen_introduction';
+  static const String _trustedContactNameKey = 'trusted_contact_name';
+  static const String _trustedContactPhoneKey = 'trusted_contact_phone';
 
   /// Save JWT token to storage
   static Future<void> saveUserToken(String token) async {
@@ -43,5 +45,21 @@ class AppMethod {
   /// Check if user has seen introduction screen
   static bool hasSeenIntroduction() {
     return _box.read<bool>(_hasSeenIntroductionKey) ?? false;
+  }
+
+  /// Save trusted contact info
+  static Future<void> saveTrustedContact(String name, String phone) async {
+    await _box.write(_trustedContactNameKey, name);
+    await _box.write(_trustedContactPhoneKey, phone);
+  }
+
+  /// Retrieve trusted contact name
+  static String? getTrustedContactName() {
+    return _box.read<String>(_trustedContactNameKey);
+  }
+
+  /// Retrieve trusted contact phone
+  static String? getTrustedContactPhone() {
+    return _box.read<String>(_trustedContactPhoneKey);
   }
 }

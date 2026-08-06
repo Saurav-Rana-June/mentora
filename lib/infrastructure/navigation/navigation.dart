@@ -129,5 +129,13 @@ class Nav {
       page: () => AccountScreen(),
       binding: AccountControllerBinding(),
     ),
+    GetPage(
+      name: Routes.MEDITATION,
+      page: () => MeditationScreen(),
+    ),
+    GetPage(
+      name: Routes.MEDITATION_PLAYER,
+      page: () => MeditationPlayerScreen(),
+    ),
   ];
 }
