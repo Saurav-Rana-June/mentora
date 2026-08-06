@@ -121,7 +121,7 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     return Obx(
       () => PlayerProgressBar(
         progress: controller.progress.value,
-        totalDurationString: controller.session.duration,
+        totalDurationString: controller.displayDuration.value,
         onChanged: (val) => controller.updateProgress(val),
       ),
     );
@@ -132,6 +132,7 @@ class MeditationPlayerScreen extends GetView<MeditationPlayerController> {
     return Obx(
       () => PlayerControls(
         isPlaying: controller.isPlaying.value,
+        isLoading: controller.isLoading.value,
         onPlayPauseTap: () => controller.togglePlayPause(),
         onPreviousTap: () => controller.seekToBeginning(),
         onNextTap: () => controller.seekToBeginning(),

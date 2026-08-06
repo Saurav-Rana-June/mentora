@@ -1,13 +1,23 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:soundcloud_explode_dart/soundcloud_explode_dart.dart';
 import '../../widgets/meditation_session.dart';
 
 class MeditationPlayerController extends GetxController {
   late MeditationSession session;
   final RxBool isPlaying = false.obs;
-  final RxDouble progress = 0.35.obs; // Start at 35% progress
+  final RxDouble progress = 0.0.obs; // Start at 0% progress
   final RxBool isFavorited = false.obs;
-  Timer? _playbackTimer;
+  final RxBool isLoading = false.obs;
+  final RxString displayDuration = ''.obs;
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final SoundcloudClient _soundcloudClient = SoundcloudClient();
+  
+  StreamSubscription? _positionSubscription;
+  StreamSubscription? _durationSubscription;
+  StreamSubscription? _playerStateSubscription;
 
   @override
   void onInit() {
@@ -16,21 +26,74 @@ class MeditationPlayerController extends GetxController {
     session = Get.arguments as MeditationSession? ?? mockMeditationSessions.first;
     // Set initial favorite status
     isFavorited.value = session.id == '1' || session.id == '3';
+    displayDuration.value = session.duration;
+
+    _initAudio();
+  }
+
+  Future<void> _initAudio() async {
+    isLoading.value = true;
+    try {
+      final track = await _soundcloudClient.tracks.getByUrl(
+        'https://soundcloud.com/meditation-music/cadunia'
+      );
+      final streams = await _soundcloudClient.tracks.getStreams(track.id);
+      if (streams.isNotEmpty) {
+        final stream = streams.firstWhere(
+          (s) => s.container == 'mp3',
+          orElse: () => streams.first,
+        );
+        final streamUrl = stream.url;
+        
+        await _audioPlayer.setUrl(streamUrl);
+        
+        _positionSubscription = _audioPlayer.positionStream.listen((pos) {
+          final dur = _audioPlayer.duration ?? Duration.zero;
+          if (dur.inSeconds > 0) {
+            progress.value = pos.inSeconds / dur.inSeconds;
+          }
+        });
+        
+        _durationSubscription = _audioPlayer.durationStream.listen((dur) {
+          if (dur != null && dur.inSeconds > 0) {
+            final minutes = dur.inMinutes;
+            displayDuration.value = '$minutes min';
+          }
+        });
+        
+        _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
+          isPlaying.value = state.playing;
+          if (state.processingState == ProcessingState.completed) {
+            isPlaying.value = false;
+            progress.value = 0.0;
+            _audioPlayer.seek(Duration.zero);
+            _audioPlayer.pause();
+          }
+        });
+      }
+    } catch (e) {
+      // Silently catch or log
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
   void onClose() {
-    _stopTimer();
+    _positionSubscription?.cancel();
+    _durationSubscription?.cancel();
+    _playerStateSubscription?.cancel();
+    _audioPlayer.dispose();
     super.onClose();
   }
 
-  // Toggle playback status and control simulated tick timer
+  // Toggle playback status
   void togglePlayPause() {
-    isPlaying.value = !isPlaying.value;
-    if (isPlaying.value) {
-      _startTimer();
+    if (isLoading.value) return;
+    if (_audioPlayer.playing) {
+      _audioPlayer.pause();
     } else {
-      _stopTimer();
+      _audioPlayer.play();
     }
   }
 
@@ -41,29 +104,19 @@ class MeditationPlayerController extends GetxController {
 
   // Update slider progress position manually
   void updateProgress(double value) {
+    if (isLoading.value) return;
     progress.value = value;
+    final dur = _audioPlayer.duration;
+    if (dur != null) {
+      final seekPos = Duration(milliseconds: (value * dur.inMilliseconds).round());
+      _audioPlayer.seek(seekPos);
+    }
   }
 
-  // Restart progress to simulated beginning of track
+  // Restart progress to beginning of track
   void seekToBeginning() {
+    if (isLoading.value) return;
     progress.value = 0.0;
-  }
-
-  // Start dummy timer to increment progress reactively
-  void _startTimer() {
-    _stopTimer();
-    _playbackTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      progress.value += 0.002;
-      if (progress.value >= 1.0) {
-        progress.value = 0.0;
-        isPlaying.value = false;
-        _stopTimer();
-      }
-    });
-  }
-
-  void _stopTimer() {
-    _playbackTimer?.cancel();
-    _playbackTimer = null;
+    _audioPlayer.seek(Duration.zero);
   }
 }
