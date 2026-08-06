@@ -78,12 +78,14 @@ class MeditationScreen extends GetView<MeditationController> {
               // Category Pill Filter
               Obx(
                 () => CustomHorizontalScrollableFilter<String>(
-                  items: _categories,
+                  items: controller.categoriesList.isNotEmpty
+                      ? controller.categoriesList
+                      : _categories,
                   selectedItem: controller.selectedCategory.value,
                   labelBuilder: (cat) => cat,
                   onItemSelected: (cat) => controller.changeCategory(cat),
                   padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s16.symmetric.horizontal,
+                    horizontal: Spacing.s8.symmetric.horizontal,
                   ),
                 ),
               ),
