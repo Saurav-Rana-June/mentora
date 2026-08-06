@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
-
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
-class PlayerControls extends StatelessWidget {
+class MusicPlayerControls extends StatelessWidget {
   final bool isPlaying;
   final bool isLoading;
   final VoidCallback? onPlayPauseTap;
   final VoidCallback? onPreviousTap;
   final VoidCallback? onNextTap;
 
-  const PlayerControls({
+  const MusicPlayerControls({
     super.key,
     required this.isPlaying,
     this.isLoading = false,

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
-
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
-class PlayerProgressBar extends StatelessWidget {
+class MusicPlayerProgressBar extends StatelessWidget {
   final double progress; // 0.0 to 1.0
   final ValueChanged<double>? onChanged;
   final String totalDurationString; // e.g. "10 min" or "25 min"
 
-  const PlayerProgressBar({
+  const MusicPlayerProgressBar({
     super.key,
     required this.progress,
     this.onChanged,
