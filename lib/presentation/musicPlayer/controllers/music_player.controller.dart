@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:soundcloud_explode_dart/soundcloud_explode_dart.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 
 class MusicPlayerController extends GetxController {
   final RxBool isPlaying = false.obs;
@@ -15,6 +18,7 @@ class MusicPlayerController extends GetxController {
   StreamSubscription? _positionSubscription;
   StreamSubscription? _durationSubscription;
   StreamSubscription? _playerStateSubscription;
+  CancelToken? _downloadCancelToken;
 
   bool _isInitRun = false;
 
@@ -25,24 +29,45 @@ class MusicPlayerController extends GetxController {
     _initAudio(audioUrl);
   }
 
+  String _getCacheFilename(String url) {
+    final sanitized = url.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+    return '$sanitized.mp3';
+  }
+
+  Future<String> _getCacheFilePath(String url) async {
+    final tempDir = await getTemporaryDirectory();
+    return '${tempDir.path}/${_getCacheFilename(url)}';
+  }
+
   Future<void> _initAudio(String audioUrl) async {
     isLoading.value = true;
     try {
-      String resolvedUrl = audioUrl;
-      // If it is a SoundCloud URL, resolve it dynamically
-      if (audioUrl.contains('soundcloud.com')) {
-        final track = await _soundcloudClient.tracks.getByUrl(audioUrl);
-        final streams = await _soundcloudClient.tracks.getStreams(track.id);
-        if (streams.isNotEmpty) {
-          final stream = streams.firstWhere(
-            (s) => s.container == 'mp3',
-            orElse: () => streams.first,
-          );
-          resolvedUrl = stream.url;
-        }
-      }
+      final cachePath = await _getCacheFilePath(audioUrl);
+      final cacheFile = File(cachePath);
 
-      await _audioPlayer.setUrl(resolvedUrl);
+      if (await cacheFile.exists()) {
+        Get.log("Loading audio from local cache: $cachePath");
+        await _audioPlayer.setAudioSource(AudioSource.file(cachePath));
+      } else {
+        Get.log("No local cache found. Resolving and streaming: $audioUrl");
+        String resolvedUrl = audioUrl;
+        if (audioUrl.contains('soundcloud.com')) {
+          final track = await _soundcloudClient.tracks.getByUrl(audioUrl);
+          final streams = await _soundcloudClient.tracks.getStreams(track.id);
+          if (streams.isNotEmpty) {
+            final stream = streams.firstWhere(
+              (s) => s.container == 'mp3',
+              orElse: () => streams.first,
+            );
+            resolvedUrl = stream.url;
+          }
+        }
+
+        await _audioPlayer.setUrl(resolvedUrl);
+
+        // Start background download
+        _startBackgroundDownload(resolvedUrl, cachePath);
+      }
 
       _positionSubscription = _audioPlayer.positionStream.listen((pos) {
         final dur = _audioPlayer.duration ?? Duration.zero;
@@ -68,14 +93,45 @@ class MusicPlayerController extends GetxController {
         }
       });
     } catch (e) {
-      // Silently catch or handle error
+      Get.log("Error initializing audio: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
+  void _startBackgroundDownload(String url, String finalPath) async {
+    final tempPath = '$finalPath.tmp';
+    _downloadCancelToken = CancelToken();
+    try {
+      final dio = Dio();
+      Get.log("Starting background download to: $tempPath");
+      await dio.download(
+        url,
+        tempPath,
+        cancelToken: _downloadCancelToken,
+      );
+
+      final tempFile = File(tempPath);
+      if (await tempFile.exists()) {
+        await tempFile.rename(finalPath);
+        Get.log("Successfully cached audio locally at: $finalPath");
+      }
+    } catch (e) {
+      if (e is DioException && CancelToken.isCancel(e)) {
+        Get.log("Background download cancelled for: $url");
+      } else {
+        Get.log("Background download failed: $e");
+      }
+      final tempFile = File(tempPath);
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+      }
+    }
+  }
+
   @override
   void onClose() {
+    _downloadCancelToken?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
     _playerStateSubscription?.cancel();

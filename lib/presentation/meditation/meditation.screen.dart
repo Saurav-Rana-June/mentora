@@ -152,7 +152,8 @@ class MeditationScreen extends GetView<MeditationController> {
                         description: session.description,
                         duration: session.duration,
                         isFavorited: controller.getIsFavoritedRx(session.id),
-                        onFavoriteTap: () => controller.toggleFavorite(session.id),
+                        onFavoriteTap: () =>
+                            controller.toggleFavorite(session.id),
                       ),
                       transition: Transition.rightToLeft,
                     );
