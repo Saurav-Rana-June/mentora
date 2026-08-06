@@ -6,6 +6,7 @@ class MeditationSession {
   final String imageUrl;
   final bool isFeatured;
   final String description;
+  final String soundTrack;
 
   const MeditationSession({
     required this.id,
@@ -15,6 +16,7 @@ class MeditationSession {
     required this.imageUrl,
     required this.isFeatured,
     this.description = "Take a deep breath and let go of external distractions. Find a comfortable position and focus on the flow of your breath. Let this guided meditation restore your inner balance and clarity.",
+    this.soundTrack = "https://soundcloud.com/meditation-music/cadunia",
   });
 
   factory MeditationSession.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class MeditationSession {
       imageUrl: json['imageUrl'] as String? ?? '',
       isFeatured: json['isFeatured'] as bool? ?? false,
       description: json['description'] as String? ?? '',
+      soundTrack: json['soundTrack'] as String? ?? 'https://soundcloud.com/meditation-music/cadunia',
     );
   }
 
@@ -38,6 +41,7 @@ class MeditationSession {
       'imageUrl': imageUrl,
       'isFeatured': isFeatured,
       'description': description,
+      'soundTrack': soundTrack,
     };
   }
 }
@@ -51,6 +55,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=600',
     isFeatured: true,
     description: 'Start your morning with a clear mind and sharp attention. This session will ground your awareness and help you approach your day with purpose and calm alignment.',
+    soundTrack: 'https://soundcloud.com/meditation-music/cadunia',
   ),
   MeditationSession(
     id: '2',
@@ -60,6 +65,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1511295742364-92767fa62d9f?q=80&w=600',
     isFeatured: true,
     description: 'Transition smoothly into a deep, healing sleep. Soft breathing patterns and gentle body scans will release muscle tension and calm your racing thoughts.',
+    soundTrack: 'https://soundcloud.com/meditation-music/sets/the-meditation-collection',
   ),
   MeditationSession(
     id: '3',
@@ -69,6 +75,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=600',
     isFeatured: true,
     description: 'Release accumulated stress and anxiety. Learn powerful grounding techniques to stabilize your mind and reclaim peace in moments of turbulence.',
+    soundTrack: 'https://soundcloud.com/meditation-music/relaxation',
   ),
   MeditationSession(
     id: '4',

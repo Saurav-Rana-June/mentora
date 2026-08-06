@@ -35,7 +35,7 @@ class MeditationPlayerController extends GetxController {
     isLoading.value = true;
     try {
       final track = await _soundcloudClient.tracks.getByUrl(
-        'https://soundcloud.com/meditation-music/cadunia'
+        session.soundTrack
       );
       final streams = await _soundcloudClient.tracks.getStreams(track.id);
       if (streams.isNotEmpty) {
