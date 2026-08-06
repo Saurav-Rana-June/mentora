@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../widgets/meditation_session.dart';
 import '../../../infrastructure/dal/services/meditation_service.dart';
 
@@ -13,6 +14,12 @@ class MeditationController extends GetxController {
   final RxList<MeditationSession> allSessionsList = <MeditationSession>[].obs;
   final RxList<MeditationSession> featuredSessionsList = <MeditationSession>[].obs;
   final RxList<String> categoriesList = <String>[].obs;
+
+  // GetStorage box instance
+  final GetStorage _box = GetStorage();
+
+  // Cache keys constants
+  static const String _categoriesCacheKey = 'meditation_categories_filters';
 
   @override
   void onInit() {
@@ -28,24 +35,58 @@ class MeditationController extends GetxController {
     debounce(searchQuery, (_) => fetchSessions(), time: const Duration(milliseconds: 300));
   }
 
-  /// Fetch available category filters from the API
+  /// Fetch available category filters from the API (with local caching)
   Future<void> fetchFilters() async {
     try {
+      // 1. Try to load categories filters from cache first
+      final List<dynamic>? cachedCategories = _box.read<List<dynamic>>(_categoriesCacheKey);
+      if (cachedCategories != null && cachedCategories.isNotEmpty) {
+        categoriesList.assignAll(cachedCategories.map((e) => e.toString()).toList());
+      }
+
+      // 2. Fetch fresh categories filters from the API in the background
       final res = await MeditationService.getMeditationFilters();
       if (res != null && res.data != null) {
-        categoriesList.value = res.data!;
+        categoriesList.assignAll(res.data!);
+        // Save to cache
+        await _box.write(_categoriesCacheKey, res.data!);
       }
     } catch (e) {
       Get.log("Failed to load meditation filters: $e");
     }
   }
 
-  /// Fetch meditations from the API based on selected filters and queries
+  /// Fetch meditations from the API based on selected filters and queries (with local caching)
   Future<void> fetchSessions() async {
+    final String allCacheKey = 'meditations_all_${selectedCategory.value}_${searchQuery.value}';
+    final String featuredCacheKey = 'meditations_featured_${selectedCategory.value}_${searchQuery.value}';
+
     try {
-      isLoading.value = true;
-      
-      // Perform parallel queries for featured and general list
+      // 1. Check cache first
+      final List<dynamic>? cachedAll = _box.read<List<dynamic>>(allCacheKey);
+      final List<dynamic>? cachedFeatured = _box.read<List<dynamic>>(featuredCacheKey);
+
+      bool hasCache = false;
+      if (cachedAll != null && cachedFeatured != null) {
+        final List<MeditationSession> allList = cachedAll
+            .map((e) => MeditationSession.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+        final List<MeditationSession> featuredList = cachedFeatured
+            .map((e) => MeditationSession.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+
+        allSessionsList.assignAll(allList);
+        featuredSessionsList.assignAll(featuredList);
+        isLoading.value = false; // Show data instantly
+        hasCache = true;
+      }
+
+      // If no cache, show loading skeleton
+      if (!hasCache) {
+        isLoading.value = true;
+      }
+
+      // 2. Execute parallel API calls in the background
       final results = await Future.wait([
         MeditationService.getFeaturedMeditations(
           category: selectedCategory.value,
@@ -62,9 +103,16 @@ class MeditationController extends GetxController {
 
       if (featuredRes != null && featuredRes.data != null) {
         featuredSessionsList.assignAll(featuredRes.data!);
+        // Save to cache
+        final serializedFeatured = featuredRes.data!.map((e) => e.toJson()).toList();
+        await _box.write(featuredCacheKey, serializedFeatured);
       }
+
       if (allRes != null && allRes.data != null) {
         allSessionsList.assignAll(allRes.data!);
+        // Save to cache
+        final serializedAll = allRes.data!.map((e) => e.toJson()).toList();
+        await _box.write(allCacheKey, serializedAll);
       }
     } catch (e) {
       Get.log("Failed to load meditations: $e");
