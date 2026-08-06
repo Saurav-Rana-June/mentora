@@ -48,7 +48,7 @@ class MeditationCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: session.imageUrl,
                   height: 105.h,
-                  width: 90.h,
+                  width: 95.h,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                     height: 70.h,
