@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
@@ -126,14 +127,36 @@ class GlobalController extends GetxController {
     return false;
   }
 
+  final GetStorage _box = GetStorage();
+
   Future<void> fetchMoodTrackerStats({
     String? dateFilter,
     String? fromDate,
     String? toDate,
+    bool forceRefresh = false,
   }) async {
     if (_isFetchingHistory) return;
+    final String actualFilter = dateFilter ?? "thisWeek";
+    final String suffix = fromDate != null || toDate != null
+        ? '${fromDate}_$toDate'
+        : actualFilter;
+    final String cacheKey = 'insights_mood_tracker_$suffix';
+    final String lastUpdatedKey = 'insights_mood_tracker_last_updated_$suffix';
+
     try {
-      isLoadingMoodTracker.value = true;
+      // 1. Try to load from GetStorage cache first
+      final cachedData = _box.read<Map<String, dynamic>>(cacheKey);
+      final cachedLastUpdated = _box.read<String>(lastUpdatedKey);
+
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        moodTrackerStats.value = MoodTrackerStatsModel.fromJson(cachedData);
+        hasCache = true;
+      }
+
+      if (!hasCache) {
+        isLoadingMoodTracker.value = true;
+      }
 
       try {
         _isFetchingHistory = true;
@@ -144,14 +167,37 @@ class GlobalController extends GetxController {
         _isFetchingHistory = false;
       }
 
+      if (hasCache && !forceRefresh) {
+        // Perform lightweight check Res
+        final checkRes = await InsightsService.getMoodTrackerStats(
+          fromDate: fromDate,
+          toDate: toDate,
+          dateFilter: actualFilter,
+          timezone: 'UTC',
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date! Stop here.
+            return;
+          }
+        }
+      }
+
+      // Fetch fresh data
       final res = await InsightsService.getMoodTrackerStats(
         fromDate: fromDate,
         toDate: toDate,
-        dateFilter: dateFilter ?? "thisWeek",
+        dateFilter: actualFilter,
         timezone: 'UTC',
       );
       if (res != null && res.data != null) {
         moodTrackerStats.value = res.data;
+        await _box.write(cacheKey, res.data!.toJson());
+        if (res.lastUpdated != null) {
+          await _box.write(lastUpdatedKey, res.lastUpdated!.toIso8601String());
+        }
       }
     } catch (e) {
       Get.log("Error fetching global mood tracker stats: $e");
