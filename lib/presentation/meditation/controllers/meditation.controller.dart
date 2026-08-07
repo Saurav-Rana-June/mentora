@@ -60,14 +60,16 @@ class MeditationController extends GetxController {
   Future<void> fetchSessions() async {
     final String allCacheKey = 'meditations_all_${selectedCategory.value}_${searchQuery.value}';
     final String featuredCacheKey = 'meditations_featured_${selectedCategory.value}_${searchQuery.value}';
+    final String lastUpdatedCacheKey = 'meditations_last_updated_${selectedCategory.value}_${searchQuery.value}';
 
     try {
       // 1. Check cache first
       final List<dynamic>? cachedAll = _box.read<List<dynamic>>(allCacheKey);
       final List<dynamic>? cachedFeatured = _box.read<List<dynamic>>(featuredCacheKey);
+      final String? cachedLastUpdated = _box.read<String>(lastUpdatedCacheKey);
 
       bool hasCache = false;
-      if (cachedAll != null && cachedFeatured != null) {
+      if (cachedAll != null && cachedFeatured != null && cachedLastUpdated != null) {
         final List<MeditationSession> allList = cachedAll
             .map((e) => MeditationSession.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
@@ -77,16 +79,31 @@ class MeditationController extends GetxController {
 
         allSessionsList.assignAll(allList);
         featuredSessionsList.assignAll(featuredList);
-        isLoading.value = false; // Show data instantly
+        isLoading.value = false; // Show data instantly from cache/memory
         hasCache = true;
       }
 
-      // If no cache, show loading skeleton
-      if (!hasCache) {
+      if (hasCache) {
+        // Fetch only the lastUpdated timestamp from the API to check if it changed
+        final checkRes = await MeditationService.getMeditations(
+          category: selectedCategory.value,
+          search: searchQuery.value,
+          lastUpdated: cachedLastUpdated,
+        );
+
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date! Stop here.
+            return;
+          }
+        }
+      } else {
+        // If no cache, show loading skeleton
         isLoading.value = true;
       }
 
-      // 2. Execute parallel API calls in the background
+      // 2. Execute parallel API calls in the background to fetch full lists
       final results = await Future.wait([
         MeditationService.getFeaturedMeditations(
           category: selectedCategory.value,
@@ -101,18 +118,22 @@ class MeditationController extends GetxController {
       final featuredRes = results[0];
       final allRes = results[1];
 
+      // Update and cache featured meditations
       if (featuredRes != null && featuredRes.data != null) {
         featuredSessionsList.assignAll(featuredRes.data!);
-        // Save to cache
         final serializedFeatured = featuredRes.data!.map((e) => e.toJson()).toList();
         await _box.write(featuredCacheKey, serializedFeatured);
       }
 
+      // Update and cache all meditations, and update lastUpdated timestamp cache
       if (allRes != null && allRes.data != null) {
         allSessionsList.assignAll(allRes.data!);
-        // Save to cache
         final serializedAll = allRes.data!.map((e) => e.toJson()).toList();
         await _box.write(allCacheKey, serializedAll);
+
+        if (allRes.lastUpdated != null) {
+          await _box.write(lastUpdatedCacheKey, allRes.lastUpdated!.toIso8601String());
+        }
       }
     } catch (e) {
       Get.log("Failed to load meditations: $e");

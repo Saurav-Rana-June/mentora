@@ -28,6 +28,7 @@ class MeditationService {
   static Future<ApiResponse<List<MeditationSession>>?> getMeditations({
     String? category,
     String? search,
+    String? lastUpdated,
   }) async {
     final Map<String, dynamic> params = {};
     if (category != null && category != 'All') {
@@ -35,6 +36,9 @@ class MeditationService {
     }
     if (search != null && search.isNotEmpty) {
       params['search'] = search;
+    }
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
     }
 
     return client.request<ApiResponse<List<MeditationSession>>>(
@@ -47,6 +51,7 @@ class MeditationService {
         return ApiResponse<List<MeditationSession>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
+            if (data == null) return [];
             final list = data as List<dynamic>;
             return list
                 .map((e) => MeditationSession.fromJson(e as Map<String, dynamic>))
