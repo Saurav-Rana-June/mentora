@@ -37,16 +37,23 @@ class InsightsController extends GetxController {
   final GetStorage _box = GetStorage();
 
   static const String _coachingBannerCacheKey = 'insights_coaching_banner_data';
-  static const String _coachingBannerLastUpdatedKey = 'insights_coaching_banner_last_updated';
+  static const String _coachingBannerLastUpdatedKey =
+      'insights_coaching_banner_last_updated';
 
   Future<void> fetchCoachingBanner({bool forceRefresh = false}) async {
     try {
-      final cachedData = _box.read<Map<String, dynamic>>(_coachingBannerCacheKey);
-      final cachedLastUpdated = _box.read<String>(_coachingBannerLastUpdatedKey);
+      final cachedData = _box.read<Map<String, dynamic>>(
+        _coachingBannerCacheKey,
+      );
+      final cachedLastUpdated = _box.read<String>(
+        _coachingBannerLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {
-        coachingBannerData.value = CoachingBannerResponseModel.fromJson(cachedData);
+        coachingBannerData.value = CoachingBannerResponseModel.fromJson(
+          cachedData,
+        );
         hasCache = true;
       }
 
@@ -60,8 +67,11 @@ class InsightsController extends GetxController {
           lastUpdated: cachedLastUpdated,
         );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date! Stop here.
             return;
           }
@@ -73,7 +83,10 @@ class InsightsController extends GetxController {
         coachingBannerData.value = response.data;
         await _box.write(_coachingBannerCacheKey, response.data!.toJson());
         if (response.lastUpdated != null) {
-          await _box.write(_coachingBannerLastUpdatedKey, response.lastUpdated!.toIso8601String());
+          await _box.write(
+            _coachingBannerLastUpdatedKey,
+            response.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
@@ -83,9 +96,13 @@ class InsightsController extends GetxController {
     }
   }
 
-  Future<void> fetchGrowthAreas(DateFilter filter, {bool forceRefresh = false}) async {
+  Future<void> fetchGrowthAreas(
+    DateFilter filter, {
+    bool forceRefresh = false,
+  }) async {
     final String growthAreasCacheKey = 'insights_growth_areas_${filter.name}';
-    final String growthAreasLastUpdatedKey = 'insights_growth_areas_last_updated_${filter.name}';
+    final String growthAreasLastUpdatedKey =
+        'insights_growth_areas_last_updated_${filter.name}';
 
     try {
       final cachedData = _box.read<Map<String, dynamic>>(growthAreasCacheKey);
@@ -112,8 +129,11 @@ class InsightsController extends GetxController {
           lastUpdated: cachedLastUpdated,
         );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date! Stop here.
             return;
           }
@@ -131,7 +151,10 @@ class InsightsController extends GetxController {
         }
         await _box.write(growthAreasCacheKey, response.data!.toJson());
         if (response.lastUpdated != null) {
-          await _box.write(growthAreasLastUpdatedKey, response.lastUpdated!.toIso8601String());
+          await _box.write(
+            growthAreasLastUpdatedKey,
+            response.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {

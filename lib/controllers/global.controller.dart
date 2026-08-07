@@ -177,8 +177,11 @@ class GlobalController extends GetxController {
           lastUpdated: cachedLastUpdated,
         );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date! Stop here.
             return;
           }
