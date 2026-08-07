@@ -57,7 +57,7 @@ class MeditationController extends GetxController {
   }
 
   /// Fetch meditations from the API based on selected filters and queries (with local caching)
-  Future<void> fetchSessions() async {
+  Future<void> fetchSessions({bool forceRefresh = false}) async {
     final String allCacheKey = 'meditations_all_${selectedCategory.value}_${searchQuery.value}';
     final String featuredCacheKey = 'meditations_featured_${selectedCategory.value}_${searchQuery.value}';
     final String lastUpdatedCacheKey = 'meditations_last_updated_${selectedCategory.value}_${searchQuery.value}';
@@ -83,7 +83,7 @@ class MeditationController extends GetxController {
         hasCache = true;
       }
 
-      if (hasCache) {
+      if (hasCache && !forceRefresh) {
         // Fetch only the lastUpdated timestamp from the API to check if it changed
         final checkRes = await MeditationService.getMeditations(
           category: selectedCategory.value,
@@ -98,7 +98,7 @@ class MeditationController extends GetxController {
             return;
           }
         }
-      } else {
+      } else if (!hasCache) {
         // If no cache, show loading skeleton
         isLoading.value = true;
       }

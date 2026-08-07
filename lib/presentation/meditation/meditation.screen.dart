@@ -68,60 +68,64 @@ class MeditationScreen extends GetView<MeditationController> {
           return const MeditationLoading();
         }
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Search Input
-              CustomSearchBar(
-                controller: _searchController,
-                focusNode: _searchFocusNode,
-                onChanged: (val) => controller.updateSearchQuery(val),
-                hintText: "Search meditations...",
-              ),
-              Spacing.s8.h,
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchSessions(forceRefresh: true),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Search Input
+                CustomSearchBar(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  onChanged: (val) => controller.updateSearchQuery(val),
+                  hintText: "Search meditations...",
+                ),
+                Spacing.s8.h,
 
-              // Category Pill Filter
-              Obx(
-                () => CustomHorizontalScrollableFilter<String>(
-                  items: controller.categoriesList.isNotEmpty
-                      ? controller.categoriesList
-                      : _categories,
-                  selectedItem: controller.selectedCategory.value,
-                  labelBuilder: (cat) => cat,
-                  onItemSelected: (cat) => controller.changeCategory(cat),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s8.symmetric.horizontal,
+                // Category Pill Filter
+                Obx(
+                  () => CustomHorizontalScrollableFilter<String>(
+                    items: controller.categoriesList.isNotEmpty
+                        ? controller.categoriesList
+                        : _categories,
+                    selectedItem: controller.selectedCategory.value,
+                    labelBuilder: (cat) => cat,
+                    onItemSelected: (cat) => controller.changeCategory(cat),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s8.symmetric.horizontal,
+                    ),
                   ),
                 ),
-              ),
-              Spacing.s12.h,
+                Spacing.s12.h,
 
-              // Content Area
-              Obx(() {
-                if (controller.isLoading.value) {
-                  return const MeditationContentLoading();
-                }
+                // Content Area
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return const MeditationContentLoading();
+                  }
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Horizontally Scrolling Featured Carousel
-                    buildFeaturedSection(context),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Horizontally Scrolling Featured Carousel
+                      buildFeaturedSection(context),
 
-                    // Vertical List Section Title
-                    if (controller.filteredSessions.isNotEmpty)
-                      const MeditationSectionTitle(title: "All Meditations"),
+                      // Vertical List Section Title
+                      if (controller.filteredSessions.isNotEmpty)
+                        const MeditationSectionTitle(title: "All Meditations"),
 
-                    // Vertical List of Sessions
-                    buildAllMeditationsList(context),
-                  ],
-                );
-              }),
+                      // Vertical List of Sessions
+                      buildAllMeditationsList(context),
+                    ],
+                  );
+                }),
 
-              // Bottom Safe Spacing
-              Spacing.s32.h,
-            ],
+                // Bottom Safe Spacing
+                Spacing.s32.h,
+              ],
+            ),
           ),
         );
       }),
