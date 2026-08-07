@@ -8,14 +8,25 @@ class MeditationService {
   static final ApiClient client = ApiClient();
 
   /// Retrieve distinct categories (filters) for meditations
-  static Future<ApiResponse<List<String>>?> getMeditationFilters() async {
+  static Future<ApiResponse<List<String>>?> getMeditationFilters({
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
     return client.request<ApiResponse<List<String>>>(
-      (dio) => dio.get('meditations/filters'),
+      (dio) => dio.get(
+        'meditations/filters',
+        queryParameters: params,
+      ),
       withAccessToken: true,
       parser: (json) {
         return ApiResponse<List<String>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
+            if (data == null) return [];
             final list = data as List<dynamic>;
             return list.map((e) => e.toString()).toList();
           },
@@ -66,6 +77,7 @@ class MeditationService {
   static Future<ApiResponse<List<MeditationSession>>?> getFeaturedMeditations({
     String? category,
     String? search,
+    String? lastUpdated,
   }) async {
     final Map<String, dynamic> params = {};
     if (category != null && category != 'All') {
@@ -73,6 +85,9 @@ class MeditationService {
     }
     if (search != null && search.isNotEmpty) {
       params['search'] = search;
+    }
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
     }
 
     return client.request<ApiResponse<List<MeditationSession>>>(
@@ -85,6 +100,7 @@ class MeditationService {
         return ApiResponse<List<MeditationSession>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
+            if (data == null) return [];
             final list = data as List<dynamic>;
             return list
                 .map((e) => MeditationSession.fromJson(e as Map<String, dynamic>))

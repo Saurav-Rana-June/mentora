@@ -69,7 +69,12 @@ class MeditationScreen extends GetView<MeditationController> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => controller.fetchSessions(forceRefresh: true),
+          onRefresh: () async {
+            await Future.wait([
+              controller.fetchFilters(forceRefresh: true),
+              controller.fetchSessions(forceRefresh: true),
+            ]);
+          },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
