@@ -13,6 +13,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
 import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
+import 'widgets/sleep_content_loading.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -78,48 +79,58 @@ class _SleepScreenState extends State<SleepScreen>
         buildTabbarSection(context),
         Spacing.s20.h,
         Obx(() {
-          switch (controller.selectedTabIndex.value) {
-            case 0:
-              return buildSoundsSection(context);
-            case 1:
-              return buildMusicSection(context);
-            case 2:
-              return buildStoriesSection(context);
-            default:
-              return SizedBox();
+          if (controller.isLoading.value) {
+            return Expanded(
+              child: SleepContentLoading(
+                selectedTabIndex: controller.selectedTabIndex.value,
+              ),
+            );
           }
+          return Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => controller.fetchSleepData(forceRefresh: true),
+              child: _buildTabContent(context),
+            ),
+          );
         }),
       ],
     );
   }
 
-  Expanded buildStoriesSection(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(
-          vertical: Spacing.s8.symmetric.horizontal,
-        ),
-        itemCount: controller.stories.length,
-        itemBuilder: (context, index) {
-          final story = controller.stories[index];
-          return buildStoriesCard(context, story);
-        },
-      ),
+  Widget _buildTabContent(BuildContext context) {
+    switch (controller.selectedTabIndex.value) {
+      case 0:
+        return _buildSoundsContent(context);
+      case 1:
+        return _buildMusicContent(context);
+      case 2:
+        return _buildStoriesContent(context);
+      default:
+        return const SizedBox();
+    }
+  }
+
+  Widget _buildStoriesContent(BuildContext context) {
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.symmetric(vertical: Spacing.s8.symmetric.horizontal),
+      itemCount: controller.stories.length,
+      itemBuilder: (context, index) {
+        final story = controller.stories[index];
+        return buildStoriesCard(context, story);
+      },
     );
   }
 
-  Expanded buildMusicSection(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(
-          vertical: Spacing.s8.symmetric.horizontal,
-        ),
-        itemCount: controller.calmMusics.length,
-        itemBuilder: (context, index) {
-          final music = controller.calmMusics[index];
-          return buildMusicCard(context, music);
-        },
-      ),
+  Widget _buildMusicContent(BuildContext context) {
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.symmetric(vertical: Spacing.s8.symmetric.horizontal),
+      itemCount: controller.calmMusics.length,
+      itemBuilder: (context, index) {
+        final music = controller.calmMusics[index];
+        return buildMusicCard(context, music);
+      },
     );
   }
 
@@ -131,7 +142,17 @@ class _SleepScreenState extends State<SleepScreen>
       duration: story.duration,
       imageUrl: story.imageUrl,
       onTap: () {
-        // Play story functionality
+        Get.to(
+          () => MusicPlayerView(
+            audioUrl: story.audioUrl,
+            title: story.title,
+            category: "Bedtime Story",
+            imageUrl: story.imageUrl,
+            description: story.description,
+            duration: story.duration,
+          ),
+          transition: Transition.rightToLeft,
+        );
       },
     );
   }
@@ -144,7 +165,17 @@ class _SleepScreenState extends State<SleepScreen>
       duration: music.duration,
       imageUrl: music.imageUrl,
       onTap: () {
-        // Play music functionality
+        Get.to(
+          () => MusicPlayerView(
+            audioUrl: music.audioUrl,
+            title: music.title,
+            category: "Calm Music",
+            imageUrl: music.imageUrl,
+            description: music.description,
+            duration: music.duration,
+          ),
+          transition: Transition.rightToLeft,
+        );
       },
     );
   }
@@ -282,43 +313,35 @@ class _SleepScreenState extends State<SleepScreen>
     );
   }
 
-  Expanded buildSoundsSection(BuildContext context) {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // buildCategorySelectorSection(context),
-            // Spacing.s16.h,
-            GridView.builder(
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-              ),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.sounds.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: Spacing.s12.value.w,
-                mainAxisSpacing: Spacing.s16.value.h,
-                childAspectRatio: 0.85,
-              ),
-              itemBuilder: (context, index) {
-                final sound = controller.sounds[index];
-                return buildSoundTile(context, index, sound.emoji, sound.title);
-              },
+  Widget _buildSoundsContent(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          GridView.builder(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s8.symmetric.horizontal,
             ),
-          ],
-        ),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.sounds.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: Spacing.s12.value.w,
+              mainAxisSpacing: Spacing.s16.value.h,
+              childAspectRatio: 0.85,
+            ),
+            itemBuilder: (context, index) {
+              final sound = controller.sounds[index];
+              return buildSoundTile(context, index, sound);
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget buildSoundTile(
-    BuildContext context,
-    int index,
-    String icon,
-    String title,
-  ) {
+  Widget buildSoundTile(BuildContext context, int index, Sound sound) {
     return Column(
       children: [
         Obx(
@@ -328,13 +351,12 @@ class _SleepScreenState extends State<SleepScreen>
               controller.selectedSoundIndex.value = index;
               Get.to(
                 () => MusicPlayerView(
-                  audioUrl:
-                      "https://www.epidemicsound.com/sound-effects/tracks/ea49cfb0-a12e-47d5-9e08-8bd8feda41f8",
-                  title: title,
+                  audioUrl: sound.audioUrl,
+                  title: sound.title,
                   category: "Ambient Sound",
                   imageUrl:
                       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-                  description: "Relaxing ambient sound of $title.",
+                  description: "Relaxing ambient sound of ${sound.title}.",
                   duration: "5:00",
                 ),
                 transition: Transition.rightToLeft,
@@ -373,14 +395,14 @@ class _SleepScreenState extends State<SleepScreen>
                 ),
               ),
               child: Center(
-                child: Text(icon, style: TextStyle(fontSize: 32.sp)),
+                child: Text(sound.emoji, style: TextStyle(fontSize: 32.sp)),
               ),
             ),
           ),
         ),
         Spacing.s8.h,
         Text(
-          title,
+          sound.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: r12.copyWith(
