@@ -12,6 +12,7 @@ import 'controllers/sleep.controller.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
+import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -286,8 +287,8 @@ class _SleepScreenState extends State<SleepScreen>
       child: SingleChildScrollView(
         child: Column(
           children: [
-            buildCategorySelectorSection(context),
-            Spacing.s16.h,
+            // buildCategorySelectorSection(context),
+            // Spacing.s16.h,
             GridView.builder(
               padding: EdgeInsets.symmetric(
                 horizontal: Spacing.s8.symmetric.horizontal,
@@ -325,6 +326,19 @@ class _SleepScreenState extends State<SleepScreen>
             borderRadius: BorderRadius.circular(80),
             onTap: () {
               controller.selectedSoundIndex.value = index;
+              Get.to(
+                () => MusicPlayerView(
+                  audioUrl:
+                      "https://www.epidemicsound.com/sound-effects/tracks/ea49cfb0-a12e-47d5-9e08-8bd8feda41f8",
+                  title: title,
+                  category: "Ambient Sound",
+                  imageUrl:
+                      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+                  description: "Relaxing ambient sound of $title.",
+                  duration: "5:00",
+                ),
+                transition: Transition.rightToLeft,
+              );
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
