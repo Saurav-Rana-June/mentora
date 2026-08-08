@@ -1,12 +1,14 @@
 import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/assessment/paginated_daily_mood_assessments.model.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
 import 'package:Mentora/data/model/auth/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
+import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 
 class GlobalController extends GetxController {
   final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
@@ -50,8 +52,67 @@ class GlobalController extends GetxController {
     }
   }
 
-  Future<void> fetchMoodHistory() async {
+  Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
+    final String moodHistoryCacheKey = 'global_mood_history_${selectedDateFilter.value.name}';
+    final String moodHistoryLastUpdatedKey = 'global_mood_history_last_updated_${selectedDateFilter.value.name}';
+
     try {
+      // 1. Try to load check-ins from cache first
+      final cachedHistory = StorageUtils.read<Map<String, dynamic>>(moodHistoryCacheKey);
+      final cachedLastUpdated = StorageUtils.read<String>(moodHistoryLastUpdatedKey);
+
+      bool hasCache = cachedHistory != null && cachedLastUpdated != null;
+      if (hasCache) {
+        final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(cachedHistory);
+        final List<DailyMoodAssessmentModel> history = paginatedModel.items;
+        moodHistoryList.assignAll(history);
+
+        checkInDates.clear();
+        checkInMoods.clear();
+
+        final today = DateTime.now();
+        DailyMoodAssessmentModel? foundToday;
+
+        for (var checkIn in history) {
+          final DateTime? checkInDate = checkIn.createdAt != null
+              ? DateTime.tryParse(checkIn.createdAt!)?.toLocal()
+              : null;
+          if (checkInDate != null) {
+            checkInDates.add(checkInDate);
+            checkInMoods.add(checkIn.feeling ?? '');
+
+            if (checkInDate.year == today.year &&
+                checkInDate.month == today.month &&
+                checkInDate.day == today.day) {
+              foundToday = checkIn;
+            }
+          }
+        }
+
+        todayCheckIn.value = foundToday;
+        if (foundToday != null) {
+          latestMood.value = foundToday.feeling ?? '';
+        }
+      }
+
+      // 2. Perform lightweight timestamp verification check if not force-refreshing
+      if (hasCache && !forceRefresh) {
+        final checkRes = await AssessmentService.getDailyMoodsHistory(
+          page: 1,
+          size: 50,
+          dateFilter: selectedDateFilter.value,
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated);
+          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date! Stop here.
+            return;
+          }
+        }
+      }
+
+      // 3. Fetch fresh history
       final response = await AssessmentService.getDailyMoodsHistory(
         page: 1,
         size: 50,
@@ -89,9 +150,15 @@ class GlobalController extends GetxController {
           latestMood.value = foundToday.feeling ?? '';
         }
 
-        if (Get.isRegistered<GlobalController>()) {
-          Get.find<GlobalController>().fetchMoodTrackerStats();
+        await StorageUtils.write(moodHistoryCacheKey, response.data!.toJson());
+        if (response.lastUpdated != null) {
+          await StorageUtils.write(
+            moodHistoryLastUpdatedKey,
+            response.lastUpdated!.toIso8601String(),
+          );
         }
+
+        fetchMoodTrackerStats();
       }
     } catch (e) {
       Get.log("Error fetching mood history: $e");
@@ -162,6 +229,14 @@ class GlobalController extends GetxController {
         checkInMoods[idx] = mood;
       }
     }
+
+    // Trigger forceRefresh to fetch latest state from server and update local cache
+    fetchMoodHistory(forceRefresh: true);
+    if (Get.isRegistered<HomeController>()) {
+      final homeController = Get.find<HomeController>();
+      homeController.fetchStreakStats(forceRefresh: true);
+      homeController.fetchDailyPlan(forceRefresh: true);
+    }
   }
 
   Future<void> changeDateFilter(DateFilter filter) async {
@@ -223,8 +298,6 @@ class GlobalController extends GetxController {
     return false;
   }
 
-  final GetStorage _box = GetStorage();
-
   Future<void> fetchMoodTrackerStats({
     String? dateFilter,
     String? fromDate,
@@ -240,12 +313,12 @@ class GlobalController extends GetxController {
     final String lastUpdatedKey = 'insights_mood_tracker_last_updated_$suffix';
 
     try {
-      // 1. Try to load from GetStorage cache first
-      final cachedData = _box.read<Map<String, dynamic>>(cacheKey);
-      final cachedLastUpdated = _box.read<String>(lastUpdatedKey);
+      // 1. Try to load from local cache first
+      final cachedData = StorageUtils.read<Map<String, dynamic>>(cacheKey);
+      final cachedLastUpdated = StorageUtils.read<String>(lastUpdatedKey);
 
-      bool hasCache = false;
-      if (cachedData != null && cachedLastUpdated != null) {
+      bool hasCache = cachedData != null && cachedLastUpdated != null;
+      if (hasCache) {
         moodTrackerStats.value = MoodTrackerStatsModel.fromJson(cachedData);
         hasCache = true;
       }
@@ -284,9 +357,9 @@ class GlobalController extends GetxController {
       );
       if (res != null && res.data != null) {
         moodTrackerStats.value = res.data;
-        await _box.write(cacheKey, res.data!.toJson());
+        await StorageUtils.write(cacheKey, res.data!.toJson());
         if (res.lastUpdated != null) {
-          await _box.write(lastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(lastUpdatedKey, res.lastUpdated!.toIso8601String());
         }
       }
     } catch (e) {

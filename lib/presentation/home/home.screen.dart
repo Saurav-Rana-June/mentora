@@ -34,35 +34,45 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  SingleChildScrollView buildBody(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
-      ),
-      child: Column(
-        children: [
-          buildTopBanner(),
-          Spacing.s16.h,
-          buildStreakAndProgressRow(context),
-          Spacing.s16.h,
-          Obx(() {
-            if (controller.globalController.todayCheckIn.value == null) {
-              return buildMoodCheckinSection(context);
-            } else {
-              return buildMoodCheckedInCard(
-                context,
-                controller.globalController.todayCheckIn.value!,
-              );
-            }
-          }),
-          Spacing.s16.h,
-          // buildConnectSection(context),
-          // Spacing.s16.h,
-          buildMoodTrendsCard(context),
-          Spacing.s16.h,
-          buildTodayPlanSection(context),
-        ],
+  Widget buildBody(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Future.wait([
+          controller.fetchStreakStats(forceRefresh: true),
+          controller.fetchDailyPlan(forceRefresh: true),
+          controller.globalController.fetchMoodHistory(forceRefresh: true),
+        ]);
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s4.symmetric.horizontal,
+        ),
+        child: Column(
+          children: [
+            buildTopBanner(),
+            Spacing.s16.h,
+            buildStreakAndProgressRow(context),
+            Spacing.s16.h,
+            Obx(() {
+              if (controller.globalController.todayCheckIn.value == null) {
+                return buildMoodCheckinSection(context);
+              } else {
+                return buildMoodCheckedInCard(
+                  context,
+                  controller.globalController.todayCheckIn.value!,
+                );
+              }
+            }),
+            Spacing.s16.h,
+            // buildConnectSection(context),
+            // Spacing.s16.h,
+            buildMoodTrendsCard(context),
+            Spacing.s16.h,
+            buildTodayPlanSection(context),
+          ],
+        ),
       ),
     );
   }
