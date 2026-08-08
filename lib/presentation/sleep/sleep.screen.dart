@@ -1,6 +1,7 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
@@ -8,26 +9,73 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/sleep.controller.dart';
-import 'package:Mentora/presentation/widgets/loaders/loader.dart';
+import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
+import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
+import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
 
-class SleepScreen extends GetView<SleepController> {
-  SleepScreen({super.key});
+class SleepScreen extends StatefulWidget {
+  const SleepScreen({super.key});
 
   @override
-  final controller = Get.put(SleepController());
+  State<SleepScreen> createState() => _SleepScreenState();
+}
+
+class _SleepScreenState extends State<SleepScreen>
+    with SingleTickerProviderStateMixin {
+  late final SleepController controller;
+  late final TabController _tabController;
+  late final Worker _tabWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.isRegistered<SleepController>()
+        ? Get.find<SleepController>()
+        : Get.put(SleepController());
+
+    _tabController = TabController(
+      length: controller.tabs.length,
+      vsync: this,
+      initialIndex: controller.selectedTabIndex.value,
+    );
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        controller.selectedTabIndex.value = _tabController.index;
+      }
+    });
+
+    _tabWorker = ever(controller.selectedTabIndex, (int index) {
+      if (_tabController.index != index) {
+        _tabController.animateTo(index);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _tabWorker.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      appBar: buildAppbar(context),
-      body: buildBody(context),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColorLight,
+        appBar: buildAppbar(context),
+        body: buildBody(context),
+      ),
     );
   }
 
   Column buildBody(BuildContext context) {
     return Column(
       children: [
-        buildTabbarSection(),
+        buildTabbarSection(context),
+        Spacing.s20.h,
         Obx(() {
           switch (controller.selectedTabIndex.value) {
             case 0:
@@ -48,8 +96,7 @@ class SleepScreen extends GetView<SleepController> {
     return Expanded(
       child: ListView.builder(
         padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s4.symmetric.horizontal,
+          vertical: Spacing.s8.symmetric.horizontal,
         ),
         itemCount: controller.stories.length,
         itemBuilder: (context, index) {
@@ -64,8 +111,7 @@ class SleepScreen extends GetView<SleepController> {
     return Expanded(
       child: ListView.builder(
         padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s4.symmetric.horizontal,
+          vertical: Spacing.s8.symmetric.horizontal,
         ),
         itemCount: controller.calmMusics.length,
         itemBuilder: (context, index) {
@@ -77,190 +123,152 @@ class SleepScreen extends GetView<SleepController> {
   }
 
   Widget buildStoriesCard(BuildContext context, Story story) {
-    return Column(
-      children: [
-        CustomPrimaryCard(
-          child: Row(
-            children: [
-              SizedBox(
-                width: 100,
-                height: 80,
-                child: CachedNetworkImage(
-                  imageUrl: story.imageUrl,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  placeholder: (context, url) => Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey.shade300,
-                    ),
-                    child: const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Loader(strokeWidth: 2),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey.shade200,
-                    ),
-                    child: const Icon(Icons.image_not_supported),
-                  ),
-                ),
-              ),
-
-              Spacing.s12.w,
-              Expanded(
-                child: SizedBox(
-                  height: 70,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              story.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: r14.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodyLarge!.color,
-                              ),
-                            ),
-                          ),
-                          Spacing.s16.w,
-                          Text(
-                            '\u{f142}',
-                            style: TextStyle(
-                              fontFamily: 'FontAwesomeLight',
-                              fontSize: 20,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium!.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        story.duration,
-                        style: r14.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Spacing.s8.h,
-      ],
+    return buildMediaCard(
+      context: context,
+      title: story.title,
+      category: "Story",
+      duration: story.duration,
+      imageUrl: story.imageUrl,
+      onTap: () {
+        // Play story functionality
+      },
     );
   }
 
   Widget buildMusicCard(BuildContext context, CalmMusic music) {
-    return Column(
-      children: [
-        CustomPrimaryCard(
+    return buildMediaCard(
+      context: context,
+      title: music.title,
+      category: "Music",
+      duration: music.duration,
+      imageUrl: music.imageUrl,
+      onTap: () {
+        // Play music functionality
+      },
+    );
+  }
+
+  Widget buildMediaCard({
+    required BuildContext context,
+    required String title,
+    required String category,
+    required String duration,
+    required String imageUrl,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.value.w,
+        vertical: Spacing.s8.value.h,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.r),
+        child: CustomPrimaryCard(
+          borderRadius: 16.r,
+          padding: EdgeInsets.zero,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 100,
-                height: 80,
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16.r),
+                  bottomLeft: Radius.circular(16.r),
+                ),
                 child: CachedNetworkImage(
-                  imageUrl: music.imageUrl,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
+                  imageUrl: imageUrl,
+                  height: 94.h,
+                  width: 94.h,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 94.h,
+                    width: 94.h,
+                    color: isDark ? slate[800] : slate[100],
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(primary),
                       ),
                     ),
                   ),
-                  placeholder: (context, url) => Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey.shade300,
-                    ),
-                    child: const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Loader(strokeWidth: 2),
-                    ),
-                  ),
                   errorWidget: (context, url, error) => Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey.shade200,
+                    height: 94.h,
+                    width: 94.h,
+                    color: isDark ? slate[800] : slate[100],
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 24.sp,
+                      color: slate[400],
                     ),
-                    child: const Icon(Icons.image_not_supported),
                   ),
                 ),
               ),
-
-              Spacing.s12.w,
               Expanded(
-                child: SizedBox(
-                  height: 70,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Spacing.s12.value.h,
+                    horizontal: Spacing.s12.value.w,
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        title,
+                        style: r16.copyWith(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Spacing.s4.h,
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              music.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: r14.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodyLarge!.color,
-                              ),
+                          Text(
+                            category,
+                            style: r12.copyWith(
+                              color: primary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Spacing.s16.w,
+                          Spacing.s8.w,
+                          Container(
+                            width: 3.w,
+                            height: 3.w,
+                            decoration: BoxDecoration(
+                              color: isDark ? slate[500] : slate[300],
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          Spacing.s8.w,
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 12.sp,
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                          ),
+                          Spacing.s4.w,
                           Text(
-                            '\u{f142}',
-                            style: TextStyle(
-                              fontFamily: 'FontAwesomeLight',
-                              fontSize: 20,
+                            duration,
+                            style: r12.copyWith(
                               color: Theme.of(
                                 context,
-                              ).textTheme.bodyMedium!.color,
+                              ).textTheme.bodySmall!.color,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        music.duration,
-                        style: r14.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Spacing.s4.h,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(
+                            Icons.play_circle_fill_rounded,
+                            size: 28.sp,
+                            color: primary,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -269,8 +277,7 @@ class SleepScreen extends GetView<SleepController> {
             ],
           ),
         ),
-        Spacing.s8.h,
-      ],
+      ),
     );
   }
 
@@ -280,13 +287,19 @@ class SleepScreen extends GetView<SleepController> {
         child: Column(
           children: [
             buildCategorySelectorSection(context),
+            Spacing.s16.h,
             GridView.builder(
-              padding: const EdgeInsets.only(top: 16),
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s8.symmetric.horizontal,
+              ),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.sounds.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
+                crossAxisSpacing: Spacing.s12.value.w,
+                mainAxisSpacing: Spacing.s16.value.h,
+                childAspectRatio: 0.85,
               ),
               itemBuilder: (context, index) {
                 final sound = controller.sounds[index];
@@ -299,7 +312,7 @@ class SleepScreen extends GetView<SleepController> {
     );
   }
 
-  Column buildSoundTile(
+  Widget buildSoundTile(
     BuildContext context,
     int index,
     String icon,
@@ -309,28 +322,44 @@ class SleepScreen extends GetView<SleepController> {
       children: [
         Obx(
           () => InkWell(
-            borderRadius: BorderRadius.circular(75),
+            borderRadius: BorderRadius.circular(80),
             onTap: () {
               controller.selectedSoundIndex.value = index;
             },
-            child: Container(
-              height: 75,
-              width: 75,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              height: 72.h,
+              width: 72.h,
               decoration: BoxDecoration(
                 color: controller.selectedSoundIndex.value == index
                     ? primary
-                    : primary.withValues(alpha: 0.2),
+                    : Theme.of(context).cardTheme.color,
                 shape: BoxShape.circle,
+                boxShadow: controller.selectedSoundIndex.value == index
+                    ? [
+                        BoxShadow(
+                          color: primary.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                border: Border.all(
+                  color: controller.selectedSoundIndex.value == index
+                      ? primary
+                      : Theme.of(context).cardColor,
+                  width: 2,
+                ),
               ),
               child: Center(
-                child: Text(
-                  icon,
-                  style: TextStyle(
-                    // fontFamily: 'FontAwesomeSolid',
-                    fontSize: 36,
-                    color: primary,
-                  ),
-                ),
+                child: Text(icon, style: TextStyle(fontSize: 32.sp)),
               ),
             ),
           ),
@@ -338,115 +367,110 @@ class SleepScreen extends GetView<SleepController> {
         Spacing.s8.h,
         Text(
           title,
-          style: r14.copyWith(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: r12.copyWith(
             color: Theme.of(context).textTheme.bodyLarge!.color,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
 
-  Column buildCategorySelectorSection(BuildContext context) {
-    return Column(
-      children: [
-        Spacing.s8.h,
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-          ),
-          child: Row(
-            children: List.generate(controller.categories.length, (index) {
-              final bool isSelected =
-                  controller.selectedIndexCategory.value == index;
-
-              return Obx(
-                () => GestureDetector(
-                  onTap: () {
-                    controller.selectedIndexCategory.value = index;
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? primary : Colors.transparent,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: isSelected
-                            ? Colors.transparent
-                            : Theme.of(context).textTheme.bodySmall!.color!
-                                  .withValues(alpha: 0.5),
-                        width: .8,
-                      ),
-                    ),
-                    child: Text(
-                      controller.categories[index],
-                      style: r14.copyWith(
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).textTheme.bodyMedium!.color,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
+  Widget buildCategorySelectorSection(BuildContext context) {
+    return Obx(
+      () => CustomHorizontalScrollableFilter<String>(
+        items: controller.categories,
+        selectedItem:
+            controller.categories[controller.selectedIndexCategory.value],
+        labelBuilder: (cat) => cat,
+        onItemSelected: (cat) {
+          controller.selectedIndexCategory.value = controller.categories
+              .indexOf(cat);
+        },
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
         ),
-        // Spacing.s20.h,
-      ],
+      ),
     );
   }
 
-  Column buildTabbarSection() {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            color: primary.withValues(alpha: 0.15),
-          ),
-          child: Obx(
-            () => Row(
-              children: List.generate(
-                controller.tabs.length,
-                (index) => Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      controller.selectedTabIndex.value = index;
-                    },
-                    borderRadius: BorderRadius.circular(6),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: controller.selectedTabIndex.value == index
-                            ? primary
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Spacing.s12.symmetric.horizontal,
-                        vertical: Spacing.s4.symmetric.horizontal,
-                      ),
-                      child: Center(
-                        child: Text(
-                          controller.tabs[index],
-                          textAlign: TextAlign.center,
-                          style: r16.copyWith(
-                            color: controller.selectedTabIndex.value == index
-                                ? white
-                                : primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+  Widget buildTabbarSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final segmentTabs = controller.tabs.map((tabLabel) {
+      return SegmentTab(
+        label: tabLabel,
+        color: primary,
+        selectedTextColor: Colors.white,
+        textColor: isDark ? slate[400] : slate[600],
+      );
+    }).toList();
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+      ),
+      child: CustomSegmentedTab(
+        tabs: segmentTabs,
+        controller: _tabController,
+        height: 42.h,
+        barDecoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        indicatorDecoration: BoxDecoration(
+          color: primary,
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: [
+            BoxShadow(
+              color: primary.withValues(alpha: 0.3),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColorLight,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      leading: const Center(child: CustomBackButton()),
+      title: Text(
+        "Sleep",
+        style: h2.copyWith(
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(right: Spacing.s16.value.w),
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                // Search functionality can be added here
+              },
+              child: Container(
+                height: 40.h,
+                width: 40.h,
+                decoration: const BoxDecoration(shape: BoxShape.circle),
+                child: Center(
+                  child: Text(
+                    MyIcons.magnifyingGlass,
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeLight',
+                      fontSize: 20.sp,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
                 ),
@@ -454,44 +478,7 @@ class SleepScreen extends GetView<SleepController> {
             ),
           ),
         ),
-        Spacing.s8.h,
       ],
-    );
-  }
-
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            height: 25,
-            width: 25,
-            child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
-          ),
-          Text(
-            "Sleep",
-            textAlign: TextAlign.center,
-            style: h2.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          Text(
-            MyIcons.magnifyingGlass,
-            style: TextStyle(
-              fontFamily: 'FontAwesomeLight',
-              fontSize: 20,
-              color: slate[500],
-            ),
-          ),
-        ],
-      ),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
     );
   }
 }
