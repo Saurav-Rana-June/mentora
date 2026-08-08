@@ -2,11 +2,13 @@ class ApiResponse<T> {
   int? status;
   String? message;
   T? data;
+  DateTime? lastUpdated;
 
   ApiResponse({
     this.status,
     this.message,
     this.data,
+    this.lastUpdated,
   });
 
   factory ApiResponse.fromJson(
@@ -19,6 +21,10 @@ class ApiResponse<T> {
       data: json['data'] != null && fromJsonT != null
           ? fromJsonT(json['data'])
           : null,
+      lastUpdated: json['lastUpdated'] != null
+          ? DateTime.tryParse(json['lastUpdated'] as String)
+          : null,
     );
   }
 }
+

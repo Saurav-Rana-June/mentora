@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
-
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
-class PlayerControls extends StatelessWidget {
+class MusicPlayerControls extends StatelessWidget {
   final bool isPlaying;
+  final bool isLoading;
   final VoidCallback? onPlayPauseTap;
   final VoidCallback? onPreviousTap;
   final VoidCallback? onNextTap;
 
-  const PlayerControls({
+  const MusicPlayerControls({
     super.key,
     required this.isPlaying,
+    this.isLoading = false,
     this.onPlayPauseTap,
     this.onPreviousTap,
     this.onNextTap,
@@ -73,15 +74,24 @@ class PlayerControls extends StatelessWidget {
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 150),
                   transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
-                  child: Text(
-                    isPlaying ? '\u{f04c}' : '\u{f04b}', // pause or play
-                    key: ValueKey<bool>(isPlaying),
-                    style: TextStyle(
-                      fontFamily: 'FontAwesomeSolid',
-                      fontSize: 24.sp,
-                      color: white,
-                    ),
-                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          height: 24.h,
+                          width: 24.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text(
+                          isPlaying ? '\u{f04c}' : '\u{f04b}', // pause or play
+                          key: ValueKey<bool>(isPlaying),
+                          style: TextStyle(
+                            fontFamily: 'FontAwesomeSolid',
+                            fontSize: 24.sp,
+                            color: white,
+                          ),
+                        ),
                 ),
               ),
             ),

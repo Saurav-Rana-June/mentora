@@ -47,8 +47,8 @@ class MeditationCard extends StatelessWidget {
                 ),
                 child: CachedNetworkImage(
                   imageUrl: session.imageUrl,
-                  height: 90.h,
-                  width: 90.h,
+                  height: 105.h,
+                  width: 95.h,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                     height: 70.h,
@@ -130,6 +130,15 @@ class MeditationCard extends StatelessWidget {
                             ),
                           ),
                         ],
+                      ),
+                      Spacing.s8.h,
+                      Text(
+                        session.description,
+                        style: r12.copyWith(
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

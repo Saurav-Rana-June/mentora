@@ -42,9 +42,16 @@ class AssessmentService {
   }
 
   /// Get user check-in streak stats
-  static Future<ApiResponse<StreakStatsModel>?> getStreakStats() async {
+  static Future<ApiResponse<StreakStatsModel>?> getStreakStats({
+    String? lastUpdated,
+  }) async {
     return client.request<ApiResponse<StreakStatsModel>>(
-      (dio) => dio.get('assessment/streak'),
+      (dio) => dio.get(
+        'assessment/streak',
+        queryParameters: {
+          if (lastUpdated != null) 'lastUpdated': lastUpdated,
+        },
+      ),
       withAccessToken: true,
       parser: (json) {
         return ApiResponse<StreakStatsModel>.fromJson(
@@ -62,6 +69,7 @@ class AssessmentService {
     int size = 10,
     String sortType = "desc",
     DateFilter? dateFilter,
+    String? lastUpdated,
   }) async {
     return client.request<ApiResponse<PaginatedDailyMoodAssessmentsModel>>(
       (dio) => dio.get(
@@ -71,6 +79,7 @@ class AssessmentService {
           'size': size,
           'sortType': sortType,
           if (dateFilter != null) 'dateFilter': dateFilter.value,
+          if (lastUpdated != null) 'lastUpdated': lastUpdated,
         },
       ),
       withAccessToken: true,

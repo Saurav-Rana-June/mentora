@@ -12,12 +12,14 @@ class InsightsService {
   /// Retrieve Coaching Banner recommendation
   static Future<ApiResponse<CoachingBannerResponseModel>?> getCoachingBanner({
     String timezone = "UTC",
+    String? lastUpdated,
   }) async {
     return client.request<ApiResponse<CoachingBannerResponseModel>>(
       (dio) => dio.get(
         'insights/coaching-banner',
         queryParameters: {
           'timezone': timezone,
+          if (lastUpdated != null) 'lastUpdated': lastUpdated,
         },
       ),
       withAccessToken: true,
@@ -37,6 +39,7 @@ class InsightsService {
     String? toDate,
     String? dateFilter,
     String? timezone,
+    String? lastUpdated,
   }) async {
     return client.request<ApiResponse<MoodTrackerStatsModel>>(
       (dio) => dio.get(
@@ -46,6 +49,7 @@ class InsightsService {
           if (toDate != null) 'toDate': toDate,
           if (dateFilter != null) 'dateFilter': dateFilter,
           if (timezone != null) 'timezone': timezone,
+          if (lastUpdated != null) 'lastUpdated': lastUpdated,
         },
       ),
       withAccessToken: true,
@@ -65,6 +69,7 @@ class InsightsService {
     String? toDate,
     String? dateFilter,
     String timezone = "UTC",
+    String? lastUpdated,
   }) async {
     return client.request<ApiResponse<GrowthAreasResponseModel>>(
       (dio) => dio.get(
@@ -74,6 +79,7 @@ class InsightsService {
           if (toDate != null) 'toDate': toDate,
           if (dateFilter != null) 'dateFilter': dateFilter,
           'timezone': timezone,
+          if (lastUpdated != null) 'lastUpdated': lastUpdated,
         },
       ),
       withAccessToken: true,

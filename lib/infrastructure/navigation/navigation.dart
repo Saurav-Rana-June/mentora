@@ -133,9 +133,5 @@ class Nav {
       name: Routes.MEDITATION,
       page: () => MeditationScreen(),
     ),
-    GetPage(
-      name: Routes.MEDITATION_PLAYER,
-      page: () => MeditationPlayerScreen(),
-    ),
   ];
 }

@@ -1,10 +1,10 @@
+import 'package:Mentora/presentation/moodCheckin/controllers/mood_checkin.controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
@@ -19,7 +19,7 @@ class MoodHistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final homeController = Get.find<HomeController>();
+    final controller = Get.find<MoodCheckinController>();
 
     return Scaffold(
       backgroundColor: theme.primaryColorLight,
@@ -45,11 +45,11 @@ class MoodHistoryView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Filter Chips Section
-            Obx(() => _buildFilterChips(context, homeController)),
+            Obx(() => _buildFilterChips(context, controller)),
             // Content Section (List or Empty state)
             Expanded(
               child: Obx(() {
-                if (homeController.moodHistoryList.isEmpty) {
+                if (controller.globalController.moodHistoryList.isEmpty) {
                   return Center(
                     child: Padding(
                       padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
@@ -122,7 +122,7 @@ class MoodHistoryView extends StatelessWidget {
 
                 // Sort history: latest first
                 final sortedHistory = List<DailyMoodAssessmentModel>.from(
-                  homeController.moodHistoryList,
+                  controller.globalController.moodHistoryList,
                 );
                 sortedHistory.sort((a, b) {
                   final aDate = a.createdAt != null
@@ -146,7 +146,7 @@ class MoodHistoryView extends StatelessWidget {
                     final checkIn = sortedHistory[index];
                     final feelingName = checkIn.feeling ?? 'Normal';
                     final moodColor = AppUtils.getMoodColor(feelingName);
-                    final moodIcon = homeController.moodImage(feelingName);
+                    final moodIcon = AppUtils.getMoodImage(feelingName);
                     final dateStr = _formatDate(checkIn.createdAt);
                     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -395,12 +395,13 @@ class MoodHistoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterChips(BuildContext context, HomeController controller) {
+  Widget _buildFilterChips(BuildContext context, MoodCheckinController controller) {
     return CustomHorizontalScrollableFilter<DateFilter>(
       items: DateFilter.values,
-      selectedItem: controller.selectedDateFilter.value,
+      selectedItem: controller.globalController.selectedDateFilter.value,
       labelBuilder: (filter) => filter.value,
-      onItemSelected: (filter) => controller.changeDateFilter(filter),
+      onItemSelected: (filter) =>
+          controller.globalController.changeDateFilter(filter),
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s16.symmetric.horizontal,
         vertical: Spacing.s8.symmetric.horizontal,

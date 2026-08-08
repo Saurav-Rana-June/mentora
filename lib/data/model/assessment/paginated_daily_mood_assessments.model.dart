@@ -27,4 +27,14 @@ class PaginatedDailyMoodAssessmentsModel {
       totalPages: json['totalPages'] as int? ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'items': items.map((e) => e.toJson()).toList(),
+      'page': page,
+      'size': size,
+      'totalItems': totalItems,
+      'totalPages': totalPages,
+    };
+  }
 }

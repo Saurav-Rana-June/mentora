@@ -1,3 +1,4 @@
+import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,7 @@ import 'package:my_spacing/spacing.enum.dart';
 
 import '../../../infrastructure/theme/theme.dart';
 import '../../../widgets/others/custom.rating.gauage.dart';
-import '../controllers/mood_checkin.controller.dart';
+import 'package:Mentora/presentation/moodCheckin/controllers/mood_checkin.controller.dart';
 
 class MoodSelectionView extends GetView<MoodCheckinController> {
   const MoodSelectionView({super.key});
@@ -34,7 +35,7 @@ class MoodSelectionView extends GetView<MoodCheckinController> {
             Spacing.s24.h,
             Obx(
               () => SvgPicture.asset(
-                controller.moodImage(controller.selectedMood.value),
+                AppUtils.getMoodImage(controller.selectedMood.value),
                 width: 150,
                 height: 150,
               ),

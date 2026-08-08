@@ -1,3 +1,4 @@
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +7,7 @@ import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
 import '../../../infrastructure/theme/theme.dart';
 
 class MoodCheckinController extends GetxController {
+  final GlobalController globalController = Get.find<GlobalController>();
   RxInt currentIndex = 0.obs;
   RxString selectedMood = 'Angry'.obs;
   RxBool isUpdateMode = false.obs;
@@ -13,15 +15,15 @@ class MoodCheckinController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     // Check if we passed a DailyMoodAssessmentModel to update
     if (Get.arguments != null && Get.arguments is DailyMoodAssessmentModel) {
       final argument = Get.arguments as DailyMoodAssessmentModel;
       isUpdateMode.value = true;
-      
+
       // Pre-fill selected mood
       selectedMood.value = argument.feeling ?? 'Angry';
-      
+
       // Pre-fill reasons
       selectedMoodReasonsList.clear();
       for (var label in argument.why ?? []) {
@@ -30,20 +32,23 @@ class MoodCheckinController extends GetxController {
           selectedMoodReasonsList.add(match);
         }
       }
-      
+
       // Pre-fill exact feelings
       selectedExtactReasonsList.clear();
       for (var label in argument.exactFeeling ?? []) {
-        final match = exactReasonsList.firstWhereOrNull((r) => r.label == label);
+        final match = exactReasonsList.firstWhereOrNull(
+          (r) => r.label == label,
+        );
         if (match != null) {
           selectedExtactReasonsList.add(match);
         }
       }
-      
+
       // Pre-fill notes
       notesController.text = argument.notes ?? "";
     }
   }
+
   final segments = [
     GaugeSegment(red, "assets/moods/Angry Face.svg", "Angry"),
     GaugeSegment(orange, "assets/moods/Not Good Face.svg", "Not Good"),
@@ -113,23 +118,6 @@ class MoodCheckinController extends GetxController {
   RxList<MoodReason> selectedMoodReasonsList = <MoodReason>[].obs;
   RxList<MoodReason> selectedExtactReasonsList = <MoodReason>[].obs;
 
-  String moodImage(String selectedMood) {
-    switch (selectedMood) {
-      case 'Angry':
-        return "assets/moods/Angry Face.svg";
-      case 'Not Good':
-        return "assets/moods/Not Good Face.svg";
-      case 'Normal':
-        return "assets/moods/Normal Face.svg";
-      case 'Good':
-        return "assets/moods/Happy Face.svg";
-      case 'Very Good':
-        return "assets/moods/Very Happy Face.svg";
-      default:
-        return "";
-    }
-  }
-
   void toggleMoodReason(MoodReason reason) {
     final exists = selectedMoodReasonsList.any((m) => m.label == reason.label);
 
@@ -159,7 +147,9 @@ class MoodCheckinController extends GetxController {
     try {
       final feeling = selectedMood.value;
       final why = selectedMoodReasonsList.map((e) => e.label).toList();
-      final exactFeeling = selectedExtactReasonsList.map((e) => e.label).toList();
+      final exactFeeling = selectedExtactReasonsList
+          .map((e) => e.label)
+          .toList();
       final notes = notesController.text.trim();
 
       final response = isUpdateMode.value
