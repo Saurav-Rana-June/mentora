@@ -1,5 +1,6 @@
 import 'package:Mentora/controllers/bottom.nav.controller.dart';
 import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
@@ -46,12 +47,12 @@ class HomeScreen extends GetView<HomeController> {
           buildStreakAndProgressRow(context),
           Spacing.s16.h,
           Obx(() {
-            if (controller.todayCheckIn.value == null) {
+            if (controller.globalController.todayCheckIn.value == null) {
               return buildMoodCheckinSection(context);
             } else {
               return buildMoodCheckedInCard(
                 context,
-                controller.todayCheckIn.value!,
+                controller.globalController.todayCheckIn.value!,
               );
             }
           }),
@@ -692,7 +693,7 @@ class HomeScreen extends GetView<HomeController> {
     DailyMoodAssessmentModel checkIn,
   ) {
     final mood = checkIn.feeling ?? '';
-    final moodIcon = controller.moodImage(mood);
+    final moodIcon = AppUtils.getMoodImage(mood);
     final moodColor = _getMoodColor(mood);
     final timeStr = _formatTime(checkIn.createdAt ?? '');
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;

@@ -1,25 +1,39 @@
+import 'package:Mentora/data/enums/date_filter_enum.dart';
+import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
-import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/data/model/auth/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 
 class GlobalController extends GetxController {
+  final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
   bool _isFetchingHistory = false;
   final RxBool isLoadingMoodTracker = false.obs;
   final Rxn<MoodTrackerStatsModel> moodTrackerStats =
       Rxn<MoodTrackerStatsModel>();
 
+  final RxList<DailyMoodAssessmentModel> moodHistoryList =
+      <DailyMoodAssessmentModel>[].obs;
+
+  final Rx<DailyMoodAssessmentModel?> todayCheckIn =
+      Rx<DailyMoodAssessmentModel?>(null);
+
+  // Check-in history
+  final RxList<DateTime> checkInDates = <DateTime>[].obs;
+  final RxList<String> checkInMoods = <String>[].obs;
+
   final Rxn<ProfileModel> userProfile = Rxn<ProfileModel>();
   final RxBool isLoadingProfile = false.obs;
+  final RxString latestMood = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchMoodTrackerStats();
     fetchUserProfile();
+    Future.wait([fetchMoodHistory(), fetchMoodTrackerStats()]);
   }
 
   Future<void> fetchUserProfile() async {
@@ -33,6 +47,54 @@ class GlobalController extends GetxController {
       Get.log("Error fetching user profile: $e");
     } finally {
       isLoadingProfile.value = false;
+    }
+  }
+
+  Future<void> fetchMoodHistory() async {
+    try {
+      final response = await AssessmentService.getDailyMoodsHistory(
+        page: 1,
+        size: 50,
+        dateFilter: selectedDateFilter.value,
+      );
+      if (response != null && response.data != null) {
+        final List<DailyMoodAssessmentModel> history = response.data!.items;
+
+        moodHistoryList.assignAll(history);
+
+        checkInDates.clear();
+        checkInMoods.clear();
+
+        final today = DateTime.now();
+        DailyMoodAssessmentModel? foundToday;
+
+        for (var checkIn in history) {
+          final DateTime? checkInDate = checkIn.createdAt != null
+              ? DateTime.tryParse(checkIn.createdAt!)?.toLocal()
+              : null;
+          if (checkInDate != null) {
+            checkInDates.add(checkInDate);
+            checkInMoods.add(checkIn.feeling ?? '');
+
+            if (checkInDate.year == today.year &&
+                checkInDate.month == today.month &&
+                checkInDate.day == today.day) {
+              foundToday = checkIn;
+            }
+          }
+        }
+
+        todayCheckIn.value = foundToday;
+        if (foundToday != null) {
+          latestMood.value = foundToday.feeling ?? '';
+        }
+
+        if (Get.isRegistered<GlobalController>()) {
+          Get.find<GlobalController>().fetchMoodTrackerStats();
+        }
+      }
+    } catch (e) {
+      Get.log("Error fetching mood history: $e");
     }
   }
 
@@ -71,6 +133,40 @@ class GlobalController extends GetxController {
     } finally {
       isLoadingProfile.value = false;
     }
+  }
+
+  void addMoodCheckin(String mood) {
+    latestMood.value = mood;
+    final today = DateTime.now();
+
+    // Check if already checked in today
+    bool alreadyCheckedIn = checkInDates.any(
+      (date) =>
+          date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day,
+    );
+
+    if (!alreadyCheckedIn) {
+      checkInDates.add(today);
+      checkInMoods.add(mood);
+    } else {
+      // Update latest mood for today
+      int idx = checkInDates.indexWhere(
+        (date) =>
+            date.year == today.year &&
+            date.month == today.month &&
+            date.day == today.day,
+      );
+      if (idx != -1) {
+        checkInMoods[idx] = mood;
+      }
+    }
+  }
+
+  Future<void> changeDateFilter(DateFilter filter) async {
+    selectedDateFilter.value = filter;
+    await fetchMoodHistory();
   }
 
   Future<bool> uploadProfilePicture(String filePath, String fileName) async {
@@ -156,15 +252,6 @@ class GlobalController extends GetxController {
 
       if (!hasCache) {
         isLoadingMoodTracker.value = true;
-      }
-
-      try {
-        _isFetchingHistory = true;
-        if (Get.isRegistered<HomeController>()) {
-          await Get.find<HomeController>().fetchMoodHistory();
-        }
-      } finally {
-        _isFetchingHistory = false;
       }
 
       if (hasCache && !forceRefresh) {

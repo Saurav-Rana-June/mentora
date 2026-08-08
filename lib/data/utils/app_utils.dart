@@ -27,6 +27,23 @@ class AppUtils {
     }
   }
 
+  static String getMoodImage(String feeling) {
+    switch (feeling) {
+      case 'Angry':
+        return "assets/moods/Angry Face.svg";
+      case 'Not Good':
+        return "assets/moods/Not Good Face.svg";
+      case 'Normal':
+        return "assets/moods/Normal Face.svg";
+      case 'Good':
+        return "assets/moods/Happy Face.svg";
+      case 'Very Good':
+        return "assets/moods/Very Happy Face.svg";
+      default:
+        return "";
+    }
+  }
+
   /// Parses common API error JSON shapes for user-visible messages.
   static String? messageFromApiErrorBody(dynamic data) {
     if (data is Map) {

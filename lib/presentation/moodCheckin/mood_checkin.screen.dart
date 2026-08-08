@@ -1,5 +1,5 @@
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_history.view.dart';
@@ -55,8 +55,8 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
                 } else {
                   final success = await controller.saveCheckIn();
                   if (success) {
-                    if (Get.isRegistered<HomeController>()) {
-                      Get.find<HomeController>().addMoodCheckin(
+                    if (Get.isRegistered<GlobalController>()) {
+                      Get.find<GlobalController>().addMoodCheckin(
                         controller.selectedMood.value,
                       );
                     }
@@ -86,9 +86,9 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
             ),
           ),
           onPressed: () {
-            final homeController = Get.find<HomeController>();
-            homeController.selectedDateFilter.value = DateFilter.thisWeek;
-            homeController.fetchMoodHistory();
+            controller.globalController.selectedDateFilter.value =
+                DateFilter.thisWeek;
+            controller.globalController.fetchMoodHistory();
             Get.to(
               () => const MoodHistoryView(),
               transition: Transition.rightToLeft,
