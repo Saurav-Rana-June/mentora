@@ -37,33 +37,48 @@ class InsightsScreen extends GetView<InsightsController> {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: buildAppbar(context),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: Spacing.s4.symmetric.horizontal,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: horizontalPadding,
-              child: Obx(
-                () => buildPersonalizedCoachingCard(context, homeController),
-              ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait({
+            controller.fetchGrowthAreas(
+              controller.selectedDateFilter.value,
+              forceRefresh: true,
             ),
-            buildDateFilters(context),
-            Spacing.s20.h,
-            Padding(
-              padding: horizontalPadding,
-              child: Column(
-                children: [
-                  buildGrowthAreaCard(context),
-                  Spacing.s20.h,
-                  buildMoodTrackerCard(context, homeController),
-                  Spacing.s12.h,
-                ],
-              ),
+            controller.fetchCoachingBanner(forceRefresh: true),
+            controller.globalController.fetchMoodTrackerStats(
+              dateFilter: controller.selectedDateFilter.value.name,
+              forceRefresh: true,
             ),
-          ],
+          });
+        },
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            vertical: Spacing.s4.symmetric.horizontal,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: horizontalPadding,
+                child: Obx(
+                  () => buildPersonalizedCoachingCard(context, homeController),
+                ),
+              ),
+              buildDateFilters(context),
+              Spacing.s20.h,
+              Padding(
+                padding: horizontalPadding,
+                child: Column(
+                  children: [
+                    buildGrowthAreaCard(context),
+                    Spacing.s20.h,
+                    buildMoodTrackerCard(context, homeController),
+                    Spacing.s12.h,
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -30,14 +30,15 @@ class SleepController extends GetxController {
   final RxBool isLoading = true.obs;
 
   // Cache keys
-  static const String _soundsCacheKey = 'sleep_sounds_cache_data';
-  static const String _soundsLastUpdatedKey = 'sleep_sounds_cache_last_updated';
+  static const String soundsCacheKey = 'sleep_sounds_cache_data';
+  static const String soundsLastUpdatedKey = 'sleep_sounds_cache_last_updated';
 
-  static const String _musicCacheKey = 'sleep_music_cache_data';
-  static const String _musicLastUpdatedKey = 'sleep_music_cache_last_updated';
+  static const String musicCacheKey = 'sleep_music_cache_data';
+  static const String musicLastUpdatedKey = 'sleep_music_cache_last_updated';
 
-  static const String _storiesCacheKey = 'sleep_stories_cache_data';
-  static const String _storiesLastUpdatedKey = 'sleep_stories_cache_last_updated';
+  static const String storiesCacheKey = 'sleep_stories_cache_data';
+  static const String storiesLastUpdatedKey =
+      'sleep_stories_cache_last_updated';
 
   @override
   void onInit() {
@@ -47,7 +48,24 @@ class SleepController extends GetxController {
 
   /// Fetch all sleep data (sounds, music, stories) in parallel
   Future<void> fetchSleepData({bool forceRefresh = false}) async {
-    isLoading.value = true;
+    final hasSoundsCache =
+        StorageUtils.read<List<dynamic>>(soundsCacheKey) != null &&
+        StorageUtils.read<String>(soundsLastUpdatedKey) != null;
+    final hasMusicCache =
+        StorageUtils.read<List<dynamic>>(musicCacheKey) != null &&
+        StorageUtils.read<String>(musicLastUpdatedKey) != null;
+    final hasStoriesCache =
+        StorageUtils.read<List<dynamic>>(storiesCacheKey) != null &&
+        StorageUtils.read<String>(storiesLastUpdatedKey) != null;
+
+    final hasAllCache = hasSoundsCache && hasMusicCache && hasStoriesCache;
+
+    if (!hasAllCache && !forceRefresh) {
+      isLoading.value = true;
+    } else {
+      isLoading.value = false;
+    }
+
     await Future.wait([
       fetchSounds(forceRefresh: forceRefresh),
       fetchMusic(forceRefresh: forceRefresh),
@@ -59,20 +77,33 @@ class SleepController extends GetxController {
   /// Fetch Sleep Sounds (with local caching & lastUpdated checks)
   Future<void> fetchSounds({bool forceRefresh = false}) async {
     try {
-      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(_soundsCacheKey);
-      final String? cachedLastUpdated = StorageUtils.read<String>(_soundsLastUpdatedKey);
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        soundsCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        soundsLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {
-        sounds.assignAll(cachedData.map((e) => Sound.fromJson(Map<String, dynamic>.from(e as Map))).toList());
+        sounds.assignAll(
+          cachedData
+              .map((e) => Sound.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        );
         hasCache = true;
       }
 
       if (hasCache && !forceRefresh) {
-        final checkRes = await SleepService.getSleepSounds(lastUpdated: cachedLastUpdated);
+        final checkRes = await SleepService.getSleepSounds(
+          lastUpdated: cachedLastUpdated,
+        );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date
             return;
           }
@@ -82,9 +113,15 @@ class SleepController extends GetxController {
       final res = await SleepService.getSleepSounds();
       if (res != null && res.data != null) {
         sounds.assignAll(res.data!);
-        await StorageUtils.write(_soundsCacheKey, res.data!.map((e) => e.toJson()).toList());
+        await StorageUtils.write(
+          soundsCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
         if (res.lastUpdated != null) {
-          await StorageUtils.write(_soundsLastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            soundsLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
@@ -95,20 +132,35 @@ class SleepController extends GetxController {
   /// Fetch Sleep Music (with local caching & lastUpdated checks)
   Future<void> fetchMusic({bool forceRefresh = false}) async {
     try {
-      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(_musicCacheKey);
-      final String? cachedLastUpdated = StorageUtils.read<String>(_musicLastUpdatedKey);
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        musicCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        musicLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {
-        calmMusics.assignAll(cachedData.map((e) => CalmMusic.fromJson(Map<String, dynamic>.from(e as Map))).toList());
+        calmMusics.assignAll(
+          cachedData
+              .map(
+                (e) => CalmMusic.fromJson(Map<String, dynamic>.from(e as Map)),
+              )
+              .toList(),
+        );
         hasCache = true;
       }
 
       if (hasCache && !forceRefresh) {
-        final checkRes = await SleepService.getSleepMusic(lastUpdated: cachedLastUpdated);
+        final checkRes = await SleepService.getSleepMusic(
+          lastUpdated: cachedLastUpdated,
+        );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date
             return;
           }
@@ -118,9 +170,15 @@ class SleepController extends GetxController {
       final res = await SleepService.getSleepMusic();
       if (res != null && res.data != null) {
         calmMusics.assignAll(res.data!);
-        await StorageUtils.write(_musicCacheKey, res.data!.map((e) => e.toJson()).toList());
+        await StorageUtils.write(
+          musicCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
         if (res.lastUpdated != null) {
-          await StorageUtils.write(_musicLastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            musicLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
@@ -131,20 +189,33 @@ class SleepController extends GetxController {
   /// Fetch Sleep Stories (with local caching & lastUpdated checks)
   Future<void> fetchStories({bool forceRefresh = false}) async {
     try {
-      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(_storiesCacheKey);
-      final String? cachedLastUpdated = StorageUtils.read<String>(_storiesLastUpdatedKey);
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        storiesCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        storiesLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {
-        stories.assignAll(cachedData.map((e) => Story.fromJson(Map<String, dynamic>.from(e as Map))).toList());
+        stories.assignAll(
+          cachedData
+              .map((e) => Story.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        );
         hasCache = true;
       }
 
       if (hasCache && !forceRefresh) {
-        final checkRes = await SleepService.getSleepStories(lastUpdated: cachedLastUpdated);
+        final checkRes = await SleepService.getSleepStories(
+          lastUpdated: cachedLastUpdated,
+        );
         if (checkRes != null) {
-          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date
             return;
           }
@@ -154,9 +225,15 @@ class SleepController extends GetxController {
       final res = await SleepService.getSleepStories();
       if (res != null && res.data != null) {
         stories.assignAll(res.data!);
-        await StorageUtils.write(_storiesCacheKey, res.data!.map((e) => e.toJson()).toList());
+        await StorageUtils.write(
+          storiesCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
         if (res.lastUpdated != null) {
-          await StorageUtils.write(_storiesLastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            storiesLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
@@ -191,12 +268,12 @@ class Sound {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'emoji': emoji,
-        'title': title,
-        'audioUrl': audioUrl,
-        'category': category,
-      };
+    'id': id,
+    'emoji': emoji,
+    'title': title,
+    'audioUrl': audioUrl,
+    'category': category,
+  };
 }
 
 class CalmMusic {
@@ -231,14 +308,14 @@ class CalmMusic {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'duration': duration,
-        'imageUrl': imageUrl,
-        'audioUrl': audioUrl,
-        'category': category,
-        'description': description,
-      };
+    'id': id,
+    'title': title,
+    'duration': duration,
+    'imageUrl': imageUrl,
+    'audioUrl': audioUrl,
+    'category': category,
+    'description': description,
+  };
 }
 
 class Story {
@@ -273,12 +350,12 @@ class Story {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'duration': duration,
-        'imageUrl': imageUrl,
-        'audioUrl': audioUrl,
-        'category': category,
-        'description': description,
-      };
+    'id': id,
+    'title': title,
+    'duration': duration,
+    'imageUrl': imageUrl,
+    'audioUrl': audioUrl,
+    'category': category,
+    'description': description,
+  };
 }

@@ -7,6 +7,7 @@ import 'package:Mentora/data/model/assessment/coaching_banner_response.model.dar
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 
 class InsightsController extends GetxController {
+  final GlobalController globalController = Get.find<GlobalController>();
   final RxInt selectedGrowthTab = 0.obs;
   final RxInt selectedMoodTab = 0.obs;
 
@@ -28,9 +29,7 @@ class InsightsController extends GetxController {
     super.onInit();
     final initialFilter = selectedDateFilter.value;
     fetchGrowthAreas(initialFilter);
-    Get.find<GlobalController>().fetchMoodTrackerStats(
-      dateFilter: initialFilter.name,
-    );
+    globalController.fetchMoodTrackerStats(dateFilter: initialFilter.name);
     fetchCoachingBanner();
   }
 
@@ -79,7 +78,10 @@ class InsightsController extends GetxController {
       final response = await InsightsService.getCoachingBanner(timezone: 'UTC');
       if (response != null && response.data != null) {
         coachingBannerData.value = response.data;
-        await StorageUtils.write(_coachingBannerCacheKey, response.data!.toJson());
+        await StorageUtils.write(
+          _coachingBannerCacheKey,
+          response.data!.toJson(),
+        );
         if (response.lastUpdated != null) {
           await StorageUtils.write(
             _coachingBannerLastUpdatedKey,
@@ -103,8 +105,12 @@ class InsightsController extends GetxController {
         'insights_growth_areas_last_updated_${filter.name}';
 
     try {
-      final cachedData = StorageUtils.read<Map<String, dynamic>>(growthAreasCacheKey);
-      final cachedLastUpdated = StorageUtils.read<String>(growthAreasLastUpdatedKey);
+      final cachedData = StorageUtils.read<Map<String, dynamic>>(
+        growthAreasCacheKey,
+      );
+      final cachedLastUpdated = StorageUtils.read<String>(
+        growthAreasLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {
