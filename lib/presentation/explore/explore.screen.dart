@@ -91,6 +91,7 @@ class ExploreScreen extends GetView<ExploreController> {
                   icon: '\u{e480}',
                   title: 'Breathing',
                   subtitle: 'Find your focus',
+                  onTap: () => Get.toNamed(Routes.BREATHING),
                 ),
               ),
             ],

@@ -21,3 +21,4 @@ export 'package:Mentora/presentation/sleep/sleep.screen.dart';
 export 'package:Mentora/presentation/splash/splash.screen.dart';
 export 'package:Mentora/presentation/sessions/sessions.screen.dart';
 export 'package:Mentora/presentation/meditation/meditation.screen.dart';
+export 'package:Mentora/presentation/breathing/breathing.screen.dart';

@@ -27,4 +27,5 @@ class Routes {
   static const ACCOUNT = '/account';
   static const SESSIONS = '/sessions';
   static const MEDITATION = '/meditation';
+  static const BREATHING = '/breathing';
 }

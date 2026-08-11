@@ -133,5 +133,9 @@ class Nav {
       name: Routes.MEDITATION,
       page: () => MeditationScreen(),
     ),
+    GetPage(
+      name: Routes.BREATHING,
+      page: () => BreathingScreen(),
+    ),
   ];
 }
