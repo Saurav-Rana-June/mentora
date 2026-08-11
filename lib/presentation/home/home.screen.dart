@@ -70,7 +70,11 @@ class HomeScreen extends GetView<HomeController> {
             // Spacing.s16.h,
             buildMoodTrendsCard(context),
             Spacing.s16.h,
-            buildTodayPlanSection(context),
+            Obx(
+              () => controller.plans.isNotEmpty
+                  ? buildTodayPlanSection(context)
+                  : SizedBox(),
+            ),
           ],
         ),
       ),
