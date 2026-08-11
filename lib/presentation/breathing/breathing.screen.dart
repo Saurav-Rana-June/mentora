@@ -33,7 +33,7 @@ class BreathingScreen extends GetView<BreathingController> {
       centerTitle: true,
       leading: const Center(child: CustomBackButton()),
       title: Text(
-        "Breathing Space",
+        "Breathing",
         style: h2.copyWith(
           color: Theme.of(context).textTheme.bodyLarge!.color,
           fontWeight: FontWeight.w600,
@@ -91,48 +91,76 @@ class BreathingScreen extends GetView<BreathingController> {
         child: CustomPrimaryCard(
           borderRadius: 16.r,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    pattern.name,
-                    style: r18.copyWith(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      "${pattern.cycleDuration}s Cycle",
-                      style: r12.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Spacing.s8.h,
-              Text(
-                pattern.description,
-                style: r14.copyWith(
-                  color: Theme.of(context).textTheme.bodySmall!.color,
-                  fontWeight: FontWeight.w400,
+              // Left Circular Emoji Icon Container
+              Container(
+                height: 56.h,
+                width: 56.h,
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(pattern.icon, style: TextStyle(fontSize: 26.sp)),
                 ),
               ),
-              Spacing.s12.h,
-              buildBreathingPatternTimeline(context, pattern),
+              Spacing.s16.w,
+              // Right Content Area
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            pattern.name,
+                            style: r18.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Spacing.s8.w,
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Text(
+                            "${pattern.cycleDuration}s",
+                            style: r12.copyWith(
+                              color: primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Spacing.s4.h,
+                    Text(
+                      pattern.description,
+                      style: r14.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
+                      ),
+                    ),
+                    Spacing.s12.h,
+                    buildBreathingPatternTimeline(context, pattern),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

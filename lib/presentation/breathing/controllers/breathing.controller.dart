@@ -9,6 +9,7 @@ class BreathingPattern {
   final int holdIn;
   final int exhale;
   final int holdOut;
+  final String icon;
 
   const BreathingPattern({
     required this.name,
@@ -17,6 +18,7 @@ class BreathingPattern {
     required this.holdIn,
     required this.exhale,
     required this.holdOut,
+    required this.icon,
   });
 
   int get cycleDuration => inhale + holdIn + exhale + holdOut;
@@ -37,6 +39,7 @@ class BreathingController extends GetxController
       holdIn: 4,
       exhale: 4,
       holdOut: 4,
+      icon: "📦",
     ),
     BreathingPattern(
       name: "4-7-8 Relax",
@@ -46,6 +49,7 @@ class BreathingController extends GetxController
       holdIn: 7,
       exhale: 8,
       holdOut: 0,
+      icon: "🌬️",
     ),
     BreathingPattern(
       name: "Equal Breathing",
@@ -55,6 +59,7 @@ class BreathingController extends GetxController
       holdIn: 0,
       exhale: 4,
       holdOut: 0,
+      icon: "⚖️",
     ),
     BreathingPattern(
       name: "Resonant Breath",
@@ -64,6 +69,7 @@ class BreathingController extends GetxController
       holdIn: 0,
       exhale: 5,
       holdOut: 0,
+      icon: "🌊",
     ),
   ];
 
