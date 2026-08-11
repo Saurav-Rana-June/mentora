@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
+import 'package:Mentora/infrastructure/dal/services/breathing_service.dart';
 
 class BreathingPattern {
+  final int? id;
   final String name;
   final String description;
   final int inhale;
@@ -12,6 +15,7 @@ class BreathingPattern {
   final String icon;
 
   const BreathingPattern({
+    this.id,
     required this.name,
     required this.description,
     required this.inhale,
@@ -22,6 +26,32 @@ class BreathingPattern {
   });
 
   int get cycleDuration => inhale + holdIn + exhale + holdOut;
+
+  factory BreathingPattern.fromJson(Map<String, dynamic> json) {
+    return BreathingPattern(
+      id: json['id'] as int?,
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      inhale: json['inhale'] as int? ?? 4,
+      holdIn: json['holdIn'] as int? ?? 0,
+      exhale: json['exhale'] as int? ?? 4,
+      holdOut: json['holdOut'] as int? ?? 0,
+      icon: json['icon'] as String? ?? '🌬️',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'inhale': inhale,
+      'holdIn': holdIn,
+      'exhale': exhale,
+      'holdOut': holdOut,
+      'icon': icon,
+    };
+  }
 }
 
 class BreathingController extends GetxController
@@ -29,9 +59,14 @@ class BreathingController extends GetxController
   late final AnimationController animationController;
   Timer? _timer;
 
-  // Breathing presets
-  final List<BreathingPattern> patterns = const [
+  // Cache keys constants
+  static const String _patternsCacheKey = 'breathing_techniques_patterns';
+  static const String _patternsLastUpdatedCacheKey = 'breathing_techniques_last_updated';
+
+  // Fallback defaults
+  static const List<BreathingPattern> defaultPatterns = [
     BreathingPattern(
+      id: 1,
       name: "Box Breathing",
       description:
           "Relieve stress, clear your mind, and improve focus under pressure.",
@@ -42,6 +77,7 @@ class BreathingController extends GetxController
       icon: "📦",
     ),
     BreathingPattern(
+      id: 2,
       name: "4-7-8 Relax",
       description:
           "Deep relaxation to help ease anxiety and transition into deep sleep.",
@@ -52,6 +88,7 @@ class BreathingController extends GetxController
       icon: "🌬️",
     ),
     BreathingPattern(
+      id: 3,
       name: "Equal Breathing",
       description:
           "Balance your nervous system and bring immediate clarity and calm.",
@@ -62,6 +99,7 @@ class BreathingController extends GetxController
       icon: "⚖️",
     ),
     BreathingPattern(
+      id: 4,
       name: "Resonant Breath",
       description:
           "Synchronizes heart and respiratory rate to optimize recovery and calm.",
@@ -73,17 +111,24 @@ class BreathingController extends GetxController
     ),
   ];
 
+  // Dynamic presets list loaded from cache/API
+  final RxList<BreathingPattern> patterns = <BreathingPattern>[].obs;
+  final RxBool isLoading = true.obs;
+
   // Reactive states
   final RxInt selectedPatternIndex = 0.obs;
   final RxInt selectedDurationSeconds = 120.obs; // Default 2 minutes
   final RxInt remainingSessionSeconds = 120.obs;
   final RxInt remainingPhaseSeconds = 0.obs;
-  final RxString currentPhase = "Ready".obs; // Ready, Inhale, Hold In, Exhale, Hold Out, Completed
+  final RxString currentPhase =
+      "Ready".obs; // Ready, Inhale, Hold In, Exhale, Hold Out, Completed
   final RxBool isPlaying = false.obs;
   final RxBool isPaused = false.obs;
   final RxBool isCompleted = false.obs;
 
-  BreathingPattern get activePattern => patterns[selectedPatternIndex.value];
+  BreathingPattern get activePattern => patterns.isNotEmpty
+      ? patterns[selectedPatternIndex.value]
+      : defaultPatterns[0];
 
   @override
   void onInit() {
@@ -94,6 +139,69 @@ class BreathingController extends GetxController
       upperBound: 1.0,
       value: 0.15,
     );
+    fetchPatterns();
+  }
+
+  /// Fetch breathing patterns from cache first, then API (using timestamp verification)
+  Future<void> fetchPatterns({bool forceRefresh = false}) async {
+    try {
+      // 1. Try loading from local storage cache
+      final List<dynamic>? cachedPatterns = StorageUtils.read<List<dynamic>>(_patternsCacheKey);
+      final String? cachedLastUpdated = StorageUtils.read<String>(_patternsLastUpdatedCacheKey);
+
+      bool hasCache = false;
+      if (cachedPatterns != null && cachedPatterns.isNotEmpty && cachedLastUpdated != null) {
+        final List<BreathingPattern> loaded = cachedPatterns
+            .map((e) => BreathingPattern.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+        patterns.assignAll(loaded);
+        hasCache = true;
+      } else {
+        // Fallback to default presets if cache is empty
+        patterns.assignAll(defaultPatterns);
+      }
+
+      isLoading.value = false;
+
+      bool needFetch = !hasCache || forceRefresh;
+
+      // Check lastUpdated on the server
+      if (hasCache && !forceRefresh) {
+        final checkRes = await BreathingService.getBreathingPatterns(lastUpdated: cachedLastUpdated);
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+            needFetch = false;
+          }
+        }
+      }
+
+      if (!needFetch) {
+        return;
+      }
+
+      // 2. Fetch fresh patterns from the API
+      final res = await BreathingService.getBreathingPatterns();
+      if (res != null && res.data != null) {
+        patterns.assignAll(res.data!);
+        
+        // Update local cache
+        final serialized = res.data!.map((e) => e.toJson()).toList();
+        await StorageUtils.write(_patternsCacheKey, serialized);
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            _patternsLastUpdatedCacheKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Failed to fetch breathing patterns: $e");
+      if (patterns.isEmpty) {
+        patterns.assignAll(defaultPatterns);
+      }
+      isLoading.value = false;
+    }
   }
 
   void startSession() {

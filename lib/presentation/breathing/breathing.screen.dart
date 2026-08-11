@@ -9,6 +9,7 @@ import 'package:Mentora/widgets/others/custom.primary.card.dart';
 
 import 'controllers/breathing.controller.dart';
 import 'views/breathing_exercise.screen.dart';
+import 'widgets/breathing_content_loading.dart';
 
 class BreathingScreen extends GetView<BreathingController> {
   BreathingScreen({super.key});
@@ -58,19 +59,25 @@ class BreathingScreen extends GetView<BreathingController> {
   }
 
   Widget buildPatternSelector(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: controller.patterns.length,
-      itemBuilder: (context, index) {
-        final pattern = controller.patterns[index];
-        return buildBreathingPatternTile(
-          context,
-          index: index,
-          pattern: pattern,
-        );
-      },
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const BreathingContentLoading();
+      }
+
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: controller.patterns.length,
+        itemBuilder: (context, index) {
+          final pattern = controller.patterns[index];
+          return buildBreathingPatternTile(
+            context,
+            index: index,
+            pattern: pattern,
+          );
+        },
+      );
+    });
   }
 
   Widget buildBreathingPatternTile(
