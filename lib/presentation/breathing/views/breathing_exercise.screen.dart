@@ -69,7 +69,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
   PreferredSizeWidget buildAppbar(BuildContext context) {
     final patternName = controller.patterns.isNotEmpty
         ? controller.patterns[patternIndex].name
-        : BreathingController.defaultPatterns[patternIndex].name;
+        : "";
     return AppBar(
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,

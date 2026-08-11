@@ -63,54 +63,6 @@ class BreathingController extends GetxController
   static const String _patternsCacheKey = 'breathing_techniques_patterns';
   static const String _patternsLastUpdatedCacheKey = 'breathing_techniques_last_updated';
 
-  // Fallback defaults
-  static const List<BreathingPattern> defaultPatterns = [
-    BreathingPattern(
-      id: 1,
-      name: "Box Breathing",
-      description:
-          "Relieve stress, clear your mind, and improve focus under pressure.",
-      inhale: 4,
-      holdIn: 4,
-      exhale: 4,
-      holdOut: 4,
-      icon: "📦",
-    ),
-    BreathingPattern(
-      id: 2,
-      name: "4-7-8 Relax",
-      description:
-          "Deep relaxation to help ease anxiety and transition into deep sleep.",
-      inhale: 4,
-      holdIn: 7,
-      exhale: 8,
-      holdOut: 0,
-      icon: "🌬️",
-    ),
-    BreathingPattern(
-      id: 3,
-      name: "Equal Breathing",
-      description:
-          "Balance your nervous system and bring immediate clarity and calm.",
-      inhale: 4,
-      holdIn: 0,
-      exhale: 4,
-      holdOut: 0,
-      icon: "⚖️",
-    ),
-    BreathingPattern(
-      id: 4,
-      name: "Resonant Breath",
-      description:
-          "Synchronizes heart and respiratory rate to optimize recovery and calm.",
-      inhale: 5,
-      holdIn: 0,
-      exhale: 5,
-      holdOut: 0,
-      icon: "🌊",
-    ),
-  ];
-
   // Dynamic presets list loaded from cache/API
   final RxList<BreathingPattern> patterns = <BreathingPattern>[].obs;
   final RxBool isLoading = true.obs;
@@ -126,9 +78,20 @@ class BreathingController extends GetxController
   final RxBool isPaused = false.obs;
   final RxBool isCompleted = false.obs;
 
-  BreathingPattern get activePattern => patterns.isNotEmpty
-      ? patterns[selectedPatternIndex.value]
-      : defaultPatterns[0];
+  BreathingPattern get activePattern {
+    if (patterns.isNotEmpty) {
+      return patterns[selectedPatternIndex.value];
+    }
+    return const BreathingPattern(
+      name: "Loading...",
+      description: "Loading breathing presets...",
+      inhale: 4,
+      holdIn: 4,
+      exhale: 4,
+      holdOut: 4,
+      icon: "🌬️",
+    );
+  }
 
   @override
   void onInit() {
@@ -156,12 +119,9 @@ class BreathingController extends GetxController
             .toList();
         patterns.assignAll(loaded);
         hasCache = true;
-      } else {
-        // Fallback to default presets if cache is empty
-        patterns.assignAll(defaultPatterns);
       }
 
-      isLoading.value = false;
+      isLoading.value = !hasCache;
 
       bool needFetch = !hasCache || forceRefresh;
 
@@ -177,6 +137,7 @@ class BreathingController extends GetxController
       }
 
       if (!needFetch) {
+        isLoading.value = false;
         return;
       }
 
@@ -195,11 +156,9 @@ class BreathingController extends GetxController
           );
         }
       }
+      isLoading.value = false;
     } catch (e) {
       Get.log("Failed to fetch breathing patterns: $e");
-      if (patterns.isEmpty) {
-        patterns.assignAll(defaultPatterns);
-      }
       isLoading.value = false;
     }
   }
