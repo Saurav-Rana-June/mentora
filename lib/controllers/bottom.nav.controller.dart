@@ -1,4 +1,4 @@
-import 'package:Mentora/data/model/extras/page.model.dart';
+import 'package:Mentora/data/model/page.model.dart';
 import 'package:Mentora/presentation/home/home.screen.dart';
 import 'package:Mentora/presentation/screens.dart';
 import 'package:get/get.dart';

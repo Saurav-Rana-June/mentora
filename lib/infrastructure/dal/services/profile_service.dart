@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../../data/model/auth/profile.model.dart';
+import '../../../../data/model/profile.model.dart';
 
 class ProfileService {
   ProfileService._();

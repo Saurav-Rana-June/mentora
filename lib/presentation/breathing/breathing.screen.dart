@@ -8,6 +8,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 
 import 'controllers/breathing.controller.dart';
+import 'package:Mentora/data/model/breathing_pattern.model.dart';
 import 'views/breathing_exercise.screen.dart';
 import 'widgets/breathing_content_loading.dart';
 
@@ -83,7 +84,7 @@ class BreathingScreen extends GetView<BreathingController> {
   Widget buildBreathingPatternTile(
     BuildContext context, {
     required int index,
-    required BreathingPattern pattern,
+    required BreathingPatternModel pattern,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: Spacing.s16.value.h),
@@ -110,7 +111,7 @@ class BreathingScreen extends GetView<BreathingController> {
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Text(pattern.icon, style: TextStyle(fontSize: 26.sp)),
+                  child: Text(pattern.icon ?? '🌬️', style: TextStyle(fontSize: 26.sp)),
                 ),
               ),
               Spacing.s16.w,
@@ -125,7 +126,7 @@ class BreathingScreen extends GetView<BreathingController> {
                       children: [
                         Expanded(
                           child: Text(
-                            pattern.name,
+                            pattern.name ?? '',
                             style: r18.copyWith(
                               color: Theme.of(
                                 context,
@@ -156,7 +157,7 @@ class BreathingScreen extends GetView<BreathingController> {
                     ),
                     Spacing.s4.h,
                     Text(
-                      pattern.description,
+                      pattern.description ?? '',
                       style: r14.copyWith(
                         color: Theme.of(context).textTheme.bodySmall!.color,
                         fontWeight: FontWeight.w400,
@@ -177,7 +178,7 @@ class BreathingScreen extends GetView<BreathingController> {
 
   Widget buildBreathingPatternTimeline(
     BuildContext context,
-    BreathingPattern pattern,
+    BreathingPatternModel pattern,
   ) {
     final List<Widget> chips = [];
 
@@ -200,13 +201,13 @@ class BreathingScreen extends GetView<BreathingController> {
       );
     }
 
-    chips.add(buildItem("${pattern.inhale}s", "Inhale"));
-    if (pattern.holdIn > 0) {
-      chips.add(buildItem("${pattern.holdIn}s", "Hold"));
+    chips.add(buildItem("${pattern.inhale ?? 4}s", "Inhale"));
+    if ((pattern.holdIn ?? 0) > 0) {
+      chips.add(buildItem("${pattern.holdIn ?? 0}s", "Hold"));
     }
-    chips.add(buildItem("${pattern.exhale}s", "Exhale"));
-    if (pattern.holdOut > 0) {
-      chips.add(buildItem("${pattern.holdOut}s", "Hold"));
+    chips.add(buildItem("${pattern.exhale ?? 4}s", "Exhale"));
+    if ((pattern.holdOut ?? 0) > 0) {
+      chips.add(buildItem("${pattern.holdOut ?? 0}s", "Hold"));
     }
 
     final List<Widget> wrappedChildren = [];

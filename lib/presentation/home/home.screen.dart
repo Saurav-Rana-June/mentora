@@ -303,7 +303,7 @@ class HomeScreen extends GetView<HomeController> {
       }
 
       final total = controller.plans.length;
-      final completed = controller.plans.where((p) => p.isComplete).length;
+      final completed = controller.plans.where((p) => p.isComplete == true).length;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -331,7 +331,7 @@ class HomeScreen extends GetView<HomeController> {
                 plan.uiIcon,
                 index == 0 ? true : false,
                 index + 1 == total ? true : false,
-                plan.isComplete,
+                plan.isComplete ?? false,
                 () {
                   controller.togglePlanCompletion(index);
                 },

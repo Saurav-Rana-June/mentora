@@ -1,7 +1,7 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../../data/model/auth/token_response.model.dart';
-import '../../../../data/model/auth/user.model.dart';
+import '../../../../data/model/token_response.model.dart';
+import '../../../../data/model/user.model.dart';
 
 class AuthService {
   AuthService._();
@@ -32,11 +32,11 @@ class AuthService {
   }
 
   /// Log in a user
-  static Future<ApiResponse<TokenResponse>?> login({
+  static Future<ApiResponse<TokenResponseModel>?> login({
     required String email,
     required String password,
   }) async {
-    return client.request<ApiResponse<TokenResponse>>(
+    return client.request<ApiResponse<TokenResponseModel>>(
       (dio) => dio.post(
         'users/login',
         data: {
@@ -46,9 +46,9 @@ class AuthService {
       ),
       withAccessToken: false,
       parser: (json) {
-        return ApiResponse<TokenResponse>.fromJson(
+        return ApiResponse<TokenResponseModel>.fromJson(
           json as Map<String, dynamic>,
-          (data) => TokenResponse.fromJson(data as Map<String, dynamic>),
+          (data) => TokenResponseModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );

@@ -1,5 +1,5 @@
 import 'package:Mentora/controllers/bottom.nav.controller.dart';
-import 'package:Mentora/data/model/extras/page.model.dart';
+import 'package:Mentora/data/model/page.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/landing/controllers/landing.controller.dart';
 import 'package:flutter/material.dart';

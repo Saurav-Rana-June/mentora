@@ -3,56 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/breathing_service.dart';
-
-class BreathingPattern {
-  final int? id;
-  final String name;
-  final String description;
-  final int inhale;
-  final int holdIn;
-  final int exhale;
-  final int holdOut;
-  final String icon;
-
-  const BreathingPattern({
-    this.id,
-    required this.name,
-    required this.description,
-    required this.inhale,
-    required this.holdIn,
-    required this.exhale,
-    required this.holdOut,
-    required this.icon,
-  });
-
-  int get cycleDuration => inhale + holdIn + exhale + holdOut;
-
-  factory BreathingPattern.fromJson(Map<String, dynamic> json) {
-    return BreathingPattern(
-      id: json['id'] as int?,
-      name: json['name'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      inhale: json['inhale'] as int? ?? 4,
-      holdIn: json['holdIn'] as int? ?? 0,
-      exhale: json['exhale'] as int? ?? 4,
-      holdOut: json['holdOut'] as int? ?? 0,
-      icon: json['icon'] as String? ?? '🌬️',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'inhale': inhale,
-      'holdIn': holdIn,
-      'exhale': exhale,
-      'holdOut': holdOut,
-      'icon': icon,
-    };
-  }
-}
+import 'package:Mentora/data/model/breathing_pattern.model.dart';
 
 class BreathingController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -64,7 +15,7 @@ class BreathingController extends GetxController
   static const String _patternsLastUpdatedCacheKey = 'breathing_techniques_last_updated';
 
   // Dynamic presets list loaded from cache/API
-  final RxList<BreathingPattern> patterns = <BreathingPattern>[].obs;
+  final RxList<BreathingPatternModel> patterns = <BreathingPatternModel>[].obs;
   final RxBool isLoading = true.obs;
 
   // Reactive states
@@ -78,11 +29,11 @@ class BreathingController extends GetxController
   final RxBool isPaused = false.obs;
   final RxBool isCompleted = false.obs;
 
-  BreathingPattern get activePattern {
+  BreathingPatternModel get activePattern {
     if (patterns.isNotEmpty) {
       return patterns[selectedPatternIndex.value];
     }
-    return const BreathingPattern(
+    return BreathingPatternModel(
       name: "Loading...",
       description: "Loading breathing presets...",
       inhale: 4,
@@ -114,8 +65,8 @@ class BreathingController extends GetxController
 
       bool hasCache = false;
       if (cachedPatterns != null && cachedPatterns.isNotEmpty && cachedLastUpdated != null) {
-        final List<BreathingPattern> loaded = cachedPatterns
-            .map((e) => BreathingPattern.fromJson(Map<String, dynamic>.from(e as Map)))
+        final List<BreathingPatternModel> loaded = cachedPatterns
+            .map((e) => BreathingPatternModel.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
         patterns.assignAll(loaded);
         hasCache = true;
@@ -214,43 +165,47 @@ class BreathingController extends GetxController
 
   void _startNextPhase({bool startCycle = false}) {
     final pattern = activePattern;
+    final inhale = pattern.inhale ?? 4;
+    final holdIn = pattern.holdIn ?? 0;
+    final exhale = pattern.exhale ?? 4;
+    final holdOut = pattern.holdOut ?? 0;
 
     if (startCycle) {
-      _transitionToPhase("Inhale", pattern.inhale);
+      _transitionToPhase("Inhale", inhale);
       return;
     }
 
     switch (currentPhase.value) {
       case "Inhale":
-        if (pattern.holdIn > 0) {
-          _transitionToPhase("Hold In", pattern.holdIn);
-        } else if (pattern.exhale > 0) {
-          _transitionToPhase("Exhale", pattern.exhale);
-        } else if (pattern.holdOut > 0) {
-          _transitionToPhase("Hold Out", pattern.holdOut);
+        if (holdIn > 0) {
+          _transitionToPhase("Hold In", holdIn);
+        } else if (exhale > 0) {
+          _transitionToPhase("Exhale", exhale);
+        } else if (holdOut > 0) {
+          _transitionToPhase("Hold Out", holdOut);
         } else {
-          _transitionToPhase("Inhale", pattern.inhale);
+          _transitionToPhase("Inhale", inhale);
         }
         break;
       case "Hold In":
-        if (pattern.exhale > 0) {
-          _transitionToPhase("Exhale", pattern.exhale);
-        } else if (pattern.holdOut > 0) {
-          _transitionToPhase("Hold Out", pattern.holdOut);
+        if (exhale > 0) {
+          _transitionToPhase("Exhale", exhale);
+        } else if (holdOut > 0) {
+          _transitionToPhase("Hold Out", holdOut);
         } else {
-          _transitionToPhase("Inhale", pattern.inhale);
+          _transitionToPhase("Inhale", inhale);
         }
         break;
       case "Exhale":
-        if (pattern.holdOut > 0) {
-          _transitionToPhase("Hold Out", pattern.holdOut);
+        if (holdOut > 0) {
+          _transitionToPhase("Hold Out", holdOut);
         } else {
-          _transitionToPhase("Inhale", pattern.inhale);
+          _transitionToPhase("Inhale", inhale);
         }
         break;
       case "Hold Out":
       default:
-        _transitionToPhase("Inhale", pattern.inhale);
+        _transitionToPhase("Inhale", inhale);
         break;
     }
   }

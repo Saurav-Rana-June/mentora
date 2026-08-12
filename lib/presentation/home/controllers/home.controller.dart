@@ -1,7 +1,7 @@
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
-import 'package:Mentora/data/model/tasks/plan.model.dart';
+import 'package:Mentora/data/model/plan.model.dart';
 import 'package:Mentora/infrastructure/dal/services/tasks_service.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
@@ -116,7 +116,7 @@ class HomeController extends GetxController {
   Future<void> togglePlanCompletion(int index) async {
     if (index >= 0 && index < plans.length) {
       final plan = plans[index];
-      final newStatus = !plan.isComplete;
+      final newStatus = !(plan.isComplete ?? false);
 
       // Optimistically update UI
       final updatedPlan = PlanModel(
@@ -135,7 +135,7 @@ class HomeController extends GetxController {
 
       try {
         final response = await TasksService.updatePlanItemCompletion(
-          planItemId: plan.id,
+          planItemId: plan.id ?? 0,
           isComplete: newStatus,
         );
         if (response != null && response.data != null) {

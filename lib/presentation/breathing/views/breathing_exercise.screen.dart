@@ -9,6 +9,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../controllers/breathing.controller.dart';
+import 'package:Mentora/data/model/breathing_pattern.model.dart';
 
 class BreathingExerciseScreen extends GetView<BreathingController> {
   final int patternIndex;
@@ -68,7 +69,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
     final patternName = controller.patterns.isNotEmpty
-        ? controller.patterns[patternIndex].name
+        ? (controller.patterns[patternIndex].name ?? "")
         : "";
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -134,7 +135,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
 
   Widget buildPatternHeaderCard(
     BuildContext context,
-    BreathingPattern pattern,
+    BreathingPatternModel pattern,
   ) {
     return CustomPrimaryCard(
       borderRadius: 20.r,
@@ -152,7 +153,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Text(pattern.icon, style: TextStyle(fontSize: 30.sp)),
+                  child: Text(pattern.icon ?? '🌬️', style: TextStyle(fontSize: 30.sp)),
                 ),
               ),
               Spacing.s16.w,
@@ -161,7 +162,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      pattern.name,
+                      pattern.name ?? '',
                       style: h2.copyWith(
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                         fontWeight: FontWeight.w700,
@@ -192,7 +193,7 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
           ),
           Spacing.s20.h,
           Text(
-            pattern.description,
+            pattern.description ?? '',
             style: r14.copyWith(
               color: Theme.of(context).textTheme.bodyMedium!.color,
               height: 1.4,
@@ -215,25 +216,25 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
 
   Widget buildBreathingPatternTimeline(
     BuildContext context,
-    BreathingPattern pattern,
+    BreathingPatternModel pattern,
   ) {
     final List<Map<String, dynamic>> phases = [
-      {'name': 'Inhale', 'duration': pattern.inhale, 'color': primary},
-      if (pattern.holdIn > 0)
+      {'name': 'Inhale', 'duration': pattern.inhale ?? 4, 'color': primary},
+      if ((pattern.holdIn ?? 0) > 0)
         {
           'name': 'Hold',
-          'duration': pattern.holdIn,
+          'duration': pattern.holdIn ?? 0,
           'color': const Color(0xFFE2C974),
         },
       {
         'name': 'Exhale',
-        'duration': pattern.exhale,
+        'duration': pattern.exhale ?? 4,
         'color': const Color(0xFF7CB6C6),
       },
-      if (pattern.holdOut > 0)
+      if ((pattern.holdOut ?? 0) > 0)
         {
           'name': 'Hold',
-          'duration': pattern.holdOut,
+          'duration': pattern.holdOut ?? 0,
           'color': const Color(0xFFE2C974),
         },
     ];
@@ -403,10 +404,10 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(pattern.icon, style: TextStyle(fontSize: 16.sp)),
+                  Text(pattern.icon ?? '🌬️', style: TextStyle(fontSize: 16.sp)),
                   Spacing.s8.w,
                   Text(
-                    pattern.name,
+                    pattern.name ?? '',
                     style: r14.copyWith(
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                       fontWeight: FontWeight.w600,

@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/mood_tracker_stats.model.dart';
-import 'package:Mentora/data/model/auth/profile.model.dart';
+import 'package:Mentora/data/model/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 
