@@ -161,27 +161,27 @@ class MeditationScreen extends GetView<MeditationController> {
             itemBuilder: (context, index) {
               final session = featuredList[index];
               return Obx(() {
-                final isFav = controller.favoritedIds.contains(session.id);
+                final isFav = controller.favoritedIds.contains(session.id ?? '');
                 return FeaturedMeditationCard(
                   session: session,
                   isFavorited: isFav,
                   onTap: () {
                     Get.to(
                       () => MusicPlayerView(
-                        audioUrl: session.soundTrack,
-                        title: session.title,
-                        category: session.category,
-                        imageUrl: session.imageUrl,
-                        description: session.description,
-                        duration: session.duration,
-                        isFavorited: controller.getIsFavoritedRx(session.id),
+                        audioUrl: session.soundTrack ?? '',
+                        title: session.title ?? '',
+                        category: session.category ?? '',
+                        imageUrl: session.imageUrl ?? '',
+                        description: session.description ?? '',
+                        duration: session.duration ?? '',
+                        isFavorited: controller.getIsFavoritedRx(session.id ?? ''),
                         onFavoriteTap: () =>
-                            controller.toggleFavorite(session.id),
+                            controller.toggleFavorite(session.id ?? ''),
                       ),
                       transition: Transition.rightToLeft,
                     );
                   },
-                  onFavoriteTap: () => controller.toggleFavorite(session.id),
+                  onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
                 );
               });
             },
@@ -207,26 +207,26 @@ class MeditationScreen extends GetView<MeditationController> {
       mainAxisSize: MainAxisSize.min,
       children: sessionsList.map((session) {
         return Obx(() {
-          final isFav = controller.favoritedIds.contains(session.id);
+          final isFav = controller.favoritedIds.contains(session.id ?? '');
           return MeditationCard(
             session: session,
             isFavorited: isFav,
             onTap: () {
               Get.to(
                 () => MusicPlayerView(
-                  audioUrl: session.soundTrack,
-                  title: session.title,
-                  category: session.category,
-                  imageUrl: session.imageUrl,
-                  description: session.description,
-                  duration: session.duration,
-                  isFavorited: controller.getIsFavoritedRx(session.id),
-                  onFavoriteTap: () => controller.toggleFavorite(session.id),
+                  audioUrl: session.soundTrack ?? '',
+                  title: session.title ?? '',
+                  category: session.category ?? '',
+                  imageUrl: session.imageUrl ?? '',
+                  description: session.description ?? '',
+                  duration: session.duration ?? '',
+                  isFavorited: controller.getIsFavoritedRx(session.id ?? ''),
+                  onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
                 ),
                 transition: Transition.rightToLeft,
               );
             },
-            onFavoriteTap: () => controller.toggleFavorite(session.id),
+            onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
           );
         });
       }).toList(),

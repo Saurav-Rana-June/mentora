@@ -5,10 +5,10 @@ import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
-import 'meditation_session.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
 
 class MeditationCard extends StatelessWidget {
-  final MeditationSession session;
+  final MeditationSessionModel session;
   final bool isFavorited;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteTap;
@@ -46,7 +46,7 @@ class MeditationCard extends StatelessWidget {
                   bottomLeft: Radius.circular(16.r),
                 ),
                 child: CachedNetworkImage(
-                  imageUrl: session.imageUrl,
+                  imageUrl: session.imageUrl ?? '',
                   height: 105.h,
                   width: 95.h,
                   fit: BoxFit.cover,
@@ -86,7 +86,7 @@ class MeditationCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        session.title,
+                        session.title ?? '',
                         style: r16.copyWith(
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                           fontWeight: FontWeight.w600,
@@ -98,7 +98,7 @@ class MeditationCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            session.category,
+                            session.category ?? '',
                             style: r12.copyWith(
                               color: primary,
                               fontWeight: FontWeight.w600,
@@ -121,7 +121,7 @@ class MeditationCard extends StatelessWidget {
                           ),
                           Spacing.s4.w,
                           Text(
-                            session.duration,
+                            session.duration ?? '',
                             style: r12.copyWith(
                               color: Theme.of(
                                 context,
@@ -133,7 +133,7 @@ class MeditationCard extends StatelessWidget {
                       ),
                       Spacing.s8.h,
                       Text(
-                        session.description,
+                        session.description ?? '',
                         style: r12.copyWith(
                           color: Theme.of(context).textTheme.bodySmall!.color,
                         ),

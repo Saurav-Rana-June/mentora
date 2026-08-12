@@ -1,6 +1,8 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../presentation/sleep/controllers/sleep.controller.dart';
+import 'package:Mentora/data/model/sound.model.dart';
+import 'package:Mentora/data/model/calm_music.model.dart';
+import 'package:Mentora/data/model/story.model.dart';
 
 class SleepService {
   SleepService._();
@@ -8,7 +10,7 @@ class SleepService {
   static final ApiClient client = ApiClient();
 
   /// Retrieve all sleep sounds based on optional category and lastUpdated filters
-  static Future<ApiResponse<List<Sound>>?> getSleepSounds({
+  static Future<ApiResponse<List<SoundModel>>?> getSleepSounds({
     String? category,
     String? lastUpdated,
   }) async {
@@ -20,20 +22,20 @@ class SleepService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<List<Sound>>>(
+    return client.request<ApiResponse<List<SoundModel>>>(
       (dio) => dio.get(
         'sleep/sounds',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<List<Sound>>.fromJson(
+        return ApiResponse<List<SoundModel>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
             if (data == null) return [];
             final list = data as List<dynamic>;
             return list
-                .map((e) => Sound.fromJson(e as Map<String, dynamic>))
+                .map((e) => SoundModel.fromJson(e as Map<String, dynamic>))
                 .toList();
           },
         );
@@ -42,7 +44,7 @@ class SleepService {
   }
 
   /// Retrieve all sleep music tracks based on optional category and lastUpdated filters
-  static Future<ApiResponse<List<CalmMusic>>?> getSleepMusic({
+  static Future<ApiResponse<List<CalmMusicModel>>?> getSleepMusic({
     String? category,
     String? lastUpdated,
   }) async {
@@ -54,20 +56,20 @@ class SleepService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<List<CalmMusic>>>(
+    return client.request<ApiResponse<List<CalmMusicModel>>>(
       (dio) => dio.get(
         'sleep/music',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<List<CalmMusic>>.fromJson(
+        return ApiResponse<List<CalmMusicModel>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
             if (data == null) return [];
             final list = data as List<dynamic>;
             return list
-                .map((e) => CalmMusic.fromJson(e as Map<String, dynamic>))
+                .map((e) => CalmMusicModel.fromJson(e as Map<String, dynamic>))
                 .toList();
           },
         );
@@ -76,7 +78,7 @@ class SleepService {
   }
 
   /// Retrieve all sleep bedtime stories based on optional category and lastUpdated filters
-  static Future<ApiResponse<List<Story>>?> getSleepStories({
+  static Future<ApiResponse<List<StoryModel>>?> getSleepStories({
     String? category,
     String? lastUpdated,
   }) async {
@@ -88,20 +90,20 @@ class SleepService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<List<Story>>>(
+    return client.request<ApiResponse<List<StoryModel>>>(
       (dio) => dio.get(
         'sleep/stories',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<List<Story>>.fromJson(
+        return ApiResponse<List<StoryModel>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
             if (data == null) return [];
             final list = data as List<dynamic>;
             return list
-                .map((e) => Story.fromJson(e as Map<String, dynamic>))
+                .map((e) => StoryModel.fromJson(e as Map<String, dynamic>))
                 .toList();
           },
         );

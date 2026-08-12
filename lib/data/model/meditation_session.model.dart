@@ -1,53 +1,37 @@
-class MeditationSession {
-  final String id;
-  final String title;
-  final String category;
-  final String duration;
-  final String imageUrl;
-  final bool isFeatured;
-  final String description;
-  final String soundTrack;
+import 'package:json_annotation/json_annotation.dart';
 
-  const MeditationSession({
-    required this.id,
-    required this.title,
-    required this.category,
-    required this.duration,
-    required this.imageUrl,
-    required this.isFeatured,
+part 'meditation_session.model.g.dart';
+
+@JsonSerializable()
+class MeditationSessionModel {
+  String? id;
+  String? title;
+  String? category;
+  String? duration;
+  String? imageUrl;
+  bool? isFeatured;
+  String? description;
+  String? soundTrack;
+
+  MeditationSessionModel({
+    this.id,
+    this.title,
+    this.category,
+    this.duration,
+    this.imageUrl,
+    this.isFeatured,
     this.description = "Take a deep breath and let go of external distractions. Find a comfortable position and focus on the flow of your breath. Let this guided meditation restore your inner balance and clarity.",
     this.soundTrack = "https://soundcloud.com/meditation-music/cadunia",
   });
 
-  factory MeditationSession.fromJson(Map<String, dynamic> json) {
-    return MeditationSession(
-      id: (json['id'] ?? '').toString(),
-      title: json['title'] as String? ?? '',
-      category: json['category'] as String? ?? '',
-      duration: json['duration'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String? ?? '',
-      isFeatured: json['isFeatured'] as bool? ?? false,
-      description: json['description'] as String? ?? '',
-      soundTrack: json['soundTrack'] as String? ?? 'https://soundcloud.com/meditation-music/cadunia',
-    );
-  }
+  factory MeditationSessionModel.fromJson(Map<String, dynamic> json) =>
+      _$MeditationSessionModelFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'category': category,
-      'duration': duration,
-      'imageUrl': imageUrl,
-      'isFeatured': isFeatured,
-      'description': description,
-      'soundTrack': soundTrack,
-    };
-  }
+  Map<String, dynamic> toJson() => _$MeditationSessionModelToJson(this);
 }
 
-const List<MeditationSession> mockMeditationSessions = [
-  MeditationSession(
+final List<MeditationSessionModel> mockMeditationSessions = [
+  MeditationSessionModel(
     id: '1',
     title: 'Morning Clarity & Focus',
     category: 'Focus',
@@ -57,7 +41,7 @@ const List<MeditationSession> mockMeditationSessions = [
     description: 'Start your morning with a clear mind and sharp attention. This session will ground your awareness and help you approach your day with purpose and calm alignment.',
     soundTrack: 'https://soundcloud.com/meditation-music/cadunia',
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '2',
     title: 'Deep Restful Sleep Wind Down',
     category: 'Sleep',
@@ -67,7 +51,7 @@ const List<MeditationSession> mockMeditationSessions = [
     description: 'Transition smoothly into a deep, healing sleep. Soft breathing patterns and gentle body scans will release muscle tension and calm your racing thoughts.',
     soundTrack: 'https://soundcloud.com/meditation-music/sets/the-meditation-collection',
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '3',
     title: 'Calming the Storm Within',
     category: 'Stress Relief',
@@ -77,7 +61,7 @@ const List<MeditationSession> mockMeditationSessions = [
     description: 'Release accumulated stress and anxiety. Learn powerful grounding techniques to stabilize your mind and reclaim peace in moments of turbulence.',
     soundTrack: 'https://soundcloud.com/meditation-music/relaxation',
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '4',
     title: 'Release Performance Anxiety',
     category: 'Anxiety',
@@ -85,7 +69,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '5',
     title: 'Mindful Forest Walking',
     category: 'Focus',
@@ -93,7 +77,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1470246973918-29a93221c455?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '6',
     title: 'Self-Love & Breathing Exercises',
     category: 'Self-Esteem',
@@ -101,7 +85,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '7',
     title: 'Loving-Kindness Meditation',
     category: 'Kindness',
@@ -109,7 +93,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '8',
     title: 'Attitude of Daily Gratitude',
     category: 'Gratitude',
@@ -117,7 +101,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1472653425572-cf5b2c73f475?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '9',
     title: 'Cooling the Heat of Anger',
     category: 'Anger',
@@ -125,7 +109,7 @@ const List<MeditationSession> mockMeditationSessions = [
     imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600',
     isFeatured: false,
   ),
-  MeditationSession(
+  MeditationSessionModel(
     id: '10',
     title: 'Healing Through Quiet Grief',
     category: 'Grief',

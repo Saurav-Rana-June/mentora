@@ -35,7 +35,7 @@ class PlanModel {
   String get uiTitle => (category ?? '').toUpperCase();
   String get label => title ?? '';
   String get uiCaption => '${duration ?? ''} • ${caption ?? ''}';
-  
+
   String get uiIcon {
     switch (icon?.toLowerCase()) {
       case 'box':

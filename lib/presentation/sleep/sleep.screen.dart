@@ -9,6 +9,9 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/sleep.controller.dart';
+import 'package:Mentora/data/model/sound.model.dart';
+import 'package:Mentora/data/model/calm_music.model.dart';
+import 'package:Mentora/data/model/story.model.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
@@ -134,22 +137,22 @@ class _SleepScreenState extends State<SleepScreen>
     );
   }
 
-  Widget buildStoriesCard(BuildContext context, Story story) {
+  Widget buildStoriesCard(BuildContext context, StoryModel story) {
     return buildMediaCard(
       context: context,
-      title: story.title,
+      title: story.title ?? '',
       category: "Story",
-      duration: story.duration,
-      imageUrl: story.imageUrl,
+      duration: story.duration ?? '',
+      imageUrl: story.imageUrl ?? '',
       onTap: () {
         Get.to(
           () => MusicPlayerView(
-            audioUrl: story.audioUrl,
-            title: story.title,
+            audioUrl: story.audioUrl ?? '',
+            title: story.title ?? '',
             category: "Bedtime Story",
-            imageUrl: story.imageUrl,
-            description: story.description,
-            duration: story.duration,
+            imageUrl: story.imageUrl ?? '',
+            description: story.description ?? '',
+            duration: story.duration ?? '',
           ),
           transition: Transition.rightToLeft,
         );
@@ -157,22 +160,22 @@ class _SleepScreenState extends State<SleepScreen>
     );
   }
 
-  Widget buildMusicCard(BuildContext context, CalmMusic music) {
+  Widget buildMusicCard(BuildContext context, CalmMusicModel music) {
     return buildMediaCard(
       context: context,
-      title: music.title,
+      title: music.title ?? '',
       category: "Music",
-      duration: music.duration,
-      imageUrl: music.imageUrl,
+      duration: music.duration ?? '',
+      imageUrl: music.imageUrl ?? '',
       onTap: () {
         Get.to(
           () => MusicPlayerView(
-            audioUrl: music.audioUrl,
-            title: music.title,
+            audioUrl: music.audioUrl ?? '',
+            title: music.title ?? '',
             category: "Calm Music",
-            imageUrl: music.imageUrl,
-            description: music.description,
-            duration: music.duration,
+            imageUrl: music.imageUrl ?? '',
+            description: music.description ?? '',
+            duration: music.duration ?? '',
           ),
           transition: Transition.rightToLeft,
         );
@@ -341,7 +344,7 @@ class _SleepScreenState extends State<SleepScreen>
     );
   }
 
-  Widget buildSoundTile(BuildContext context, int index, Sound sound) {
+  Widget buildSoundTile(BuildContext context, int index, SoundModel sound) {
     return Column(
       children: [
         Obx(
@@ -351,12 +354,12 @@ class _SleepScreenState extends State<SleepScreen>
               controller.selectedSoundIndex.value = index;
               Get.to(
                 () => MusicPlayerView(
-                  audioUrl: sound.audioUrl,
-                  title: sound.title,
+                  audioUrl: sound.audioUrl ?? '',
+                  title: sound.title ?? '',
                   category: "Ambient Sound",
                   imageUrl:
                       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-                  description: "Relaxing ambient sound of ${sound.title}.",
+                  description: "Relaxing ambient sound of ${sound.title ?? ''}.",
                   duration: "5:00",
                 ),
                 transition: Transition.rightToLeft,
@@ -395,14 +398,14 @@ class _SleepScreenState extends State<SleepScreen>
                 ),
               ),
               child: Center(
-                child: Text(sound.emoji, style: TextStyle(fontSize: 32.sp)),
+                child: Text(sound.emoji ?? '', style: TextStyle(fontSize: 32.sp)),
               ),
             ),
           ),
         ),
         Spacing.s8.h,
         Text(
-          sound.title,
+          sound.title ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: r12.copyWith(

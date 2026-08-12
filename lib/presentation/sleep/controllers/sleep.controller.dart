@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import '../../../infrastructure/dal/services/sleep_service.dart';
+import 'package:Mentora/data/model/sound.model.dart';
+import 'package:Mentora/data/model/calm_music.model.dart';
+import 'package:Mentora/data/model/story.model.dart';
 
 class SleepController extends GetxController {
   final selectedTabIndex = 0.obs;
@@ -23,9 +26,9 @@ class SleepController extends GetxController {
     'Music',
   ].obs;
 
-  final RxList<Sound> sounds = <Sound>[].obs;
-  final RxList<CalmMusic> calmMusics = <CalmMusic>[].obs;
-  final RxList<Story> stories = <Story>[].obs;
+  final RxList<SoundModel> sounds = <SoundModel>[].obs;
+  final RxList<CalmMusicModel> calmMusics = <CalmMusicModel>[].obs;
+  final RxList<StoryModel> stories = <StoryModel>[].obs;
 
   final RxBool isLoading = true.obs;
 
@@ -88,7 +91,7 @@ class SleepController extends GetxController {
       if (cachedData != null && cachedLastUpdated != null) {
         sounds.assignAll(
           cachedData
-              .map((e) => Sound.fromJson(Map<String, dynamic>.from(e as Map)))
+              .map((e) => SoundModel.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList(),
         );
         hasCache = true;
@@ -144,7 +147,7 @@ class SleepController extends GetxController {
         calmMusics.assignAll(
           cachedData
               .map(
-                (e) => CalmMusic.fromJson(Map<String, dynamic>.from(e as Map)),
+                (e) => CalmMusicModel.fromJson(Map<String, dynamic>.from(e as Map)),
               )
               .toList(),
         );
@@ -200,7 +203,7 @@ class SleepController extends GetxController {
       if (cachedData != null && cachedLastUpdated != null) {
         stories.assignAll(
           cachedData
-              .map((e) => Story.fromJson(Map<String, dynamic>.from(e as Map)))
+              .map((e) => StoryModel.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList(),
         );
         hasCache = true;
@@ -240,122 +243,4 @@ class SleepController extends GetxController {
       Get.log("Failed to load sleep stories: $e");
     }
   }
-}
-
-class Sound {
-  final int id;
-  final String emoji;
-  final String title;
-  final String audioUrl;
-  final String category;
-
-  Sound({
-    required this.id,
-    required this.emoji,
-    required this.title,
-    required this.audioUrl,
-    required this.category,
-  });
-
-  factory Sound.fromJson(Map<String, dynamic> json) {
-    return Sound(
-      id: json['id'] as int,
-      emoji: json['emoji'] as String,
-      title: json['title'] as String,
-      audioUrl: json['audioUrl'] as String,
-      category: json['category'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'emoji': emoji,
-    'title': title,
-    'audioUrl': audioUrl,
-    'category': category,
-  };
-}
-
-class CalmMusic {
-  final int id;
-  final String title;
-  final String duration;
-  final String imageUrl;
-  final String audioUrl;
-  final String category;
-  final String description;
-
-  CalmMusic({
-    required this.id,
-    required this.title,
-    required this.duration,
-    required this.imageUrl,
-    required this.audioUrl,
-    required this.category,
-    required this.description,
-  });
-
-  factory CalmMusic.fromJson(Map<String, dynamic> json) {
-    return CalmMusic(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      duration: json['duration'] as String,
-      imageUrl: json['imageUrl'] as String,
-      audioUrl: json['audioUrl'] as String,
-      category: json['category'] as String,
-      description: json['description'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'duration': duration,
-    'imageUrl': imageUrl,
-    'audioUrl': audioUrl,
-    'category': category,
-    'description': description,
-  };
-}
-
-class Story {
-  final int id;
-  final String title;
-  final String duration;
-  final String imageUrl;
-  final String audioUrl;
-  final String category;
-  final String description;
-
-  const Story({
-    required this.id,
-    required this.title,
-    required this.duration,
-    required this.imageUrl,
-    required this.audioUrl,
-    required this.category,
-    required this.description,
-  });
-
-  factory Story.fromJson(Map<String, dynamic> json) {
-    return Story(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      duration: json['duration'] as String,
-      imageUrl: json['imageUrl'] as String,
-      audioUrl: json['audioUrl'] as String,
-      category: json['category'] as String,
-      description: json['description'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'duration': duration,
-    'imageUrl': imageUrl,
-    'audioUrl': audioUrl,
-    'category': category,
-    'description': description,
-  };
 }

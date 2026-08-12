@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
-import '../widgets/meditation_session.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
 import '../../../infrastructure/dal/services/meditation_service.dart';
 
 class MeditationController extends GetxController {
@@ -11,9 +11,9 @@ class MeditationController extends GetxController {
   final RxSet<String> favoritedIds = {'1', '3'}.obs;
 
   // API list buffers
-  final RxList<MeditationSession> allSessionsList = <MeditationSession>[].obs;
-  final RxList<MeditationSession> featuredSessionsList =
-      <MeditationSession>[].obs;
+  final RxList<MeditationSessionModel> allSessionsList = <MeditationSessionModel>[].obs;
+  final RxList<MeditationSessionModel> featuredSessionsList =
+      <MeditationSessionModel>[].obs;
   final RxList<String> categoriesList = <String>[].obs;
 
 
@@ -126,9 +126,9 @@ class MeditationController extends GetxController {
           cachedFeatured != null && cachedFeaturedLastUpdated != null;
 
       if (hasAllCache) {
-        final List<MeditationSession> allList = cachedAll
+        final List<MeditationSessionModel> allList = cachedAll
             .map(
-              (e) => MeditationSession.fromJson(
+              (e) => MeditationSessionModel.fromJson(
                 Map<String, dynamic>.from(e as Map),
               ),
             )
@@ -137,9 +137,9 @@ class MeditationController extends GetxController {
       }
 
       if (hasFeaturedCache) {
-        final List<MeditationSession> featuredList = cachedFeatured
+        final List<MeditationSessionModel> featuredList = cachedFeatured
             .map(
-              (e) => MeditationSession.fromJson(
+              (e) => MeditationSessionModel.fromJson(
                 Map<String, dynamic>.from(e as Map),
               ),
             )
@@ -282,8 +282,8 @@ class MeditationController extends GetxController {
   }
 
   // UI-compatible getters pointing to reactive API datasets
-  List<MeditationSession> get filteredSessions => allSessionsList;
-  List<MeditationSession> get featuredSessions => featuredSessionsList;
+  List<MeditationSessionModel> get filteredSessions => allSessionsList;
+  List<MeditationSessionModel> get featuredSessions => featuredSessionsList;
 
   // Derived RxBool that synchronizes with the favoritedIds reactive set
   RxBool getIsFavoritedRx(String id) {
