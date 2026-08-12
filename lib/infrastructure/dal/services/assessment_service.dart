@@ -1,9 +1,9 @@
 import '../../../../data/enums/date_filter_enum.dart';
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../../data/model/assessment/daily_mood_assessment.model.dart';
-import '../../../../data/model/assessment/paginated_daily_mood_assessments.model.dart';
-import '../../../../data/model/assessment/streak_stats.model.dart';
+import '../../../../data/model/daily_mood_assessment.model.dart';
+import '../../../../data/model/paginated_daily_mood_assessments.model.dart';
+import '../../../../data/model/streak_stats.model.dart';
 
 class AssessmentService {
   AssessmentService._();

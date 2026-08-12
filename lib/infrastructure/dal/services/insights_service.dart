@@ -1,8 +1,8 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../../data/model/assessment/mood_tracker_stats.model.dart';
-import '../../../../data/model/assessment/growth_areas_response.model.dart';
-import '../../../../data/model/assessment/coaching_banner_response.model.dart';
+import '../../../../data/model/mood_tracker_stats.model.dart';
+import '../../../../data/model/growth_areas_response.model.dart';
+import '../../../../data/model/coaching_banner_response.model.dart';
 
 class InsightsService {
   InsightsService._();

@@ -5,7 +5,7 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
-import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';

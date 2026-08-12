@@ -5,7 +5,7 @@ import 'package:Mentora/data/model/tasks/plan.model.dart';
 import 'package:Mentora/infrastructure/dal/services/tasks_service.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
-import 'package:Mentora/data/model/assessment/streak_stats.model.dart';
+import 'package:Mentora/data/model/streak_stats.model.dart';
 
 class HomeController extends GetxController {
   final GlobalController globalController = Get.find<GlobalController>();

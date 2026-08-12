@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/controllers/global.controller.dart';
-import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
+import 'package:Mentora/data/model/growth_areas_response.model.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/coaching_banner_response.model.dart';
+import 'package:Mentora/data/model/coaching_banner_response.model.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 
 class InsightsController extends GetxController {

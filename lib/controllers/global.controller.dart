@@ -1,11 +1,11 @@
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
-import 'package:Mentora/data/model/assessment/paginated_daily_mood_assessments.model.dart';
+import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/paginated_daily_mood_assessments.model.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
-import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
+import 'package:Mentora/data/model/mood_tracker_stats.model.dart';
 import 'package:Mentora/data/model/auth/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
@@ -64,7 +64,7 @@ class GlobalController extends GetxController {
       bool hasCache = cachedHistory != null && cachedLastUpdated != null;
       if (hasCache) {
         final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(cachedHistory);
-        final List<DailyMoodAssessmentModel> history = paginatedModel.items;
+        final List<DailyMoodAssessmentModel> history = paginatedModel.items ?? [];
         moodHistoryList.assignAll(history);
 
         checkInDates.clear();
@@ -119,7 +119,7 @@ class GlobalController extends GetxController {
         dateFilter: selectedDateFilter.value,
       );
       if (response != null && response.data != null) {
-        final List<DailyMoodAssessmentModel> history = response.data!.items;
+        final List<DailyMoodAssessmentModel> history = response.data!.items ?? [];
 
         moodHistoryList.assignAll(history);
 
