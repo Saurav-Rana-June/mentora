@@ -23,3 +23,5 @@ export 'package:Mentora/presentation/sessions/sessions.screen.dart';
 export 'package:Mentora/presentation/meditation/meditation.screen.dart';
 export 'package:Mentora/presentation/breathing/breathing.screen.dart';
 export 'package:Mentora/presentation/breathing/views/breathing_exercise.screen.dart';
+export 'package:Mentora/presentation/journaling/journaling.screen.dart';
+export 'package:Mentora/presentation/journaling/views/journal_question_detail.screen.dart';

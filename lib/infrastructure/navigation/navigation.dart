@@ -137,5 +137,9 @@ class Nav {
       name: Routes.BREATHING,
       page: () => BreathingScreen(),
     ),
+    GetPage(
+      name: Routes.JOURNALING,
+      page: () => JournalingScreen(),
+    ),
   ];
 }

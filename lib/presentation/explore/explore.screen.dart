@@ -115,6 +115,7 @@ class ExploreScreen extends GetView<ExploreController> {
                   icon: '\u{f328}',
                   title: 'Journaling',
                   subtitle: 'Reflect on today',
+                  onTap: () => Get.toNamed(Routes.JOURNALING),
                 ),
               ),
             ],
