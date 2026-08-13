@@ -1,6 +1,7 @@
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
+import 'package:Mentora/presentation/insights/controllers/insights.controller.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_history.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
@@ -56,8 +57,18 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
                   final success = await controller.saveCheckIn();
                   if (success) {
                     if (Get.isRegistered<GlobalController>()) {
-                      Get.find<GlobalController>().addMoodCheckin(
+                      controller.globalController.addMoodCheckin(
                         controller.selectedMood.value,
+                      );
+                      controller.globalController.fetchMoodTrackerStats(
+                        forceRefresh: true,
+                      );
+                      Get.find<InsightsController>().fetchGrowthAreas(
+                        DateFilter.thisWeek,
+                        forceRefresh: true,
+                      );
+                      Get.find<InsightsController>().fetchCoachingBanner(
+                        forceRefresh: true,
                       );
                     }
                     Get.back();

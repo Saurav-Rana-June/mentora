@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'growth_areas_response.model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class GrowthAreasResponseModel {
   bool? hasSufficientData;
   List<GrowthAreaModel>? areas;
@@ -27,7 +27,7 @@ class GrowthAreaModel {
   double? progress;
   String? tip;
   String? icon;
-  
+
   @JsonKey(includeFromJson: false, includeToJson: false)
   IconData? localIcon;
 

@@ -21,7 +21,7 @@ PaginatedDailyMoodAssessmentsModel _$PaginatedDailyMoodAssessmentsModelFromJson(
 Map<String, dynamic> _$PaginatedDailyMoodAssessmentsModelToJson(
   PaginatedDailyMoodAssessmentsModel instance,
 ) => <String, dynamic>{
-  'items': instance.items,
+  'items': instance.items?.map((e) => e.toJson()).toList(),
   'page': instance.page,
   'size': instance.size,
   'totalItems': instance.totalItems,

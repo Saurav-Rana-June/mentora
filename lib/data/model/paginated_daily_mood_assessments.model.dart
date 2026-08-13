@@ -3,7 +3,7 @@ import 'daily_mood_assessment.model.dart';
 
 part 'paginated_daily_mood_assessments.model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class PaginatedDailyMoodAssessmentsModel {
   List<DailyMoodAssessmentModel>? items;
   int? page;

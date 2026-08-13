@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'mood_tracker_stats.model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class MoodTrackerStatsModel {
   List<MoodCalendarDayModel>? data;
   String? dominantMood;

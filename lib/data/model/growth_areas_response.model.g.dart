@@ -20,7 +20,7 @@ Map<String, dynamic> _$GrowthAreasResponseModelToJson(
   GrowthAreasResponseModel instance,
 ) => <String, dynamic>{
   'hasSufficientData': instance.hasSufficientData,
-  'areas': instance.areas,
+  'areas': instance.areas?.map((e) => e.toJson()).toList(),
   'placeholderMessage': instance.placeholderMessage,
 };
 

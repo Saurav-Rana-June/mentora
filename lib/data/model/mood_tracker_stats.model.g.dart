@@ -19,7 +19,7 @@ MoodTrackerStatsModel _$MoodTrackerStatsModelFromJson(
 Map<String, dynamic> _$MoodTrackerStatsModelToJson(
   MoodTrackerStatsModel instance,
 ) => <String, dynamic>{
-  'data': instance.data,
+  'data': instance.data?.map((e) => e.toJson()).toList(),
   'dominantMood': instance.dominantMood,
   'consistency': instance.consistency,
 };
