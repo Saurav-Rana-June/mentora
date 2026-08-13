@@ -16,6 +16,8 @@ class GlobalController extends GetxController {
   final RxBool isLoadingMoodTracker = false.obs;
   final Rxn<MoodTrackerStatsModel> moodTrackerStats =
       Rxn<MoodTrackerStatsModel>();
+  final Rxn<MoodTrackerStatsModel> moodTrackerStatsThisWeek =
+      Rxn<MoodTrackerStatsModel>();
 
   final RxList<DailyMoodAssessmentModel> moodHistoryList =
       <DailyMoodAssessmentModel>[].obs;
@@ -319,7 +321,11 @@ class GlobalController extends GetxController {
 
       bool hasCache = cachedData != null && cachedLastUpdated != null;
       if (hasCache) {
-        moodTrackerStats.value = MoodTrackerStatsModel.fromJson(cachedData);
+        final model = MoodTrackerStatsModel.fromJson(cachedData);
+        if (actualFilter == "thisWeek" && fromDate == null && toDate == null) {
+          moodTrackerStatsThisWeek.value = model;
+        }
+        moodTrackerStats.value = model;
         hasCache = true;
       }
 
@@ -356,6 +362,9 @@ class GlobalController extends GetxController {
         timezone: 'UTC',
       );
       if (res != null && res.data != null) {
+        if (actualFilter == "thisWeek" && fromDate == null && toDate == null) {
+          moodTrackerStatsThisWeek.value = res.data;
+        }
         moodTrackerStats.value = res.data;
         await StorageUtils.write(cacheKey, res.data!.toJson());
         if (res.lastUpdated != null) {

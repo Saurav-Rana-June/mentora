@@ -169,7 +169,7 @@ class HomeScreen extends GetView<HomeController> {
     final globalController = Get.find<GlobalController>();
 
     return Obx(() {
-      final stats = globalController.moodTrackerStats.value;
+      final stats = globalController.moodTrackerStatsThisWeek.value;
       final checkedInMoods =
           stats?.data?.map((d) => d.feeling).whereType<String>().toList() ?? [];
       final historyLength = checkedInMoods.length;
