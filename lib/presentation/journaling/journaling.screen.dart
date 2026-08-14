@@ -11,6 +11,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'controllers/journaling.controller.dart';
 import 'views/journal_question_detail.screen.dart';
+import 'widgets/journaling_content_loading.dart';
 
 class JournalingScreen extends GetView<JournalingController> {
   JournalingScreen({super.key});
@@ -71,32 +72,49 @@ class JournalingScreen extends GetView<JournalingController> {
 
   Widget buildBody(BuildContext context) {
     return Obx(() {
+      if (controller.isLoading.value) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s8.symmetric.horizontal,
+            vertical: Spacing.s8.symmetric.vertical,
+          ),
+          child: const JournalingContentLoading(),
+        );
+      }
+
       final list = controller.filteredEntries;
-      return SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s8.symmetric.vertical,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!controller.isSearching.value) ...[
-              buildTodayQuestionCard(context),
-              Spacing.s16.h,
+      return RefreshIndicator(
+        onRefresh: () => Future.wait([
+          controller.fetchQuestions(forceRefresh: true),
+          controller.fetchEntries(forceRefresh: true),
+        ]),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s8.symmetric.horizontal,
+            vertical: Spacing.s8.symmetric.vertical,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!controller.isSearching.value) ...[
+                buildTodayQuestionCard(context),
+                Spacing.s16.h,
+              ],
+              if (list.isEmpty)
+                buildEmptyState(context)
+              else ...[
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    return buildEntryCard(context, list[index]);
+                  },
+                ),
+              ],
             ],
-            if (list.isEmpty)
-              buildEmptyState(context)
-            else ...[
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  return buildEntryCard(context, list[index]);
-                },
-              ),
-            ],
-          ],
+          ),
         ),
       );
     });

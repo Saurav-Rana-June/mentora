@@ -66,11 +66,11 @@ class _JournalQuestionDetailScreenState
       return;
     }
     final current = _currentQuestion.value;
-    final available = controller.presetQuestions
-        .where((q) => q != current)
-        .toList();
-    if (available.isNotEmpty) {
-      _currentQuestion.value = (available..shuffle()).first;
+    final available = controller.questionsList.map((q) => q.questionText).toList();
+    final listToUse = available.isNotEmpty ? available : controller.fallbackQuestions;
+    final filtered = listToUse.where((q) => q != current).toList();
+    if (filtered.isNotEmpty) {
+      _currentQuestion.value = (filtered..shuffle()).first;
     }
   }
 
