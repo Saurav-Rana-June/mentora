@@ -24,6 +24,14 @@ class JournalingController extends GetxController {
     "What was the most peaceful moment of your day today?",
     "What is a personal boundary you want to establish or strengthen?",
     "Describe a challenge you overcame recently and what you learned from it.",
+    "What is a recent success, no matter how small, that you are proud of?",
+    "What does your ideal morning routine look like?",
+    "Who in your life makes you feel the most supported, and why?",
+    "What is one thing you can forgive yourself for today?",
+    "What are you holding onto that you need to let go of?",
+    "What is a compliment you received recently that made you smile?",
+    "How do you handle stress, and is there a healthier way you could try?",
+    "What does a perfect, stress-free day look like to you?",
   ];
 
   @override
@@ -37,7 +45,9 @@ class JournalingController extends GetxController {
     if (stored != null) {
       entries.assignAll(
         stored
-            .map((e) => JournalEntryModel.fromJson(Map<String, dynamic>.from(e)))
+            .map(
+              (e) => JournalEntryModel.fromJson(Map<String, dynamic>.from(e)),
+            )
             .toList(),
       );
     }
@@ -52,8 +62,9 @@ class JournalingController extends GetxController {
   }
 
   void _saveToStorage() {
-    final List<Map<String, dynamic>> data =
-        entries.map((e) => e.toJson()).toList();
+    final List<Map<String, dynamic>> data = entries
+        .map((e) => e.toJson())
+        .toList();
     StorageUtils.write(_storageKey, data);
   }
 

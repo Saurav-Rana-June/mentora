@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
-import 'package:my_spacing/spacing.enum.dart';
 
 import 'controllers/forgot_password.controller.dart';
 
