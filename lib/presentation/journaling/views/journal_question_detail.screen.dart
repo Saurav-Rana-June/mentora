@@ -67,8 +67,12 @@ class _JournalQuestionDetailScreenState
       return;
     }
     final current = _currentQuestion.value;
-    final available = controller.questionsList.map((q) => q.questionText).toList();
-    final listToUse = available.isNotEmpty ? available : controller.fallbackQuestions;
+    final available = controller.questionsList
+        .map((q) => q.questionText)
+        .toList();
+    final listToUse = available.isNotEmpty
+        ? available
+        : controller.fallbackQuestions;
     final filtered = listToUse.where((q) => q != current).toList();
     if (filtered.isNotEmpty) {
       _currentQuestion.value = (filtered..shuffle()).first;
@@ -258,11 +262,7 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f130}', // Microphone in FA
             onTap: () {
-              AppUtils.snackbar(
-                "Info",
-                "Coming Soon!!",
-                SnackBarType.INFO,
-              );
+              AppUtils.snackbar("Info", "Coming Soon!!", SnackBarType.INFO);
             },
           ),
           Spacing.s16.w,
@@ -271,11 +271,7 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f030}', // Camera in FA
             onTap: () {
-              AppUtils.snackbar(
-                "Info",
-                "Coming Soon!!",
-                SnackBarType.INFO,
-              );
+              AppUtils.snackbar("Info", "Coming Soon!!", SnackBarType.INFO);
             },
           ),
           Spacing.s16.w,
@@ -284,11 +280,7 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f03e}', // Image/Gallery in FA
             onTap: () {
-              AppUtils.snackbar(
-                "Info",
-                "Coming Soon!!",
-                SnackBarType.INFO,
-              );
+              AppUtils.snackbar("Info", "Coming Soon!!", SnackBarType.INFO);
             },
           ),
           Spacing.s16.w,
@@ -297,11 +289,7 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f15b}', // File/Doc in FA
             onTap: () {
-              AppUtils.snackbar(
-                "Info",
-                "Coming Soon!!",
-                SnackBarType.INFO,
-              );
+              AppUtils.snackbar("Info", "Coming Soon!!", SnackBarType.INFO);
             },
           ),
         ],

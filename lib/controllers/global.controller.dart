@@ -9,6 +9,8 @@ import 'package:Mentora/data/model/mood_tracker_stats.model.dart';
 import 'package:Mentora/data/model/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
+import 'package:Mentora/infrastructure/dal/services/meditation_service.dart';
 
 class GlobalController extends GetxController {
   final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
@@ -33,10 +35,18 @@ class GlobalController extends GetxController {
   final RxBool isLoadingProfile = false.obs;
   final RxString latestMood = ''.obs;
 
+  // Featured Meditations
+  final featuredMeditations = <MeditationSessionModel>[].obs;
+  final RxBool isLoadingFeaturedMeditations = false.obs;
+
+  static const String _featuredMeditationsCacheKey = 'global_featured_meditations';
+  static const String _featuredMeditationsLastUpdatedKey = 'global_featured_meditations_last_updated';
+
   @override
   void onInit() {
     super.onInit();
     fetchUserProfile();
+    fetchFeaturedMeditations();
     Future.wait([fetchMoodHistory(), fetchMoodTrackerStats()]);
   }
 
@@ -375,6 +385,70 @@ class GlobalController extends GetxController {
       Get.log("Error fetching global mood tracker stats: $e");
     } finally {
       isLoadingMoodTracker.value = false;
+    }
+  }
+
+  Future<void> fetchFeaturedMeditations({bool forceRefresh = false}) async {
+    try {
+      // 1. Try to load from cache
+      final List<dynamic>? cachedData =
+          StorageUtils.read<List<dynamic>>(_featuredMeditationsCacheKey);
+      final String? cachedLastUpdated =
+          StorageUtils.read<String>(_featuredMeditationsLastUpdatedKey);
+
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        featuredMeditations.assignAll(
+          cachedData
+              .map(
+                (e) => MeditationSessionModel.fromJson(
+                  Map<String, dynamic>.from(e as Map),
+                ),
+              )
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache) {
+        isLoadingFeaturedMeditations.value = false;
+      } else {
+        isLoadingFeaturedMeditations.value = true;
+      }
+
+      // 2. Perform lightweight timestamp verification check if not force-refreshing
+      if (hasCache && !forceRefresh) {
+        final checkRes = await MeditationService.getFeaturedMeditations(
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            return;
+          }
+        }
+      }
+
+      // 3. Fetch fresh data
+      final res = await MeditationService.getFeaturedMeditations();
+      if (res != null && res.data != null) {
+        featuredMeditations.assignAll(res.data!);
+        await StorageUtils.write(
+          _featuredMeditationsCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            _featuredMeditationsLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Error fetching featured meditations: $e");
+    } finally {
+      isLoadingFeaturedMeditations.value = false;
     }
   }
 }
