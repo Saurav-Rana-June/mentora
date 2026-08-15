@@ -20,12 +20,12 @@ class JournalingController extends GetxController {
   final attachedImagePath = Rxn<String>();
   final ImagePicker _picker = ImagePicker();
 
-  static const String _questionsCacheKey = 'journaling_questions_cache';
+  static const String _questionsCacheKey = StorageKeys.JOURNALING_QUESTIONS;
   static const String _questionsLastUpdatedCacheKey =
-      'journaling_questions_last_updated';
-  static const String _entriesCacheKey = 'journaling_entries_cache';
+      StorageKeys.JOURNALING_QUESTIONS_LAST_UPDATED;
+  static const String _entriesCacheKey = StorageKeys.JOURNALING_ENTRIES;
   static const String _entriesLastUpdatedCacheKey =
-      'journaling_entries_last_updated';
+      StorageKeys.JOURNALING_ENTRIES_LAST_UPDATED;
 
   final RxList<JournalQuestionModel> questionsList =
       <JournalQuestionModel>[].obs;

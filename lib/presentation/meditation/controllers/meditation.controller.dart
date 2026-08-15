@@ -19,9 +19,9 @@ class MeditationController extends GetxController {
   final RxList<String> categoriesList = <String>[].obs;
 
   // Cache keys constants
-  static const String _categoriesCacheKey = 'meditation_categories_filters';
+  static const String _categoriesCacheKey = StorageKeys.MEDITATION_CATEGORIES;
   static const String _categoriesLastUpdatedCacheKey =
-      'meditation_categories_last_updated';
+      StorageKeys.MEDITATION_CATEGORIES_LAST_UPDATED;
 
   @override
   void onInit() {
@@ -99,10 +99,14 @@ class MeditationController extends GetxController {
 
   /// Fetch meditations from the API based on selected filters and queries (with local caching)
   Future<void> fetchSessions({bool forceRefresh = false}) async {
-    final String allCacheKey =
-        'meditations_all_${selectedCategory.value}_${searchQuery.value}';
-    final String allLastUpdatedCacheKey =
-        'meditations_all_last_updated_${selectedCategory.value}_${searchQuery.value}';
+    final String allCacheKey = StorageKeys.meditationAll(
+      selectedCategory.value,
+      searchQuery.value,
+    );
+    final String allLastUpdatedCacheKey = StorageKeys.meditationAllLastUpdated(
+      selectedCategory.value,
+      searchQuery.value,
+    );
 
     if (forceRefresh) {
       await StorageUtils.remove(allCacheKey);

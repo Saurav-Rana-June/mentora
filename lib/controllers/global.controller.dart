@@ -40,9 +40,9 @@ class GlobalController extends GetxController {
   final RxBool isLoadingFeaturedMeditations = false.obs;
 
   static const String _featuredMeditationsCacheKey =
-      'global_featured_meditations';
+      StorageKeys.FEATURED_MEDITATIONS;
   static const String _featuredMeditationsLastUpdatedKey =
-      'global_featured_meditations_last_updated';
+      StorageKeys.FEATURED_MEDITATIONS_LAST_UPDATED;
 
   @override
   void onInit() {
@@ -72,9 +72,9 @@ class GlobalController extends GetxController {
 
   Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
     final String moodHistoryCacheKey =
-        'global_mood_history_${selectedDateFilter.value.name}';
+        StorageKeys.globalMoodHistory(selectedDateFilter.value.name);
     final String moodHistoryLastUpdatedKey =
-        'global_mood_history_last_updated_${selectedDateFilter.value.name}';
+        StorageKeys.globalMoodHistoryLastUpdated(selectedDateFilter.value.name);
 
     try {
       // 1. Try to load check-ins from cache first
@@ -338,8 +338,8 @@ class GlobalController extends GetxController {
     final String suffix = fromDate != null || toDate != null
         ? '${fromDate}_$toDate'
         : actualFilter;
-    final String cacheKey = 'insights_mood_tracker_$suffix';
-    final String lastUpdatedKey = 'insights_mood_tracker_last_updated_$suffix';
+    final String cacheKey = StorageKeys.insightsMoodTracker(suffix);
+    final String lastUpdatedKey = StorageKeys.insightsMoodTrackerLastUpdated(suffix);
 
     try {
       // 1. Try to load from local cache first

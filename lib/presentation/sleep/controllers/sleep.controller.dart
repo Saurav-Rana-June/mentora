@@ -33,15 +33,14 @@ class SleepController extends GetxController {
   final RxBool isLoading = true.obs;
 
   // Cache keys
-  static const String soundsCacheKey = 'sleep_sounds_cache_data';
-  static const String soundsLastUpdatedKey = 'sleep_sounds_cache_last_updated';
+  static const String soundsCacheKey = StorageKeys.SLEEP_SOUNDS;
+  static const String soundsLastUpdatedKey = StorageKeys.SLEEP_SOUNDS_LAST_UPDATED;
 
-  static const String musicCacheKey = 'sleep_music_cache_data';
-  static const String musicLastUpdatedKey = 'sleep_music_cache_last_updated';
+  static const String musicCacheKey = StorageKeys.SLEEP_MUSIC;
+  static const String musicLastUpdatedKey = StorageKeys.SLEEP_MUSIC_LAST_UPDATED;
 
-  static const String storiesCacheKey = 'sleep_stories_cache_data';
-  static const String storiesLastUpdatedKey =
-      'sleep_stories_cache_last_updated';
+  static const String storiesCacheKey = StorageKeys.SLEEP_STORIES;
+  static const String storiesLastUpdatedKey = StorageKeys.SLEEP_STORIES_LAST_UPDATED;
 
   @override
   void onInit() {

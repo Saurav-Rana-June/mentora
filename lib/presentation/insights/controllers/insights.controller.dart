@@ -33,9 +33,9 @@ class InsightsController extends GetxController {
     fetchCoachingBanner();
   }
 
-  static const String _coachingBannerCacheKey = 'insights_coaching_banner_data';
+  static const String _coachingBannerCacheKey = StorageKeys.COACHING_BANNER;
   static const String _coachingBannerLastUpdatedKey =
-      'insights_coaching_banner_last_updated';
+      StorageKeys.COACHING_BANNER_LAST_UPDATED;
 
   Future<void> fetchCoachingBanner({bool forceRefresh = false}) async {
     try {
@@ -100,9 +100,9 @@ class InsightsController extends GetxController {
     DateFilter filter, {
     bool forceRefresh = false,
   }) async {
-    final String growthAreasCacheKey = 'insights_growth_areas_${filter.name}';
+    final String growthAreasCacheKey = StorageKeys.growthAreas(filter.name);
     final String growthAreasLastUpdatedKey =
-        'insights_growth_areas_last_updated_${filter.name}';
+        StorageKeys.growthAreasLastUpdated(filter.name);
 
     try {
       final cachedData = StorageUtils.read<Map<String, dynamic>>(

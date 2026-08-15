@@ -12,9 +12,9 @@ class HomeController extends GetxController {
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
 
-  static const String _streakStatsCacheKey = 'home_streak_stats_data';
-  static const String _streakStatsLastUpdatedCacheKey = 'home_streak_stats_last_updated';
-  static const String _dailyPlanCacheKey = 'home_daily_plan_data';
+  static const String _streakStatsCacheKey = StorageKeys.STREAK_STATS;
+  static const String _streakStatsLastUpdatedCacheKey = StorageKeys.STREAK_STATS_LAST_UPDATED;
+  static const String _dailyPlanCacheKey = StorageKeys.DAILY_PLAN;
 
   // Trusted Contact Info
   final RxString trustedContactName = ''.obs;

@@ -11,8 +11,8 @@ class BreathingController extends GetxController
   Timer? _timer;
 
   // Cache keys constants
-  static const String _patternsCacheKey = 'breathing_techniques_patterns';
-  static const String _patternsLastUpdatedCacheKey = 'breathing_techniques_last_updated';
+  static const String _patternsCacheKey = StorageKeys.BREATHING_PATTERNS;
+  static const String _patternsLastUpdatedCacheKey = StorageKeys.BREATHING_PATTERNS_LAST_UPDATED;
 
   // Dynamic presets list loaded from cache/API
   final RxList<BreathingPatternModel> patterns = <BreathingPatternModel>[].obs;
