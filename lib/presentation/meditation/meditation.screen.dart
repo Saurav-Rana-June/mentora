@@ -62,7 +62,7 @@ class MeditationScreen extends GetView<MeditationController> {
         final isInitialLoad =
             controller.isLoading.value &&
             controller.allSessionsList.isEmpty &&
-            controller.featuredSessionsList.isEmpty;
+            controller.featuredSessions.isEmpty;
 
         if (isInitialLoad) {
           return const MeditationLoading();
@@ -161,7 +161,9 @@ class MeditationScreen extends GetView<MeditationController> {
             itemBuilder: (context, index) {
               final session = featuredList[index];
               return Obx(() {
-                final isFav = controller.favoritedIds.contains(session.id?.toString() ?? '');
+                final isFav = controller.favoritedIds.contains(
+                  session.id?.toString() ?? '',
+                );
                 return FeaturedMeditationCard(
                   session: session,
                   isFavorited: isFav,
@@ -174,14 +176,18 @@ class MeditationScreen extends GetView<MeditationController> {
                         imageUrl: session.imageUrl ?? '',
                         description: session.description ?? '',
                         duration: session.duration ?? '',
-                        isFavorited: controller.getIsFavoritedRx(session.id?.toString() ?? ''),
-                        onFavoriteTap: () =>
-                            controller.toggleFavorite(session.id?.toString() ?? ''),
+                        isFavorited: controller.getIsFavoritedRx(
+                          session.id?.toString() ?? '',
+                        ),
+                        onFavoriteTap: () => controller.toggleFavorite(
+                          session.id?.toString() ?? '',
+                        ),
                       ),
                       transition: Transition.rightToLeft,
                     );
                   },
-                  onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
+                  onFavoriteTap: () =>
+                      controller.toggleFavorite(session.id?.toString() ?? ''),
                 );
               });
             },
@@ -207,7 +213,9 @@ class MeditationScreen extends GetView<MeditationController> {
       mainAxisSize: MainAxisSize.min,
       children: sessionsList.map((session) {
         return Obx(() {
-          final isFav = controller.favoritedIds.contains(session.id?.toString() ?? '');
+          final isFav = controller.favoritedIds.contains(
+            session.id?.toString() ?? '',
+          );
           return MeditationCard(
             session: session,
             isFavorited: isFav,
@@ -220,13 +228,17 @@ class MeditationScreen extends GetView<MeditationController> {
                   imageUrl: session.imageUrl ?? '',
                   description: session.description ?? '',
                   duration: session.duration ?? '',
-                  isFavorited: controller.getIsFavoritedRx(session.id?.toString() ?? ''),
-                  onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
+                  isFavorited: controller.getIsFavoritedRx(
+                    session.id?.toString() ?? '',
+                  ),
+                  onFavoriteTap: () =>
+                      controller.toggleFavorite(session.id?.toString() ?? ''),
                 ),
                 transition: Transition.rightToLeft,
               );
             },
-            onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
+            onFavoriteTap: () =>
+                controller.toggleFavorite(session.id?.toString() ?? ''),
           );
         });
       }).toList(),
