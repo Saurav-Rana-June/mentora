@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
@@ -259,10 +258,10 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f130}', // Microphone in FA
             onTap: () {
-              Get.snackbar(
+              AppUtils.snackbar(
                 "Info",
-                "Speech-to-text recording coming soon!",
-                snackPosition: SnackPosition.BOTTOM,
+                "Coming Soon!!",
+                SnackBarType.INFO,
               );
             },
           ),
@@ -271,14 +270,26 @@ class _JournalQuestionDetailScreenState
           buildBottomActionIcon(
             context: context,
             iconUnicode: '\u{f030}', // Camera in FA
-            onTap: () => controller.pickImage(ImageSource.camera),
+            onTap: () {
+              AppUtils.snackbar(
+                "Info",
+                "Coming Soon!!",
+                SnackBarType.INFO,
+              );
+            },
           ),
           Spacing.s16.w,
           // Image / Gallery
           buildBottomActionIcon(
             context: context,
             iconUnicode: '\u{f03e}', // Image/Gallery in FA
-            onTap: () => controller.pickImage(ImageSource.gallery),
+            onTap: () {
+              AppUtils.snackbar(
+                "Info",
+                "Coming Soon!!",
+                SnackBarType.INFO,
+              );
+            },
           ),
           Spacing.s16.w,
           // File / Document
@@ -286,10 +297,10 @@ class _JournalQuestionDetailScreenState
             context: context,
             iconUnicode: '\u{f15b}', // File/Doc in FA
             onTap: () {
-              Get.snackbar(
+              AppUtils.snackbar(
                 "Info",
-                "Document upload coming soon!",
-                snackPosition: SnackPosition.BOTTOM,
+                "Coming Soon!!",
+                SnackBarType.INFO,
               );
             },
           ),
