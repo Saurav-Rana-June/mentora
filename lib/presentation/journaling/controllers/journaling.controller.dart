@@ -5,24 +5,30 @@ import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'package:Mentora/data/model/journal_question.model.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/journaling_service.dart';
+import 'package:Mentora/data/enums/snackbar_enum.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
 
 class JournalingController extends GetxController {
   final entries = <JournalEntryModel>[].obs;
   final todayQuestion = ''.obs;
   final isSearching = false.obs;
   final searchText = ''.obs;
-  final isLoading = true.obs;
+  final isQuestionsLoading = true.obs;
+  final isEntriesLoading = true.obs;
 
   // Attachment states for the editing draft
   final attachedImagePath = Rxn<String>();
   final ImagePicker _picker = ImagePicker();
 
   static const String _questionsCacheKey = 'journaling_questions_cache';
-  static const String _questionsLastUpdatedCacheKey = 'journaling_questions_last_updated';
+  static const String _questionsLastUpdatedCacheKey =
+      'journaling_questions_last_updated';
   static const String _entriesCacheKey = 'journaling_entries_cache';
-  static const String _entriesLastUpdatedCacheKey = 'journaling_entries_last_updated';
+  static const String _entriesLastUpdatedCacheKey =
+      'journaling_entries_last_updated';
 
-  final RxList<JournalQuestionModel> questionsList = <JournalQuestionModel>[].obs;
+  final RxList<JournalQuestionModel> questionsList =
+      <JournalQuestionModel>[].obs;
 
   final List<String> fallbackQuestions = [
     "What activities usually make you feel better when you're feeling low?",
@@ -52,15 +58,33 @@ class JournalingController extends GetxController {
 
   Future<void> fetchQuestions({bool forceRefresh = false}) async {
     try {
-      final List<dynamic>? cachedQuestions = StorageUtils.read<List<dynamic>>(_questionsCacheKey);
-      final String? cachedLastUpdated = StorageUtils.read<String>(_questionsLastUpdatedCacheKey);
+      final List<dynamic>? cachedQuestions = StorageUtils.read<List<dynamic>>(
+        _questionsCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        _questionsLastUpdatedCacheKey,
+      );
 
       bool hasCache = false;
-      if (cachedQuestions != null && cachedQuestions.isNotEmpty && cachedLastUpdated != null) {
+      if (cachedQuestions != null &&
+          cachedQuestions.isNotEmpty &&
+          cachedLastUpdated != null) {
         questionsList.assignAll(
-          cachedQuestions.map((e) => JournalQuestionModel.fromJson(Map<String, dynamic>.from(e as Map))).toList()
+          cachedQuestions
+              .map(
+                (e) => JournalQuestionModel.fromJson(
+                  Map<String, dynamic>.from(e as Map),
+                ),
+              )
+              .toList(),
         );
         hasCache = true;
+      }
+
+      if (hasCache) {
+        isQuestionsLoading.value = false;
+      } else {
+        isQuestionsLoading.value = true;
       }
 
       if (todayQuestion.value.isEmpty) {
@@ -68,10 +92,13 @@ class JournalingController extends GetxController {
       }
 
       if (hasCache && !forceRefresh) {
-        final checkRes = await JournalingService.getJournalingQuestions(lastUpdated: cachedLastUpdated);
+        final checkRes = await JournalingService.getJournalingQuestions(
+          lastUpdated: cachedLastUpdated,
+        );
         if (checkRes != null) {
           final cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             return;
           }
         }
@@ -80,14 +107,27 @@ class JournalingController extends GetxController {
       final res = await JournalingService.getJournalingQuestions();
       if (res != null && res.data != null) {
         questionsList.assignAll(res.data!);
-        await StorageUtils.write(_questionsCacheKey, res.data!.map((e) => e.toJson()).toList());
+        await StorageUtils.write(
+          _questionsCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
         if (res.lastUpdated != null) {
-          await StorageUtils.write(_questionsLastUpdatedCacheKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            _questionsLastUpdatedCacheKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
         _setInitialTodayQuestion();
       }
     } catch (e) {
       Get.log("Failed to load questions: $e");
+      AppUtils.snackbar(
+        "Error",
+        "Failed to load questions.",
+        SnackBarType.ERROR,
+      );
+    } finally {
+      isQuestionsLoading.value = false;
     }
   }
 
@@ -107,18 +147,37 @@ class JournalingController extends GetxController {
     final filtered = listToUse.where((q) => q != current).toList();
     if (filtered.isNotEmpty) {
       todayQuestion.value = (filtered..shuffle()).first;
+      AppUtils.snackbar(
+        "Info",
+        "Today's question rotated.",
+        SnackBarType.INFO,
+      );
+    } else {
+      AppUtils.snackbar(
+        "Warning",
+        "No other questions available to rotate.",
+        SnackBarType.WARNING,
+      );
     }
   }
 
   Future<void> fetchEntries({bool forceRefresh = false}) async {
     try {
-      final List<dynamic>? cachedEntries = StorageUtils.read<List<dynamic>>(_entriesCacheKey);
-      final String? cachedLastUpdated = StorageUtils.read<String>(_entriesLastUpdatedCacheKey);
+      final List<dynamic>? cachedEntries = StorageUtils.read<List<dynamic>>(
+        _entriesCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        _entriesLastUpdatedCacheKey,
+      );
 
       bool hasCache = false;
       if (cachedEntries != null && cachedLastUpdated != null) {
         final loaded = cachedEntries
-            .map((e) => JournalEntryModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map(
+              (e) => JournalEntryModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList();
         entries.assignAll(loaded);
         _sortEntries();
@@ -126,16 +185,19 @@ class JournalingController extends GetxController {
       }
 
       if (hasCache) {
-        isLoading.value = false;
+        isEntriesLoading.value = false;
       } else {
-        isLoading.value = true;
+        isEntriesLoading.value = true;
       }
 
       if (hasCache && !forceRefresh) {
-        final checkRes = await JournalingService.getJournalingEntries(lastUpdated: cachedLastUpdated);
+        final checkRes = await JournalingService.getJournalingEntries(
+          lastUpdated: cachedLastUpdated,
+        );
         if (checkRes != null) {
           final cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             return;
           }
         }
@@ -145,15 +207,26 @@ class JournalingController extends GetxController {
       if (res != null && res.data != null) {
         entries.assignAll(res.data!);
         _sortEntries();
-        await StorageUtils.write(_entriesCacheKey, res.data!.map((e) => e.toJson()).toList());
+        await StorageUtils.write(
+          _entriesCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
         if (res.lastUpdated != null) {
-          await StorageUtils.write(_entriesLastUpdatedCacheKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            _entriesLastUpdatedCacheKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
       Get.log("Failed to load entries: $e");
+      AppUtils.snackbar(
+        "Error",
+        "Failed to load entries.",
+        SnackBarType.ERROR,
+      );
     } finally {
-      isLoading.value = false;
+      isEntriesLoading.value = false;
     }
   }
 
@@ -161,7 +234,11 @@ class JournalingController extends GetxController {
     entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
-  Future<void> addEntry(String question, String answer, {String? imagePath}) async {
+  Future<void> addEntry(
+    String question,
+    String answer, {
+    String? imagePath,
+  }) async {
     try {
       final res = await JournalingService.createJournalingEntry(
         question: question,
@@ -172,13 +249,33 @@ class JournalingController extends GetxController {
         entries.insert(0, res.data!);
         _sortEntries();
         _saveToCache();
+        AppUtils.snackbar(
+          "Success",
+          "Journal entry saved successfully.",
+          SnackBarType.SUCCESS,
+        );
+      } else {
+        AppUtils.snackbar(
+          "Error",
+          "Failed to save entry.",
+          SnackBarType.ERROR,
+        );
       }
     } catch (e) {
       Get.log("Failed to add entry: $e");
+      AppUtils.snackbar(
+        "Error",
+        "An error occurred while saving entry.",
+        SnackBarType.ERROR,
+      );
     }
   }
 
-  Future<void> updateEntry(String id, String answer, {String? imagePath}) async {
+  Future<void> updateEntry(
+    String id,
+    String answer, {
+    String? imagePath,
+  }) async {
     try {
       final res = await JournalingService.updateJournalingEntry(
         id: id,
@@ -191,10 +288,26 @@ class JournalingController extends GetxController {
           entries[index] = res.data!;
           _sortEntries();
           _saveToCache();
+          AppUtils.snackbar(
+            "Success",
+            "Journal entry updated successfully.",
+            SnackBarType.SUCCESS,
+          );
         }
+      } else {
+        AppUtils.snackbar(
+          "Error",
+          "Failed to update entry.",
+          SnackBarType.ERROR,
+        );
       }
     } catch (e) {
       Get.log("Failed to update entry: $e");
+      AppUtils.snackbar(
+        "Error",
+        "An error occurred while updating entry.",
+        SnackBarType.ERROR,
+      );
     }
   }
 
@@ -204,14 +317,33 @@ class JournalingController extends GetxController {
       if (res != null) {
         entries.removeWhere((e) => e.id == id);
         _saveToCache();
+        AppUtils.snackbar(
+          "Success",
+          "Journal entry deleted successfully.",
+          SnackBarType.SUCCESS,
+        );
+      } else {
+        AppUtils.snackbar(
+          "Error",
+          "Failed to delete entry.",
+          SnackBarType.ERROR,
+        );
       }
     } catch (e) {
       Get.log("Failed to delete entry: $e");
+      AppUtils.snackbar(
+        "Error",
+        "An error occurred while deleting entry.",
+        SnackBarType.ERROR,
+      );
     }
   }
 
   void _saveToCache() {
-    StorageUtils.write(_entriesCacheKey, entries.map((e) => e.toJson()).toList());
+    StorageUtils.write(
+      _entriesCacheKey,
+      entries.map((e) => e.toJson()).toList(),
+    );
   }
 
   // Media picking helpers
@@ -220,18 +352,28 @@ class JournalingController extends GetxController {
       final XFile? file = await _picker.pickImage(source: source);
       if (file != null) {
         attachedImagePath.value = file.path;
+        AppUtils.snackbar(
+          "Success",
+          "Image attached successfully.",
+          SnackBarType.SUCCESS,
+        );
       }
     } catch (e) {
-      Get.snackbar(
+      AppUtils.snackbar(
         "Error",
         "Failed to pick image: $e",
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.ERROR,
       );
     }
   }
 
   void clearAttachment() {
     attachedImagePath.value = null;
+    AppUtils.snackbar(
+      "Info",
+      "Image attachment cleared.",
+      SnackBarType.INFO,
+    );
   }
 
   List<JournalEntryModel> get filteredEntries {

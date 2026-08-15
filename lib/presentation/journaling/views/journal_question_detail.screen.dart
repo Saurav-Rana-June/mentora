@@ -11,6 +11,8 @@ import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import '../controllers/journaling.controller.dart';
+import 'package:Mentora/data/enums/snackbar_enum.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
 
 class JournalQuestionDetailScreen extends StatefulWidget {
   final String question;
@@ -58,10 +60,10 @@ class _JournalQuestionDetailScreenState
   void _rotateQuestion() {
     if (widget.existingEntry != null) {
       // Disable question rotation when editing an existing entry to maintain integrity
-      Get.snackbar(
+      AppUtils.snackbar(
         "Info",
         "You cannot change the question of an existing entry.",
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.INFO,
       );
       return;
     }
@@ -77,10 +79,10 @@ class _JournalQuestionDetailScreenState
   void _handleSave() {
     final answer = _answerController.text.trim();
     if (answer.isEmpty) {
-      Get.snackbar(
+      AppUtils.snackbar(
         "Required",
         "Please write an answer before saving.",
-        snackPosition: SnackPosition.BOTTOM,
+        SnackBarType.WARNING,
       );
       return;
     }
@@ -92,11 +94,6 @@ class _JournalQuestionDetailScreenState
         imagePath: controller.attachedImagePath.value,
       );
       Get.back();
-      Get.snackbar(
-        "Success",
-        "Journal entry updated successfully.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } else {
       controller.addEntry(
         _currentQuestion.value,
@@ -104,11 +101,6 @@ class _JournalQuestionDetailScreenState
         imagePath: controller.attachedImagePath.value,
       );
       Get.back();
-      Get.snackbar(
-        "Success",
-        "Journal entry saved successfully.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
     }
   }
 

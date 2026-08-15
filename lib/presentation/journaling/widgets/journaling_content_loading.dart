@@ -3,8 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
+enum JournalingLoadingMode {
+  full,
+  question,
+  entries,
+}
+
 class JournalingContentLoading extends StatefulWidget {
-  const JournalingContentLoading({super.key});
+  final JournalingLoadingMode mode;
+
+  const JournalingContentLoading({
+    super.key,
+    this.mode = JournalingLoadingMode.full,
+  });
 
   @override
   State<JournalingContentLoading> createState() => _JournalingContentLoadingState();
@@ -44,54 +55,89 @@ class _JournalingContentLoadingState extends State<JournalingContentLoading>
       builder: (context, child) {
         return Opacity(
           opacity: _opacityAnimation.value,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Today's Question Card Skeleton
-              Container(
-                height: 160.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: skeletonColor,
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-              ),
-              Spacing.s24.h,
-
-              // Entries Header/Title Skeleton
-              Container(
-                height: 20.h,
-                width: 150.w,
-                decoration: BoxDecoration(
-                  color: skeletonColor,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-              ),
-              Spacing.s12.h,
-
-              // Vertical Entries List Skeleton
-              ListView.builder(
-                itemCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: Spacing.s12.value.h),
-                    child: Container(
-                      height: 120.h,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: skeletonColor,
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+          child: _buildSkeleton(skeletonColor),
         );
       },
     );
+  }
+
+  Widget _buildSkeleton(Color skeletonColor) {
+    switch (widget.mode) {
+      case JournalingLoadingMode.question:
+        return Container(
+          height: 160.h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: skeletonColor,
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+        );
+      case JournalingLoadingMode.entries:
+        return ListView.builder(
+          itemCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: Spacing.s12.value.h),
+              child: Container(
+                height: 120.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: skeletonColor,
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+              ),
+            );
+          },
+        );
+      case JournalingLoadingMode.full:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Today's Question Card Skeleton
+            Container(
+              height: 160.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: skeletonColor,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+            ),
+            Spacing.s24.h,
+
+            // Entries Header/Title Skeleton
+            Container(
+              height: 20.h,
+              width: 150.w,
+              decoration: BoxDecoration(
+                color: skeletonColor,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+            Spacing.s12.h,
+
+            // Vertical Entries List Skeleton
+            ListView.builder(
+              itemCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: Spacing.s12.value.h),
+                  child: Container(
+                    height: 120.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: skeletonColor,
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+    }
   }
 }

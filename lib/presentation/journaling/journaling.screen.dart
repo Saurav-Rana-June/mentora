@@ -7,6 +7,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.confirmation.box.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'controllers/journaling.controller.dart';
@@ -72,16 +73,6 @@ class JournalingScreen extends GetView<JournalingController> {
 
   Widget buildBody(BuildContext context) {
     return Obx(() {
-      if (controller.isLoading.value) {
-        return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
-          ),
-          child: const JournalingContentLoading(),
-        );
-      }
-
       final list = controller.filteredEntries;
       return RefreshIndicator(
         onRefresh: () => Future.wait([
@@ -98,21 +89,27 @@ class JournalingScreen extends GetView<JournalingController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!controller.isSearching.value) ...[
-                buildTodayQuestionCard(context),
+                controller.isQuestionsLoading.value
+                    ? const JournalingContentLoading(
+                        mode: JournalingLoadingMode.question,
+                      )
+                    : buildTodayQuestionCard(context),
                 Spacing.s16.h,
               ],
-              if (list.isEmpty)
-                buildEmptyState(context)
-              else ...[
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    return buildEntryCard(context, list[index]);
-                  },
-                ),
-              ],
+              controller.isEntriesLoading.value
+                  ? const JournalingContentLoading(
+                      mode: JournalingLoadingMode.entries,
+                    )
+                  : (list.isEmpty
+                        ? buildEmptyState(context)
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: list.length,
+                            itemBuilder: (context, index) {
+                              return buildEntryCard(context, list[index]);
+                            },
+                          )),
             ],
           ),
         ),
@@ -322,40 +319,15 @@ class JournalingScreen extends GetView<JournalingController> {
 
   void _showDeleteConfirmation(BuildContext context, String id) {
     Get.dialog(
-      AlertDialog(
-        backgroundColor: Theme.of(context).cardTheme.color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(
-          "Delete Entry",
-          style: r18.copyWith(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          "Are you sure you want to delete this journal reflection?",
-          style: r14,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text("Cancel", style: r14.copyWith(color: slate[500])),
-          ),
-          TextButton(
-            onPressed: () {
-              controller.deleteEntry(id);
-              Get.back();
-              Get.snackbar(
-                "Deleted",
-                "Your journal entry has been removed.",
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
-            child: Text(
-              "Delete",
-              style: r14.copyWith(color: red, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
+      CustomConfirmationBox(
+        title: "Delete Entry",
+        message: "Are you sure you want to delete this journal reflection?",
+        confirmLabel: "Delete",
+        isDestructive: true,
+        onConfirm: () {
+          controller.deleteEntry(id);
+          Get.back();
+        },
       ),
     );
   }
