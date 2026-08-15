@@ -8,6 +8,8 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
+import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
+import 'package:Mentora/presentation/meditation/controllers/meditation.controller.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
   ExploreScreen({super.key});
@@ -271,6 +273,28 @@ class ExploreScreen extends GetView<ExploreController> {
                     icon: _getCategoryIcon(item.category),
                     title: item.title ?? 'Meditation Session',
                     duration: item.duration ?? '10 min',
+                    onTap: () {
+                      final meditationController =
+                          Get.isRegistered<MeditationController>()
+                          ? Get.find<MeditationController>()
+                          : Get.put(MeditationController());
+                      Get.to(
+                        () => MusicPlayerView(
+                          audioUrl: item.soundTrack ?? '',
+                          title: item.title ?? '',
+                          category: item.category ?? '',
+                          imageUrl: item.imageUrl ?? '',
+                          description: item.description ?? '',
+                          duration: item.duration ?? '',
+                          isFavorited: meditationController.getIsFavoritedRx(
+                            item.id?.toString() ?? '',
+                          ),
+                          onFavoriteTap: () => meditationController
+                              .toggleFavorite(item.id?.toString() ?? ''),
+                        ),
+                        transition: Transition.rightToLeft,
+                      );
+                    },
                   ),
                 );
               }).toList(),
@@ -309,9 +333,10 @@ class ExploreScreen extends GetView<ExploreController> {
     required String icon,
     required String title,
     required String duration,
+    required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: CustomPrimaryCard(
         padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
