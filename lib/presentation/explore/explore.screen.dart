@@ -290,7 +290,9 @@ class ExploreScreen extends GetView<ExploreController> {
       return '\u{f119}'; // face-frown
     } else if (lower.contains('mood') || lower.contains('esteem')) {
       return '\u{e027}'; // rocket-launch
-    } else if (lower.contains('anxiety') || lower.contains('grief') || lower.contains('anger')) {
+    } else if (lower.contains('anxiety') ||
+        lower.contains('grief') ||
+        lower.contains('anger')) {
       return '\u{e36a}'; // face-anxious-sweat
     } else if (lower.contains('breath')) {
       return '\u{e480}'; // face-exhaling
@@ -646,9 +648,10 @@ class _ExploreMeditationLoadingState extends State<ExploreMeditationLoading>
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
-    _opacityAnimation = Tween<double>(begin: 0.35, end: 0.75).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _opacityAnimation = Tween<double>(
+      begin: 0.35,
+      end: 0.75,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

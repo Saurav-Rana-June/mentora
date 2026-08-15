@@ -39,15 +39,21 @@ class GlobalController extends GetxController {
   final featuredMeditations = <MeditationSessionModel>[].obs;
   final RxBool isLoadingFeaturedMeditations = false.obs;
 
-  static const String _featuredMeditationsCacheKey = 'global_featured_meditations';
-  static const String _featuredMeditationsLastUpdatedKey = 'global_featured_meditations_last_updated';
+  static const String _featuredMeditationsCacheKey =
+      'global_featured_meditations';
+  static const String _featuredMeditationsLastUpdatedKey =
+      'global_featured_meditations_last_updated';
 
   @override
   void onInit() {
     super.onInit();
     fetchUserProfile();
-    fetchFeaturedMeditations();
-    Future.wait([fetchMoodHistory(), fetchMoodTrackerStats()]);
+
+    Future.wait([
+      fetchMoodHistory(),
+      fetchMoodTrackerStats(),
+      fetchFeaturedMeditations(),
+    ]);
   }
 
   Future<void> fetchUserProfile() async {
@@ -65,18 +71,27 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
-    final String moodHistoryCacheKey = 'global_mood_history_${selectedDateFilter.value.name}';
-    final String moodHistoryLastUpdatedKey = 'global_mood_history_last_updated_${selectedDateFilter.value.name}';
+    final String moodHistoryCacheKey =
+        'global_mood_history_${selectedDateFilter.value.name}';
+    final String moodHistoryLastUpdatedKey =
+        'global_mood_history_last_updated_${selectedDateFilter.value.name}';
 
     try {
       // 1. Try to load check-ins from cache first
-      final cachedHistory = StorageUtils.read<Map<String, dynamic>>(moodHistoryCacheKey);
-      final cachedLastUpdated = StorageUtils.read<String>(moodHistoryLastUpdatedKey);
+      final cachedHistory = StorageUtils.read<Map<String, dynamic>>(
+        moodHistoryCacheKey,
+      );
+      final cachedLastUpdated = StorageUtils.read<String>(
+        moodHistoryLastUpdatedKey,
+      );
 
       bool hasCache = cachedHistory != null && cachedLastUpdated != null;
       if (hasCache) {
-        final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(cachedHistory);
-        final List<DailyMoodAssessmentModel> history = paginatedModel.items ?? [];
+        final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(
+          cachedHistory,
+        );
+        final List<DailyMoodAssessmentModel> history =
+            paginatedModel.items ?? [];
         moodHistoryList.assignAll(history);
 
         checkInDates.clear();
@@ -117,7 +132,8 @@ class GlobalController extends GetxController {
         );
         if (checkRes != null) {
           final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date! Stop here.
             return;
           }
@@ -131,7 +147,8 @@ class GlobalController extends GetxController {
         dateFilter: selectedDateFilter.value,
       );
       if (response != null && response.data != null) {
-        final List<DailyMoodAssessmentModel> history = response.data!.items ?? [];
+        final List<DailyMoodAssessmentModel> history =
+            response.data!.items ?? [];
 
         moodHistoryList.assignAll(history);
 
@@ -378,7 +395,10 @@ class GlobalController extends GetxController {
         moodTrackerStats.value = res.data;
         await StorageUtils.write(cacheKey, res.data!.toJson());
         if (res.lastUpdated != null) {
-          await StorageUtils.write(lastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            lastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
@@ -391,10 +411,12 @@ class GlobalController extends GetxController {
   Future<void> fetchFeaturedMeditations({bool forceRefresh = false}) async {
     try {
       // 1. Try to load from cache
-      final List<dynamic>? cachedData =
-          StorageUtils.read<List<dynamic>>(_featuredMeditationsCacheKey);
-      final String? cachedLastUpdated =
-          StorageUtils.read<String>(_featuredMeditationsLastUpdatedKey);
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        _featuredMeditationsCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        _featuredMeditationsLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {

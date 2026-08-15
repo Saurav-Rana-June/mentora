@@ -161,7 +161,7 @@ class MeditationScreen extends GetView<MeditationController> {
             itemBuilder: (context, index) {
               final session = featuredList[index];
               return Obx(() {
-                final isFav = controller.favoritedIds.contains(session.id ?? '');
+                final isFav = controller.favoritedIds.contains(session.id?.toString() ?? '');
                 return FeaturedMeditationCard(
                   session: session,
                   isFavorited: isFav,
@@ -174,14 +174,14 @@ class MeditationScreen extends GetView<MeditationController> {
                         imageUrl: session.imageUrl ?? '',
                         description: session.description ?? '',
                         duration: session.duration ?? '',
-                        isFavorited: controller.getIsFavoritedRx(session.id ?? ''),
+                        isFavorited: controller.getIsFavoritedRx(session.id?.toString() ?? ''),
                         onFavoriteTap: () =>
-                            controller.toggleFavorite(session.id ?? ''),
+                            controller.toggleFavorite(session.id?.toString() ?? ''),
                       ),
                       transition: Transition.rightToLeft,
                     );
                   },
-                  onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
+                  onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
                 );
               });
             },
@@ -207,7 +207,7 @@ class MeditationScreen extends GetView<MeditationController> {
       mainAxisSize: MainAxisSize.min,
       children: sessionsList.map((session) {
         return Obx(() {
-          final isFav = controller.favoritedIds.contains(session.id ?? '');
+          final isFav = controller.favoritedIds.contains(session.id?.toString() ?? '');
           return MeditationCard(
             session: session,
             isFavorited: isFav,
@@ -220,13 +220,13 @@ class MeditationScreen extends GetView<MeditationController> {
                   imageUrl: session.imageUrl ?? '',
                   description: session.description ?? '',
                   duration: session.duration ?? '',
-                  isFavorited: controller.getIsFavoritedRx(session.id ?? ''),
-                  onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
+                  isFavorited: controller.getIsFavoritedRx(session.id?.toString() ?? ''),
+                  onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
                 ),
                 transition: Transition.rightToLeft,
               );
             },
-            onFavoriteTap: () => controller.toggleFavorite(session.id ?? ''),
+            onFavoriteTap: () => controller.toggleFavorite(session.id?.toString() ?? ''),
           );
         });
       }).toList(),

@@ -9,7 +9,7 @@ part of 'meditation_session.model.dart';
 MeditationSessionModel _$MeditationSessionModelFromJson(
   Map<String, dynamic> json,
 ) => MeditationSessionModel(
-  id: json['id'] as String?,
+  id: (json['id'] as num?)?.toInt(),
   title: json['title'] as String?,
   category: json['category'] as String?,
   duration: json['duration'] as String?,
