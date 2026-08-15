@@ -78,6 +78,10 @@ class SleepController extends GetxController {
 
   /// Fetch Sleep Sounds (with local caching & lastUpdated checks)
   Future<void> fetchSounds({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(soundsCacheKey);
+      await StorageUtils.remove(soundsLastUpdatedKey);
+    }
     try {
       final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
         soundsCacheKey,
@@ -133,6 +137,10 @@ class SleepController extends GetxController {
 
   /// Fetch Sleep Music (with local caching & lastUpdated checks)
   Future<void> fetchMusic({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(musicCacheKey);
+      await StorageUtils.remove(musicLastUpdatedKey);
+    }
     try {
       final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
         musicCacheKey,
@@ -190,6 +198,10 @@ class SleepController extends GetxController {
 
   /// Fetch Sleep Stories (with local caching & lastUpdated checks)
   Future<void> fetchStories({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(storiesCacheKey);
+      await StorageUtils.remove(storiesLastUpdatedKey);
+    }
     try {
       final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
         storiesCacheKey,

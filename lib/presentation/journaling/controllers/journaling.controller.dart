@@ -57,6 +57,10 @@ class JournalingController extends GetxController {
   }
 
   Future<void> fetchQuestions({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_questionsCacheKey);
+      await StorageUtils.remove(_questionsLastUpdatedCacheKey);
+    }
     try {
       final List<dynamic>? cachedQuestions = StorageUtils.read<List<dynamic>>(
         _questionsCacheKey,
@@ -162,6 +166,10 @@ class JournalingController extends GetxController {
   }
 
   Future<void> fetchEntries({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_entriesCacheKey);
+      await StorageUtils.remove(_entriesLastUpdatedCacheKey);
+    }
     try {
       final List<dynamic>? cachedEntries = StorageUtils.read<List<dynamic>>(
         _entriesCacheKey,

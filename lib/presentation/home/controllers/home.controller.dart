@@ -37,6 +37,10 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchStreakStats({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_streakStatsCacheKey);
+      await StorageUtils.remove(_streakStatsLastUpdatedCacheKey);
+    }
     try {
       // 1. Try to load stats from cache first
       final cachedStats = StorageUtils.read<Map<String, dynamic>>(_streakStatsCacheKey);
@@ -84,6 +88,9 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchDailyPlan({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_dailyPlanCacheKey);
+    }
     try {
       // 1. Try to load plans from cache first
       final cachedPlans = StorageUtils.read<List<dynamic>>(_dailyPlanCacheKey);

@@ -76,6 +76,11 @@ class GlobalController extends GetxController {
     final String moodHistoryLastUpdatedKey =
         StorageKeys.globalMoodHistoryLastUpdated(selectedDateFilter.value.name);
 
+    if (forceRefresh) {
+      await StorageUtils.remove(moodHistoryCacheKey);
+      await StorageUtils.remove(moodHistoryLastUpdatedKey);
+    }
+
     try {
       // 1. Try to load check-ins from cache first
       final cachedHistory = StorageUtils.read<Map<String, dynamic>>(
@@ -340,6 +345,11 @@ class GlobalController extends GetxController {
         : actualFilter;
     final String cacheKey = StorageKeys.insightsMoodTracker(suffix);
     final String lastUpdatedKey = StorageKeys.insightsMoodTrackerLastUpdated(suffix);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(cacheKey);
+      await StorageUtils.remove(lastUpdatedKey);
+    }
 
     try {
       // 1. Try to load from local cache first

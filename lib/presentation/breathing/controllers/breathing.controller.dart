@@ -58,6 +58,10 @@ class BreathingController extends GetxController
 
   /// Fetch breathing patterns from cache first, then API (using timestamp verification)
   Future<void> fetchPatterns({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_patternsCacheKey);
+      await StorageUtils.remove(_patternsLastUpdatedCacheKey);
+    }
     try {
       // 1. Try loading from local storage cache
       final List<dynamic>? cachedPatterns = StorageUtils.read<List<dynamic>>(_patternsCacheKey);

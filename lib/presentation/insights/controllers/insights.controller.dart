@@ -38,6 +38,10 @@ class InsightsController extends GetxController {
       StorageKeys.COACHING_BANNER_LAST_UPDATED;
 
   Future<void> fetchCoachingBanner({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_coachingBannerCacheKey);
+      await StorageUtils.remove(_coachingBannerLastUpdatedKey);
+    }
     try {
       final cachedData = StorageUtils.read<Map<String, dynamic>>(
         _coachingBannerCacheKey,
@@ -103,6 +107,11 @@ class InsightsController extends GetxController {
     final String growthAreasCacheKey = StorageKeys.growthAreas(filter.name);
     final String growthAreasLastUpdatedKey =
         StorageKeys.growthAreasLastUpdated(filter.name);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(growthAreasCacheKey);
+      await StorageUtils.remove(growthAreasLastUpdatedKey);
+    }
 
     try {
       final cachedData = StorageUtils.read<Map<String, dynamic>>(

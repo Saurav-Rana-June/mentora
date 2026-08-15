@@ -42,6 +42,10 @@ class MeditationController extends GetxController {
 
   /// Fetch available category filters from the API (with local caching)
   Future<void> fetchFilters({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_categoriesCacheKey);
+      await StorageUtils.remove(_categoriesLastUpdatedCacheKey);
+    }
     try {
       // 1. Try to load categories filters from cache first
       final List<dynamic>? cachedCategories = StorageUtils.read<List<dynamic>>(
