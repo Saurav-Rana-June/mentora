@@ -194,7 +194,7 @@ class ExploreScreen extends GetView<ExploreController> {
   }
 
   Widget buildDiscoverMeditation(BuildContext context) {
-    final globalController = Get.find<GlobalController>();
+    final globalController = controller.globalController;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
