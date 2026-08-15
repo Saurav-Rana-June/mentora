@@ -97,16 +97,22 @@ class MeditationController extends GetxController {
   }
 
   /// Fetch meditations from the API based on selected filters and queries (with local caching)
-  /// Fetch meditations from the API based on selected filters and queries (with local caching)
   Future<void> fetchSessions({bool forceRefresh = false}) async {
     final String allCacheKey =
         'meditations_all_${selectedCategory.value}_${searchQuery.value}';
     final String allLastUpdatedCacheKey =
         'meditations_all_last_updated_${selectedCategory.value}_${searchQuery.value}';
 
+    if (forceRefresh) {
+      await StorageUtils.remove(allCacheKey);
+      await StorageUtils.remove(allLastUpdatedCacheKey);
+    }
+
     try {
       // 1. Check cache first
-      final List<dynamic>? cachedAll = StorageUtils.read<List<dynamic>>(allCacheKey);
+      final List<dynamic>? cachedAll = StorageUtils.read<List<dynamic>>(
+        allCacheKey,
+      );
       final String? cachedAllLastUpdated = StorageUtils.read<String>(
         allLastUpdatedCacheKey,
       );
@@ -116,9 +122,8 @@ class MeditationController extends GetxController {
       if (hasAllCache) {
         final List<MeditationSessionModel> allList = cachedAll
             .map(
-              (e) => MeditationSessionModel.fromJson(
-                Map<String, dynamic>.from(e as Map),
-              ),
+              (e) =>
+                  MeditationSessionModel.fromJson(Map<String, dynamic>.from(e)),
             )
             .toList();
         allSessionsList.assignAll(allList);
