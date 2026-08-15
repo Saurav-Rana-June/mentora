@@ -62,7 +62,7 @@ class MeditationScreen extends GetView<MeditationController> {
         final isInitialLoad =
             controller.isLoading.value &&
             controller.allSessionsList.isEmpty &&
-            controller.featuredSessions.isEmpty;
+            controller.globalController.featuredMeditations.isEmpty;
 
         if (isInitialLoad) {
           return const MeditationLoading();
@@ -72,6 +72,9 @@ class MeditationScreen extends GetView<MeditationController> {
           onRefresh: () async {
             await Future.wait([
               controller.fetchFilters(forceRefresh: true),
+              controller.globalController.fetchFeaturedMeditations(
+                forceRefresh: true,
+              ),
               controller.fetchSessions(forceRefresh: true),
             ]);
           },
@@ -139,7 +142,7 @@ class MeditationScreen extends GetView<MeditationController> {
 
   // Decompose Featured Section
   Widget buildFeaturedSection(BuildContext context) {
-    final featuredList = controller.featuredSessions;
+    final featuredList = controller.globalController.featuredMeditations;
     if (featuredList.isEmpty) {
       return const SizedBox.shrink();
     }

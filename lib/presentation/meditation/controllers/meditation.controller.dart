@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/data/model/meditation_session.model.dart';
 import '../../../infrastructure/dal/services/meditation_service.dart';
 
 class MeditationController extends GetxController {
+  final GlobalController globalController = GlobalController();
   final RxString selectedCategory = 'All'.obs;
   final RxString searchQuery = ''.obs;
   final RxBool isLoading = true.obs;
@@ -13,8 +15,7 @@ class MeditationController extends GetxController {
   // API list buffers
   final RxList<MeditationSessionModel> allSessionsList =
       <MeditationSessionModel>[].obs;
-  final RxList<MeditationSessionModel> featuredSessionsList =
-      <MeditationSessionModel>[].obs;
+
   final RxList<String> categoriesList = <String>[].obs;
 
   // Cache keys constants
@@ -207,7 +208,6 @@ class MeditationController extends GetxController {
 
   // UI-compatible getters pointing to reactive API datasets
   List<MeditationSessionModel> get filteredSessions => allSessionsList;
-  List<MeditationSessionModel> get featuredSessions => featuredSessionsList;
 
   // Derived RxBool that synchronizes with the favoritedIds reactive set
   RxBool getIsFavoritedRx(String id) {

@@ -409,6 +409,11 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchFeaturedMeditations({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_featuredMeditationsCacheKey);
+      await StorageUtils.remove(_featuredMeditationsLastUpdatedKey);
+    }
+
     try {
       // 1. Try to load from cache
       final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
