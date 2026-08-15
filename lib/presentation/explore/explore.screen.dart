@@ -1,21 +1,19 @@
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
-import 'package:Mentora/presentation/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
-import 'package:Mentora/controllers/global.controller.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
-  const ExploreScreen({super.key});
+  ExploreScreen({super.key});
 
   @override
+  final controller = Get.put(ExploreController());
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,

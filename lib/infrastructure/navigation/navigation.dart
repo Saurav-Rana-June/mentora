@@ -101,7 +101,7 @@ class Nav {
     ),
     GetPage(
       name: Routes.EXPLORE,
-      page: () => const ExploreScreen(),
+      page: () => ExploreScreen(),
       binding: ExploreControllerBinding(),
     ),
     GetPage(
@@ -129,17 +129,8 @@ class Nav {
       page: () => AccountScreen(),
       binding: AccountControllerBinding(),
     ),
-    GetPage(
-      name: Routes.MEDITATION,
-      page: () => MeditationScreen(),
-    ),
-    GetPage(
-      name: Routes.BREATHING,
-      page: () => BreathingScreen(),
-    ),
-    GetPage(
-      name: Routes.JOURNALING,
-      page: () => JournalingScreen(),
-    ),
+    GetPage(name: Routes.MEDITATION, page: () => MeditationScreen()),
+    GetPage(name: Routes.BREATHING, page: () => BreathingScreen()),
+    GetPage(name: Routes.JOURNALING, page: () => JournalingScreen()),
   ];
 }

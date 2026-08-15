@@ -6,7 +6,7 @@ import 'package:Mentora/data/model/meditation_session.model.dart';
 import '../../../infrastructure/dal/services/meditation_service.dart';
 
 class MeditationController extends GetxController {
-  final GlobalController globalController = GlobalController();
+  final GlobalController globalController = Get.find<GlobalController>();
   final RxString selectedCategory = 'All'.obs;
   final RxString searchQuery = ''.obs;
   final RxBool isLoading = true.obs;
