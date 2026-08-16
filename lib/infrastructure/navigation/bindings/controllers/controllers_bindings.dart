@@ -13,8 +13,9 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing.c
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/mood_checkin.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/onboarding.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/prepare_plan.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/sessions.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_in.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_up.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/sessions.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/video_session.controller.binding.dart'; 

@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 
-import '../environment/environment.dart';
 import '../../presentation/screens.dart';
+import '../environment/environment.dart';
 import 'bindings/controllers/controllers_bindings.dart';
 import 'bindings/controllers/home.controller.binding.dart';
 import 'routes.dart';
@@ -132,5 +132,10 @@ class Nav {
     GetPage(name: Routes.MEDITATION, page: () => MeditationScreen()),
     GetPage(name: Routes.BREATHING, page: () => BreathingScreen()),
     GetPage(name: Routes.JOURNALING, page: () => JournalingScreen()),
+    GetPage(
+      name: Routes.VIDEO_SESSION,
+      page: () => VideoSessionScreen(),
+      binding: VideoSessionControllerBinding(),
+    ),
   ];
 }

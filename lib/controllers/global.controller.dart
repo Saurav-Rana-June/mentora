@@ -71,8 +71,9 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
-    final String moodHistoryCacheKey =
-        StorageKeys.globalMoodHistory(selectedDateFilter.value.name);
+    final String moodHistoryCacheKey = StorageKeys.globalMoodHistory(
+      selectedDateFilter.value.name,
+    );
     final String moodHistoryLastUpdatedKey =
         StorageKeys.globalMoodHistoryLastUpdated(selectedDateFilter.value.name);
 
@@ -344,7 +345,9 @@ class GlobalController extends GetxController {
         ? '${fromDate}_$toDate'
         : actualFilter;
     final String cacheKey = StorageKeys.insightsMoodTracker(suffix);
-    final String lastUpdatedKey = StorageKeys.insightsMoodTrackerLastUpdated(suffix);
+    final String lastUpdatedKey = StorageKeys.insightsMoodTrackerLastUpdated(
+      suffix,
+    );
 
     if (forceRefresh) {
       await StorageUtils.remove(cacheKey);

@@ -10,12 +10,38 @@ import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
 import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 import 'package:Mentora/presentation/meditation/controllers/meditation.controller.dart';
+import 'package:Mentora/data/model/video_session.model.dart';
+import 'package:Mentora/presentation/videoSession/widgets/video_card.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
   ExploreScreen({super.key});
 
   @override
   final controller = Get.put(ExploreController());
+
+  final _yogaSession = VideoSessionModel(
+    id: 1,
+    title: "10-Minute Morning Yoga Flow for Beginners",
+    category: "Stress Management",
+    duration: "10 mins",
+    imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=400&q=80",
+    author: "Coach Jessica",
+    description: "Wake up your body and mind with this gentle 10-minute morning yoga flow. Perfect for beginners to build flexibility, strength, and morning mindfulness.",
+    videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+    views: "1.2K views",
+  );
+
+  final _sleepSession = VideoSessionModel(
+    id: 2,
+    title: "Deep Sleep Guided Visualization & Breathing",
+    category: "Sleep Science",
+    duration: "25 mins",
+    imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=400&q=80",
+    author: "Dr. Sarah Cole",
+    description: "Release the tension of the day and prepare for a deep, restful sleep. Join Dr. Sarah Cole in this guided visualization and slow breathing practice designed for deep relaxation.",
+    videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+    views: "850 views",
+  );
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
@@ -454,14 +480,14 @@ class ExploreScreen extends GetView<ExploreController> {
   }
 
   Widget buildVideoSection(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s16.value.w,
+          ),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -472,7 +498,9 @@ class ExploreScreen extends GetView<ExploreController> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(Routes.VIDEO_SESSION);
+                },
                 borderRadius: BorderRadius.circular(4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -490,126 +518,11 @@ class ExploreScreen extends GetView<ExploreController> {
               ),
             ],
           ),
-          Spacing.s8.h,
-          buildVideoTile(
-            context,
-            category: "STRESS MANAGEMENT",
-            title: "10-Minute Morning Yoga Flow for Beginners",
-            duration: "10 mins",
-            author: "Coach Jessica",
-          ),
-          buildVideoTile(
-            context,
-            category: "SLEEP SCIENCE",
-            title: "Deep Sleep Guided Visualization & Breathing",
-            duration: "25 mins",
-            author: "Dr. Sarah Cole",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildVideoTile(
-    BuildContext context, {
-    required String title,
-    required String category,
-    required String duration,
-    required String author,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: CustomPrimaryCard(
-        padding: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
-        child: Row(
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: 100.w,
-                    height: 75.h,
-                    child: Image.asset(
-                      "assets/images/banner.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 32.h,
-                  width: 32.h,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 18.sp,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Spacing.s12.w,
-            Expanded(
-              child: SizedBox(
-                height: 75.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category,
-                      style: r10.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2.h),
-                        child: Text(
-                          title,
-                          style: r14.copyWith(
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 11.sp,
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                        Spacing.s4.w,
-                        Text(
-                          "$duration • by $author",
-                          style: r10.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ),
-      ),
+        Spacing.s8.h,
+        VideoCard(session: _yogaSession),
+        VideoCard(session: _sleepSession),
+      ],
     );
   }
 
