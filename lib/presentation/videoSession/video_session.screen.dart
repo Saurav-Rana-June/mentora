@@ -52,8 +52,8 @@ class VideoSessionScreen extends GetView<VideoSessionController> {
           controller.searchController.clear();
           controller.selectCategory('All');
           await Future.wait([
-            controller.fetchFilters(),
-            controller.fetchSessions(),
+            controller.fetchFilters(forceRefresh: true),
+            controller.fetchSessions(forceRefresh: true),
           ]);
         },
         child: SingleChildScrollView(

@@ -86,4 +86,13 @@ class StorageKeys {
       'insights_mood_tracker_$suffix';
   static String insightsMoodTrackerLastUpdated(String suffix) =>
       'insights_mood_tracker_last_updated_$suffix';
+
+  // Video Session Keys
+  static const String VIDEO_SESSION_CATEGORIES = 'video_session_categories_filters';
+  static const String VIDEO_SESSION_CATEGORIES_LAST_UPDATED =
+      'video_session_categories_last_updated';
+  static String videoSessionAll(String category, String query) =>
+      'video_sessions_all_${category}_${query}';
+  static String videoSessionAllLastUpdated(String category, String query) =>
+      'video_sessions_all_last_updated_${category}_${query}';
 }
