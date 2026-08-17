@@ -9,9 +9,13 @@ class BreathingService {
 
   /// Retrieve all breathing patterns from the backend
   static Future<ApiResponse<List<BreathingPatternModel>>?> getBreathingPatterns({
+    String? search,
     String? lastUpdated,
   }) async {
     final Map<String, dynamic> params = {};
+    if (search != null && search.isNotEmpty) {
+      params['search'] = search;
+    }
     if (lastUpdated != null && lastUpdated.isNotEmpty) {
       params['lastUpdated'] = lastUpdated;
     }
