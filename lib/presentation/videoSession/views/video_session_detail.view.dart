@@ -117,7 +117,9 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
           return Container(
             margin: EdgeInsets.only(right: Spacing.s12.value.w),
             decoration: BoxDecoration(
-              color: isDark ? slate[800]!.withValues(alpha: 0.5) : white.withValues(alpha: 0.5),
+              color: isDark
+                  ? slate[800]!.withValues(alpha: 0.5)
+                  : white.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -318,13 +320,9 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
         children: [
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              trackHeight: 4.h,
-              thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: 6.r,
-              ),
-              overlayShape: RoundSliderOverlayShape(
-                overlayRadius: 12.r,
-              ),
+              trackHeight: 3.h,
+              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+              overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
               activeTrackColor: primary,
               inactiveTrackColor: isDark ? slate[700] : slate[200],
               thumbColor: primary,
@@ -362,74 +360,91 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
               ],
             ),
           ),
-          Spacing.s12.h,
+          Spacing.s16.h,
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? slate[700]!.withValues(alpha: 0.3) : slate[100]!,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.replay_10_rounded,
-                    size: 24.sp,
-                    color: primary,
-                  ),
-                  onPressed: () => _skipSeconds(-10),
-                ),
-              ),
-              Spacing.s24.w,
+              // Speed Selector Mock
               InkWell(
-                onTap: _togglePlayPause,
-                borderRadius: BorderRadius.circular(24.r),
+                onTap: () {},
+                borderRadius: BorderRadius.circular(12.r),
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.s20.value.w,
-                    vertical: Spacing.s8.value.h,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(24.r),
-                    border: Border.all(
-                      color: primary.withValues(alpha: 0.2),
-                      width: 1,
+                    color: isDark
+                        ? slate[700]!.withValues(alpha: 0.3)
+                        : slate[100]!,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    "1.0x",
+                    style: r12.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                        color: primary,
-                        size: 20.sp,
-                      ),
-                      Spacing.s8.w,
-                      Text(
-                        isPlaying ? "Pause" : "Play Session",
-                        style: r14.copyWith(
-                          color: primary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                ),
+              ),
+              // Skip Back 10s
+              IconButton(
+                icon: Icon(
+                  Icons.replay_10_rounded,
+                  size: 26.sp,
+                  color: isDark ? white : slate[600],
+                ),
+                onPressed: () => _skipSeconds(-10),
+              ),
+              // Play/Pause Action Circle
+              InkWell(
+                onTap: _togglePlayPause,
+                borderRadius: BorderRadius.circular(30.r),
+                child: Container(
+                  height: 56.h,
+                  width: 56.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        primary,
+                        primary.withValues(alpha: 0.8),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primary.withValues(alpha: 0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
+                  child: Center(
+                    child: Icon(
+                      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 30.sp,
+                    ),
+                  ),
                 ),
               ),
-              Spacing.s24.w,
-              Container(
-                decoration: BoxDecoration(
-                  color: isDark ? slate[700]!.withValues(alpha: 0.3) : slate[100]!,
-                  shape: BoxShape.circle,
+              // Skip Forward 10s
+              IconButton(
+                icon: Icon(
+                  Icons.forward_10_rounded,
+                  size: 26.sp,
+                  color: isDark ? white : slate[600],
                 ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.forward_10_rounded,
-                    size: 24.sp,
-                    color: primary,
-                  ),
-                  onPressed: () => _skipSeconds(10),
+                onPressed: () => _skipSeconds(10),
+              ),
+              // Sleep Timer Mock
+              IconButton(
+                icon: Icon(
+                  Icons.timer_outlined,
+                  size: 22.sp,
+                  color: primary,
                 ),
+                onPressed: () {},
               ),
             ],
           ),
