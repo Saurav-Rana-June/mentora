@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,10 +14,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 class VideoSessionDetailView extends StatefulWidget {
   final VideoSessionModel session;
 
-  const VideoSessionDetailView({
-    super.key,
-    required this.session,
-  });
+  const VideoSessionDetailView({super.key, required this.session});
 
   @override
   State<VideoSessionDetailView> createState() => _VideoSessionDetailViewState();
@@ -37,14 +35,13 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
   }
 
   double _parseDuration(String durationStr) {
-    // e.g., "10 mins" or "25 mins" -> parse out numbers
     final numberRegExp = RegExp(r'\d+');
     final match = numberRegExp.firstMatch(durationStr);
     if (match != null) {
       final minutes = double.tryParse(match.group(0)!) ?? 10.0;
       return minutes * 60;
     }
-    return 600.0; // 10 minutes default
+    return 600.0;
   }
 
   @override
@@ -91,7 +88,9 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = Theme.of(context).cardTheme.color ?? (isDark ? slate[800] : white);
+    final cardBg =
+        Theme.of(context).cardTheme.color ?? (isDark ? slate[800]! : white);
+    final borderColor = isDark ? slate[700]! : slate[200]!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
@@ -109,50 +108,59 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
         ),
         actions: [
           Obx(() {
-            // Find current session state from controller for reactivity
             final currentSession = controller.videoSessions.firstWhere(
               (s) => s.id == widget.session.id,
               orElse: () => widget.session,
             );
-            return IconButton(
-              icon: Icon(
-                currentSession.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: currentSession.isFavorite ? red : Theme.of(context).iconTheme.color,
+            return Container(
+              margin: EdgeInsets.only(right: Spacing.s12.value.w),
+              decoration: BoxDecoration(
+                color: isDark ? slate[800]!.withValues(alpha: 0.5) : white.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
               ),
-              onPressed: () {
-                controller.toggleFavorite(widget.session.id);
-              },
+              child: IconButton(
+                icon: Icon(
+                  currentSession.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: currentSession.isFavorite
+                      ? red
+                      : Theme.of(context).iconTheme.color,
+                ),
+                onPressed: () {
+                  controller.toggleFavorite(widget.session.id);
+                },
+              ),
             );
           }),
-          Spacing.s12.w,
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s16.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
+            horizontal: Spacing.s16.value.w,
+            vertical: Spacing.s12.value.h,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🎥 Video Player Screen Mockup
+              // 🎥 Cinematic Video Player Mockup
               Container(
                 width: double.infinity,
                 height: 220.h,
                 decoration: BoxDecoration(
                   color: black,
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(24.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(24.r),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -164,7 +172,12 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           color: slate[800],
-                          child: const Center(child: CircularProgressIndicator()),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.green,
+                              strokeWidth: 2,
+                            ),
+                          ),
                         ),
                         errorWidget: (context, url, error) => Image.asset(
                           "assets/images/banner.png",
@@ -173,63 +186,77 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // Semi-transparent overlay during play state
+                      // Soft gradient overlay
                       Container(
-                        color: Colors.black.withValues(alpha: isPlaying ? 0.2 : 0.4),
-                      ),
-                      // Dynamic visualizer/indicator when playing
-                      if (isPlaying)
-                        Positioned(
-                          top: 16.h,
-                          right: 16.w,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Spacing.s8.symmetric.horizontal,
-                              vertical: Spacing.s4.symmetric.vertical,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primary.withValues(alpha: 0.85),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.videocam, color: Colors.white, size: 12),
-                                Spacing.s4.w,
-                                Text(
-                                  "PLAYING",
-                                  style: r10.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.2),
+                              Colors.black.withValues(alpha: isPlaying ? 0.3 : 0.6),
+                            ],
                           ),
                         ),
-                      // Central Play/Pause circular button
+                      ),
+                      // Playing Indicator with pulsing AudioVisualizer
+                      Positioned(
+                        top: 16.h,
+                        right: 16.w,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Spacing.s12.value.w,
+                            vertical: Spacing.s4.value.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(20.r),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _AudioVisualizer(isPlaying: isPlaying),
+                              Spacing.s8.w,
+                              Text(
+                                isPlaying ? "PLAYING" : "PAUSED",
+                                style: r10.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Central Pulsating Play/Pause Button
                       InkWell(
                         onTap: _togglePlayPause,
-                        borderRadius: BorderRadius.circular(30.r),
-                        child: Container(
-                          height: 60.h,
-                          width: 60.h,
+                        borderRadius: BorderRadius.circular(40.r),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 70.h,
+                          width: 70.h,
                           decoration: BoxDecoration(
-                            color: primary.withValues(alpha: 0.9),
+                            color: primary.withValues(alpha: isPlaying ? 0.85 : 0.95),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: primary.withValues(alpha: 0.4),
-                                blurRadius: 15,
-                                spreadRadius: 2,
+                                color: primary.withValues(alpha: isPlaying ? 0.3 : 0.6),
+                                blurRadius: isPlaying ? 25 : 15,
+                                spreadRadius: isPlaying ? 4 : 1,
                               ),
                             ],
                           ),
                           child: Center(
                             child: Icon(
-                              isPlaying ? Icons.pause : Icons.play_arrow,
+                              isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                               color: Colors.white,
-                              size: 32.sp,
+                              size: 36.sp,
                             ),
                           ),
                         ),
@@ -238,27 +265,38 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                   ),
                 ),
               ),
-              Spacing.s16.h,
+              Spacing.s20.h,
 
-              // 🎛️ Media Control Dashboard (Slider & Skippers)
+              // 🎛️ Glassmorphic Media Control Card
               Container(
-                padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
+                padding: EdgeInsets.all(Spacing.s16.value.w),
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(24.r),
                   border: Border.all(
-                    color: isDark ? slate[700]! : slate[200]!,
-                    width: 1,
+                    color: borderColor,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
-                    // Slider
+                    // Timeline Slider
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         trackHeight: 4.h,
-                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-                        overlayShape: RoundSliderOverlayShape(overlayRadius: 12.r),
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: 6.r,
+                        ),
+                        overlayShape: RoundSliderOverlayShape(
+                          overlayRadius: 12.r,
+                        ),
                         activeTrackColor: primary,
                         inactiveTrackColor: isDark ? slate[700] : slate[200],
                         thumbColor: primary,
@@ -297,14 +335,24 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                         ],
                       ),
                     ),
-                    Spacing.s8.h,
-                    // Skipping Controls
+                    Spacing.s12.h,
+                    // Advanced Controls
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.replay_10, size: 28.sp, color: primary),
-                          onPressed: () => _skipSeconds(-10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: isDark ? slate[700]!.withValues(alpha: 0.3) : slate[100]!,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.replay_10_rounded,
+                              size: 24.sp,
+                              color: primary,
+                            ),
+                            onPressed: () => _skipSeconds(-10),
+                          ),
                         ),
                         Spacing.s24.w,
                         InkWell(
@@ -312,24 +360,28 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                           borderRadius: BorderRadius.circular(24.r),
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: Spacing.s16.symmetric.horizontal,
-                              vertical: Spacing.s8.symmetric.vertical,
+                              horizontal: Spacing.s20.value.w,
+                              vertical: Spacing.s8.value.h,
                             ),
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(20.r),
+                              borderRadius: BorderRadius.circular(24.r),
+                              border: Border.all(
+                                color: primary.withValues(alpha: 0.2),
+                                width: 1,
+                              ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
+                                  isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                                   color: primary,
-                                  size: 18.sp,
+                                  size: 20.sp,
                                 ),
-                                Spacing.s4.w,
+                                Spacing.s8.w,
                                 Text(
                                   isPlaying ? "Pause" : "Play Session",
-                                  style: r12.copyWith(
+                                  style: r14.copyWith(
                                     color: primary,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -339,9 +391,19 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                           ),
                         ),
                         Spacing.s24.w,
-                        IconButton(
-                          icon: Icon(Icons.forward_10, size: 28.sp, color: primary),
-                          onPressed: () => _skipSeconds(10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: isDark ? slate[700]!.withValues(alpha: 0.3) : slate[100]!,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.forward_10_rounded,
+                              size: 24.sp,
+                              color: primary,
+                            ),
+                            onPressed: () => _skipSeconds(10),
+                          ),
                         ),
                       ],
                     ),
@@ -350,33 +412,37 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
               ),
               Spacing.s20.h,
 
-              // 🏷️ Category Badge & Title
+              // 🏷️ Category Badge & Title Information
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.s12.symmetric.horizontal,
-                      vertical: Spacing.s4.symmetric.horizontal,
+                      horizontal: Spacing.s12.value.w,
+                      vertical: Spacing.s4.value.h,
                     ),
                     decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20.r),
+                      color: primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(
+                        color: primary.withValues(alpha: 0.25),
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       widget.session.category.toUpperCase(),
                       style: r10.copyWith(
                         color: primary,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
+                        letterSpacing: 1.0,
                       ),
                     ),
                   ),
                   Row(
                     children: [
                       Icon(
-                        Icons.remove_red_eye,
-                        size: 14.sp,
+                        Icons.remove_red_eye_outlined,
+                        size: 16.sp,
                         color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                       Spacing.s4.w,
@@ -394,60 +460,81 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
               Spacing.s12.h,
               Text(
                 widget.session.title,
-                style: h2.copyWith(
+                style: h1.copyWith(
                   color: Theme.of(context).textTheme.bodyLarge!.color,
                   fontWeight: FontWeight.w700,
-                  height: 1.2,
+                  height: 1.25,
                 ),
               ),
-              Spacing.s8.h,
-              // Author row
-              Row(
-                children: [
-                  Container(
-                    height: 36.h,
-                    width: 36.h,
-                    decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget.session.author.split(' ').last.substring(0, 1).toUpperCase(),
-                        style: r14.copyWith(
-                          color: primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Spacing.s8.w,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.session.author,
-                        style: r14.copyWith(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        "Mental Health Coach",
-                        style: r10.copyWith(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               Spacing.s16.h,
-              const Divider(),
-              Spacing.s12.h,
 
-              // 📖 Description
+              // 👤 Author Premium Profile Card
+              Container(
+                padding: EdgeInsets.all(Spacing.s12.value.w),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: borderColor,
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 44.h,
+                      width: 44.h,
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: primary.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.session.author
+                              .split(' ')
+                              .last
+                              .substring(0, 1)
+                              .toUpperCase(),
+                          style: r16.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Spacing.s12.w,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.session.author,
+                          style: r14.copyWith(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Spacing.s4.h,
+                        Text(
+                          "Mindfulness & Wellness Expert",
+                          style: r10.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Spacing.s20.h,
+              const Divider(),
+              Spacing.s16.h,
+
+              // 📖 About Session
               Text(
                 "About Session",
                 style: r16.copyWith(
@@ -460,7 +547,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                 widget.session.description,
                 style: r14.copyWith(
                   color: Theme.of(context).textTheme.bodyMedium!.color,
-                  height: 1.5,
+                  height: 1.6,
                 ),
               ),
               Spacing.s24.h,
@@ -468,6 +555,87 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AudioVisualizer extends StatefulWidget {
+  final bool isPlaying;
+  const _AudioVisualizer({required this.isPlaying});
+
+  @override
+  State<_AudioVisualizer> createState() => _AudioVisualizerState();
+}
+
+class _AudioVisualizerState extends State<_AudioVisualizer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    if (widget.isPlaying) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _AudioVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying) {
+      _controller.repeat();
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(4, (index) {
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            double factor;
+            switch (index) {
+              case 0:
+                factor = 0.3 + 0.7 * (0.5 + 0.5 * (math.sin(_controller.value * 2 * math.pi)));
+                break;
+              case 1:
+                factor = 0.2 + 0.8 * (0.5 + 0.5 * (math.cos(_controller.value * 2 * math.pi + 1.0)));
+                break;
+              case 2:
+                factor = 0.4 + 0.6 * (0.5 + 0.5 * (math.sin(_controller.value * 2 * math.pi + 2.0)));
+                break;
+              default:
+                factor = 0.1 + 0.9 * (0.5 + 0.5 * (math.cos(_controller.value * 2 * math.pi + 3.0)));
+                break;
+            }
+            if (!widget.isPlaying) factor = 0.15;
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 1.5.w),
+              width: 3.w,
+              height: (16.h * factor).clamp(3.h, 16.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(1.5.r),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }
