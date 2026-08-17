@@ -8,10 +8,8 @@ class BreathingService {
   static final ApiClient client = ApiClient();
 
   /// Retrieve all breathing patterns from the backend with optional search filter
-  static Future<ApiResponse<List<BreathingPatternModel>>?> getBreathingPatterns({
-    String? search,
-    String? lastUpdated,
-  }) async {
+  static Future<ApiResponse<List<BreathingPatternModel>>?>
+  getBreathingPatterns({String? search, String? lastUpdated}) async {
     final Map<String, dynamic> params = {};
     if (search != null && search.isNotEmpty) {
       params['search'] = search;
@@ -31,7 +29,8 @@ class BreathingService {
             final list = data as List<dynamic>;
             return list
                 .map(
-                  (e) => BreathingPatternModel.fromJson(e as Map<String, dynamic>),
+                  (e) =>
+                      BreathingPatternModel.fromJson(e as Map<String, dynamic>),
                 )
                 .toList();
           },
@@ -41,7 +40,8 @@ class BreathingService {
   }
 
   /// Retrieve details of a single breathing technique by ID
-  static Future<ApiResponse<BreathingPatternModel>?> getBreathingPatternDetails({
+  static Future<ApiResponse<BreathingPatternModel>?>
+  getBreathingPatternDetails({
     required int breathingId,
     String? lastUpdated,
   }) async {
@@ -51,15 +51,13 @@ class BreathingService {
     }
 
     return client.request<ApiResponse<BreathingPatternModel>>(
-      (dio) => dio.get(
-        'breathing/$breathingId',
-        queryParameters: params,
-      ),
+      (dio) => dio.get('breathing/$breathingId', queryParameters: params),
       withAccessToken: true,
       parser: (json) {
         return ApiResponse<BreathingPatternModel>.fromJson(
           json as Map<String, dynamic>,
-          (data) => BreathingPatternModel.fromJson(data as Map<String, dynamic>),
+          (data) =>
+              BreathingPatternModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );
