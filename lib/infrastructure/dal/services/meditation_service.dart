@@ -110,4 +110,29 @@ class MeditationService {
       },
     );
   }
+
+  /// Retrieve details for a single meditation by its ID
+  static Future<ApiResponse<MeditationSessionModel>?> getMeditationDetails({
+    required int meditationId,
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
+    return client.request<ApiResponse<MeditationSessionModel>>(
+      (dio) => dio.get(
+        'meditations/$meditationId',
+        queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<MeditationSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => MeditationSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

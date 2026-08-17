@@ -72,4 +72,29 @@ class VideoSessionService {
       },
     );
   }
+
+  /// Retrieve details of a single video session by ID
+  static Future<ApiResponse<VideoSessionModel>?> getVideoSessionDetails({
+    required int videoSessionId,
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
+    return client.request<ApiResponse<VideoSessionModel>>(
+      (dio) => dio.get(
+        'video_session/$videoSessionId',
+        queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<VideoSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => VideoSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }
