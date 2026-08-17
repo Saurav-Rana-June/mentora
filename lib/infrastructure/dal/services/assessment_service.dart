@@ -10,6 +10,96 @@ class AssessmentService {
 
   static final ApiClient client = ApiClient();
 
+  /// Create onboarding wellness assessment responses
+  static Future<ApiResponse<dynamic>?> createAssessment({
+    required List<String> mainGoals,
+    required List<String> healthIssues,
+    String? pastYearStressFrequency,
+    String? eatHealthy,
+    String? triedMeditation,
+    String? sleepQuality,
+    String? happinessLevel,
+  }) async {
+    return client.request<ApiResponse<dynamic>>(
+      (dio) => dio.post(
+        'assessment/create',
+        data: {
+          'mainGoals': mainGoals,
+          'healthIssues': healthIssues,
+          if (pastYearStressFrequency != null) 'pastYearStressFrequency': pastYearStressFrequency,
+          if (eatHealthy != null) 'eatHealthy': eatHealthy,
+          if (triedMeditation != null) 'triedMeditation': triedMeditation,
+          if (sleepQuality != null) 'sleepQuality': sleepQuality,
+          if (happinessLevel != null) 'happinessLevel': happinessLevel,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => data,
+        );
+      },
+    );
+  }
+
+  /// Update user wellness assessment details
+  static Future<ApiResponse<dynamic>?> updateAssessment({
+    List<String>? mainGoals,
+    List<String>? healthIssues,
+    String? pastYearStressFrequency,
+    String? eatHealthy,
+    String? triedMeditation,
+    String? sleepQuality,
+    String? happinessLevel,
+  }) async {
+    return client.request<ApiResponse<dynamic>>(
+      (dio) => dio.put(
+        'assessment/update',
+        data: {
+          if (mainGoals != null) 'mainGoals': mainGoals,
+          if (healthIssues != null) 'healthIssues': healthIssues,
+          if (pastYearStressFrequency != null) 'pastYearStressFrequency': pastYearStressFrequency,
+          if (eatHealthy != null) 'eatHealthy': eatHealthy,
+          if (triedMeditation != null) 'triedMeditation': triedMeditation,
+          if (sleepQuality != null) 'sleepQuality': sleepQuality,
+          if (happinessLevel != null) 'happinessLevel': happinessLevel,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => data,
+        );
+      },
+    );
+  }
+
+  /// Retrieve onboarding wellness assessment details
+  static Future<ApiResponse<dynamic>?> getAssessment({
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
+    return client.request<ApiResponse<dynamic>>(
+      (dio) => dio.get(
+        'assessment/me',
+        queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => data,
+        );
+      },
+    );
+  }
+
   /// Create or update today's mood check-in
   static Future<ApiResponse<DailyMoodAssessmentModel>?>
   createOrUpdateDailyMood({
@@ -57,6 +147,36 @@ class AssessmentService {
         return ApiResponse<StreakStatsModel>.fromJson(
           json as Map<String, dynamic>,
           (data) => StreakStatsModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Retrieve all user daily mood check-ins (non-paginated)
+  static Future<ApiResponse<List<DailyMoodAssessmentModel>>?> getDailyMoods({
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
+    return client.request<ApiResponse<List<DailyMoodAssessmentModel>>>(
+      (dio) => dio.get(
+        'assessment/moods',
+        queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<List<DailyMoodAssessmentModel>>.fromJson(
+          json as Map<String, dynamic>,
+          (data) {
+            if (data == null) return [];
+            final list = data as List<dynamic>;
+            return list
+                .map((e) => DailyMoodAssessmentModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+          },
         );
       },
     );
