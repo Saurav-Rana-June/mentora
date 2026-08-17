@@ -9,6 +9,7 @@ import 'package:Mentora/widgets/others/custom.searchbar.widget.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'controllers/video_session.controller.dart';
 import 'widgets/video_card.dart';
+import 'widgets/video_content_loading.dart';
 
 class VideoSessionScreen extends GetView<VideoSessionController> {
   VideoSessionScreen({super.key});
@@ -99,6 +100,9 @@ class VideoSessionScreen extends GetView<VideoSessionController> {
 
   Widget buildVideoList(BuildContext context) {
     return Obx(() {
+      if (controller.isLoading.value && controller.videoSessions.isEmpty) {
+        return const VideoContentLoading();
+      }
       final sessions = controller.filteredSessions;
       if (sessions.isEmpty) {
         return buildEmptyState(context);
