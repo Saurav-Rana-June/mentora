@@ -95,7 +95,6 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
@@ -108,36 +107,6 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
           fontWeight: FontWeight.w600,
         ),
       ),
-      actions: [
-        Obx(() {
-          final currentSession = controller.videoSessions.firstWhere(
-            (s) => s.id == widget.session.id,
-            orElse: () => widget.session,
-          );
-          return Container(
-            margin: EdgeInsets.only(right: Spacing.s12.value.w),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? slate[800]!.withValues(alpha: 0.5)
-                  : white.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(
-                currentSession.isFavorite
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                color: currentSession.isFavorite
-                    ? red
-                    : Theme.of(context).iconTheme.color,
-              ),
-              onPressed: () {
-                controller.toggleFavorite(widget.session.id);
-              },
-            ),
-          );
-        }),
-      ],
     );
   }
 
@@ -165,8 +134,6 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                 height: 1.25,
               ),
             ),
-            Spacing.s16.h,
-            _buildAuthorCard(context),
             Spacing.s20.h,
             const Divider(),
             Spacing.s16.h,
@@ -369,7 +336,10 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                 onTap: () {},
                 borderRadius: BorderRadius.circular(12.r),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 6.h,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark
                         ? slate[700]!.withValues(alpha: 0.3)
@@ -406,10 +376,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        primary,
-                        primary.withValues(alpha: 0.8),
-                      ],
+                      colors: [primary, primary.withValues(alpha: 0.8)],
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -421,7 +388,9 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
                   ),
                   child: Center(
                     child: Icon(
-                      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      isPlaying
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
                       color: Colors.white,
                       size: 30.sp,
                     ),
@@ -439,11 +408,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
               ),
               // Sleep Timer Mock
               IconButton(
-                icon: Icon(
-                  Icons.timer_outlined,
-                  size: 22.sp,
-                  color: primary,
-                ),
+                icon: Icon(Icons.timer_outlined, size: 22.sp, color: primary),
                 onPressed: () {},
               ),
             ],
@@ -500,71 +465,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
     );
   }
 
-  Widget _buildAuthorCard(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg =
-        Theme.of(context).cardTheme.color ?? (isDark ? slate[800]! : white);
-    final borderColor = isDark ? slate[700]! : slate[200]!;
 
-    return Container(
-      padding: EdgeInsets.all(Spacing.s12.value.w),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: borderColor, width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 44.h,
-            width: 44.h,
-            decoration: BoxDecoration(
-              color: primary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: primary.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                widget.session.author
-                    .split(' ')
-                    .last
-                    .substring(0, 1)
-                    .toUpperCase(),
-                style: r16.copyWith(
-                  color: primary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-          Spacing.s12.w,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.session.author,
-                style: r14.copyWith(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Spacing.s4.h,
-              Text(
-                "Mindfulness & Wellness Expert",
-                style: r10.copyWith(
-                  color: Theme.of(context).textTheme.bodySmall!.color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildAboutSession(BuildContext context) {
     return Column(

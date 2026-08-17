@@ -19,29 +19,6 @@ class ExploreScreen extends GetView<ExploreController> {
   @override
   final controller = Get.put(ExploreController());
 
-  final _yogaSession = VideoSessionModel(
-    id: 1,
-    title: "10-Minute Morning Yoga Flow for Beginners",
-    category: "Stress Management",
-    duration: "10 mins",
-    imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=400&q=80",
-    author: "Coach Jessica",
-    description: "Wake up your body and mind with this gentle 10-minute morning yoga flow. Perfect for beginners to build flexibility, strength, and morning mindfulness.",
-    videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-    views: "1.2K views",
-  );
-
-  final _sleepSession = VideoSessionModel(
-    id: 2,
-    title: "Deep Sleep Guided Visualization & Breathing",
-    category: "Sleep Science",
-    duration: "25 mins",
-    imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=400&q=80",
-    author: "Dr. Sarah Cole",
-    description: "Release the tension of the day and prepare for a deep, restful sleep. Join Dr. Sarah Cole in this guided visualization and slow breathing practice designed for deep relaxation.",
-    videoUrl: "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-    views: "850 views",
-  );
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
@@ -480,6 +457,10 @@ class ExploreScreen extends GetView<ExploreController> {
   }
 
   Widget buildVideoSection(BuildContext context) {
+    final videoSessionController = Get.isRegistered<VideoSessionController>()
+        ? Get.find<VideoSessionController>()
+        : Get.put(VideoSessionController());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -520,8 +501,42 @@ class ExploreScreen extends GetView<ExploreController> {
           ),
         ),
         Spacing.s8.h,
-        VideoCard(session: _yogaSession),
-        VideoCard(session: _sleepSession),
+        Obx(() {
+          if (videoSessionController.isLoading.value &&
+              videoSessionController.videoSessions.isEmpty) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
+              ),
+            );
+          }
+          final list = videoSessionController.videoSessions;
+          if (list.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s16.value.w,
+                vertical: 12,
+              ),
+              child: Text(
+                "No video sessions found.",
+                style: r14.copyWith(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
+            );
+          }
+          final displayList = list.take(2).toList();
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: displayList.map((session) {
+              return VideoCard(session: session);
+            }).toList(),
+          );
+        }),
       ],
     );
   }
