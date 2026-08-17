@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
+import '../../../infrastructure/dal/services/video_session_service.dart';
 
 class VideoSessionController extends GetxController {
   final videoSessions = <VideoSessionModel>[].obs;
@@ -9,11 +10,52 @@ class VideoSessionController extends GetxController {
   final searchController = TextEditingController();
 
   final categories = <String>[].obs;
+  final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _loadMockData();
+    // Initial fetch of filters and sessions from API
+    Future.wait([fetchFilters(), fetchSessions()]);
+  }
+
+  /// Fetch filters/categories dynamically from the backend
+  Future<void> fetchFilters() async {
+    try {
+      final res = await VideoSessionService.getVideoSessionFilters();
+      if (res != null && res.data != null && res.data!.isNotEmpty) {
+        categories.assignAll(res.data!);
+      }
+    } catch (e) {
+      Get.log("Failed to load video session filters from API: $e");
+      // Local fallback for categories if offline
+      categories.assignAll([
+        "All",
+        "Stress Management",
+        "Sleep Science",
+        "Anxiety Relief",
+        "Focus Work",
+        "Mood Booster",
+      ]);
+    }
+  }
+
+  /// Fetch video sessions from the backend
+  Future<void> fetchSessions() async {
+    try {
+      isLoading.value = true;
+      final res = await VideoSessionService.getVideoSessions();
+      if (res != null && res.data != null) {
+        videoSessions.assignAll(res.data!);
+      } else {
+        _loadMockData();
+      }
+    } catch (e) {
+      Get.log("Failed to load video sessions from API: $e");
+      _loadMockData(); // Local mock fallback
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _loadMockData() {
@@ -76,13 +118,6 @@ class VideoSessionController extends GetxController {
     ];
 
     videoSessions.assignAll(mockSessions);
-
-    // Extract unique categories
-    final uniqueCats = <String>{};
-    for (var session in mockSessions) {
-      uniqueCats.add(session.category);
-    }
-    categories.assignAll(['All', ...uniqueCats]);
   }
 
   List<VideoSessionModel> get filteredSessions {
@@ -124,4 +159,3 @@ class VideoSessionController extends GetxController {
     super.onClose();
   }
 }
-
