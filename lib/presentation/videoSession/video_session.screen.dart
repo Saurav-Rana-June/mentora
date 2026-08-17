@@ -51,6 +51,10 @@ class VideoSessionScreen extends GetView<VideoSessionController> {
           controller.updateSearchQuery('');
           controller.searchController.clear();
           controller.selectCategory('All');
+          await Future.wait([
+            controller.fetchFilters(),
+            controller.fetchSessions(),
+          ]);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
