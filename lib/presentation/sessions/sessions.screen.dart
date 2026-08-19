@@ -7,6 +7,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/others/custom.primary.card.dart';
+import '../../widgets/others/custom.divider.dart';
 import 'controllers/sessions.controller.dart';
 
 class SessionsScreen extends GetView<SessionsController> {
@@ -310,7 +311,7 @@ class SessionsScreen extends GetView<SessionsController> {
             ),
 
             Spacing.s12.h,
-            const Divider(height: 1),
+            const CustomDivider(),
             Spacing.s16.h,
 
             // Middle Row: Avatar and Details

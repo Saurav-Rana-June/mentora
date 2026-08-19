@@ -1,6 +1,7 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.switch.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:flutter/material.dart';
@@ -58,11 +59,9 @@ class AccountScreen extends GetView<AccountController> {
                         "My Badges",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -76,11 +75,9 @@ class AccountScreen extends GetView<AccountController> {
                           ),
                         ),
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -107,11 +104,9 @@ class AccountScreen extends GetView<AccountController> {
                         "Account & Security",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -119,11 +114,9 @@ class AccountScreen extends GetView<AccountController> {
                         "Linked Accounts",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -136,11 +129,9 @@ class AccountScreen extends GetView<AccountController> {
                           ),
                         ),
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -167,11 +158,9 @@ class AccountScreen extends GetView<AccountController> {
                         "Payment Methods",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -198,11 +187,9 @@ class AccountScreen extends GetView<AccountController> {
                         "Help & Support",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,
@@ -210,11 +197,9 @@ class AccountScreen extends GetView<AccountController> {
                         "About Mentora",
                         onTap: () {},
                       ),
-                      Divider(
-                        height: 1,
+                      CustomDivider(
                         indent: 40.w,
                         endIndent: 8.w,
-                        color: isDark ? slate[700]! : slate[100]!,
                       ),
                       buildOptionRow(
                         context,

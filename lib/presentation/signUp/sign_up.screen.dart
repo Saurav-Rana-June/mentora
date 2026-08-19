@@ -2,6 +2,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:Mentora/widgets/others/custom.check.box.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -258,7 +259,7 @@ class SignUpScreen extends GetView<SignUpController> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(
+                    child: CustomDivider(
                       color: Theme.of(context).textTheme.bodySmall!.color,
                       height: 0.5,
                       thickness: 1,
@@ -275,7 +276,7 @@ class SignUpScreen extends GetView<SignUpController> {
                   ),
                   Spacing.s8.w,
                   Expanded(
-                    child: Divider(
+                    child: CustomDivider(
                       color: Theme.of(context).textTheme.bodySmall!.color,
                       height: 0.5,
                       thickness: 1,

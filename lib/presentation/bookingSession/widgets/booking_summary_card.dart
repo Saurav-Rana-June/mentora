@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
 
 class BookingSummaryCard extends StatelessWidget {
@@ -67,7 +68,7 @@ class BookingSummaryCard extends StatelessWidget {
             ],
           ),
           Spacing.s16.h,
-          const Divider(height: 1),
+          const CustomDivider(),
           Spacing.s16.h,
 
           // Details grid/rows
@@ -107,7 +108,7 @@ class BookingSummaryCard extends StatelessWidget {
 
           if (notes.trim().isNotEmpty) ...[
             Spacing.s16.h,
-            const Divider(height: 1),
+            const CustomDivider(),
             Spacing.s16.h,
             Text(
               "Your Notes",

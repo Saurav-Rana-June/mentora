@@ -6,6 +6,7 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../../infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import '../../../widgets/buttons/custom_back_button.widet.dart';
 
 class ChatExpertHistoryView extends GetView<ChatExpertsController> {
@@ -176,7 +177,7 @@ class ChatExpertHistoryView extends GetView<ChatExpertsController> {
           ),
           Spacing.s4.h,
 
-          Divider(),
+          const CustomDivider(),
         ],
       ),
     );
@@ -243,7 +244,7 @@ class ChatExpertHistoryView extends GetView<ChatExpertsController> {
           ),
           Spacing.s4.h,
 
-          Divider(),
+          const CustomDivider(),
         ],
       ),
     );

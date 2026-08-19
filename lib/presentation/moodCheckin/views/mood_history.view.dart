@@ -11,6 +11,7 @@ import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:my_icons/icons.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
 class MoodHistoryView extends StatelessWidget {
@@ -154,7 +155,6 @@ class MoodHistoryView extends StatelessWidget {
                       final moodColor = AppUtils.getMoodColor(feelingName);
                       final moodIcon = AppUtils.getMoodImage(feelingName);
                       final dateStr = _formatDate(checkIn.createdAt);
-                      final isDarkMode = theme.brightness == Brightness.dark;
 
                       return IntrinsicHeight(
                         child: Row(
@@ -303,12 +303,7 @@ class MoodHistoryView extends StatelessWidget {
                                           (checkIn.why?.isNotEmpty ??
                                               false)) ...[
                                         Spacing.s12.h,
-                                        Divider(
-                                          color: isDarkMode
-                                              ? slate[700]!
-                                              : slate[100]!,
-                                          height: 1,
-                                        ),
+                                        const CustomDivider(),
                                         Spacing.s12.h,
                                         Wrap(
                                           spacing: 8.w,

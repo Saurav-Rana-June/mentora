@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
 import 'package:Mentora/presentation/videoSession/controllers/video_session.controller.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
@@ -135,7 +136,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
               ),
             ),
             Spacing.s20.h,
-            const Divider(),
+            const CustomDivider(),
             Spacing.s16.h,
             _buildAboutSession(context),
           ],

@@ -3,6 +3,7 @@ import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.toggle.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:Mentora/widgets/charts/custom.bar.chart.dart';
@@ -217,7 +218,7 @@ class InsightsScreen extends GetView<InsightsController> {
             ],
           ),
           Spacing.s4.h,
-          const Divider(),
+          const CustomDivider(),
           Spacing.s16.h,
           Obx(() {
             if (controller.isLoadingGrowth.value) {
@@ -514,7 +515,7 @@ class InsightsScreen extends GetView<InsightsController> {
             ],
           ),
           Spacing.s4.h,
-          const Divider(),
+          const CustomDivider(),
           Spacing.s16.h,
           Obx(() {
             final globalController = Get.find<GlobalController>();

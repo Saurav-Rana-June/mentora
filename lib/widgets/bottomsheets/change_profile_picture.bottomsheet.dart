@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'custom_bottomsheet.widget.dart';
 
 class ChangeProfilePictureBottomsheet extends StatelessWidget {
@@ -51,7 +52,7 @@ class ChangeProfilePictureBottomsheet extends StatelessWidget {
             },
           ),
           if (showRemoveOption) ...[
-            const Divider(),
+            const CustomDivider(),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
               title: Text(

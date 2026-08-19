@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 
 class CustomScrollSelector extends StatefulWidget {
   final int minValue;
@@ -62,7 +63,7 @@ class _CustomScrollSelectorState extends State<CustomScrollSelector> {
             top: widget.height / 2 - widget.itemHeight / 2,
             left: 0,
             right: 0,
-            child: Divider(color: widget.dividerColor, thickness: 1),
+            child: CustomDivider(color: widget.dividerColor, thickness: 1),
           ),
 
           // Bottom Divider
@@ -70,7 +71,7 @@ class _CustomScrollSelectorState extends State<CustomScrollSelector> {
             top: widget.height / 2 + widget.itemHeight / 2,
             left: 0,
             right: 0,
-            child: Divider(color: widget.dividerColor, thickness: 1),
+            child: CustomDivider(color: widget.dividerColor, thickness: 1),
           ),
 
           // Wheel

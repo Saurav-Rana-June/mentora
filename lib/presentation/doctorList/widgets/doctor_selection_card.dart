@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
+import 'package:Mentora/presentation/doctorList/views/doctor_details.view.dart';
 
 class DoctorSelectionCard extends StatelessWidget {
   final Expert expert;
@@ -23,7 +25,12 @@ class DoctorSelectionCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Get.to(
+          () => DoctorDetailsView(expert: expert),
+          transition: Transition.rightToLeft,
+        );
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
         child: CustomPrimaryCard(

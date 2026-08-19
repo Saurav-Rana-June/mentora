@@ -8,6 +8,7 @@ import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -303,7 +304,9 @@ class HomeScreen extends GetView<HomeController> {
       }
 
       final total = controller.plans.length;
-      final completed = controller.plans.where((p) => p.isComplete == true).length;
+      final completed = controller.plans
+          .where((p) => p.isComplete == true)
+          .length;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -710,7 +713,6 @@ class HomeScreen extends GetView<HomeController> {
     final moodIcon = AppUtils.getMoodImage(mood);
     final moodColor = _getMoodColor(mood);
     final timeStr = _formatTime(checkIn.createdAt ?? '');
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
@@ -797,7 +799,7 @@ class HomeScreen extends GetView<HomeController> {
             if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
                 (checkIn.why?.isNotEmpty ?? false)) ...[
               Spacing.s12.h,
-              Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
+              const CustomDivider(),
               Spacing.s12.h,
               Wrap(
                 spacing: 8.w,

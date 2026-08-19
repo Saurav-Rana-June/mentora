@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:my_spacing/spacing.enum.dart';
 
 import '../../infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import 'controllers/chat_experts.controller.dart';
 
@@ -181,7 +182,7 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
           ),
           Spacing.s4.h,
 
-          Divider(),
+          const CustomDivider(),
         ],
       ),
     );
