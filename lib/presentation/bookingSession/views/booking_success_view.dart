@@ -127,11 +127,7 @@ class BookingSuccessView extends GetView<BookingSessionController> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.calendar_today,
-                    size: 18.r,
-                    color: primary,
-                  ),
+                  Icon(Icons.calendar_today, size: 18.r, color: primary),
                   Spacing.s8.w,
                   Text(
                     "Add to Calendar",

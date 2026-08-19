@@ -1,13 +1,13 @@
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/account.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/account.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/all_set.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_a_i.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/chat_experts.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/continue.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/explore.controller.binding.dart';
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/favorite.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/favorite.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/forgot_password.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/home.controller.binding.dart';
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/insights.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/insights.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/introduction.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/mood_checkin.controller.binding.dart';
@@ -16,7 +16,8 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/prepare_p
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sessions.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_in.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_up.controller.binding.dart';
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
-export 'package:Mentora/infrastructure/navigation/bindings/controllers/video_session.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/video_session.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/booking_session.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/doctor_list.controller.binding.dart';

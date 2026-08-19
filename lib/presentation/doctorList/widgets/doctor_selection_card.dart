@@ -8,13 +8,11 @@ import 'package:Mentora/widgets/others/custom.primary.card.dart';
 
 class DoctorSelectionCard extends StatelessWidget {
   final Expert expert;
-  final bool isSelected;
   final VoidCallback onTap;
 
   const DoctorSelectionCard({
     super.key,
     required this.expert,
-    required this.isSelected,
     required this.onTap,
   });
 
@@ -24,16 +22,8 @@ class DoctorSelectionCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+      child: Container(
         margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: isSelected ? primary : Colors.transparent,
-            width: 2.w,
-          ),
-        ),
         child: CustomPrimaryCard(
           borderRadius: 14.r,
           padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
@@ -46,9 +36,7 @@ class DoctorSelectionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected
-                        ? primary
-                        : primary.withValues(alpha: 0.2),
+                    color: primary.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                 ),

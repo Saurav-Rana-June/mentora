@@ -5,8 +5,6 @@ import '../../../../presentation/videoSession/controllers/video_session.controll
 class VideoSessionControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<VideoSessionController>(
-      () => VideoSessionController(),
-    );
+    Get.lazyPut<VideoSessionController>(() => VideoSessionController());
   }
 }

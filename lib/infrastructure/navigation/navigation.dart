@@ -142,5 +142,10 @@ class Nav {
       page: () => BookingSessionScreen(),
       binding: BookingSessionControllerBinding(),
     ),
+    GetPage(
+      name: Routes.DOCTOR_LIST,
+      page: () => DoctorListScreen(),
+      binding: DoctorListControllerBinding(),
+    ),
   ];
 }

@@ -424,7 +424,7 @@ class SessionsScreen extends GetView<SessionsController> {
   FloatingActionButton buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Get.toNamed(Routes.BOOKING_SESSION);
+        Get.toNamed(Routes.DOCTOR_LIST);
       },
       backgroundColor: primary,
       child: Text(
