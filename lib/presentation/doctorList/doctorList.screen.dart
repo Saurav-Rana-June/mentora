@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
+import '../../widgets/others/custom.searchbar.widget.dart';
 import 'controllers/doctor_list_controller.dart';
 import 'widgets/doctor_selection_card.dart';
 
@@ -52,6 +53,11 @@ class DoctorListScreen extends GetView<DoctorListController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          CustomSearchBar(
+            hintText: "Search therapists...",
+            onChanged: (val) => controller.searchQuery.value = val,
+          ),
+          Spacing.s8.h,
           // Therapists List
           Expanded(
             child: Obx(() {
