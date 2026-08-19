@@ -19,10 +19,13 @@ class DoctorListScreen extends GetView<DoctorListController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
-      appBar: buildAppbar(context),
-      body: buildBody(context),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: theme.primaryColorLight,
+        appBar: buildAppbar(context),
+        body: buildBody(context),
+      ),
     );
   }
 
