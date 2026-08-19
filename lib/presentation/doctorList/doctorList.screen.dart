@@ -50,24 +50,32 @@ class DoctorListScreen extends GetView<DoctorListController> {
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Spacing.s8.h,
-
-          CustomSearchBar(
-            hintText: "Search therapists...",
-            onChanged: (val) => controller.searchQuery.value = val,
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(child: Spacing.s8.h),
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: theme.primaryColorLight,
+            surfaceTintColor: Colors.transparent,
+            floating: true,
+            snap: true,
+            pinned: false,
+            elevation: 0,
+            titleSpacing: 0,
+            title: CustomSearchBar(
+              hintText: "Search therapists...",
+              onChanged: (val) => controller.searchQuery.value = val,
+            ),
           ),
-          Spacing.s16.h,
+          SliverToBoxAdapter(child: Spacing.s16.h),
+          Obx(() {
+            final filtered = controller.filteredTherapists;
 
-          // Therapists List
-          Expanded(
-            child: Obx(() {
-              final filtered = controller.filteredTherapists;
-
-              if (filtered.isEmpty) {
-                return Center(
+            if (filtered.isEmpty) {
+              return SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -89,22 +97,20 @@ class DoctorListScreen extends GetView<DoctorListController> {
                       ),
                     ],
                   ),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: filtered.length,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final expert = filtered[index];
-                  return DoctorSelectionCard(
-                    expert: expert,
-                    onTap: () => controller.selectDoctor(expert),
-                  );
-                },
+                ),
               );
-            }),
-          ),
+            }
+
+            return SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final expert = filtered[index];
+                return DoctorSelectionCard(
+                  expert: expert,
+                  onTap: () => controller.selectDoctor(expert),
+                );
+              }, childCount: filtered.length),
+            );
+          }),
         ],
       ),
     );
