@@ -51,7 +51,6 @@ class DoctorListScreen extends GetView<DoctorListController> {
         horizontal: Spacing.s8.symmetric.horizontal,
       ),
       child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: Spacing.s8.h),
           SliverAppBar(
@@ -65,7 +64,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
             titleSpacing: 0,
             toolbarHeight: 64.h,
             title: Padding(
-              padding: EdgeInsets.only(bottom: Spacing.s16.symmetric.vertical),
+              padding: EdgeInsets.only(bottom: Spacing.s8.symmetric.vertical),
               child: CustomSearchBar(
                 hintText: "Search therapists...",
                 onChanged: (val) => controller.searchQuery.value = val,
