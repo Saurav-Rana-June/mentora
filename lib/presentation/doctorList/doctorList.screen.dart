@@ -63,12 +63,15 @@ class DoctorListScreen extends GetView<DoctorListController> {
             pinned: false,
             elevation: 0,
             titleSpacing: 0,
-            title: CustomSearchBar(
-              hintText: "Search therapists...",
-              onChanged: (val) => controller.searchQuery.value = val,
+            toolbarHeight: 64.h,
+            title: Padding(
+              padding: EdgeInsets.only(bottom: Spacing.s16.symmetric.vertical),
+              child: CustomSearchBar(
+                hintText: "Search therapists...",
+                onChanged: (val) => controller.searchQuery.value = val,
+              ),
             ),
           ),
-          SliverToBoxAdapter(child: Spacing.s16.h),
           Obx(() {
             final filtered = controller.filteredTherapists;
 
