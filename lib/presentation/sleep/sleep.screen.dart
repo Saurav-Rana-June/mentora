@@ -79,6 +79,7 @@ class _SleepScreenState extends State<SleepScreen>
   Column buildBody(BuildContext context) {
     return Column(
       children: [
+        Spacing.s8.h,
         buildTabbarSection(context),
         Spacing.s20.h,
         Obx(() {
@@ -359,7 +360,8 @@ class _SleepScreenState extends State<SleepScreen>
                   category: "Ambient Sound",
                   imageUrl:
                       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-                  description: "Relaxing ambient sound of ${sound.title ?? ''}.",
+                  description:
+                      "Relaxing ambient sound of ${sound.title ?? ''}.",
                   duration: "5:00",
                 ),
                 transition: Transition.rightToLeft,
@@ -398,7 +400,10 @@ class _SleepScreenState extends State<SleepScreen>
                 ),
               ),
               child: Center(
-                child: Text(sound.emoji ?? '', style: TextStyle(fontSize: 32.sp)),
+                child: Text(
+                  sound.emoji ?? '',
+                  style: TextStyle(fontSize: 32.sp),
+                ),
               ),
             ),
           ),

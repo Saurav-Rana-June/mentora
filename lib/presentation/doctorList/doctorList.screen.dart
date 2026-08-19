@@ -53,11 +53,14 @@ class DoctorListScreen extends GetView<DoctorListController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Spacing.s8.h,
+
           CustomSearchBar(
             hintText: "Search therapists...",
             onChanged: (val) => controller.searchQuery.value = val,
           ),
-          Spacing.s8.h,
+          Spacing.s16.h,
+
           // Therapists List
           Expanded(
             child: Obx(() {

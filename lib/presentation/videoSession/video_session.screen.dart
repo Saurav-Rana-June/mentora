@@ -62,8 +62,14 @@ class VideoSessionScreen extends GetView<VideoSessionController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildSearchBar(context),
               Spacing.s8.h,
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s8.symmetric.horizontal,
+                ),
+                child: buildSearchBar(context),
+              ),
+              Spacing.s16.h,
               buildCategories(context),
               Spacing.s12.h,
               buildVideoList(context),

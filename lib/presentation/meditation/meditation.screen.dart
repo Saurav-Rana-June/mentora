@@ -83,14 +83,21 @@ class MeditationScreen extends GetView<MeditationController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Search Input
-                CustomSearchBar(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  onChanged: (val) => controller.updateSearchQuery(val),
-                  hintText: "Search meditations...",
-                ),
                 Spacing.s8.h,
+
+                // Search Input
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Spacing.s8.symmetric.horizontal,
+                  ),
+                  child: CustomSearchBar(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    onChanged: (val) => controller.updateSearchQuery(val),
+                    hintText: "Search meditations...",
+                  ),
+                ),
+                Spacing.s16.h,
 
                 // Category Pill Filter
                 Obx(
