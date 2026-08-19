@@ -1,0 +1,391 @@
+import 'package:get/get.dart';
+import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
+import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
+import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
+
+class BookingSessionController extends GetxController {
+  // Wizard steps: 0 (Doctor), 1 (Session Slot), 2 (Details), 3 (Review), 4 (Success)
+  final RxInt currentStep = 0.obs;
+
+  // Selected details
+  final Rxn<Expert> selectedDoctor = Rxn<Expert>();
+  final Rxn<DateTime> selectedDate = Rxn<DateTime>();
+  final Rxn<TimeSlot> selectedTimeSlot = Rxn<TimeSlot>();
+  final RxString selectedSessionType =
+      "Video Call".obs; // 'Video Call' or 'Voice Call'
+  final RxString sessionNotes = "".obs;
+
+  final RxBool isLoading = false.obs;
+
+  // Available lists
+  final RxList<Expert> therapists = <Expert>[].obs;
+  final RxList<DateTime> availableDates = <DateTime>[].obs;
+  final RxList<TimeSlot> timeSlots = <TimeSlot>[].obs;
+
+  final RxString searchQuery = "".obs;
+
+  List<Expert> get filteredTherapists {
+    final query = searchQuery.value.toLowerCase();
+    if (query.isEmpty) return therapists;
+    return therapists.where((t) {
+      final nameMatches = t.name?.toLowerCase().contains(query) ?? false;
+      final specialtyMatches =
+          t.speciality?.toLowerCase().contains(query) ?? false;
+      return nameMatches || specialtyMatches;
+    }).toList();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTherapists();
+    generateAvailableDates();
+  }
+
+  void fetchTherapists() {
+    // Reuse the exact list of experts from ChatExpertsController if registered,
+    // or instantiate a fresh copy of the mock list for consistency.
+    if (Get.isRegistered<ChatExpertsController>()) {
+      therapists.assignAll(Get.find<ChatExpertsController>().expertsList);
+    } else {
+      // Inline copy of the 15 experts to ensure compatibility
+      therapists.assignAll([
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/32.jpg',
+          name: 'Dr. William Butcher',
+          speciality: 'Clinical Psychologist',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/44.jpg',
+          name: 'Dr. Emily Carter',
+          speciality: 'Family Therapist',
+          callFeature: true,
+          videoCallFeature: false,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/76.jpg',
+          name: 'Dr. Michael Reed',
+          speciality: 'Behavioral Specialist',
+          callFeature: false,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/68.jpg',
+          name: 'Dr. Sophia Turner',
+          speciality: 'Child Psychologist',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/15.jpg',
+          name: 'Dr. James Anderson',
+          speciality: 'Mental Health Coach',
+          callFeature: true,
+          videoCallFeature: false,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/12.jpg',
+          name: 'Dr. Olivia Harris',
+          speciality: 'Stress Management',
+          callFeature: false,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/45.jpg',
+          name: 'Dr. Daniel Lewis',
+          speciality: 'Cognitive Therapist',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/25.jpg',
+          name: 'Dr. Isabella Moore',
+          speciality: 'Relationship Counselor',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/90.jpg',
+          name: 'Dr. Ethan Walker',
+          speciality: 'Anxiety Specialist',
+          callFeature: false,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/33.jpg',
+          name: 'Dr. Ava Martinez',
+          speciality: 'Trauma Therapist',
+          callFeature: true,
+          videoCallFeature: false,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/60.jpg',
+          name: 'Dr. Noah Thompson',
+          speciality: 'Mindfulness Coach',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/77.jpg',
+          name: 'Dr. Mia Robinson',
+          speciality: 'Emotional Wellness',
+          callFeature: false,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/22.jpg',
+          name: 'Dr. Lucas White',
+          speciality: 'Sleep Therapist',
+          callFeature: true,
+          videoCallFeature: false,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/women/88.jpg',
+          name: 'Dr. Charlotte King',
+          speciality: 'Depression Specialist',
+          callFeature: true,
+          videoCallFeature: true,
+        ),
+        Expert(
+          image: 'https://randomuser.me/api/portraits/men/5.jpg',
+          name: 'Dr. Henry Scott',
+          speciality: 'Addiction Counselor',
+          callFeature: false,
+          videoCallFeature: true,
+        ),
+      ]);
+    }
+  }
+
+  void generateAvailableDates() {
+    final List<DateTime> dates = [];
+    final today = DateTime.now();
+    for (int i = 0; i < 14; i++) {
+      dates.add(today.add(Duration(days: i)));
+    }
+    availableDates.assignAll(dates);
+    // Auto-select today
+    if (dates.isNotEmpty) {
+      selectDate(dates.first);
+    }
+  }
+
+  void selectDoctor(Expert doctor) {
+    selectedDoctor.value = doctor;
+    // Set default session type based on features
+    if (doctor.videoCallFeature == true) {
+      selectedSessionType.value = "Video Call";
+    } else if (doctor.callFeature == true) {
+      selectedSessionType.value = "Voice Call";
+    } else {
+      selectedSessionType.value = "Video Call";
+    }
+  }
+
+  void selectDate(DateTime date) {
+    selectedDate.value = date;
+    selectedTimeSlot.value = null; // Clear previous time slot selection
+    generateTimeSlots(date);
+  }
+
+  void selectTimeSlot(TimeSlot slot) {
+    selectedTimeSlot.value = slot;
+  }
+
+  void setSessionType(String type) {
+    selectedSessionType.value = type;
+  }
+
+  void setSessionNotes(String notes) {
+    sessionNotes.value = notes;
+  }
+
+  void generateTimeSlots(DateTime date) {
+    // Generate static slots grouped by period
+    final List<TimeSlot> slots = [
+      TimeSlot(time: "09:00 AM", period: "Morning", isAvailable: true),
+      TimeSlot(time: "09:30 AM", period: "Morning", isAvailable: true),
+      TimeSlot(
+        time: "10:00 AM",
+        period: "Morning",
+        isAvailable: false,
+      ), // simulate booked
+      TimeSlot(time: "10:30 AM", period: "Morning", isAvailable: true),
+      TimeSlot(time: "11:00 AM", period: "Morning", isAvailable: true),
+
+      TimeSlot(time: "01:30 PM", period: "Afternoon", isAvailable: true),
+      TimeSlot(time: "02:00 PM", period: "Afternoon", isAvailable: true),
+      TimeSlot(time: "02:30 PM", period: "Afternoon", isAvailable: true),
+      TimeSlot(
+        time: "03:00 PM",
+        period: "Afternoon",
+        isAvailable: false,
+      ), // simulate booked
+      TimeSlot(time: "03:30 PM", period: "Afternoon", isAvailable: true),
+
+      TimeSlot(time: "05:00 PM", period: "Evening", isAvailable: true),
+      TimeSlot(time: "05:30 PM", period: "Evening", isAvailable: true),
+      TimeSlot(time: "06:00 PM", period: "Evening", isAvailable: true),
+      TimeSlot(time: "06:30 PM", period: "Evening", isAvailable: true),
+      TimeSlot(
+        time: "07:00 PM",
+        period: "Evening",
+        isAvailable: false,
+      ), // simulate booked
+    ];
+
+    // If date is today, disable past slots
+    final now = DateTime.now();
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
+      final List<TimeSlot> adjustedSlots = [];
+      for (var slot in slots) {
+        final parsedTime = _parseTimeOfDay(slot.time, date);
+        if (parsedTime.isBefore(now)) {
+          adjustedSlots.add(
+            TimeSlot(time: slot.time, period: slot.period, isAvailable: false),
+          );
+        } else {
+          adjustedSlots.add(slot);
+        }
+      }
+      timeSlots.assignAll(adjustedSlots);
+    } else {
+      timeSlots.assignAll(slots);
+    }
+  }
+
+  DateTime _parseTimeOfDay(String timeStr, DateTime date) {
+    // Parse formats like "09:30 AM" or "02:00 PM"
+    final parts = timeStr.split(" ");
+    final timeParts = parts[0].split(":");
+    int hour = int.parse(timeParts[0]);
+    final int minute = int.parse(timeParts[1]);
+    final String amPm = parts[1];
+
+    if (amPm == "PM" && hour != 12) {
+      hour += 12;
+    } else if (amPm == "AM" && hour == 12) {
+      hour = 0;
+    }
+
+    return DateTime(date.year, date.month, date.day, hour, minute);
+  }
+
+  void nextStep() {
+    if (currentStep.value < 4) {
+      currentStep.value++;
+    }
+  }
+
+  void previousStep() {
+    if (currentStep.value > 0) {
+      currentStep.value--;
+    }
+  }
+
+  Future<void> bookSession() async {
+    if (selectedDoctor.value == null ||
+        selectedDate.value == null ||
+        selectedTimeSlot.value == null) {
+      Get.snackbar(
+        "Invalid Selection",
+        "Please select a doctor, date, and time slot.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      // Simulate network request
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      // Build SessionModel
+      final docName = selectedDoctor.value?.name ?? "Therapist";
+      final docSpecialty = selectedDoctor.value?.speciality ?? "Specialist";
+      final docImage =
+          selectedDoctor.value?.image ??
+          "https://randomuser.me/api/portraits/men/32.jpg";
+      final formattedDate =
+          formatFullDate(selectedDate.value!) +
+          " • " +
+          selectedTimeSlot.value!.time;
+
+      final newSession = SessionModel(
+        expertName: docName,
+        specialty: docSpecialty,
+        imageUrl: docImage,
+        dateTime: formattedDate,
+        callType: selectedSessionType.value,
+        status: "Confirmed",
+      );
+
+      // Add to SessionsController if registered
+      if (Get.isRegistered<SessionsController>()) {
+        Get.find<SessionsController>().addSession(newSession);
+      }
+
+      // Move to success step
+      currentStep.value = 4;
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Could not book your session. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  String formatBookingDate(DateTime date) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const weekdays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    final month = months[date.month - 1];
+    final weekday = weekdays[date.weekday - 1];
+    return "$weekday, $month ${date.day}";
+  }
+
+  String formatFullDate(DateTime date) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return "${months[date.month - 1]} ${date.day.toString().padLeft(2, '0')}, ${date.year}";
+  }
+}

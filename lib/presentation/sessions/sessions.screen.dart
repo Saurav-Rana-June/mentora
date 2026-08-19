@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import '../../infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/sessions.controller.dart';
@@ -423,15 +424,7 @@ class SessionsScreen extends GetView<SessionsController> {
   FloatingActionButton buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Get.snackbar(
-          "Booking Flow",
-          "Session booking flow coming soon!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: primary,
-          colorText: white,
-          margin: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
-          borderRadius: 12,
-        );
+        Get.toNamed(Routes.BOOKING_SESSION);
       },
       backgroundColor: primary,
       child: Text(

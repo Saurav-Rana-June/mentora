@@ -19,3 +19,4 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/sign_up.c
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/sleep.controller.binding.dart'; 
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/video_session.controller.binding.dart'; 
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/booking_session.controller.binding.dart';

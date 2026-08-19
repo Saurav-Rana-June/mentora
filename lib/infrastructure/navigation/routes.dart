@@ -30,4 +30,5 @@ class Routes {
   static const SLEEP = '/sleep';
   static const SPLASH = '/splash';
   static const VIDEO_SESSION = '/video-session';
+  static const BOOKING_SESSION = '/booking-session';
 }

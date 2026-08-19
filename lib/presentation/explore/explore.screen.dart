@@ -1,3 +1,4 @@
+import 'package:Mentora/presentation/videoSession/controllers/video_session.controller.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -465,9 +466,7 @@ class ExploreScreen extends GetView<ExploreController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s16.value.w,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: Spacing.s16.value.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

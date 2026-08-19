@@ -26,3 +26,4 @@ export 'package:Mentora/presentation/signUp/sign_up.screen.dart';
 export 'package:Mentora/presentation/sleep/sleep.screen.dart';
 export 'package:Mentora/presentation/splash/splash.screen.dart';
 export 'package:Mentora/presentation/videoSession/video_session.screen.dart';
+export 'package:Mentora/presentation/bookingSession/bookingSession.screen.dart';

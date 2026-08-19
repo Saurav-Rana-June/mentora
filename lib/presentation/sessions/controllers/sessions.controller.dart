@@ -45,6 +45,10 @@ class SessionsController extends GetxController {
   void toggleTab(bool upcoming) {
     isUpcomingSelected.value = upcoming;
   }
+
+  void addSession(SessionModel session) {
+    upcomingSessions.insert(0, session);
+  }
 }
 
 class SessionModel {

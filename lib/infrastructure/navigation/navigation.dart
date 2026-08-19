@@ -137,5 +137,10 @@ class Nav {
       page: () => VideoSessionScreen(),
       binding: VideoSessionControllerBinding(),
     ),
+    GetPage(
+      name: Routes.BOOKING_SESSION,
+      page: () => BookingSessionScreen(),
+      binding: BookingSessionControllerBinding(),
+    ),
   ];
 }
