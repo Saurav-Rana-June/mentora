@@ -24,14 +24,14 @@ class DoctorListController extends GetxController {
   void onInit() {
     super.onInit();
     scrollController.addListener(_scrollListener);
-    
+
     // Debounce search query to optimize API request frequency
     debounce(
       searchQuery,
       (_) => fetchTherapists(forceRefresh: true),
       time: const Duration(milliseconds: 300),
     );
-    
+
     fetchTherapists();
   }
 
@@ -55,7 +55,8 @@ class DoctorListController extends GetxController {
     if (loadMore) {
       if (isLoading.value ||
           isLoadMore.value ||
-          currentPage.value >= totalPages.value) return;
+          currentPage.value >= totalPages.value)
+        return;
       isLoadMore.value = true;
     } else {
       if (isLoading.value) return;
@@ -87,7 +88,9 @@ class DoctorListController extends GetxController {
             searchQuery.value.isEmpty) {
           therapists.assignAll(
             cachedData
-                .map((e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)))
+                .map(
+                  (e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)),
+                )
                 .toList(),
           );
           if (cachedTotalPages != null) {
@@ -105,8 +108,9 @@ class DoctorListController extends GetxController {
             lastUpdated: cachedLastUpdated,
           );
           if (checkRes != null) {
-            final DateTime? cachedDateTime =
-                DateTime.tryParse(cachedLastUpdated!);
+            final DateTime? cachedDateTime = DateTime.tryParse(
+              cachedLastUpdated!,
+            );
             if (checkRes.lastUpdated != null &&
                 checkRes.lastUpdated == cachedDateTime) {
               isLoading.value = false;

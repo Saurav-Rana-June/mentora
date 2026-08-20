@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
-
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
@@ -19,16 +18,51 @@ class CustomSearchBar extends StatelessWidget {
   });
 
   @override
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
+}
+
+class _CustomSearchBarState extends State<CustomSearchBar> {
+  late final TextEditingController _controller;
+  bool _showClearButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller ?? TextEditingController();
+    _showClearButton = _controller.text.isNotEmpty;
+    _controller.addListener(_textListener);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_textListener);
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _textListener() {
+    final showClear = _controller.text.isNotEmpty;
+    if (_showClearButton != showClear) {
+      setState(() {
+        _showClearButton = showClear;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return TextField(
-      controller: controller,
-      focusNode: focusNode,
-      onChanged: onChanged,
-      style: r16.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color),
+      controller: _controller,
+      focusNode: widget.focusNode,
+      onChanged: widget.onChanged,
+      style: r16.copyWith(color: theme.textTheme.bodyLarge!.color),
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: r14.copyWith(color: slate[400]),
         prefixIcon: Padding(
           padding: EdgeInsets.only(
@@ -42,6 +76,28 @@ class CustomSearchBar extends StatelessWidget {
           ),
         ),
         prefixIconConstraints: const BoxConstraints(
+          minWidth: 40,
+          minHeight: 40,
+        ),
+        suffixIcon: _showClearButton
+            ? Padding(
+                padding: EdgeInsets.only(right: Spacing.s8.value.w),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.clear_rounded,
+                    size: 20.sp,
+                    color: isDark ? slate[400] : slate[500],
+                  ),
+                  onPressed: () {
+                    _controller.clear();
+                    if (widget.onChanged != null) {
+                      widget.onChanged!("");
+                    }
+                  },
+                ),
+              )
+            : null,
+        suffixIconConstraints: const BoxConstraints(
           minWidth: 40,
           minHeight: 40,
         ),
