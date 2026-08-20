@@ -92,7 +92,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
 
           // Reviews Section
           buildReviewsSection(context, theme, isDark),
-          Spacing.s24.h,
+          Spacing.s12.h,
         ],
       ),
     );
@@ -383,13 +383,13 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Total Price",
+                  "Starting From",
                   style: r12.copyWith(color: theme.textTheme.bodySmall!.color),
                 ),
-                Spacing.s4.h,
+                // Spacing.s4.h,
                 Text(
-                  "\$95.00/hr",
-                  style: h2.copyWith(
+                  "\$25.00/hr",
+                  style: h3.copyWith(
                     color: theme.textTheme.bodyLarge!.color,
                     fontWeight: FontWeight.bold,
                   ),
