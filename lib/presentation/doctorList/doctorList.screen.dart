@@ -50,13 +50,17 @@ class DoctorListScreen extends GetView<DoctorListController> {
   Widget buildBody(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-      ),
-      child: CustomScrollView(
-        controller: controller.scrollController,
-        slivers: [
+    return RefreshIndicator(
+      color: theme.primaryColor,
+      onRefresh: () => controller.fetchTherapists(forceRefresh: true),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+        ),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: controller.scrollController,
+          slivers: [
           SliverToBoxAdapter(child: Spacing.s8.h),
           SliverAppBar(
             automaticallyImplyLeading: false,
@@ -135,6 +139,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
           }),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
