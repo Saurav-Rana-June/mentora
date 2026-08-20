@@ -95,4 +95,8 @@ class StorageKeys {
       'video_sessions_all_${category}_${query}';
   static String videoSessionAllLastUpdated(String category, String query) =>
       'video_sessions_all_last_updated_${category}_${query}';
+
+  // Doctor Keys
+  static const String DOCTORS = 'doctors_cache';
+  static const String DOCTORS_LAST_UPDATED = 'doctors_last_updated';
 }

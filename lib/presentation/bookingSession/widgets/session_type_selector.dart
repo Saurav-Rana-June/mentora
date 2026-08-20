@@ -1,8 +1,8 @@
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
 
-import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
 class SessionTypeSelector extends StatelessWidget {

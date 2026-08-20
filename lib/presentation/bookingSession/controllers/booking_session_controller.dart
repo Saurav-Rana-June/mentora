@@ -1,5 +1,5 @@
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
-import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
 import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
 

@@ -1,3 +1,4 @@
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:flutter/material.dart';

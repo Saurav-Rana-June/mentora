@@ -1,5 +1,6 @@
 import 'package:Mentora/presentation/chatAI/controllers/chat_a_i.controller.dart';
 import 'package:get/get.dart';
+import 'package:Mentora/data/model/expert.model.dart';
 
 class ChatExpertsController extends GetxController {
   final RxList<MessageModel> messages = <MessageModel>[
@@ -251,21 +252,7 @@ class ChatExpertsController extends GetxController {
   RxBool isChatsSelected = true.obs;
 }
 
-class Expert {
-  final String? image;
-  final String? name;
-  final String? speciality;
-  final bool? callFeature;
-  final bool? videoCallFeature;
 
-  Expert({
-    this.image,
-    this.name,
-    this.speciality,
-    this.callFeature,
-    this.videoCallFeature,
-  });
-}
 
 class Chat {
   final String? image;

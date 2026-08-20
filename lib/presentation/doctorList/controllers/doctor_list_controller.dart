@@ -1,142 +1,159 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-
+import 'package:Mentora/data/model/expert.model.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import '../../../infrastructure/navigation/routes.dart';
-import '../../chatExperts/controllers/chat_experts.controller.dart';
+import '../../../infrastructure/dal/services/doctor_service.dart';
 
 class DoctorListController extends GetxController {
   final RxList<Expert> therapists = <Expert>[].obs;
   final RxString searchQuery = "".obs;
 
-  List<Expert> get filteredTherapists {
-    final query = searchQuery.value.toLowerCase().trim();
-    if (query.isEmpty) return therapists;
-    return therapists.where((t) {
-      final nameMatches = t.name?.toLowerCase().contains(query) ?? false;
-      final specialtyMatches =
-          t.speciality?.toLowerCase().contains(query) ?? false;
-      return nameMatches || specialtyMatches;
-    }).toList();
-  }
+  // Pagination states
+  final RxInt currentPage = 1.obs;
+  final RxInt totalPages = 1.obs;
+  final RxBool isLoading = false.obs;
+  final RxBool isLoadMore = false.obs;
+
+  // Scroll controller for infinite scrolling
+  final ScrollController scrollController = ScrollController();
+
+  List<Expert> get filteredTherapists => therapists;
 
   @override
   void onInit() {
     super.onInit();
+    scrollController.addListener(_scrollListener);
+    
+    // Debounce search query to optimize API request frequency
+    debounce(
+      searchQuery,
+      (_) => fetchTherapists(forceRefresh: true),
+      time: const Duration(milliseconds: 300),
+    );
+    
     fetchTherapists();
   }
 
-  void fetchTherapists() {
-    // Reuse the exact list of experts from ChatExpertsController if registered,
-    // or instantiate a fresh copy of the mock list for consistency.
-    if (Get.isRegistered<ChatExpertsController>()) {
-      therapists.assignAll(Get.find<ChatExpertsController>().expertsList);
-    } else {
-      therapists.assignAll([
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/32.jpg',
-          name: 'Dr. William Butcher',
-          speciality: 'Clinical Psychologist',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/44.jpg',
-          name: 'Dr. Emily Carter',
-          speciality: 'Family Therapist',
-          callFeature: true,
-          videoCallFeature: false,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/76.jpg',
-          name: 'Dr. Michael Reed',
-          speciality: 'Behavioral Specialist',
-          callFeature: false,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/68.jpg',
-          name: 'Dr. Sophia Turner',
-          speciality: 'Child Psychologist',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/15.jpg',
-          name: 'Dr. James Anderson',
-          speciality: 'Mental Health Coach',
-          callFeature: true,
-          videoCallFeature: false,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/12.jpg',
-          name: 'Dr. Olivia Harris',
-          speciality: 'Stress Management',
-          callFeature: false,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/45.jpg',
-          name: 'Dr. Daniel Lewis',
-          speciality: 'Cognitive Therapist',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/25.jpg',
-          name: 'Dr. Isabella Moore',
-          speciality: 'Relationship Counselor',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/90.jpg',
-          name: 'Dr. Ethan Walker',
-          speciality: 'Anxiety Specialist',
-          callFeature: false,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/33.jpg',
-          name: 'Dr. Ava Martinez',
-          speciality: 'Trauma Therapist',
-          callFeature: true,
-          videoCallFeature: false,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/60.jpg',
-          name: 'Dr. Noah Thompson',
-          speciality: 'Mindfulness Coach',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/77.jpg',
-          name: 'Dr. Mia Robinson',
-          speciality: 'Emotional Wellness',
-          callFeature: false,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/22.jpg',
-          name: 'Dr. Lucas White',
-          speciality: 'Sleep Therapist',
-          callFeature: true,
-          videoCallFeature: false,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/women/88.jpg',
-          name: 'Dr. Charlotte King',
-          speciality: 'Depression Specialist',
-          callFeature: true,
-          videoCallFeature: true,
-        ),
-        Expert(
-          image: 'https://randomuser.me/api/portraits/men/5.jpg',
-          name: 'Dr. Henry Scott',
-          speciality: 'Addiction Counselor',
-          callFeature: false,
-          videoCallFeature: true,
-        ),
-      ]);
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      loadNextPage();
+    }
+  }
+
+  Future<void> fetchTherapists({bool forceRefresh = false}) async {
+    if (isLoading.value) return;
+    isLoading.value = true;
+    currentPage.value = 1;
+
+    if (forceRefresh) {
+      await StorageUtils.remove(StorageKeys.DOCTORS);
+      await StorageUtils.remove(StorageKeys.DOCTORS_LAST_UPDATED);
+    }
+
+    try {
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        StorageKeys.DOCTORS,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        StorageKeys.DOCTORS_LAST_UPDATED,
+      );
+
+      bool hasCache = false;
+      if (cachedData != null &&
+          cachedLastUpdated != null &&
+          searchQuery.value.isEmpty) {
+        therapists.assignAll(
+          cachedData
+              .map((e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache && !forceRefresh) {
+        // Background check for updates
+        final checkRes = await DoctorService.getDoctors(
+          search: searchQuery.value,
+          page: 1,
+          size: 10,
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime =
+              DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            isLoading.value = false;
+            return; // Cache is still up to date
+          }
+        }
+      }
+
+      // Execute API call
+      final res = await DoctorService.getDoctors(
+        search: searchQuery.value,
+        page: currentPage.value,
+        size: 10,
+      );
+
+      if (res != null && res.data != null) {
+        final items = res.data!.items ?? [];
+        therapists.assignAll(items);
+        totalPages.value = res.data!.totalPages ?? 1;
+
+        // Cache first page response if search is empty
+        if (searchQuery.value.isEmpty) {
+          await StorageUtils.write(
+            StorageKeys.DOCTORS,
+            items.map((e) => e.toJson()).toList(),
+          );
+          if (res.lastUpdated != null) {
+            await StorageUtils.write(
+              StorageKeys.DOCTORS_LAST_UPDATED,
+              res.lastUpdated!.toIso8601String(),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      Get.log("Failed to load therapists: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadNextPage() async {
+    if (isLoading.value ||
+        isLoadMore.value ||
+        currentPage.value >= totalPages.value) return;
+    isLoadMore.value = true;
+
+    try {
+      final nextPage = currentPage.value + 1;
+      final res = await DoctorService.getDoctors(
+        search: searchQuery.value,
+        page: nextPage,
+        size: 10,
+      );
+
+      if (res != null && res.data != null) {
+        final items = res.data!.items ?? [];
+        therapists.addAll(items);
+        currentPage.value = nextPage;
+        totalPages.value = res.data!.totalPages ?? 1;
+      }
+    } catch (e) {
+      Get.log("Failed to load more therapists: $e");
+    } finally {
+      isLoadMore.value = false;
     }
   }
 

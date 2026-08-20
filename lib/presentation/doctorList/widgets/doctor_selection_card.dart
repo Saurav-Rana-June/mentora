@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
-import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
@@ -59,24 +59,25 @@ class DoctorSelectionCard extends StatelessWidget {
                           backgroundColor: theme.primaryColorLight,
                         ),
                       ),
-                      Positioned(
-                        bottom: 4.r,
-                        right: 6.r,
-                        child: Container(
-                          width: 11.r,
-                          height: 11.r,
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF4CAF50,
-                            ), // Alive green indicator
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDark ? slate[800]! : Colors.white,
-                              width: 2.r,
+                      if (expert.isAvailable == true)
+                        Positioned(
+                          bottom: 4.r,
+                          right: 6.r,
+                          child: Container(
+                            width: 11.r,
+                            height: 11.r,
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF4CAF50,
+                              ), // Alive green indicator
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? slate[800]! : Colors.white,
+                                width: 2.r,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   Spacing.s12.w,
@@ -175,7 +176,7 @@ class DoctorSelectionCard extends StatelessWidget {
                                   ),
                                   Spacing.s4.w,
                                   Text(
-                                    "4.9",
+                                    expert.rating?.toStringAsFixed(1) ?? '5.0',
                                     style: r12.copyWith(
                                       color: theme.textTheme.bodyMedium!.color,
                                       fontWeight: FontWeight.w600,
@@ -206,7 +207,7 @@ class DoctorSelectionCard extends StatelessWidget {
                                   ),
                                   Spacing.s4.w,
                                   Text(
-                                    "8+ yrs exp",
+                                    "${expert.experienceYears ?? 0}+ yrs exp",
                                     style: r12.copyWith(
                                       color: theme.textTheme.bodyMedium!.color,
                                       fontWeight: FontWeight.w600,
@@ -216,41 +217,6 @@ class DoctorSelectionCard extends StatelessWidget {
                               ),
                             ),
                           ],
-                        ),
-                        Spacing.s12.h,
-
-                        // Next Available Slot pill
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: primary.withValues(alpha: 0.06),
-                            borderRadius: BorderRadius.circular(20.r),
-                            border: Border.all(
-                              color: primary.withValues(alpha: 0.12),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.access_time_filled_rounded,
-                                size: 13.r,
-                                color: primary,
-                              ),
-                              Spacing.s4.w,
-                              Text(
-                                "Next slot: Today • 5:00 PM",
-                                style: r12.copyWith(
-                                  color: primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),

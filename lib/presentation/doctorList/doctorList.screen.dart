@@ -8,6 +8,7 @@ import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/others/custom.searchbar.widget.dart';
 import 'controllers/doctor_list_controller.dart';
 import 'widgets/doctor_selection_card.dart';
+import 'widgets/doctor_list_loading.dart';
 
 class DoctorListScreen extends GetView<DoctorListController> {
   DoctorListScreen({super.key});
@@ -54,6 +55,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
         horizontal: Spacing.s8.symmetric.horizontal,
       ),
       child: CustomScrollView(
+        controller: controller.scrollController,
         slivers: [
           SliverToBoxAdapter(child: Spacing.s8.h),
           SliverAppBar(
@@ -78,6 +80,11 @@ class DoctorListScreen extends GetView<DoctorListController> {
             final filtered = controller.filteredTherapists;
 
             if (filtered.isEmpty) {
+              if (controller.isLoading.value) {
+                return const SliverToBoxAdapter(
+                  child: DoctorListLoading(),
+                );
+              }
               return SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(
@@ -108,12 +115,20 @@ class DoctorListScreen extends GetView<DoctorListController> {
 
             return SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
+                if (index == filtered.length) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: Spacing.s16.symmetric.vertical),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
                 final expert = filtered[index];
                 return DoctorSelectionCard(
                   expert: expert,
                   onTap: () => controller.selectDoctor(expert),
                 );
-              }, childCount: filtered.length),
+              }, childCount: filtered.length + (controller.isLoadMore.value ? 1 : 0)),
             );
           }),
         ],

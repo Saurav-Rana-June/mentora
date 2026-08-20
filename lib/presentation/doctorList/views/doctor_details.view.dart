@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'package:Mentora/presentation/chatExperts/controllers/chat_experts.controller.dart';
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
@@ -36,7 +36,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final String bio =
+    final String bio = widget.expert.bio ??
         "Dr. ${widget.expert.name ?? 'Therapist'} is a highly dedicated ${widget.expert.speciality ?? 'Mental Health Professional'} specialized in supporting individuals with emotional resilience, mood improvements, and trauma healing. With over 8 years of experience, Dr. ${widget.expert.name ?? 'Therapist'} provides a compassionate, non-judgmental space for exploration, self-discovery, and personal growth.";
 
     return Scaffold(
@@ -140,7 +140,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
         Wrap(
           spacing: Spacing.s4.symmetric.horizontal,
           runSpacing: Spacing.s4.symmetric.horizontal,
-          children: _tags.map((tag) {
+          children: (widget.expert.specialties ?? _tags).map((tag) {
             return CustomPill(label: tag, isSelected: false, onTap: () {});
           }).toList(),
         ),
@@ -179,22 +179,23 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
                       backgroundColor: theme.primaryColorLight,
                     ),
                   ),
-                  Positioned(
-                    bottom: 4.r,
-                    right: 6.r,
-                    child: Container(
-                      width: 13.r,
-                      height: 13.r,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF4CAF50), // Alive green indicator
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark ? slate[900]! : Colors.white,
-                          width: 2.r,
+                  if (widget.expert.isAvailable == true)
+                    Positioned(
+                      bottom: 4.r,
+                      right: 6.r,
+                      child: Container(
+                        width: 13.r,
+                        height: 13.r,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4CAF50), // Alive green indicator
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? slate[900]! : Colors.white,
+                            width: 2.r,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
               Spacing.s16.w,
@@ -231,9 +232,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildStatItem(context, "4.9 ★", "120+ Reviews"),
-              buildStatItem(context, "8+ Yrs", "Experience"),
-              buildStatItem(context, "500+", "Patients"),
+              buildStatItem(context, "${widget.expert.rating?.toStringAsFixed(1) ?? '5.0'} ★", "${widget.expert.reviewsCount ?? 0}+ Reviews"),
+              buildStatItem(context, "${widget.expert.experienceYears ?? 0}+ Yrs", "Experience"),
+              buildStatItem(context, "${widget.expert.patientsCount ?? 0}+", "Patients"),
             ],
           ),
           Spacing.s16.h,
@@ -388,7 +389,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
                 ),
                 // Spacing.s4.h,
                 Text(
-                  "\$25.00/hr",
+                  "\$${widget.expert.startingPricePerHour?.toStringAsFixed(2) ?? '25.00'}/hr",
                   style: h3.copyWith(
                     color: theme.textTheme.bodyLarge!.color,
                     fontWeight: FontWeight.bold,
