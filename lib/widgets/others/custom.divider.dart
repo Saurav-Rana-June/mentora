@@ -22,7 +22,7 @@ class CustomDivider extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final Color effectiveColor = color ?? (isDark ? slate[700]! : slate[100]!);
+    final Color effectiveColor = color ?? (isDark ? slate[600]! : slate[100]!);
 
     return Divider(
       height: height ?? 1,
