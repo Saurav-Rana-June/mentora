@@ -67,7 +67,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
             pinned: false,
             elevation: 0,
             titleSpacing: 0,
-            toolbarHeight: 64.h,
+            toolbarHeight: 66.h,
             title: Padding(
               padding: EdgeInsets.only(bottom: Spacing.s8.symmetric.vertical),
               child: CustomSearchBar(
@@ -81,9 +81,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
 
             if (filtered.isEmpty) {
               if (controller.isLoading.value) {
-                return const SliverToBoxAdapter(
-                  child: DoctorListLoading(),
-                );
+                return const SliverToBoxAdapter(child: DoctorListLoading());
               }
               return SliverFillRemaining(
                 hasScrollBody: false,
@@ -114,21 +112,25 @@ class DoctorListScreen extends GetView<DoctorListController> {
             }
 
             return SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (index == filtered.length) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: Spacing.s16.symmetric.vertical),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  if (index == filtered.length) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Spacing.s16.symmetric.vertical,
+                      ),
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final expert = filtered[index];
+                  return DoctorSelectionCard(
+                    expert: expert,
+                    onTap: () => controller.selectDoctor(expert),
                   );
-                }
-                final expert = filtered[index];
-                return DoctorSelectionCard(
-                  expert: expert,
-                  onTap: () => controller.selectDoctor(expert),
-                );
-              }, childCount: filtered.length + (controller.isLoadMore.value ? 1 : 0)),
+                },
+                childCount:
+                    filtered.length + (controller.isLoadMore.value ? 1 : 0),
+              ),
             );
           }),
         ],
