@@ -130,7 +130,9 @@ class DoctorListScreen extends GetView<DoctorListController> {
                             strokeWidth: 3.r,
                             showPercentageText: false,
                             progressColor: theme.primaryColor,
-                            backgroundColor: theme.dividerColor.withValues(alpha: 0.1),
+                            backgroundColor: theme.dividerColor.withValues(
+                              alpha: 0.1,
+                            ),
                           ),
                         ),
                       );

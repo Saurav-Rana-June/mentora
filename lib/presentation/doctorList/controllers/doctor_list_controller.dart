@@ -56,6 +56,7 @@ class DoctorListController extends GetxController {
     if (forceRefresh) {
       await StorageUtils.remove(StorageKeys.DOCTORS);
       await StorageUtils.remove(StorageKeys.DOCTORS_LAST_UPDATED);
+      await StorageUtils.remove(StorageKeys.DOCTORS_TOTAL_PAGES);
     }
 
     try {
@@ -64,6 +65,9 @@ class DoctorListController extends GetxController {
       );
       final String? cachedLastUpdated = StorageUtils.read<String>(
         StorageKeys.DOCTORS_LAST_UPDATED,
+      );
+      final int? cachedTotalPages = StorageUtils.read<int>(
+        StorageKeys.DOCTORS_TOTAL_PAGES,
       );
 
       bool hasCache = false;
@@ -75,6 +79,9 @@ class DoctorListController extends GetxController {
               .map((e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList(),
         );
+        if (cachedTotalPages != null) {
+          totalPages.value = cachedTotalPages;
+        }
         hasCache = true;
       }
 
@@ -114,6 +121,10 @@ class DoctorListController extends GetxController {
           await StorageUtils.write(
             StorageKeys.DOCTORS,
             items.map((e) => e.toJson()).toList(),
+          );
+          await StorageUtils.write(
+            StorageKeys.DOCTORS_TOTAL_PAGES,
+            totalPages.value,
           );
           if (res.lastUpdated != null) {
             await StorageUtils.write(

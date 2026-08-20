@@ -99,4 +99,5 @@ class StorageKeys {
   // Doctor Keys
   static const String DOCTORS = 'doctors_cache';
   static const String DOCTORS_LAST_UPDATED = 'doctors_last_updated';
+  static const String DOCTORS_TOTAL_PAGES = 'doctors_total_pages';
 }
