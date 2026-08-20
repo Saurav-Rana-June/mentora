@@ -141,11 +141,33 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
 
     final steps = ["Time", "Details", "Review"];
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      color: theme.primaryColorLight,
+      margin: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.value.w,
+        vertical: Spacing.s12.value.h,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: isDark ? slate[800] : Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: isDark
+              ? slate[700]!
+              : theme.dividerColor.withValues(alpha: 0.05),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(steps.length, (index) {
           final isCompleted = index < currentStep;
           final isActive = index == currentStep;
@@ -153,54 +175,100 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
           return Expanded(
             child: Row(
               children: [
-                // Step Circle
-                Container(
-                  width: 22.r,
-                  height: 22.r,
+                // Step pill container
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: isActive
-                        ? primary
-                        : isCompleted
-                        ? primary.withValues(alpha: 0.12)
-                        : theme.dividerColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+                        ? primary.withValues(alpha: 0.08)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
-                  child: Center(
-                    child: isCompleted
-                        ? Icon(Icons.check, size: 12.r, color: primary)
-                        : Text(
-                            (index + 1).toString(),
-                            style: r10.copyWith(
-                              color: isActive
-                                  ? Colors.white
-                                  : theme.textTheme.bodySmall!.color,
-                              fontWeight: FontWeight.w700,
-                            ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Circle Indicator
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: 24.r,
+                        height: 24.r,
+                        decoration: BoxDecoration(
+                          color: isActive
+                              ? primary
+                              : isCompleted
+                              ? primary.withValues(alpha: 0.15)
+                              : (isDark ? slate[700] : slate[200]),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isActive
+                                ? primary
+                                : isCompleted
+                                ? primary
+                                : (isDark ? slate[600]! : slate[300]!),
+                            width: 1.5,
                           ),
+                          boxShadow: isActive
+                              ? [
+                                  BoxShadow(
+                                    color: primary.withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Center(
+                          child: isCompleted
+                              ? Icon(
+                                  Icons.check_rounded,
+                                  size: 14.r,
+                                  color: primary,
+                                )
+                              : Text(
+                                  (index + 1).toString(),
+                                  style: r12.copyWith(
+                                    color: isActive
+                                        ? Colors.white
+                                        : (isDark ? slate[300] : slate[600]),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Spacing.s8.w,
+
+                      // Label
+                      Text(
+                        steps[index],
+                        style: r13.copyWith(
+                          color: isActive
+                              ? primary
+                              : isCompleted
+                              ? (isDark ? slate[200] : slate[700])
+                              : (isDark ? slate[400] : slate[500]),
+                          fontWeight: isActive
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Spacing.s8.w,
 
-                // Step Name
-                Text(
-                  steps[index],
-                  style: r12.copyWith(
-                    color: isActive
-                        ? primary
-                        : theme.textTheme.bodySmall!.color,
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-
-                // Connecting Line
+                // Connecting progress line
                 if (index < steps.length - 1) ...[
                   Spacing.s8.w,
                   Expanded(
-                    child: Container(
-                      height: 1.h,
-                      color: isCompleted
-                          ? primary.withValues(alpha: 0.4)
-                          : theme.dividerColor.withValues(alpha: 0.1),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 2.h,
+                      decoration: BoxDecoration(
+                        color: isCompleted
+                            ? primary
+                            : (isDark ? slate[700] : slate[200]),
+                        borderRadius: BorderRadius.circular(1.r),
+                      ),
                     ),
                   ),
                   Spacing.s8.w,
