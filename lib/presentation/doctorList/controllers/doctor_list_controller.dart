@@ -44,14 +44,24 @@ class DoctorListController extends GetxController {
   void _scrollListener() {
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 200) {
-      loadNextPage();
+      fetchTherapists(loadMore: true);
     }
   }
 
-  Future<void> fetchTherapists({bool forceRefresh = false}) async {
-    if (isLoading.value) return;
-    isLoading.value = true;
-    currentPage.value = 1;
+  Future<void> fetchTherapists({
+    bool forceRefresh = false,
+    bool loadMore = false,
+  }) async {
+    if (loadMore) {
+      if (isLoading.value ||
+          isLoadMore.value ||
+          currentPage.value >= totalPages.value) return;
+      isLoadMore.value = true;
+    } else {
+      if (isLoading.value) return;
+      isLoading.value = true;
+      currentPage.value = 1;
+    }
 
     if (forceRefresh) {
       await StorageUtils.remove(StorageKeys.DOCTORS);
@@ -60,64 +70,72 @@ class DoctorListController extends GetxController {
     }
 
     try {
-      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
-        StorageKeys.DOCTORS,
-      );
-      final String? cachedLastUpdated = StorageUtils.read<String>(
-        StorageKeys.DOCTORS_LAST_UPDATED,
-      );
-      final int? cachedTotalPages = StorageUtils.read<int>(
-        StorageKeys.DOCTORS_TOTAL_PAGES,
-      );
-
-      bool hasCache = false;
-      if (cachedData != null &&
-          cachedLastUpdated != null &&
-          searchQuery.value.isEmpty) {
-        therapists.assignAll(
-          cachedData
-              .map((e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)))
-              .toList(),
+      if (!loadMore) {
+        final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+          StorageKeys.DOCTORS,
         );
-        if (cachedTotalPages != null) {
-          totalPages.value = cachedTotalPages;
+        final String? cachedLastUpdated = StorageUtils.read<String>(
+          StorageKeys.DOCTORS_LAST_UPDATED,
+        );
+        final int? cachedTotalPages = StorageUtils.read<int>(
+          StorageKeys.DOCTORS_TOTAL_PAGES,
+        );
+
+        bool hasCache = false;
+        if (cachedData != null &&
+            cachedLastUpdated != null &&
+            searchQuery.value.isEmpty) {
+          therapists.assignAll(
+            cachedData
+                .map((e) => Expert.fromJson(Map<String, dynamic>.from(e as Map)))
+                .toList(),
+          );
+          if (cachedTotalPages != null) {
+            totalPages.value = cachedTotalPages;
+          }
+          hasCache = true;
         }
-        hasCache = true;
-      }
 
-      if (hasCache && !forceRefresh) {
-        // Background check for updates
-        final checkRes = await DoctorService.getDoctors(
-          search: searchQuery.value,
-          page: 1,
-          size: 10,
-          lastUpdated: cachedLastUpdated,
-        );
-        if (checkRes != null) {
-          final DateTime? cachedDateTime =
-              DateTime.tryParse(cachedLastUpdated!);
-          if (checkRes.lastUpdated != null &&
-              checkRes.lastUpdated == cachedDateTime) {
-            isLoading.value = false;
-            return; // Cache is still up to date
+        if (hasCache && !forceRefresh) {
+          // Background check for updates
+          final checkRes = await DoctorService.getDoctors(
+            search: searchQuery.value,
+            page: 1,
+            size: 10,
+            lastUpdated: cachedLastUpdated,
+          );
+          if (checkRes != null) {
+            final DateTime? cachedDateTime =
+                DateTime.tryParse(cachedLastUpdated!);
+            if (checkRes.lastUpdated != null &&
+                checkRes.lastUpdated == cachedDateTime) {
+              isLoading.value = false;
+              return; // Cache is still up to date
+            }
           }
         }
       }
 
       // Execute API call
+      final int targetPage = loadMore ? (currentPage.value + 1) : 1;
       final res = await DoctorService.getDoctors(
         search: searchQuery.value,
-        page: currentPage.value,
+        page: targetPage,
         size: 10,
       );
 
       if (res != null && res.data != null) {
         final items = res.data!.items ?? [];
-        therapists.assignAll(items);
+        if (loadMore) {
+          therapists.addAll(items);
+          currentPage.value = targetPage;
+        } else {
+          therapists.assignAll(items);
+        }
         totalPages.value = res.data!.totalPages ?? 1;
 
         // Cache first page response if search is empty
-        if (searchQuery.value.isEmpty) {
+        if (!loadMore && searchQuery.value.isEmpty) {
           await StorageUtils.write(
             StorageKeys.DOCTORS,
             items.map((e) => e.toJson()).toList(),
@@ -137,34 +155,11 @@ class DoctorListController extends GetxController {
     } catch (e) {
       Get.log("Failed to load therapists: $e");
     } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> loadNextPage() async {
-    if (isLoading.value ||
-        isLoadMore.value ||
-        currentPage.value >= totalPages.value) return;
-    isLoadMore.value = true;
-
-    try {
-      final nextPage = currentPage.value + 1;
-      final res = await DoctorService.getDoctors(
-        search: searchQuery.value,
-        page: nextPage,
-        size: 10,
-      );
-
-      if (res != null && res.data != null) {
-        final items = res.data!.items ?? [];
-        therapists.addAll(items);
-        currentPage.value = nextPage;
-        totalPages.value = res.data!.totalPages ?? 1;
+      if (loadMore) {
+        isLoadMore.value = false;
+      } else {
+        isLoading.value = false;
       }
-    } catch (e) {
-      Get.log("Failed to load more therapists: $e");
-    } finally {
-      isLoadMore.value = false;
     }
   }
 
