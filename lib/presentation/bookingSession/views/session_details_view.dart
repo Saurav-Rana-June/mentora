@@ -19,6 +19,9 @@ class SessionDetailsView extends GetView<BookingSessionController> {
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

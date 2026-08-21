@@ -8,6 +8,7 @@ import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
 import 'controllers/booking_session_controller.dart';
 import 'views/choose_session_view.dart';
+import 'views/session_type_view.dart';
 import 'views/session_details_view.dart';
 import 'views/review_booking_view.dart';
 import 'views/booking_success_view.dart';
@@ -29,9 +30,9 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
         final step = controller.currentStep.value;
 
         return PopScope(
-          canPop: step == 0 || step >= 3,
+          canPop: step == 0 || step >= 4,
           onPopInvokedWithResult: (didPop, result) {
-            if (!didPop && step > 0 && step < 3) {
+            if (!didPop && step > 0 && step < 4) {
               controller.previousStep();
             }
           },
@@ -55,7 +56,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
       automaticallyImplyLeading: false,
       leading: Obx(() {
         final step = controller.currentStep.value;
-        if (step >= 3)
+        if (step >= 4)
           return const SizedBox.shrink(); // Hide back arrow on success
 
         return Center(
@@ -94,7 +95,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
       title: Obx(() {
         final step = controller.currentStep.value;
         String title = "Book Session";
-        if (step == 3) title = "Booking Confirmed";
+        if (step == 4) title = "Booking Confirmed";
         return Text(
           title,
           style: h2.copyWith(
@@ -113,34 +114,31 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
         Obx(() => buildStepIndicator(context, controller.currentStep.value)),
         Spacing.s12.h,
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s8.symmetric.horizontal,
-            ),
-            child: Obx(() {
-              switch (controller.currentStep.value) {
-                case 0:
-                  return const ChooseSessionView();
-                case 1:
-                  return const SessionDetailsView();
-                case 2:
-                  return const ReviewBookingView();
-                case 3:
-                  return const BookingSuccessView();
-                default:
-                  return const ChooseSessionView();
-              }
-            }),
-          ),
+          child: Obx(() {
+            switch (controller.currentStep.value) {
+              case 0:
+                return const ChooseSessionView();
+              case 1:
+                return const SessionTypeView();
+              case 2:
+                return const SessionDetailsView();
+              case 3:
+                return const ReviewBookingView();
+              case 4:
+                return const BookingSuccessView();
+              default:
+                return const ChooseSessionView();
+            }
+          }),
         ),
       ],
     );
   }
 
   Widget buildStepIndicator(BuildContext context, int currentStep) {
-    if (currentStep >= 3) return const SizedBox.shrink();
+    if (currentStep >= 4) return const SizedBox.shrink();
 
-    final steps = ["Time", "Details", "Review"];
+    final steps = ["Time", "Type", "Details", "Review"];
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -287,7 +285,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
   Widget? buildBottomCTA(BuildContext context) {
     return Obx(() {
       final step = controller.currentStep.value;
-      if (step >= 3)
+      if (step >= 4)
         return const SizedBox.shrink(); // Success screen has its own bottom buttons
 
       bool isEnabled = false;
@@ -298,8 +296,10 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
             controller.selectedDate.value != null &&
             controller.selectedTimeSlot.value != null;
       } else if (step == 1) {
-        isEnabled = true; // Notes is optional, skip/continue always allowed
+        isEnabled = controller.selectedSessionType.value.isNotEmpty;
       } else if (step == 2) {
+        isEnabled = true; // Notes is optional, skip/continue always allowed
+      } else if (step == 3) {
         isEnabled = true;
         buttonText = "Confirm Booking";
       }
@@ -323,7 +323,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
           isLoading: controller.isLoading.value,
           onPressed: isEnabled
               ? () {
-                  if (step == 2) {
+                  if (step == 3) {
                     controller.bookSession();
                   } else {
                     controller.nextStep();

@@ -23,7 +23,8 @@ class BookingSuccessView extends GetView<BookingSessionController> {
     return Center(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s16.symmetric.horizontal,
+          horizontal: Spacing.s16.symmetric.horizontal +
+              Spacing.s8.symmetric.horizontal,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -103,7 +104,7 @@ class BookingSuccessView extends GetView<BookingSessionController> {
                   _buildDetailRow(
                     context,
                     Icons.payment_outlined,
-                    "₹1,500 (Pay at session)",
+                    "\$${controller.sessionPrice.value.toStringAsFixed(0)} (Pay at session)",
                   ),
                 ],
               ),

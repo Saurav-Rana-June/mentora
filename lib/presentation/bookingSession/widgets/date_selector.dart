@@ -23,7 +23,8 @@ class DateSelector extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s4.symmetric.horizontal,
+            horizontal: Spacing.s8.symmetric.horizontal +
+                Spacing.s4.symmetric.horizontal,
           ),
           child: Text(
             "Select Date",
@@ -40,7 +41,8 @@ class DateSelector extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: dates.length,
             padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s4.symmetric.horizontal,
+              horizontal: Spacing.s8.symmetric.horizontal +
+                  Spacing.s4.symmetric.horizontal,
             ),
             itemBuilder: (context, index) {
               final date = dates[index];

@@ -14,6 +14,8 @@ class BookingSummaryCard extends StatelessWidget {
   final TimeSlot timeSlot;
   final String sessionType;
   final String notes;
+  final double price;
+  final int duration;
 
   const BookingSummaryCard({
     super.key,
@@ -22,6 +24,8 @@ class BookingSummaryCard extends StatelessWidget {
     required this.timeSlot,
     required this.sessionType,
     required this.notes,
+    required this.price,
+    required this.duration,
   });
 
   @override
@@ -94,14 +98,14 @@ class BookingSummaryCard extends StatelessWidget {
             context,
             Icons.access_time,
             "Duration",
-            "50 minutes",
+            "$duration minutes",
           ),
           Spacing.s12.h,
           _buildSummaryRow(
             context,
             Icons.payments_outlined,
             "Session Fee",
-            "₹1,500",
+            "\$${price.toStringAsFixed(0)}",
             valueColor: primary,
             valueWeight: FontWeight.w700,
           ),

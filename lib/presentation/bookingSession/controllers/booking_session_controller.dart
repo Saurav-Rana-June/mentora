@@ -4,7 +4,7 @@ import 'package:Mentora/presentation/bookingSession/models/booking_session_model
 import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
 
 class BookingSessionController extends GetxController {
-  // Wizard steps: 0 (Session Slot), 1 (Details), 2 (Review), 3 (Success)
+  // Wizard steps: 0 (Session Slot), 1 (Session Type), 2 (Details), 3 (Review), 4 (Success)
   final RxInt currentStep = 0.obs;
 
   // Selected details
@@ -13,7 +13,9 @@ class BookingSessionController extends GetxController {
   final Rxn<TimeSlot> selectedTimeSlot = Rxn<TimeSlot>();
   final RxString selectedSessionType =
       "Video Call".obs; // 'Video Call' or 'Voice Call'
+  final RxInt selectedDuration = 45.obs; // 15, 30, 45, 60 minutes
   final RxString sessionNotes = "".obs;
+  final RxDouble sessionPrice = 0.0.obs;
 
   final RxBool isLoading = false.obs;
 
@@ -53,6 +55,19 @@ class BookingSessionController extends GetxController {
     } else {
       selectedSessionType.value = "Video Call";
     }
+    updateSessionPrice();
+  }
+
+  void updateSessionPrice() {
+    final doctor = selectedDoctor.value;
+    if (doctor == null) {
+      sessionPrice.value = 0.0;
+      return;
+    }
+    final hourlyRate = doctor.startingPricePerHour ?? 100.0;
+    final modalityMultiplier = selectedSessionType.value == "Video Call" ? 1.0 : 0.8;
+    final durationFraction = selectedDuration.value / 60.0;
+    sessionPrice.value = hourlyRate * durationFraction * modalityMultiplier;
   }
 
   void selectDate(DateTime date) {
@@ -67,6 +82,12 @@ class BookingSessionController extends GetxController {
 
   void setSessionType(String type) {
     selectedSessionType.value = type;
+    updateSessionPrice();
+  }
+
+  void setSessionDuration(int minutes) {
+    selectedDuration.value = minutes;
+    updateSessionPrice();
   }
 
   void setSessionNotes(String notes) {
@@ -147,7 +168,7 @@ class BookingSessionController extends GetxController {
   }
 
   void nextStep() {
-    if (currentStep.value < 3) {
+    if (currentStep.value < 4) {
       currentStep.value++;
     }
   }
@@ -184,7 +205,8 @@ class BookingSessionController extends GetxController {
       final formattedDate =
           formatFullDate(selectedDate.value!) +
           " • " +
-          selectedTimeSlot.value!.time;
+          selectedTimeSlot.value!.time +
+          " (${selectedDuration.value} mins)";
 
       final newSession = SessionModel(
         expertName: docName,
@@ -201,7 +223,7 @@ class BookingSessionController extends GetxController {
       }
 
       // Move to success step
-      currentStep.value = 3;
+      currentStep.value = 4;
     } catch (e) {
       Get.snackbar(
         "Error",

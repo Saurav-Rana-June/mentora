@@ -16,6 +16,9 @@ class ReviewBookingView extends GetView<BookingSessionController> {
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,6 +64,8 @@ class ReviewBookingView extends GetView<BookingSessionController> {
               timeSlot: controller.selectedTimeSlot.value!,
               sessionType: controller.selectedSessionType.value,
               notes: controller.sessionNotes.value,
+              price: controller.sessionPrice.value,
+              duration: controller.selectedDuration.value,
             );
           }),
           Spacing.s24.h,

@@ -6,7 +6,6 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../../infrastructure/theme/theme.dart';
 import '../controllers/booking_session_controller.dart';
 import '../widgets/date_selector.dart';
-import '../widgets/session_type_selector.dart';
 import '../widgets/time_slot_selector.dart';
 
 class ChooseSessionView extends GetView<BookingSessionController> {
@@ -23,7 +22,8 @@ class ChooseSessionView extends GetView<BookingSessionController> {
           // Header info
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s4.symmetric.horizontal,
+              horizontal: Spacing.s8.symmetric.horizontal +
+                  Spacing.s4.symmetric.horizontal,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,23 +58,13 @@ class ChooseSessionView extends GetView<BookingSessionController> {
           }),
           Spacing.s24.h,
 
-          // Session type selector
-          Obx(() {
-            if (controller.selectedDoctor.value != null) {
-              return SessionTypeSelector(
-                expert: controller.selectedDoctor.value!,
-                selectedType: controller.selectedSessionType.value,
-                onTypeSelected: controller.setSessionType,
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-          Spacing.s24.h,
+
 
           // Time Slots Grid
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s4.symmetric.horizontal,
+              horizontal: Spacing.s8.symmetric.horizontal +
+                  Spacing.s4.symmetric.horizontal,
             ),
             child: Text(
               "Available Times",
@@ -85,27 +75,32 @@ class ChooseSessionView extends GetView<BookingSessionController> {
             ),
           ),
           Spacing.s12.h,
-          Obx(() {
-            if (controller.timeSlots.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Center(
-                  child: Text(
-                    "No available slots for this date.",
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodySmall!.color,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s8.symmetric.horizontal,
+            ),
+            child: Obx(() {
+              if (controller.timeSlots.isEmpty) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  child: Center(
+                    child: Text(
+                      "No available slots for this date.",
+                      style: r14.copyWith(
+                        color: theme.textTheme.bodySmall!.color,
+                      ),
                     ),
                   ),
-                ),
-              );
-            }
+                );
+              }
 
-            return TimeSlotSelector(
-              slots: controller.timeSlots,
-              selectedSlot: controller.selectedTimeSlot.value,
-              onSlotSelected: controller.selectTimeSlot,
-            );
-          }),
+              return TimeSlotSelector(
+                slots: controller.timeSlots,
+                selectedSlot: controller.selectedTimeSlot.value,
+                onSlotSelected: controller.selectTimeSlot,
+              );
+            }),
+          ),
           Spacing.s24.h,
         ],
       ),
