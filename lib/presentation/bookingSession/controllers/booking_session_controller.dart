@@ -4,7 +4,7 @@ import 'package:Mentora/presentation/bookingSession/models/booking_session_model
 import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
 
 class BookingSessionController extends GetxController {
-  // Wizard steps: 0 (Doctor), 1 (Session Slot), 2 (Details), 3 (Review), 4 (Success)
+  // Wizard steps: 0 (Session Slot), 1 (Details), 2 (Review), 3 (Success)
   final RxInt currentStep = 0.obs;
 
   // Selected details
@@ -147,7 +147,7 @@ class BookingSessionController extends GetxController {
   }
 
   void nextStep() {
-    if (currentStep.value < 4) {
+    if (currentStep.value < 3) {
       currentStep.value++;
     }
   }
@@ -201,7 +201,7 @@ class BookingSessionController extends GetxController {
       }
 
       // Move to success step
-      currentStep.value = 4;
+      currentStep.value = 3;
     } catch (e) {
       Get.snackbar(
         "Error",

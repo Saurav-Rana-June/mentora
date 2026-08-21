@@ -36,7 +36,8 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final String bio = widget.expert.bio ??
+    final String bio =
+        widget.expert.bio ??
         "Dr. ${widget.expert.name ?? 'Therapist'} is a highly dedicated ${widget.expert.speciality ?? 'Mental Health Professional'} specialized in supporting individuals with emotional resilience, mood improvements, and trauma healing. With over 8 years of experience, Dr. ${widget.expert.name ?? 'Therapist'} provides a compassionate, non-judgmental space for exploration, self-discovery, and personal growth.";
 
     return Scaffold(
@@ -187,7 +188,9 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
                         width: 13.r,
                         height: 13.r,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50), // Alive green indicator
+                          color: const Color(
+                            0xFF4CAF50,
+                          ), // Alive green indicator
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isDark ? slate[900]! : Colors.white,
@@ -232,9 +235,21 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildStatItem(context, "${widget.expert.rating?.toStringAsFixed(1) ?? '5.0'} ★", "${widget.expert.reviewsCount ?? 0}+ Reviews"),
-              buildStatItem(context, "${widget.expert.experienceYears ?? 0}+ Yrs", "Experience"),
-              buildStatItem(context, "${widget.expert.patientsCount ?? 0}+", "Patients"),
+              buildStatItem(
+                context,
+                "${widget.expert.rating?.toStringAsFixed(1) ?? '5.0'} ★",
+                "${widget.expert.reviewsCount ?? 0}+ Reviews",
+              ),
+              buildStatItem(
+                context,
+                "${widget.expert.experienceYears ?? 0}+ Yrs",
+                "Experience",
+              ),
+              buildStatItem(
+                context,
+                "${widget.expert.patientsCount ?? 0}+",
+                "Patients",
+              ),
             ],
           ),
           Spacing.s16.h,
@@ -244,12 +259,12 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              buildActionButton(
-                context,
-                Icons.chat_bubble_outline_rounded,
-                "Chat",
-                true,
-              ),
+              // buildActionButton(
+              //   context,
+              //   Icons.chat_bubble_outline_rounded,
+              //   "Chat",
+              //   true,
+              // ),
               buildActionButton(
                 context,
                 Icons.phone_outlined,
@@ -320,7 +335,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
               : null,
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
-            width: 80.w,
+            width: 132.w,
             padding: EdgeInsets.symmetric(vertical: 8.h),
             decoration: BoxDecoration(
               color: isEnabled

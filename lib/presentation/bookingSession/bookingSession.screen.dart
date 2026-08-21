@@ -109,6 +109,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
   Widget buildBody(BuildContext context) {
     return Column(
       children: [
+        Spacing.s16.h,
         Obx(() => buildStepIndicator(context, controller.currentStep.value)),
         Spacing.s12.h,
         Expanded(
@@ -143,141 +144,143 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: Spacing.s16.value.w,
-        vertical: Spacing.s12.value.h,
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-      decoration: BoxDecoration(
-        color: isDark ? slate[800] : Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: isDark
-              ? slate[700]!
-              : theme.dividerColor.withValues(alpha: 0.05),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(steps.length, (index) {
-          final isCompleted = index < currentStep;
-          final isActive = index == currentStep;
-
-          return Expanded(
-            child: Row(
-              children: [
-                // Step pill container
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? primary.withValues(alpha: 0.08)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20.r),
+    return Stack(
+      children: [
+        // Background Connecting Lines
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 32.r, // Centered vertically with 32.r height circles
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(flex: 1),
+              ...List.generate(steps.length - 1, (index) {
+                final isLineCompleted = index < currentStep;
+                return Expanded(
+                  flex: 2,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 350),
+                    curve: Curves.easeInOut,
+                    height: 3.h,
+                    decoration: BoxDecoration(
+                      color: isLineCompleted
+                          ? primary
+                          : (isDark ? slate[700] : slate[200]),
+                      borderRadius: BorderRadius.circular(1.5.h),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Circle Indicator
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        width: 24.r,
-                        height: 24.r,
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? primary
-                              : isCompleted
-                              ? primary.withValues(alpha: 0.15)
-                              : (isDark ? slate[700] : slate[200]),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isActive
-                                ? primary
-                                : isCompleted
-                                ? primary
-                                : (isDark ? slate[600]! : slate[300]!),
-                            width: 1.5,
-                          ),
-                          boxShadow: isActive
-                              ? [
-                                  BoxShadow(
-                                    color: primary.withValues(alpha: 0.3),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Center(
-                          child: isCompleted
-                              ? Icon(
-                                  Icons.check_rounded,
-                                  size: 14.r,
+                );
+              }),
+              const Spacer(flex: 1),
+            ],
+          ),
+        ),
+
+        // Steps (Circles & Labels)
+        Row(
+          children: List.generate(steps.length, (index) {
+            final isCompleted = index < currentStep;
+            final isActive = index == currentStep;
+
+            return Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Circle Indicator
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 32.r,
+                    height: 32.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isCompleted
+                          ? primary
+                          : isActive
+                          ? theme.cardTheme.color
+                          : (isDark ? slate[800] : slate[50]),
+                      border: Border.all(
+                        color: isCompleted || isActive
+                            ? primary
+                            : (isDark ? slate[700]! : slate[300]!),
+                        width: isActive ? 2 : 1.5,
+                      ),
+                      boxShadow: isActive
+                          ? [
+                              BoxShadow(
+                                color: primary.withValues(alpha: 0.25),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: isCompleted
+                            ? Icon(
+                                Icons.check_rounded,
+                                key: const ValueKey("check"),
+                                size: 18.r,
+                                color: Colors.white,
+                              )
+                            : isActive
+                            ? Container(
+                                key: const ValueKey("active"),
+                                width: 20.r,
+                                height: 20.r,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
                                   color: primary,
-                                )
-                              : Text(
-                                  (index + 1).toString(),
-                                  style: r12.copyWith(
-                                    color: isActive
-                                        ? Colors.white
-                                        : (isDark ? slate[300] : slate[600]),
-                                    fontWeight: FontWeight.bold,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    (index + 1).toString(),
+                                    style: r10.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                        ),
-                      ),
-                      Spacing.s8.w,
-
-                      // Label
-                      Text(
-                        steps[index],
-                        style: r13.copyWith(
-                          color: isActive
-                              ? primary
-                              : isCompleted
-                              ? (isDark ? slate[200] : slate[700])
-                              : (isDark ? slate[400] : slate[500]),
-                          fontWeight: isActive
-                              ? FontWeight.w700
-                              : FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Connecting progress line
-                if (index < steps.length - 1) ...[
-                  Spacing.s8.w,
-                  Expanded(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      height: 2.h,
-                      decoration: BoxDecoration(
-                        color: isCompleted
-                            ? primary
-                            : (isDark ? slate[700] : slate[200]),
-                        borderRadius: BorderRadius.circular(1.r),
+                              )
+                            : Text(
+                                (index + 1).toString(),
+                                key: const ValueKey("upcoming"),
+                                style: r12.copyWith(
+                                  color: isDark ? slate[400] : slate[500],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ),
-                  Spacing.s8.w,
+                  Spacing.s8.h,
+
+                  // Label
+                  Text(
+                    steps[index],
+                    style: r12.copyWith(
+                      color: isActive
+                          ? primary
+                          : isCompleted
+                          ? (isDark ? slate[200] : slate[700])
+                          : (isDark ? slate[500] : slate[400]),
+                      fontWeight: isActive
+                          ? FontWeight.w700
+                          : isCompleted
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
-              ],
-            ),
-          );
-        }),
-      ),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 

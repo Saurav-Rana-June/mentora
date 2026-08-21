@@ -17,7 +17,6 @@ class ChooseSessionView extends GetView<BookingSessionController> {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
