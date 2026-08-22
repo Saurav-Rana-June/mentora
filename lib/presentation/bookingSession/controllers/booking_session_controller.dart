@@ -3,6 +3,7 @@ import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
 import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
+import '../../../infrastructure/navigation/routes.dart';
 
 class BookingSessionController extends GetxController {
   // Wizard steps: 0 (Session Slot), 1 (Session Type), 2 (Details), 3 (Review), 4 (Success)
@@ -78,7 +79,9 @@ class BookingSessionController extends GetxController {
       return;
     }
     final hourlyRate = doctor.startingPricePerHour ?? 100.0;
-    final modalityMultiplier = selectedSessionType.value == "Video Call" ? 1.0 : 0.8;
+    final modalityMultiplier = selectedSessionType.value == "Video Call"
+        ? 1.0
+        : 0.8;
     final durationFraction = selectedDuration.value / 60.0;
     sessionPrice.value = hourlyRate * durationFraction * modalityMultiplier;
   }
@@ -193,59 +196,7 @@ class BookingSessionController extends GetxController {
   }
 
   Future<void> bookSession() async {
-    if (selectedDoctor.value == null ||
-        selectedDate.value == null ||
-        selectedTimeSlot.value == null) {
-      Get.snackbar(
-        "Invalid Selection",
-        "Please select a doctor, date, and time slot.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    try {
-      isLoading.value = true;
-      // Simulate network request
-      await Future.delayed(const Duration(milliseconds: 1500));
-
-      // Build SessionModel
-      final docName = selectedDoctor.value?.name ?? "Therapist";
-      final docSpecialty = selectedDoctor.value?.speciality ?? "Specialist";
-      final docImage =
-          selectedDoctor.value?.image ??
-          "https://randomuser.me/api/portraits/men/32.jpg";
-      final formattedDate =
-          formatFullDate(selectedDate.value!) +
-          " • " +
-          selectedTimeSlot.value!.time +
-          " (${selectedDuration.value} mins)";
-
-      final newSession = SessionModel(
-        expertName: docName,
-        specialty: docSpecialty,
-        imageUrl: docImage,
-        dateTime: formattedDate,
-        callType: selectedSessionType.value,
-        status: "Confirmed",
-      );
-
-      // Add to SessionsController if registered
-      if (Get.isRegistered<SessionsController>()) {
-        Get.find<SessionsController>().addSession(newSession);
-      }
-
-      // Move to success step
-      currentStep.value = 4;
-    } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Could not book your session. Please try again.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } finally {
-      isLoading.value = false;
-    }
+    Get.toNamed(Routes.BOOKING_CONFIRMATION);
   }
 
   String formatBookingDate(DateTime date) {

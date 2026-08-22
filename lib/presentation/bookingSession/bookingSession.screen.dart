@@ -13,7 +13,6 @@ import 'views/choose_session_view.dart';
 import 'views/session_type_view.dart';
 import 'views/session_details_view.dart';
 import 'views/review_booking_view.dart';
-import 'views/booking_success_view.dart';
 
 class BookingSessionScreen extends GetView<BookingSessionController> {
   BookingSessionScreen({super.key});
@@ -126,8 +125,6 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
                 return const SessionDetailsView();
               case 3:
                 return const ReviewBookingView();
-              case 4:
-                return const BookingSuccessView();
               default:
                 return const ChooseSessionView();
             }

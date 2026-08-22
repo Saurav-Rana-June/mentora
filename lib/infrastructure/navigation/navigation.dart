@@ -147,5 +147,9 @@ class Nav {
       page: () => DoctorListScreen(),
       binding: DoctorListControllerBinding(),
     ),
+    GetPage(
+      name: Routes.BOOKING_CONFIRMATION,
+      page: () => const BookingConfirmationScreen(),
+    ),
   ];
 }

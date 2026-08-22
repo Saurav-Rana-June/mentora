@@ -32,4 +32,5 @@ class Routes {
   static const VIDEO_SESSION = '/video-session';
   static const BOOKING_SESSION = '/booking-session';
   static const DOCTOR_LIST = '/doctor-list';
+  static const BOOKING_CONFIRMATION = '/booking-confirmation';
 }
