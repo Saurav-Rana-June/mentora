@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
@@ -31,6 +32,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: _buildAppbar(context),
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -61,6 +63,51 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
           ),
         ),
         bottomNavigationBar: _buildActionButtons(context),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppbar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColorLight,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      automaticallyImplyLeading: false,
+      leading: Center(
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            splashColor: primary.withValues(alpha: 0.3),
+            onTap: () {
+              Get.close(2);
+            },
+            child: Container(
+              height: 40.h,
+              width: 40.h,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: Center(
+                child: Text(
+                  MyIcons.chevronLeft,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeLight',
+                    fontSize: 20,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      title: Text(
+        "Booking Confirmed",
+        style: h2.copyWith(
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -323,7 +370,9 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
           CustomPrimaryButton(
             text: "View My Sessions",
             onPressed: () {
-              Get.close(2); // Returns to Sessions screen which refreshes automatically
+              Get.close(
+                2,
+              ); // Returns to Sessions screen which refreshes automatically
             },
             height: 48.h,
             borderRadius: 26.r,
