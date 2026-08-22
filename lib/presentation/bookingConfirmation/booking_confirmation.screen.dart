@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
+import '../../widgets/others/custom.primary.bottombar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../bookingSession/controllers/booking_session_controller.dart';
 
@@ -53,14 +54,13 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
                     ),
                   Spacing.s32.h,
                   _buildNextStepsSection(context),
-                  Spacing.s40.h,
-                  _buildActionButtons(context),
                   Spacing.s24.h,
                 ],
               ),
             ),
           ),
         ),
+        bottomNavigationBar: _buildActionButtons(context),
       ),
     );
   }
@@ -304,53 +304,72 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
 
   Widget _buildActionButtons(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      children: [
-        // Primary CTA Button (dominating)
-        CustomPrimaryButton(
-          text: "View My Sessions",
-          onPressed: () {
-            Get.close(2); // Returns to Sessions screen which refreshes automatically
-          },
-          height: 48.h,
-          borderRadius: 26.r,
-          backgroundColor: primary,
-          textColor: Colors.white,
+    return CustomPrimaryBottomBar(
+      backgroundColor: theme.cardTheme.color,
+      border: Border(
+        top: BorderSide(
+          color: theme.dividerColor.withValues(alpha: 0.08),
+          width: 1,
         ),
-        Spacing.s12.h,
-
-        // Secondary subtle link button
-        TextButton(
-          onPressed: () {
-            Get.snackbar(
-              "Calendar",
-              "Session added to your Google Calendar!",
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: primary,
-              colorText: Colors.white,
-            );
-          },
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: 15.r,
-                color: theme.textTheme.bodySmall!.color,
-              ),
-              Spacing.s8.w,
-              Text(
-                "Add to Calendar",
-                style: r12.copyWith(
-                  color: theme.textTheme.bodySmall!.color,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.symmetric.horizontal,
+        vertical: Spacing.s12.symmetric.vertical,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Primary CTA Button (dominating)
+          CustomPrimaryButton(
+            text: "View My Sessions",
+            onPressed: () {
+              Get.close(2); // Returns to Sessions screen which refreshes automatically
+            },
+            height: 48.h,
+            borderRadius: 26.r,
+            backgroundColor: primary,
+            textColor: Colors.white,
           ),
-        ),
-      ],
+          Spacing.s8.h,
+
+          // Secondary subtle link button
+          TextButton(
+            onPressed: () {
+              Get.snackbar(
+                "Calendar",
+                "Session added to your Google Calendar!",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: primary,
+                colorText: Colors.white,
+              );
+            },
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(0, 0),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.calendar_today_rounded,
+                  size: 15.r,
+                  color: theme.textTheme.bodySmall!.color,
+                ),
+                Spacing.s8.w,
+                Text(
+                  "Add to Calendar",
+                  style: r12.copyWith(
+                    color: theme.textTheme.bodySmall!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

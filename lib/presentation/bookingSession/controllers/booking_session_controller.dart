@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
-import 'package:Mentora/presentation/sessions/controllers/sessions.controller.dart';
 import '../../../infrastructure/navigation/routes.dart';
 
 class BookingSessionController extends GetxController {
