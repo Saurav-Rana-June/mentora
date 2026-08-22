@@ -8,6 +8,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:Mentora/widgets/fields/custom_dropdownfield.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:my_icons/icons.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
@@ -31,8 +32,7 @@ class EditAccountScreen extends GetView<EditAccountController> {
         body: buildBody(context),
         bottomNavigationBar: Obx(() {
           final isLoading = controller.globalController.isLoadingProfile.value;
-          return Container(
-            color: Theme.of(context).primaryColorLight,
+          return CustomPrimaryBottomBar(
             padding: EdgeInsets.symmetric(
               horizontal: Spacing.s16.value,
               vertical: Spacing.s16.value,

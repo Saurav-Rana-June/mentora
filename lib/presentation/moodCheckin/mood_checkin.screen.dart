@@ -10,6 +10,7 @@ import 'package:Mentora/presentation/moodCheckin/views/reason_selection.view.dar
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
@@ -34,8 +35,8 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
     );
   }
 
-  Padding buildButton() {
-    return Padding(
+  Widget buildButton() {
+    return CustomPrimaryBottomBar(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s4.symmetric.vertical,

@@ -1,6 +1,7 @@
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -58,8 +59,8 @@ class AllSetScreen extends GetView<AllSetController> {
     );
   }
 
-  Padding buildButton() {
-    return Padding(
+  Widget buildButton() {
+    return CustomPrimaryBottomBar(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s4.symmetric.vertical,

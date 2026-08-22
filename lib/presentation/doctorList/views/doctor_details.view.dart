@@ -10,6 +10,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.pill.widget.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'all_reviews.view.dart';
 
@@ -376,60 +377,44 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
   }
 
   Widget buildBottomCTA(BuildContext context, ThemeData theme, bool isDark) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s8.symmetric.horizontal,
-      ),
-      decoration: BoxDecoration(
-        color: theme.primaryColorLight,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
+    return CustomPrimaryBottomBar(
+      child: Row(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Starting From",
+                style: r12.copyWith(color: theme.textTheme.bodySmall!.color),
+              ),
+              // Spacing.s4.h,
+              Text(
+                "\$${widget.expert.startingPricePerHour?.toStringAsFixed(2) ?? '25.00'}/hr",
+                style: h3.copyWith(
+                  color: theme.textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          Spacing.s24.w,
+          Expanded(
+            child: CustomPrimaryButton(
+              text: "Book Session",
+              height: 48.h,
+              borderRadius: 14.r,
+              backgroundColor: primary,
+              textStyle: r16.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+              onPressed: () {
+                Get.toNamed(Routes.BOOKING_SESSION, arguments: widget.expert);
+              },
+            ),
           ),
         ],
-      ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Starting From",
-                  style: r12.copyWith(color: theme.textTheme.bodySmall!.color),
-                ),
-                // Spacing.s4.h,
-                Text(
-                  "\$${widget.expert.startingPricePerHour?.toStringAsFixed(2) ?? '25.00'}/hr",
-                  style: h3.copyWith(
-                    color: theme.textTheme.bodyLarge!.color,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            Spacing.s24.w,
-            Expanded(
-              child: CustomPrimaryButton(
-                text: "Book Session",
-                height: 48.h,
-                borderRadius: 14.r,
-                backgroundColor: primary,
-                textStyle: r16.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-                onPressed: () {
-                  Get.toNamed(Routes.BOOKING_SESSION, arguments: widget.expert);
-                },
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

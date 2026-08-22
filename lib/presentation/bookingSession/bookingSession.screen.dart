@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
+import '../../widgets/others/custom.primary.bottombar.dart';
 import 'controllers/booking_session_controller.dart';
 import 'views/choose_session_view.dart';
 import 'views/session_type_view.dart';
@@ -304,19 +305,18 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
         buttonText = "Confirm Booking";
       }
 
-      return Container(
+      return CustomPrimaryBottomBar(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.08),
+            width: 1,
+          ),
+        ),
+        boxShadow: const [],
         padding: EdgeInsets.symmetric(
           horizontal: Spacing.s8.symmetric.horizontal,
           vertical: Spacing.s8.symmetric.vertical,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          border: Border(
-            top: BorderSide(
-              color: Theme.of(context).dividerColor.withValues(alpha: 0.08),
-              width: 1,
-            ),
-          ),
         ),
         child: CustomPrimaryButton(
           text: buttonText,
