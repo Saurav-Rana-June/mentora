@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
+import '../../widgets/buttons/custom_outline_button.widget.dart';
 import '../../widgets/others/custom.primary.bottombar.dart';
 import 'controllers/booking_session_controller.dart';
 import 'views/choose_session_view.dart';
@@ -305,6 +306,25 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
         buttonText = "Confirm Booking";
       }
 
+      final isLight = Theme.of(context).brightness == Brightness.light;
+      final continueButton = CustomPrimaryButton(
+        text: buttonText,
+        isLoading: controller.isLoading.value,
+        backgroundColor: primary,
+        textColor: Colors.white,
+        height: 42.h,
+        borderRadius: 26.r,
+        onPressed: isEnabled
+            ? () {
+                if (step == 3) {
+                  controller.bookSession();
+                } else {
+                  controller.nextStep();
+                }
+              }
+            : null,
+      );
+
       return CustomPrimaryBottomBar(
         backgroundColor: Theme.of(context).cardTheme.color,
         border: Border(
@@ -313,24 +333,31 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
             width: 1,
           ),
         ),
-        boxShadow: const [],
         padding: EdgeInsets.symmetric(
           horizontal: Spacing.s8.symmetric.horizontal,
           vertical: Spacing.s8.symmetric.vertical,
         ),
-        child: CustomPrimaryButton(
-          text: buttonText,
-          isLoading: controller.isLoading.value,
-          onPressed: isEnabled
-              ? () {
-                  if (step == 3) {
-                    controller.bookSession();
-                  } else {
-                    controller.nextStep();
-                  }
-                }
-              : null,
-        ),
+        child: step > 0
+            ? Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: CustomOutlineButton(
+                      label: "Back",
+                      onTap: () {
+                        controller.previousStep();
+                      },
+                      height: 42.h,
+                      borderRadius: 26.r,
+                      borderColor: isLight ? primary : slate[600],
+                      textColor: isLight ? primary : Colors.white70,
+                    ),
+                  ),
+                  Spacing.s16.w,
+                  Expanded(flex: 2, child: continueButton),
+                ],
+              )
+            : continueButton,
       );
     });
   }

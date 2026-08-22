@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
@@ -19,6 +20,8 @@ class BookingSessionController extends GetxController {
 
   final RxBool isLoading = false.obs;
 
+  final TextEditingController notesController = TextEditingController();
+
   // Available lists
   final RxList<DateTime> availableDates = <DateTime>[].obs;
   final RxList<TimeSlot> timeSlots = <TimeSlot>[].obs;
@@ -26,10 +29,20 @@ class BookingSessionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    notesController.text = sessionNotes.value;
+    notesController.addListener(() {
+      sessionNotes.value = notesController.text;
+    });
     if (Get.arguments is Expert) {
       selectDoctor(Get.arguments as Expert);
     }
     generateAvailableDates();
+  }
+
+  @override
+  void onClose() {
+    notesController.dispose();
+    super.onClose();
   }
 
   void generateAvailableDates() {
