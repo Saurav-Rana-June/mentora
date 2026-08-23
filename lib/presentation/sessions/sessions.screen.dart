@@ -10,6 +10,7 @@ import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../../widgets/others/custom.divider.dart';
 import '../../widgets/others/custom.screen.wrapper.dart';
+import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'controllers/sessions.controller.dart';
 
 class SessionsScreen extends GetView<SessionsController> {
@@ -384,35 +385,21 @@ class SessionsScreen extends GetView<SessionsController> {
 
             if (!isCompleted) ...[
               Spacing.s20.h,
-              Material(
-                color: primary,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Join Session",
-                          style: r14.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Spacing.s8.w,
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
+              CustomPrimaryButton(
+                text: "Join Session",
+                borderRadius: 12,
+                height: 45.h,
+                backgroundColor: primary,
+                suffixIcon: const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: Colors.white,
                 ),
+                textStyle: r14.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: () {},
               ),
             ],
           ],
