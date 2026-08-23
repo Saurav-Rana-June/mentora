@@ -273,6 +273,18 @@ class BookingSessionController extends GetxController {
     sessionNotes.value = notes;
   }
 
+  void nextStep() {
+    if (currentStep.value < 4) {
+      currentStep.value++;
+    }
+  }
+
+  void previousStep() {
+    if (currentStep.value > 0) {
+      currentStep.value--;
+    }
+  }
+
   Future<void> bookSession() async {
     final doctor = selectedDoctor.value;
     final date = selectedDate.value;
