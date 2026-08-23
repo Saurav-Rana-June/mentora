@@ -8,6 +8,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.searchbar.widget.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'controllers/video_session.controller.dart';
 import 'widgets/video_card.dart';
 import 'widgets/video_content_loading.dart';
@@ -22,8 +23,7 @@ class VideoSessionScreen extends GetView<VideoSessionController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );

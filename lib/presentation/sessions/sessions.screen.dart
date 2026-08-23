@@ -9,6 +9,7 @@ import '../../infrastructure/theme/theme.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../../widgets/others/custom.divider.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import 'controllers/sessions.controller.dart';
 
 class SessionsScreen extends GetView<SessionsController> {
@@ -19,8 +20,7 @@ class SessionsScreen extends GetView<SessionsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
       floatingActionButton: buildFloatingActionButton(context),

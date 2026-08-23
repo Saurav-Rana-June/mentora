@@ -10,6 +10,7 @@ import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import '../controllers/journaling.controller.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
@@ -110,8 +111,7 @@ class _JournalQuestionDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );

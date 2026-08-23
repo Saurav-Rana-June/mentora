@@ -2,6 +2,7 @@ import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,17 +29,13 @@ class IntroductionScreen extends GetView<IntroductionController> {
       ),
     );
 
-    return Scaffold(
-      body: SafeArea(
-        top: false,
-        child: Container(
-          child: Stack(
-            children: [
-              buildBackgroundImageSection(),
-              buildMainContentSection(context),
-            ],
-          ),
-        ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      body: Stack(
+        children: [
+          buildBackgroundImageSection(),
+          buildMainContentSection(context),
+        ],
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import 'controllers/sleep.controller.dart';
 import 'package:Mentora/data/model/sound.model.dart';
 import 'package:Mentora/data/model/calm_music.model.dart';
@@ -67,13 +68,10 @@ class _SleepScreenState extends State<SleepScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        appBar: buildAppbar(context),
-        body: buildBody(context),
-      ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      appBar: buildAppbar(context),
+      body: buildBody(context),
     );
   }
 

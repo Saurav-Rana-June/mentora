@@ -11,6 +11,7 @@ import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
 import 'package:Mentora/presentation/videoSession/controllers/video_session.controller.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
 class VideoSessionDetailView extends StatefulWidget {
@@ -89,8 +90,7 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: _buildAppbar(context),
       body: _buildBody(context),
     );

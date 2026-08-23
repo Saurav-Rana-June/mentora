@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/others/custom.searchbar.widget.dart';
 import '../../widgets/others/custom.circular.progressbar.dart';
 import 'controllers/doctor_list_controller.dart';
@@ -20,15 +21,10 @@ class DoctorListScreen extends GetView<DoctorListController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: theme.primaryColorLight,
-        appBar: buildAppbar(context),
-        body: buildBody(context),
-      ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      appBar: buildAppbar(context),
+      body: buildBody(context),
     );
   }
 

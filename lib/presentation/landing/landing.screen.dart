@@ -2,6 +2,7 @@ import 'package:Mentora/controllers/bottom.nav.controller.dart';
 import 'package:Mentora/data/model/page.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/landing/controllers/landing.controller.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,23 +18,20 @@ class LandingScreen extends GetView<LandingController> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        key: _landingController.scaffoldKey,
-        body: Obx(
-          () => AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, animation) =>
-                FadeTransition(opacity: animation, child: child),
-            child: _bottomNavController
-                .pages[_bottomNavController.tabIndex.value]
-                .widget,
-          ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      scaffoldKey: _landingController.scaffoldKey,
+      body: Obx(
+        () => AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) =>
+              FadeTransition(opacity: animation, child: child),
+          child: _bottomNavController
+              .pages[_bottomNavController.tabIndex.value]
+              .widget,
         ),
-
-        bottomNavigationBar: _buildBottomNavigationBar(context),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 

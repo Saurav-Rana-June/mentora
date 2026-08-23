@@ -6,6 +6,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'doctor_details.view.dart'; // import MockReview and _reviews
 
 class AllReviewsView extends StatelessWidget {
@@ -15,12 +16,9 @@ class AllReviewsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
-      body: buildBody(context, theme),
+      body: buildBody(context, Theme.of(context)),
     );
   }
 

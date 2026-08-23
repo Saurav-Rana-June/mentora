@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import 'controllers/continue.controller.dart';
 
 class ContinueScreen extends GetView<ContinueController> {
@@ -26,7 +27,10 @@ class ContinueScreen extends GetView<ContinueController> {
       ),
     );
 
-    return Scaffold(body: SafeArea(top: false, child: buildBody(context)));
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      body: buildBody(context),
+    );
   }
 
   Padding buildBody(BuildContext context) {

@@ -11,6 +11,7 @@ import 'package:Mentora/data/enums/date_filter_enum.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:my_icons/icons.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
@@ -23,8 +24,8 @@ class MoodHistoryView extends StatelessWidget {
     final theme = Theme.of(context);
     final controller = Get.find<MoodCheckinController>();
 
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
+    return CustomScreenWrapper(
+      safeAreaTop: false,
       appBar: CustomPrimaryAppBar(
         title: Text(
           "Mood History",
@@ -39,10 +40,8 @@ class MoodHistoryView extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: SafeArea(
-        top: false,
-        child: RefreshIndicator(
-          onRefresh: () async {
+      body: RefreshIndicator(
+        onRefresh: () async {
             await controller.globalController.fetchMoodHistory();
           },
           child: Column(
@@ -398,8 +397,7 @@ class MoodHistoryView extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildFilterChips(

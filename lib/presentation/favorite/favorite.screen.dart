@@ -10,6 +10,7 @@ import 'package:my_spacing/spacing.enum.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../chatExperts/views/chat_experts_history.view.dart';
 import 'controllers/favorite.controller.dart';
 
@@ -21,8 +22,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: SingleChildScrollView(
         child: Column(

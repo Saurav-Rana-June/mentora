@@ -10,6 +10,7 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 import 'package:Mentora/presentation/meditation/controllers/meditation.controller.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
@@ -21,9 +22,9 @@ class ExploreScreen extends GetView<ExploreController> {
   @override
   final controller = Get.put(ExploreController());
 
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: SingleChildScrollView(
         child: Column(

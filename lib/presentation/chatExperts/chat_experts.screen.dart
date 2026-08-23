@@ -11,6 +11,7 @@ import 'package:my_spacing/spacing.enum.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import 'controllers/chat_experts.controller.dart';
 
@@ -36,8 +37,8 @@ class ChatExpertsScreen extends GetView<ChatExpertsController> {
         child: body,
       );
     }
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
+      useSafeArea: false,
       appBar: buildAppbar(context),
       body: body,
     );

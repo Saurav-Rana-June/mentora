@@ -9,6 +9,7 @@ import '../../widgets/buttons/custom_primary_button.widget.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.bottombar.dart';
 import '../../widgets/others/custom.primary.card.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../bookingSession/controllers/booking_session_controller.dart';
 
 class BookingConfirmationScreen extends GetView<BookingSessionController> {
@@ -25,46 +26,28 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
     final timeStr = controller.selectedTimeSlot.value?.time ?? "";
     final sessionType = controller.selectedSessionType.value;
 
-    return PopScope(
+    return CustomScreenWrapper(
+      backgroundColor: theme.scaffoldBackgroundColor,
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         Get.close(2);
       },
-      child: Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: _buildAppbar(context),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildSuccessHeader(context, doctorName),
-                  Spacing.s32.h,
-                  if (doctor != null)
-                    _buildSuccessDetails(
-                      context,
-                      doctor,
-                      formattedDate,
-                      timeStr,
-                      sessionType,
-                    ),
-                  Spacing.s32.h,
-                  _buildNextStepsSection(context),
-                  Spacing.s24.h,
-                ],
-              ),
-            ),
+      appBar: _buildAppbar(context),
+      body: Center(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s8.symmetric.horizontal,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [],
           ),
         ),
-        bottomNavigationBar: _buildActionButtons(context),
       ),
+      bottomNavigationBar: _buildActionButtons(context),
     );
   }
 
@@ -357,7 +340,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
         ),
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s16.symmetric.horizontal,
+        horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s8.symmetric.vertical,
       ),
       child: Column(

@@ -11,6 +11,7 @@ import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
 import 'controllers/chat_a_i.controller.dart';
@@ -33,9 +34,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
           final body = buildBody(context);
           return RepaintBoundary(
             key: controller.exportKey,
-            child: Scaffold(
-              backgroundColor: Theme.of(context).primaryColorLight,
-              body: SafeArea(top: false, child: body),
+            child: CustomScreenWrapper(
+              safeAreaTop: false,
+              body: body,
             ),
           );
         },

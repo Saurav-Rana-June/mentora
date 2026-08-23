@@ -4,6 +4,7 @@ import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:Mentora/widgets/others/custom.check.box.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,14 +23,12 @@ class SignUpScreen extends GetView<SignUpController> {
   final controller = Get.put(SignUpController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
       appBar: buildAppbar(),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          alignment: AlignmentGeometry.bottomCenter,
-          children: [buildForm(context), buildButton()],
-        ),
+      body: Stack(
+        alignment: AlignmentGeometry.bottomCenter,
+        children: [buildForm(context), buildButton()],
       ),
     );
   }

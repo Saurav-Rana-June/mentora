@@ -8,6 +8,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../../infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import '../../../widgets/others/custom.primary.appbar.dart';
+import '../../../widgets/others/custom.screen.wrapper.dart';
 import '../../../widgets/buttons/custom_back_button.widet.dart';
 
 class ChatExpertHistoryView extends GetView<ChatExpertsController> {
@@ -15,8 +16,7 @@ class ChatExpertHistoryView extends GetView<ChatExpertsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: Padding(
         padding: EdgeInsets.symmetric(

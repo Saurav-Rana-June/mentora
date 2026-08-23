@@ -9,6 +9,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import '../controllers/breathing.controller.dart';
 import 'package:Mentora/data/model/breathing_pattern.model.dart';
 
@@ -61,10 +62,9 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
-      body: SafeArea(child: Obx(() => buildBodyContent(context))),
+      body: Obx(() => buildBodyContent(context)),
     );
   }
 

@@ -12,6 +12,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
@@ -25,14 +26,11 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
   const MoodCheckinScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        appBar: buildAppbar(context),
-        body: Obx(() => bodyWidget(controller.currentIndex.value)),
-        bottomNavigationBar: Obx(() => buildButton()),
-      ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      appBar: buildAppbar(context),
+      body: Obx(() => bodyWidget(controller.currentIndex.value)),
+      bottomNavigationBar: Obx(() => buildButton()),
     );
   }
 

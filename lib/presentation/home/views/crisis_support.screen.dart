@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../../infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import '../controllers/home.controller.dart';
 
 class CrisisSupportScreen extends StatefulWidget {
@@ -153,8 +154,7 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
+    return CustomScreenWrapper(
       appBar: CustomPrimaryAppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),

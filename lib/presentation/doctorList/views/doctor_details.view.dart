@@ -12,6 +12,7 @@ import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.pill.widget.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'all_reviews.view.dart';
 
@@ -42,8 +43,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
         widget.expert.bio ??
         "Dr. ${widget.expert.name ?? 'Therapist'} is a highly dedicated ${widget.expert.speciality ?? 'Mental Health Professional'} specialized in supporting individuals with emotional resilience, mood improvements, and trauma healing. With over 8 years of experience, Dr. ${widget.expert.name ?? 'Therapist'} provides a compassionate, non-judgmental space for exploration, self-discovery, and personal growth.";
 
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context, theme, isDark, bio),
       bottomNavigationBar: buildBottomCTA(context, theme, isDark),

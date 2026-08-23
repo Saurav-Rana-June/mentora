@@ -3,6 +3,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/others/custom.switch.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +27,10 @@ class AccountScreen extends GetView<AccountController> {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        appBar: buildAppbar(context),
-        body: SizedBox(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      appBar: buildAppbar(context),
+      body: SizedBox(
           width: Get.width,
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
@@ -216,8 +215,7 @@ class AccountScreen extends GetView<AccountController> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget buildUpgradeBanner(BuildContext context) {

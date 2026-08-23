@@ -9,6 +9,7 @@ import '../../widgets/buttons/custom_primary_button.widget.dart';
 import '../../widgets/buttons/custom_outline_button.widget.dart';
 import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.bottombar.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import 'controllers/booking_session_controller.dart';
 import 'views/choose_session_view.dart';
 import 'views/session_type_view.dart';
@@ -23,30 +24,23 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     // Handle android physical back button behavior
-    return SafeArea(
-      top: false,
-      child: Obx(() {
-        final step = controller.currentStep.value;
+    return Obx(() {
+      final step = controller.currentStep.value;
 
-        return PopScope(
-          canPop: step == 0 || step >= 4,
-          onPopInvokedWithResult: (didPop, result) {
-            if (!didPop && step > 0 && step < 4) {
-              controller.previousStep();
-            }
-          },
-          child: Scaffold(
-            backgroundColor: theme.primaryColorLight,
-            appBar: buildAppbar(context),
-            body: buildBody(context),
-            bottomNavigationBar: buildBottomCTA(context),
-          ),
-        );
-      }),
-    );
+      return CustomScreenWrapper(
+        safeAreaTop: false,
+        canPop: step == 0 || step >= 4,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && step > 0 && step < 4) {
+            controller.previousStep();
+          }
+        },
+        appBar: buildAppbar(context),
+        body: buildBody(context),
+        bottomNavigationBar: buildBottomCTA(context),
+      );
+    });
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {

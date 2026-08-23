@@ -3,6 +3,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.linear.progress.bar.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -19,17 +20,15 @@ class OnboardingScreen extends GetView<OnboardingController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
       appBar: buildAppbar(context),
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            Obx(() => Expanded(child: controller.getCurrentView())),
+      body: Column(
+        children: [
+          Obx(() => Expanded(child: controller.getCurrentView())),
 
-            buildButton(),
-          ],
-        ),
+          buildButton(),
+        ],
       ),
     );
   }

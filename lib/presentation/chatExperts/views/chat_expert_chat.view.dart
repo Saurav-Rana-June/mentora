@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../../widgets/buttons/custom_back_button.widet.dart';
 import '../../../widgets/others/custom.primary.appbar.dart';
+import '../../../widgets/others/custom.screen.wrapper.dart';
 import '../controllers/chat_experts.controller.dart';
 
 class ChatExpertChatView extends GetView<ChatExpertsController> {
@@ -17,8 +18,7 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );

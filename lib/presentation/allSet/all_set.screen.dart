@@ -2,6 +2,7 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,10 +16,9 @@ class AllSetScreen extends GetView<AllSetController> {
   const AllSetScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        body: Padding(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      body: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: Spacing.s16.symmetric.horizontal,
             vertical: Spacing.s4.symmetric.horizontal,
@@ -55,8 +55,7 @@ class AllSetScreen extends GetView<AllSetController> {
           ),
         ),
         bottomNavigationBar: buildButton(),
-      ),
-    );
+      );
   }
 
   Widget buildButton() {
