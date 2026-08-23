@@ -27,7 +27,6 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
     final sessionType = controller.selectedSessionType.value;
 
     return CustomScreenWrapper(
-      backgroundColor: theme.scaffoldBackgroundColor,
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
@@ -43,7 +42,20 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [],
+            children: [
+              _buildSuccessHeader(context, doctorName),
+              Spacing.s24.h,
+              _buildSuccessDetails(
+                context,
+                doctor,
+                formattedDate,
+                timeStr,
+                sessionType,
+              ),
+              Spacing.s24.h,
+              _buildNextStepsSection(context),
+              Spacing.s24.h,
+            ],
           ),
         ),
       ),
@@ -101,24 +113,24 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
           alignment: Alignment.center,
           children: [
             Container(
-              height: 96.h,
-              width: 96.h,
+              height: 116.h,
+              width: 116.h,
               decoration: BoxDecoration(
                 color: successColor.withValues(alpha: 0.04),
                 shape: BoxShape.circle,
               ),
             ),
             Container(
-              height: 76.h,
-              width: 76.h,
+              height: 96.h,
+              width: 96.h,
               decoration: BoxDecoration(
                 color: successColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
             Container(
-              height: 56.h,
-              width: 56.h,
+              height: 76.h,
+              width: 76.h,
               decoration: BoxDecoration(
                 color: successColor.withValues(alpha: 0.18),
                 shape: BoxShape.circle,
@@ -192,15 +204,15 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
                   children: [
                     Text(
                       doctor.name ?? "Therapist",
-                      style: r14.copyWith(
+                      style: r16.copyWith(
                         color: theme.textTheme.bodyLarge!.color,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Spacing.s4.h,
+                    // Spacing.s4.h,
                     Text(
                       doctor.speciality ?? "Mental Health Professional",
-                      style: r12.copyWith(
+                      style: r14.copyWith(
                         color: theme.textTheme.bodySmall!.color,
                       ),
                     ),
@@ -420,7 +432,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
             children: [
               Text(
                 label,
-                style: r10.copyWith(
+                style: r12.copyWith(
                   color: theme.textTheme.bodySmall!.color,
                   fontWeight: FontWeight.w500,
                 ),
@@ -428,7 +440,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
               Spacing.s4.h,
               Text(
                 text,
-                style: r12.copyWith(
+                style: r14.copyWith(
                   color: theme.textTheme.bodyLarge!.color,
                   fontWeight: FontWeight.w600,
                 ),
