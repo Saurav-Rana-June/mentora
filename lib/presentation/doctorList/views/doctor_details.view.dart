@@ -400,7 +400,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
             child: CustomPrimaryButton(
               text: "Book Session",
               height: 48.h,
-              borderRadius: 14.r,
+              borderRadius: 100,
               backgroundColor: primary,
               textStyle: r16.copyWith(
                 color: Colors.white,
