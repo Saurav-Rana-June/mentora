@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../../infrastructure/theme/theme.dart';
+import '../../../widgets/others/custom.primary.card.dart';
 import '../controllers/booking_session_controller.dart';
 
 class SessionTypeView extends GetView<BookingSessionController> {
@@ -430,27 +431,21 @@ class SessionTypeView extends GetView<BookingSessionController> {
     dynamic doctor,
   ) {
     final theme = Theme.of(context);
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal:
-            Spacing.s8.symmetric.horizontal + Spacing.s4.symmetric.horizontal,
+    return CustomPrimaryCard(
+      margin: EdgeInsets.symmetric(horizontal: Spacing.s8.symmetric.horizontal),
+      padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
+      borderRadius: 16.r,
+      border: Border.all(
+        color: theme.dividerColor.withValues(alpha: 0.1),
+        width: 1,
       ),
-      padding: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: theme.dividerColor.withValues(alpha: 0.1),
-          width: 1,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.02),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -468,7 +463,7 @@ class SessionTypeView extends GetView<BookingSessionController> {
                   children: [
                     Text(
                       doctor.name ?? "Therapist",
-                      style: r14.copyWith(
+                      style: r16.copyWith(
                         color: theme.textTheme.bodyLarge!.color,
                         fontWeight: FontWeight.bold,
                       ),
@@ -476,7 +471,7 @@ class SessionTypeView extends GetView<BookingSessionController> {
                     Spacing.s4.h,
                     Text(
                       doctor.speciality ?? "Mental Health Professional",
-                      style: r12.copyWith(
+                      style: r14.copyWith(
                         color: theme.textTheme.bodySmall!.color,
                       ),
                     ),
@@ -585,7 +580,7 @@ class SessionTypeView extends GetView<BookingSessionController> {
             Spacing.s8.w,
             Text(
               label,
-              style: r12.copyWith(
+              style: r14.copyWith(
                 color: theme.textTheme.bodySmall!.color,
                 fontWeight: FontWeight.w500,
               ),
@@ -594,7 +589,7 @@ class SessionTypeView extends GetView<BookingSessionController> {
         ),
         Text(
           value,
-          style: r12.copyWith(
+          style: r16.copyWith(
             color: theme.textTheme.bodyLarge!.color,
             fontWeight: FontWeight.w600,
           ),

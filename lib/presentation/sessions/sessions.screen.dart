@@ -387,7 +387,7 @@ class SessionsScreen extends GetView<SessionsController> {
               Spacing.s20.h,
               CustomPrimaryButton(
                 text: "Join Session",
-                borderRadius: 12,
+                borderRadius: 100,
                 height: 45.h,
                 backgroundColor: primary,
                 suffixIcon: const Icon(

@@ -34,7 +34,7 @@ class DoctorSelectionCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
         child: CustomPrimaryCard(
-          borderRadius: 16.r,
+          borderRadius: 8,
           padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
           child: Column(
             children: [
@@ -226,13 +226,17 @@ class DoctorSelectionCard extends StatelessWidget {
               Spacing.s12.h,
               CustomPrimaryButton(
                 text: "Book Session",
-                height: 38.h,
-                borderRadius: 12.r,
+                borderRadius: 100,
+                height: 45.h,
                 backgroundColor: primary,
-                textColor: Colors.white,
+                suffixIcon: const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: Colors.white,
+                ),
                 textStyle: r14.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
                 onPressed: onTap,
               ),

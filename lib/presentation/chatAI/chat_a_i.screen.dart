@@ -14,6 +14,7 @@ import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
+import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/chat_a_i.controller.dart';
 
 class ChatAIScreen extends GetView<ChatAIController> {
@@ -161,22 +162,20 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   Widget buildCenterMessageBoxArea(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
-          width: 0.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: primary.withValues(alpha: 0.08),
-            blurRadius: 16,
-            spreadRadius: 2,
-          ),
-        ],
+    return CustomPrimaryCard(
+      borderRadius: 20,
+      border: Border.all(
+        color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
+        width: 0.8,
       ),
+      boxShadow: [
+        BoxShadow(
+          color: primary.withValues(alpha: 0.08),
+          blurRadius: 16,
+          spreadRadius: 2,
+        ),
+      ],
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -336,75 +335,65 @@ class ChatAIScreen extends GetView<ChatAIController> {
     required String query,
   }) {
     final theme = Theme.of(context);
-    return Material(
-      color: theme.cardTheme.color,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => controller.sendMessage(query),
-        child: Container(
-          width: 200.w,
-          height: 120.h,
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color:
-                  theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
-              width: 0.8,
+    return CustomPrimaryCard(
+      borderRadius: 20,
+      width: 200.w,
+      height: 120.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.vertical,
+      ),
+      border: Border.all(
+        color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+        width: 0.8,
+      ),
+      onTap: () => controller.sendMessage(query),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              iconUnicode,
+              style: TextStyle(
+                fontFamily: 'FontAwesomeSolid',
+                fontSize: 16,
+                color: theme.colorScheme.primary,
+              ),
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  iconUnicode,
-                  style: TextStyle(
-                    fontFamily: 'FontAwesomeSolid',
-                    fontSize: 16,
-                    color: theme.colorScheme.primary,
+          Spacing.s16.w,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: r14.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge!.color,
                   ),
                 ),
-              ),
-              Spacing.s16.w,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: r14.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge!.color,
-                      ),
+                // Spacing.s4.h,
+                Text(
+                  description,
+                  style: r12.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: theme.textTheme.bodySmall!.color!.withValues(
+                      alpha: 0.7,
                     ),
-                    // Spacing.s4.h,
-                    Text(
-                      description,
-                      style: r12.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: theme.textTheme.bodySmall!.color!.withValues(
-                          alpha: 0.7,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
