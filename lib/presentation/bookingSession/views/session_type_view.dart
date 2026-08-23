@@ -21,26 +21,21 @@ class SessionTypeView extends GetView<BookingSessionController> {
         return const Center(child: Text("No doctor selected"));
       }
 
-      final List<Map<String, dynamic>> modalities = [
-        if (doctor.videoCallFeature != false)
-          {
-            "type": "Video Call",
-            "title": "Video Session",
-            "description":
-                "Face-to-face virtual counseling in a private, secure video call.",
-            "icon": Icons.videocam_rounded,
-          },
-        if (doctor.callFeature != false)
-          {
-            "type": "Voice Call",
-            "title": "Voice Session",
-            "description":
-                "Private audio-only counseling for complete voice comfort.",
-            "icon": Icons.phone_rounded,
-          },
-      ];
+      if (controller.isLoading.value && controller.apiModalities.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-      final List<int> durations = [15, 30, 45, 60];
+      final List<Map<String, dynamic>> modalities = controller.apiModalities.map((item) {
+        final type = item["type"] as String;
+        return {
+          "type": type,
+          "title": item["title"] ?? (type == "Video Call" ? "Video Session" : "Voice Session"),
+          "description": item["description"] ?? "",
+          "icon": type == "Video Call" ? Icons.videocam_rounded : Icons.phone_rounded,
+        };
+      }).toList();
+
+      final List<int> durations = controller.apiDurations.map((item) => item["minutes"] as int).toList();
       final hourlyRate = doctor.startingPricePerHour ?? 100.0;
       final activeModality = controller.selectedSessionType.value;
 
@@ -326,26 +321,14 @@ class SessionTypeView extends GetView<BookingSessionController> {
             itemBuilder: (context, index) {
               final min = durations[index];
               final isSelected = controller.selectedDuration.value == min;
-              final multiplier = activeModality == "Video Call" ? 1.0 : 0.8;
-              final calculatedPrice = hourlyRate * (min / 60.0) * multiplier;
-
-              String durationSubtitle = "";
-              switch (min) {
-                case 15:
-                  durationSubtitle = "Quick check-in";
-                  break;
-                case 30:
-                  durationSubtitle = "Standard focus";
-                  break;
-                case 45:
-                  durationSubtitle = "Therapy session";
-                  break;
-                case 60:
-                  durationSubtitle = "Deep exploration";
-                  break;
-                default:
-                  durationSubtitle = "Consultation";
-              }
+              final durationItem = controller.apiDurations.firstWhere(
+                (d) => d['minutes'] == min,
+                orElse: () => <String, dynamic>{},
+              );
+              final calculatedPrice = activeModality == "Video Call"
+                  ? ((durationItem["videoCallPrice"] ?? (hourlyRate * (min / 60.0) * 1.0)) as num).toDouble()
+                  : ((durationItem["voiceCallPrice"] ?? (hourlyRate * (min / 60.0) * 0.8)) as num).toDouble();
+              final durationSubtitle = durationItem["subtitle"] as String? ?? "Consultation";
 
               return GestureDetector(
                 onTap: () {

@@ -13,20 +13,26 @@ class ChooseSessionView extends GetView<BookingSessionController> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context),
-          Spacing.s20.h,
-          _buildDateSelector(context),
-          Spacing.s24.h,
-          _buildTimeSlotsSection(context),
-          Spacing.s24.h,
-        ],
-      ),
-    );
+    return Obx(() {
+      if (controller.isLoading.value && controller.timeSlots.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      return SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context),
+            Spacing.s20.h,
+            _buildDateSelector(context),
+            Spacing.s24.h,
+            _buildTimeSlotsSection(context),
+            Spacing.s24.h,
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildHeader(BuildContext context) {

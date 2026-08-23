@@ -100,4 +100,14 @@ class StorageKeys {
   static const String DOCTORS = 'doctors_cache';
   static const String DOCTORS_LAST_UPDATED = 'doctors_last_updated';
   static const String DOCTORS_TOTAL_PAGES = 'doctors_total_pages';
+
+  // Booking Session Keys
+  static String doctorAvailability(int doctorId, String date) =>
+      'booking_avail_${doctorId}_$date';
+  static String doctorAvailabilityLastUpdated(int doctorId, String date) =>
+      'booking_avail_last_updated_${doctorId}_$date';
+  static String sessionInfo(int doctorId) => 'booking_info_$doctorId';
+  static String sessionInfoLastUpdated(int doctorId) => 'booking_info_last_updated_$doctorId';
+  static const String MY_SESSIONS = 'my_sessions_cache';
+  static const String MY_SESSIONS_LAST_UPDATED = 'my_sessions_last_updated';
 }

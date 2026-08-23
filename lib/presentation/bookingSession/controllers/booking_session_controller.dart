@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
+import 'package:Mentora/data/model/booked_session.model.dart';
+import 'package:Mentora/infrastructure/dal/services/booking_session_service.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import '../../../infrastructure/navigation/routes.dart';
 
 class BookingSessionController extends GetxController {
@@ -12,19 +16,24 @@ class BookingSessionController extends GetxController {
   final Rxn<Expert> selectedDoctor = Rxn<Expert>();
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final Rxn<TimeSlot> selectedTimeSlot = Rxn<TimeSlot>();
-  final RxString selectedSessionType =
-      "Video Call".obs; // 'Video Call' or 'Voice Call'
+  final RxString selectedSessionType = "Video Call".obs; // 'Video Call' or 'Voice Call'
   final RxInt selectedDuration = 45.obs; // 15, 30, 45, 60 minutes
   final RxString sessionNotes = "".obs;
   final RxDouble sessionPrice = 0.0.obs;
 
   final RxBool isLoading = false.obs;
 
+  final Rxn<BookedSession> bookedSession = Rxn<BookedSession>();
+
   final TextEditingController notesController = TextEditingController();
 
   // Available lists
   final RxList<DateTime> availableDates = <DateTime>[].obs;
   final RxList<TimeSlot> timeSlots = <TimeSlot>[].obs;
+
+  // API modalities and durations buffers
+  final RxList<Map<String, dynamic>> apiModalities = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> apiDurations = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -36,7 +45,6 @@ class BookingSessionController extends GetxController {
     if (Get.arguments is Expert) {
       selectDoctor(Get.arguments as Expert);
     }
-    generateAvailableDates();
   }
 
   @override
@@ -45,22 +53,8 @@ class BookingSessionController extends GetxController {
     super.onClose();
   }
 
-  void generateAvailableDates() {
-    final List<DateTime> dates = [];
-    final today = DateTime.now();
-    for (int i = 0; i < 14; i++) {
-      dates.add(today.add(Duration(days: i)));
-    }
-    availableDates.assignAll(dates);
-    // Auto-select today
-    if (dates.isNotEmpty) {
-      selectDate(dates.first);
-    }
-  }
-
   void selectDoctor(Expert doctor) {
     selectedDoctor.value = doctor;
-    // Set default session type based on features
     if (doctor.videoCallFeature == true) {
       selectedSessionType.value = "Video Call";
     } else if (doctor.callFeature == true) {
@@ -68,27 +62,197 @@ class BookingSessionController extends GetxController {
     } else {
       selectedSessionType.value = "Video Call";
     }
+
+    selectedDate.value = null;
+    selectedTimeSlot.value = null;
+    timeSlots.clear();
+
+    initBookingSessionFlow();
+  }
+
+  Future<void> initBookingSessionFlow() async {
+    final doctor = selectedDoctor.value;
+    if (doctor == null) return;
+
+    isLoading.value = true;
+    try {
+      // 1. Generate local dates (next 14 days)
+      final List<DateTime> dates = [];
+      final today = DateTime.now();
+      for (int i = 0; i < 14; i++) {
+        dates.add(today.add(Duration(days: i)));
+      }
+      availableDates.assignAll(dates);
+      if (dates.isNotEmpty) {
+        selectedDate.value = dates.first;
+      }
+
+      // 2. Fetch availability for selectedDate and session info in parallel
+      await Future.wait([
+        if (selectedDate.value != null) fetchDoctorAvailability(selectedDate.value!),
+        fetchSessionInfo(),
+      ]);
+    } catch (e) {
+      Get.log("Failed to initialize booking session flow: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchSessionInfo({bool forceRefresh = false}) async {
+    final doctor = selectedDoctor.value;
+    if (doctor == null) return;
+
+    final String infoCacheKey = StorageKeys.sessionInfo(doctor.id!);
+    final String infoLastUpdatedCacheKey = StorageKeys.sessionInfoLastUpdated(doctor.id!);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(infoCacheKey);
+      await StorageUtils.remove(infoLastUpdatedCacheKey);
+    }
+
+    try {
+      // 1. Read from local cache first
+      final cachedInfo = StorageUtils.read<Map<String, dynamic>>(infoCacheKey);
+      final cachedLastUpdated = StorageUtils.read<String>(infoLastUpdatedCacheKey);
+
+      bool hasCache = false;
+      if (cachedInfo != null && cachedLastUpdated != null) {
+        final modalitiesData = cachedInfo['modalities'] as List<dynamic>? ?? [];
+        final durationsData = cachedInfo['durations'] as List<dynamic>? ?? [];
+        apiModalities.assignAll(modalitiesData.map((e) => Map<String, dynamic>.from(e)).toList());
+        apiDurations.assignAll(durationsData.map((e) => Map<String, dynamic>.from(e)).toList());
+        hasCache = true;
+      }
+
+      if (hasCache) {
+        _applyDefaultModalityAndDuration();
+      } else {
+        isLoading.value = true;
+      }
+
+      // 2. Fetch from backend with lastUpdated optimization
+      final String? lastUpdatedQuery = (hasCache && !forceRefresh) ? cachedLastUpdated : null;
+      final res = await BookingSessionService.getSessionInfo(
+        doctorId: doctor.id!,
+        lastUpdated: lastUpdatedQuery,
+      );
+
+      if (res != null && res.data != null) {
+        final map = res.data!;
+        final modalitiesData = map['modalities'] as List<dynamic>? ?? [];
+        final durationsData = map['durations'] as List<dynamic>? ?? [];
+
+        apiModalities.assignAll(modalitiesData.map((e) => Map<String, dynamic>.from(e)).toList());
+        apiDurations.assignAll(durationsData.map((e) => Map<String, dynamic>.from(e)).toList());
+
+        // Cache the fresh data
+        await StorageUtils.write(infoCacheKey, map);
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(infoLastUpdatedCacheKey, res.lastUpdated!.toIso8601String());
+        }
+
+        _applyDefaultModalityAndDuration();
+      }
+    } catch (e) {
+      Get.log("Failed to fetch session info: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void _applyDefaultModalityAndDuration() {
+    if (apiModalities.isNotEmpty) {
+      final currentType = selectedSessionType.value;
+      final exists = apiModalities.any((m) => m['type'] == currentType);
+      if (!exists) {
+        selectedSessionType.value = apiModalities.first['type'] as String;
+      }
+    }
+    if (apiDurations.isNotEmpty) {
+      final currentDuration = selectedDuration.value;
+      final exists = apiDurations.any((d) => d['minutes'] == currentDuration);
+      if (!exists) {
+        selectedDuration.value = apiDurations.first['minutes'] as int;
+      }
+    }
     updateSessionPrice();
   }
 
-  void updateSessionPrice() {
+  Future<void> fetchDoctorAvailability(DateTime date, {bool forceRefresh = false}) async {
     final doctor = selectedDoctor.value;
-    if (doctor == null) {
+    if (doctor == null) return;
+
+    final dateStr = date.toIso8601String().split('T')[0];
+    final String availCacheKey = StorageKeys.doctorAvailability(doctor.id!, dateStr);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(availCacheKey);
+    }
+
+    try {
+      // 1. Read from cache first
+      final cachedAvail = StorageUtils.read<Map<String, dynamic>>(availCacheKey);
+      bool hasCache = false;
+      if (cachedAvail != null) {
+        final slotsList = cachedAvail['timeSlots'] as List<dynamic>? ?? [];
+        timeSlots.assignAll(slotsList.map((e) => TimeSlot.fromJson(Map<String, dynamic>.from(e))).toList());
+        hasCache = true;
+      }
+
+      if (!hasCache) {
+        isLoading.value = true;
+      }
+
+      // 2. Fetch fresh availability from API in background/foreground
+      final res = await BookingSessionService.getDoctorAvailability(
+        doctorId: doctor.id!,
+        date: dateStr,
+      );
+
+      if (res != null && res.data != null) {
+        final List<TimeSlot> freshSlots = res.data!['timeSlots'] as List<TimeSlot>? ?? [];
+        timeSlots.assignAll(freshSlots);
+
+        // Serialize and save to cache
+        final serializedSlots = freshSlots.map((e) => {
+          'time': e.time,
+          'period': e.period,
+          'isAvailable': e.isAvailable,
+        }).toList();
+
+        await StorageUtils.write(availCacheKey, {
+          'timeSlots': serializedSlots,
+        });
+      }
+    } catch (e) {
+      Get.log("Failed to fetch doctor availability: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void updateSessionPrice() {
+    if (apiDurations.isEmpty) {
       sessionPrice.value = 0.0;
       return;
     }
-    final hourlyRate = doctor.startingPricePerHour ?? 100.0;
-    final modalityMultiplier = selectedSessionType.value == "Video Call"
-        ? 1.0
-        : 0.8;
-    final durationFraction = selectedDuration.value / 60.0;
-    sessionPrice.value = hourlyRate * durationFraction * modalityMultiplier;
+    final durationData = apiDurations.firstWhereOrNull(
+      (element) => element['minutes'] == selectedDuration.value,
+    );
+    if (durationData != null) {
+      if (selectedSessionType.value == "Video Call") {
+        sessionPrice.value = (durationData['videoCallPrice'] as num).toDouble();
+      } else {
+        sessionPrice.value = (durationData['voiceCallPrice'] as num).toDouble();
+      }
+    }
   }
 
   void selectDate(DateTime date) {
     selectedDate.value = date;
     selectedTimeSlot.value = null; // Clear previous time slot selection
-    generateTimeSlots(date);
+    fetchDoctorAvailability(date);
   }
 
   void selectTimeSlot(TimeSlot slot) {
@@ -109,93 +273,44 @@ class BookingSessionController extends GetxController {
     sessionNotes.value = notes;
   }
 
-  void generateTimeSlots(DateTime date) {
-    // Generate static slots grouped by period
-    final List<TimeSlot> slots = [
-      TimeSlot(time: "09:00 AM", period: "Morning", isAvailable: true),
-      TimeSlot(time: "09:30 AM", period: "Morning", isAvailable: true),
-      TimeSlot(
-        time: "10:00 AM",
-        period: "Morning",
-        isAvailable: false,
-      ), // simulate booked
-      TimeSlot(time: "10:30 AM", period: "Morning", isAvailable: true),
-      TimeSlot(time: "11:00 AM", period: "Morning", isAvailable: true),
-
-      TimeSlot(time: "01:30 PM", period: "Afternoon", isAvailable: true),
-      TimeSlot(time: "02:00 PM", period: "Afternoon", isAvailable: true),
-      TimeSlot(time: "02:30 PM", period: "Afternoon", isAvailable: true),
-      TimeSlot(
-        time: "03:00 PM",
-        period: "Afternoon",
-        isAvailable: false,
-      ), // simulate booked
-      TimeSlot(time: "03:30 PM", period: "Afternoon", isAvailable: true),
-
-      TimeSlot(time: "05:00 PM", period: "Evening", isAvailable: true),
-      TimeSlot(time: "05:30 PM", period: "Evening", isAvailable: true),
-      TimeSlot(time: "06:00 PM", period: "Evening", isAvailable: true),
-      TimeSlot(time: "06:30 PM", period: "Evening", isAvailable: true),
-      TimeSlot(
-        time: "07:00 PM",
-        period: "Evening",
-        isAvailable: false,
-      ), // simulate booked
-    ];
-
-    // If date is today, disable past slots
-    final now = DateTime.now();
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day) {
-      final List<TimeSlot> adjustedSlots = [];
-      for (var slot in slots) {
-        final parsedTime = _parseTimeOfDay(slot.time, date);
-        if (parsedTime.isBefore(now)) {
-          adjustedSlots.add(
-            TimeSlot(time: slot.time, period: slot.period, isAvailable: false),
-          );
-        } else {
-          adjustedSlots.add(slot);
-        }
-      }
-      timeSlots.assignAll(adjustedSlots);
-    } else {
-      timeSlots.assignAll(slots);
-    }
-  }
-
-  DateTime _parseTimeOfDay(String timeStr, DateTime date) {
-    // Parse formats like "09:30 AM" or "02:00 PM"
-    final parts = timeStr.split(" ");
-    final timeParts = parts[0].split(":");
-    int hour = int.parse(timeParts[0]);
-    final int minute = int.parse(timeParts[1]);
-    final String amPm = parts[1];
-
-    if (amPm == "PM" && hour != 12) {
-      hour += 12;
-    } else if (amPm == "AM" && hour == 12) {
-      hour = 0;
-    }
-
-    return DateTime(date.year, date.month, date.day, hour, minute);
-  }
-
-  void nextStep() {
-    if (currentStep.value < 4) {
-      currentStep.value++;
-    }
-  }
-
-  void previousStep() {
-    if (currentStep.value > 0) {
-      currentStep.value--;
-    }
-  }
-
   Future<void> bookSession() async {
-    Get.toNamed(Routes.BOOKING_CONFIRMATION);
+    final doctor = selectedDoctor.value;
+    final date = selectedDate.value;
+    final slot = selectedTimeSlot.value;
+    if (doctor == null || date == null || slot == null) {
+      Get.snackbar("Error", "Please complete all booking selections.");
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      final dateStr = date.toIso8601String().split('T')[0];
+      final res = await BookingSessionService.createSession(
+        doctorId: doctor.id!,
+        selectedDate: dateStr,
+        selectedTimeSlot: slot.time,
+        timeSlotType: slot.period,
+        modalityType: selectedSessionType.value,
+        duration: selectedDuration.value,
+        durationCost: sessionPrice.value,
+        notes: sessionNotes.value,
+      );
+
+      if (res != null && res.data != null) {
+        bookedSession.value = res.data;
+        notesController.clear();
+        sessionNotes.value = "";
+
+        // Push booking confirmation screen passing the booked session
+        Get.toNamed(Routes.BOOKING_CONFIRMATION);
+      } else {
+        Get.snackbar("Booking Failed", res?.message ?? "An error occurred while booking.");
+      }
+    } catch (e) {
+      Get.snackbar("Booking Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   String formatBookingDate(DateTime date) {
