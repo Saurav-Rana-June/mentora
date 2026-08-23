@@ -6,6 +6,7 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.confirmation.box.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
@@ -29,12 +30,8 @@ class JournalingScreen extends GetView<JournalingController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       leading: Center(child: CustomBackButton(icon: MyIcons.chevronLeft)),
       title: Text(
         "Journaling",

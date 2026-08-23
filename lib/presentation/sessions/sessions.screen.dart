@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../../widgets/others/custom.divider.dart';
 import 'controllers/sessions.controller.dart';
@@ -26,10 +27,8 @@ class SessionsScreen extends GetView<SessionsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

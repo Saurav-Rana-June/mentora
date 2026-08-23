@@ -8,6 +8,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:my_spacing/spacing.enum.dart';
 
 import '../../widgets/buttons/custom_back_button.widet.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../chatExperts/views/chat_experts_history.view.dart';
 import 'controllers/favorite.controller.dart';
@@ -391,8 +392,8 @@ class FavoriteScreen extends GetView<FavoriteController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -437,10 +438,8 @@ class FavoriteScreen extends GetView<FavoriteController> {
           ),
         ],
       ),
-      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
     );
   }
 }

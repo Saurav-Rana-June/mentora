@@ -8,6 +8,7 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../../widgets/buttons/custom_back_button.widet.dart';
+import '../../../widgets/others/custom.primary.appbar.dart';
 import '../controllers/chat_experts.controller.dart';
 
 class ChatExpertChatView extends GetView<ChatExpertsController> {
@@ -142,8 +143,8 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -255,10 +256,8 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
           ),
         ],
       ),
-      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
     );
   }
 }

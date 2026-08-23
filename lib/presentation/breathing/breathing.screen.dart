@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 
 import 'controllers/breathing.controller.dart';
@@ -28,11 +29,7 @@ class BreathingScreen extends GetView<BreathingController> {
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Breathing",

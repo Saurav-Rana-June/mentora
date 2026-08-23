@@ -9,6 +9,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/model/journal_entry.model.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import '../controllers/journaling.controller.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
@@ -116,11 +117,8 @@ class _JournalQuestionDetailScreenState
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       leading: IconButton(
         icon: Text(
           MyIcons.xmark,

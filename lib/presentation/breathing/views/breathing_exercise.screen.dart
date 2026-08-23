@@ -7,6 +7,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/buttons/custom_outline_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../controllers/breathing.controller.dart';
 import 'package:Mentora/data/model/breathing_pattern.model.dart';
@@ -71,11 +72,8 @@ class BreathingExerciseScreen extends GetView<BreathingController> {
     final patternName = controller.patterns.isNotEmpty
         ? (controller.patterns[patternIndex].name ?? "")
         : "";
-    return AppBar(
+    return CustomPrimaryAppBar(
       backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
       leading: const Center(child: CustomBackButton()),
       title: Text(
         patternName,

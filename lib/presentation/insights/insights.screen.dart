@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.toggle.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
@@ -703,10 +704,8 @@ class InsightsScreen extends GetView<InsightsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

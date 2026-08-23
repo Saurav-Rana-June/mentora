@@ -3,6 +3,7 @@ import 'package:Mentora/presentation/continue/continue.screen.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -201,10 +202,9 @@ class PasswordResetView extends StatelessWidget {
     );
   }
 
-  AppBar buildAppbar() => AppBar(
-    title: CustomBackButton(),
+  PreferredSizeWidget buildAppbar() => const CustomPrimaryAppBar(
+    leading: Center(child: CustomBackButton()),
     automaticallyImplyLeading: false,
     centerTitle: false,
-    surfaceTintColor: Colors.transparent,
   );
 }

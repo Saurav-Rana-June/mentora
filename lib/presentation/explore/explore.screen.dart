@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 import 'package:Mentora/presentation/meditation/controllers/meditation.controller.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
@@ -540,10 +541,8 @@ class ExploreScreen extends GetView<ExploreController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

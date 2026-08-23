@@ -7,6 +7,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../../infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
+import '../../../widgets/others/custom.primary.appbar.dart';
 import '../../../widgets/buttons/custom_back_button.widet.dart';
 
 class ChatExpertHistoryView extends GetView<ChatExpertsController> {
@@ -331,8 +332,8 @@ class ChatExpertHistoryView extends GetView<ChatExpertsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -411,10 +412,8 @@ class ChatExpertHistoryView extends GetView<ChatExpertsController> {
           ),
         ],
       ),
-      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:Mentora/presentation/moodCheckin/views/reason_selection.view.dar
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -80,13 +81,11 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      title: CustomBackButton(icon: MyIcons.xmark),
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
+      leading: CustomBackButton(icon: MyIcons.xmark),
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
       actions: [
         IconButton(
           icon: Text(

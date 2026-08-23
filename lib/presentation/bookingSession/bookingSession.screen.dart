@@ -7,6 +7,7 @@ import 'package:my_spacing/my_spacing.dart';
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
 import '../../widgets/buttons/custom_outline_button.widget.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.bottombar.dart';
 import 'controllers/booking_session_controller.dart';
 import 'views/choose_session_view.dart';
@@ -49,11 +50,7 @@ class BookingSessionScreen extends GetView<BookingSessionController> {
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       automaticallyImplyLeading: false,
       leading: Obx(() {
         final step = controller.currentStep.value;

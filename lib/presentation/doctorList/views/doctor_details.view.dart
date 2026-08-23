@@ -7,6 +7,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.pill.widget.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
@@ -50,11 +51,7 @@ class _DoctorDetailsViewState extends State<DoctorDetailsView> {
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Therapist Profile",

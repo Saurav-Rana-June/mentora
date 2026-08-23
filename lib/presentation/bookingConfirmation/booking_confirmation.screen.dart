@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_primary_button.widget.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.bottombar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import '../bookingSession/controllers/booking_session_controller.dart';
@@ -68,11 +69,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       automaticallyImplyLeading: false,
       leading: Center(
         child: Material(
@@ -361,7 +358,7 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
       ),
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s16.symmetric.horizontal,
-        vertical: Spacing.s12.symmetric.vertical,
+        vertical: Spacing.s8.symmetric.vertical,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -379,44 +376,44 @@ class BookingConfirmationScreen extends GetView<BookingSessionController> {
             backgroundColor: primary,
             textColor: Colors.white,
           ),
-          Spacing.s8.h,
+          // Spacing.s8.h,
 
-          // Secondary subtle link button
-          TextButton(
-            onPressed: () {
-              Get.snackbar(
-                "Calendar",
-                "Session added to your Google Calendar!",
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: primary,
-                colorText: Colors.white,
-              );
-            },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(0, 0),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 15.r,
-                  color: theme.textTheme.bodySmall!.color,
-                ),
-                Spacing.s8.w,
-                Text(
-                  "Add to Calendar",
-                  style: r12.copyWith(
-                    color: theme.textTheme.bodySmall!.color,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // // Secondary subtle link button
+          // TextButton(
+          //   onPressed: () {
+          //     Get.snackbar(
+          //       "Calendar",
+          //       "Session added to your Google Calendar!",
+          //       snackPosition: SnackPosition.BOTTOM,
+          //       backgroundColor: primary,
+          //       colorText: Colors.white,
+          //     );
+          //   },
+          //   style: TextButton.styleFrom(
+          //     padding: EdgeInsets.zero,
+          //     minimumSize: const Size(0, 0),
+          //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          //   ),
+          //   child: Row(
+          //     mainAxisSize: MainAxisSize.min,
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Icon(
+          //         Icons.calendar_today_rounded,
+          //         size: 15.r,
+          //         color: theme.textTheme.bodySmall!.color,
+          //       ),
+          //       Spacing.s8.w,
+          //       Text(
+          //         "Add to Calendar",
+          //         style: r12.copyWith(
+          //           color: theme.textTheme.bodySmall!.color,
+          //           fontWeight: FontWeight.w600,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

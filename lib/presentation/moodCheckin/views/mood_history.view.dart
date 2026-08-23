@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:my_icons/icons.dart';
@@ -24,7 +25,7 @@ class MoodHistoryView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.primaryColorLight,
-      appBar: AppBar(
+      appBar: CustomPrimaryAppBar(
         title: Text(
           "Mood History",
           style: r18.copyWith(
@@ -35,10 +36,8 @@ class MoodHistoryView extends StatelessWidget {
         leading: const Center(
           child: CustomBackButton(icon: MyIcons.chevronLeft),
         ),
-        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: theme.primaryColorLight,
       ),
       body: SafeArea(
         top: false,

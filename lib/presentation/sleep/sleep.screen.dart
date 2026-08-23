@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/sleep.controller.dart';
 import 'package:Mentora/data/model/sound.model.dart';
@@ -480,11 +481,7 @@ class _SleepScreenState extends State<SleepScreen>
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Sleep",

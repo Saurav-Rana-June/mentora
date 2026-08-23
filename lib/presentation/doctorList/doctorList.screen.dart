@@ -5,6 +5,7 @@ import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.searchbar.widget.dart';
 import '../../widgets/others/custom.circular.progressbar.dart';
 import 'controllers/doctor_list_controller.dart';
@@ -32,11 +33,7 @@ class DoctorListScreen extends GetView<DoctorListController> {
   }
 
   PreferredSizeWidget buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Choose Therapist",

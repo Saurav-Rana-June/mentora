@@ -10,6 +10,7 @@ import '../../infrastructure/theme/theme.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
 import 'controllers/chat_a_i.controller.dart';
@@ -640,17 +641,15 @@ class ChatAIScreen extends GetView<ChatAIController> {
     return Obx(() {
       final isScrolled = controller.isScrolled.value;
 
-      final appBar = AppBar(
+      final appBar = CustomPrimaryAppBar(
         title: controller.isSearching.value
             ? buildSearchAppbar(context)
             : buildNormalAppbar(context),
-        surfaceTintColor: Colors.transparent,
         centerTitle: false,
         automaticallyImplyLeading: false,
         backgroundColor: isScrolled
             ? theme.primaryColorLight.withValues(alpha: 0.8)
             : Colors.transparent,
-        elevation: 0,
       );
 
       if (isScrolled) {

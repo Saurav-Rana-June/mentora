@@ -1,5 +1,6 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.switch.dart';
@@ -468,11 +469,8 @@ class AccountScreen extends GetView<AccountController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton(icon: MyIcons.chevronLeft)),
       title: Text(
         "Account",

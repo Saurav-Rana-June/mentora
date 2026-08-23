@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import '../../../infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import '../controllers/home.controller.dart';
 
@@ -154,10 +155,7 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
     
     return Scaffold(
       backgroundColor: theme.primaryColorLight,
-      appBar: AppBar(
-        backgroundColor: theme.primaryColorLight,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
+      appBar: CustomPrimaryAppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Get.back(),

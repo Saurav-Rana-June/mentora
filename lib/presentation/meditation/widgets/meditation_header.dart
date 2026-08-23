@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 
 class MeditationHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onSearchTap;
@@ -9,15 +10,11 @@ class MeditationHeader extends StatelessWidget implements PreferredSizeWidget {
   const MeditationHeader({super.key, this.onSearchTap});
 
   @override
-  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
+  Size get preferredSize => Size.fromHeight(const CustomPrimaryAppBar().preferredSize.height);
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Meditation",

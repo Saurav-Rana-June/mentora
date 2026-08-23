@@ -7,6 +7,7 @@ import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:Mentora/widgets/fields/custom_dropdownfield.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
 import 'package:my_spacing/my_spacing.dart';
@@ -44,11 +45,8 @@ class EditAccountScreen extends GetView<EditAccountController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       leading: const Center(child: CustomBackButton(icon: MyIcons.chevronLeft)),
       title: Text(
         "Edit Profile",
@@ -58,7 +56,6 @@ class EditAccountScreen extends GetView<EditAccountController> {
         ),
       ),
       centerTitle: true,
-      automaticallyImplyLeading: false,
     );
   }
 

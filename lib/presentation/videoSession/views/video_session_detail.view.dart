@@ -10,6 +10,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/data/model/video_session.model.dart';
 import 'package:Mentora/presentation/videoSession/controllers/video_session.controller.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 
 class VideoSessionDetailView extends StatefulWidget {
@@ -96,10 +97,8 @@ class _VideoSessionDetailViewState extends State<VideoSessionDetailView> {
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
-    return AppBar(
+    return CustomPrimaryAppBar(
       backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
       leading: const Center(child: CustomBackButton()),
       title: Text(
         "Session Player",
