@@ -17,7 +17,8 @@ class BookingSessionController extends GetxController {
   final Rxn<Expert> selectedDoctor = Rxn<Expert>();
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final Rxn<TimeSlot> selectedTimeSlot = Rxn<TimeSlot>();
-  final RxString selectedSessionType = "Video Call".obs; // 'Video Call' or 'Voice Call'
+  final RxString selectedSessionType =
+      "Video Call".obs; // 'Video Call' or 'Voice Call'
   final RxInt selectedDuration = 45.obs; // 15, 30, 45, 60 minutes
   final RxString sessionNotes = "".obs;
   final RxDouble sessionPrice = 0.0.obs;
@@ -33,8 +34,10 @@ class BookingSessionController extends GetxController {
   final RxList<TimeSlot> timeSlots = <TimeSlot>[].obs;
 
   // API modalities and durations buffers
-  final RxList<SessionModalityModel> apiModalities = <SessionModalityModel>[].obs;
-  final RxList<SessionDurationModel> apiDurations = <SessionDurationModel>[].obs;
+  final RxList<SessionModalityModel> apiModalities =
+      <SessionModalityModel>[].obs;
+  final RxList<SessionDurationModel> apiDurations =
+      <SessionDurationModel>[].obs;
 
   @override
   void onInit() {
@@ -90,7 +93,8 @@ class BookingSessionController extends GetxController {
 
       // 2. Fetch availability for selectedDate and session info in parallel
       await Future.wait([
-        if (selectedDate.value != null) fetchDoctorAvailability(selectedDate.value!),
+        if (selectedDate.value != null)
+          fetchDoctorAvailability(selectedDate.value!),
         fetchSessionInfo(),
       ]);
     } catch (e) {
@@ -105,7 +109,9 @@ class BookingSessionController extends GetxController {
     if (doctor == null) return;
 
     final String infoCacheKey = StorageKeys.sessionInfo(doctor.id!);
-    final String infoLastUpdatedCacheKey = StorageKeys.sessionInfoLastUpdated(doctor.id!);
+    final String infoLastUpdatedCacheKey = StorageKeys.sessionInfoLastUpdated(
+      doctor.id!,
+    );
 
     if (forceRefresh) {
       await StorageUtils.remove(infoCacheKey);
@@ -115,7 +121,9 @@ class BookingSessionController extends GetxController {
     try {
       // 1. Read from local cache first
       final cachedInfo = StorageUtils.read<Map<String, dynamic>>(infoCacheKey);
-      final cachedLastUpdated = StorageUtils.read<String>(infoLastUpdatedCacheKey);
+      final cachedLastUpdated = StorageUtils.read<String>(
+        infoLastUpdatedCacheKey,
+      );
 
       bool hasCache = false;
       if (cachedInfo != null && cachedLastUpdated != null) {
@@ -132,7 +140,9 @@ class BookingSessionController extends GetxController {
       }
 
       // 2. Fetch from backend with lastUpdated optimization
-      final String? lastUpdatedQuery = (hasCache && !forceRefresh) ? cachedLastUpdated : null;
+      final String? lastUpdatedQuery = (hasCache && !forceRefresh)
+          ? cachedLastUpdated
+          : null;
       final res = await BookingSessionService.getSessionInfo(
         doctorId: doctor.id!,
         lastUpdated: lastUpdatedQuery,
@@ -146,7 +156,10 @@ class BookingSessionController extends GetxController {
         // Cache the fresh data
         await StorageUtils.write(infoCacheKey, info.toJson());
         if (res.lastUpdated != null) {
-          await StorageUtils.write(infoLastUpdatedCacheKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            infoLastUpdatedCacheKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
 
         _applyDefaultModalityAndDuration();
@@ -176,12 +189,18 @@ class BookingSessionController extends GetxController {
     updateSessionPrice();
   }
 
-  Future<void> fetchDoctorAvailability(DateTime date, {bool forceRefresh = false}) async {
+  Future<void> fetchDoctorAvailability(
+    DateTime date, {
+    bool forceRefresh = false,
+  }) async {
     final doctor = selectedDoctor.value;
     if (doctor == null) return;
 
     final dateStr = date.toIso8601String().split('T')[0];
-    final String availCacheKey = StorageKeys.doctorAvailability(doctor.id!, dateStr);
+    final String availCacheKey = StorageKeys.doctorAvailability(
+      doctor.id!,
+      dateStr,
+    );
 
     if (forceRefresh) {
       await StorageUtils.remove(availCacheKey);
@@ -189,7 +208,9 @@ class BookingSessionController extends GetxController {
 
     try {
       // 1. Read from cache first
-      final cachedAvail = StorageUtils.read<Map<String, dynamic>>(availCacheKey);
+      final cachedAvail = StorageUtils.read<Map<String, dynamic>>(
+        availCacheKey,
+      );
       bool hasCache = false;
       if (cachedAvail != null) {
         final avail = DoctorAvailabilityModel.fromJson(cachedAvail);
@@ -305,7 +326,10 @@ class BookingSessionController extends GetxController {
         // Push booking confirmation screen passing the booked session
         Get.toNamed(Routes.BOOKING_CONFIRMATION);
       } else {
-        Get.snackbar("Booking Failed", res?.message ?? "An error occurred while booking.");
+        Get.snackbar(
+          "Booking Failed",
+          res?.message ?? "An error occurred while booking.",
+        );
       }
     } catch (e) {
       Get.snackbar("Booking Error", e.toString());
