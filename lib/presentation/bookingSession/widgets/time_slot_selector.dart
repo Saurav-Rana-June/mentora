@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../../infrastructure/theme/theme.dart';
-import '../models/booking_session_model.dart';
+import 'package:Mentora/data/model/doctor_availability.model.dart';
 
 class TimeSlotSelector extends StatelessWidget {
   final List<TimeSlot> slots;

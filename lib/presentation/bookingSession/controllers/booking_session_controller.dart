@@ -2,7 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:get/get.dart';
-import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
+import 'package:Mentora/data/model/doctor_availability.model.dart';
+import 'package:Mentora/data/model/session_info.model.dart';
 import 'package:Mentora/data/model/booked_session.model.dart';
 import 'package:Mentora/infrastructure/dal/services/booking_session_service.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
@@ -32,8 +33,8 @@ class BookingSessionController extends GetxController {
   final RxList<TimeSlot> timeSlots = <TimeSlot>[].obs;
 
   // API modalities and durations buffers
-  final RxList<Map<String, dynamic>> apiModalities = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> apiDurations = <Map<String, dynamic>>[].obs;
+  final RxList<SessionModalityModel> apiModalities = <SessionModalityModel>[].obs;
+  final RxList<SessionDurationModel> apiDurations = <SessionDurationModel>[].obs;
 
   @override
   void onInit() {
@@ -118,10 +119,9 @@ class BookingSessionController extends GetxController {
 
       bool hasCache = false;
       if (cachedInfo != null && cachedLastUpdated != null) {
-        final modalitiesData = cachedInfo['modalities'] as List<dynamic>? ?? [];
-        final durationsData = cachedInfo['durations'] as List<dynamic>? ?? [];
-        apiModalities.assignAll(modalitiesData.map((e) => Map<String, dynamic>.from(e)).toList());
-        apiDurations.assignAll(durationsData.map((e) => Map<String, dynamic>.from(e)).toList());
+        final info = SessionInfoModel.fromJson(cachedInfo);
+        apiModalities.assignAll(info.modalities);
+        apiDurations.assignAll(info.durations);
         hasCache = true;
       }
 
@@ -139,15 +139,12 @@ class BookingSessionController extends GetxController {
       );
 
       if (res != null && res.data != null) {
-        final map = res.data!;
-        final modalitiesData = map['modalities'] as List<dynamic>? ?? [];
-        final durationsData = map['durations'] as List<dynamic>? ?? [];
-
-        apiModalities.assignAll(modalitiesData.map((e) => Map<String, dynamic>.from(e)).toList());
-        apiDurations.assignAll(durationsData.map((e) => Map<String, dynamic>.from(e)).toList());
+        final info = res.data!;
+        apiModalities.assignAll(info.modalities);
+        apiDurations.assignAll(info.durations);
 
         // Cache the fresh data
-        await StorageUtils.write(infoCacheKey, map);
+        await StorageUtils.write(infoCacheKey, info.toJson());
         if (res.lastUpdated != null) {
           await StorageUtils.write(infoLastUpdatedCacheKey, res.lastUpdated!.toIso8601String());
         }
@@ -164,16 +161,16 @@ class BookingSessionController extends GetxController {
   void _applyDefaultModalityAndDuration() {
     if (apiModalities.isNotEmpty) {
       final currentType = selectedSessionType.value;
-      final exists = apiModalities.any((m) => m['type'] == currentType);
+      final exists = apiModalities.any((m) => m.type == currentType);
       if (!exists) {
-        selectedSessionType.value = apiModalities.first['type'] as String;
+        selectedSessionType.value = apiModalities.first.type;
       }
     }
     if (apiDurations.isNotEmpty) {
       final currentDuration = selectedDuration.value;
-      final exists = apiDurations.any((d) => d['minutes'] == currentDuration);
+      final exists = apiDurations.any((d) => d.minutes == currentDuration);
       if (!exists) {
-        selectedDuration.value = apiDurations.first['minutes'] as int;
+        selectedDuration.value = apiDurations.first.minutes;
       }
     }
     updateSessionPrice();
@@ -195,8 +192,8 @@ class BookingSessionController extends GetxController {
       final cachedAvail = StorageUtils.read<Map<String, dynamic>>(availCacheKey);
       bool hasCache = false;
       if (cachedAvail != null) {
-        final slotsList = cachedAvail['timeSlots'] as List<dynamic>? ?? [];
-        timeSlots.assignAll(slotsList.map((e) => TimeSlot.fromJson(Map<String, dynamic>.from(e))).toList());
+        final avail = DoctorAvailabilityModel.fromJson(cachedAvail);
+        timeSlots.assignAll(avail.timeSlots);
         hasCache = true;
       }
 
@@ -211,19 +208,11 @@ class BookingSessionController extends GetxController {
       );
 
       if (res != null && res.data != null) {
-        final List<TimeSlot> freshSlots = res.data!['timeSlots'] as List<TimeSlot>? ?? [];
-        timeSlots.assignAll(freshSlots);
+        final DoctorAvailabilityModel freshAvail = res.data!;
+        timeSlots.assignAll(freshAvail.timeSlots);
 
         // Serialize and save to cache
-        final serializedSlots = freshSlots.map((e) => {
-          'time': e.time,
-          'period': e.period,
-          'isAvailable': e.isAvailable,
-        }).toList();
-
-        await StorageUtils.write(availCacheKey, {
-          'timeSlots': serializedSlots,
-        });
+        await StorageUtils.write(availCacheKey, freshAvail.toJson());
       }
     } catch (e) {
       Get.log("Failed to fetch doctor availability: $e");
@@ -238,13 +227,13 @@ class BookingSessionController extends GetxController {
       return;
     }
     final durationData = apiDurations.firstWhereOrNull(
-      (element) => element['minutes'] == selectedDuration.value,
+      (element) => element.minutes == selectedDuration.value,
     );
     if (durationData != null) {
       if (selectedSessionType.value == "Video Call") {
-        sessionPrice.value = (durationData['videoCallPrice'] as num).toDouble();
+        sessionPrice.value = durationData.videoCallPrice;
       } else {
-        sessionPrice.value = (durationData['voiceCallPrice'] as num).toDouble();
+        sessionPrice.value = durationData.voiceCallPrice;
       }
     }
   }

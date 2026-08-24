@@ -6,7 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.divider.dart';
-import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
+import 'package:Mentora/data/model/doctor_availability.model.dart';
 
 class BookingSummaryCard extends StatelessWidget {
   final Expert expert;

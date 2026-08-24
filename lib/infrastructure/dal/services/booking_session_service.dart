@@ -1,6 +1,7 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import 'package:Mentora/presentation/bookingSession/models/booking_session_model.dart';
+import 'package:Mentora/data/model/doctor_availability.model.dart';
+import 'package:Mentora/data/model/session_info.model.dart';
 import 'package:Mentora/data/model/booked_session.model.dart';
 
 class BookingSessionService {
@@ -9,7 +10,7 @@ class BookingSessionService {
   static final ApiClient client = ApiClient();
 
   /// Retrieve available dates and time slots for a specific doctor
-  static Future<ApiResponse<Map<String, dynamic>>?> getDoctorAvailability({
+  static Future<ApiResponse<DoctorAvailabilityModel>?> getDoctorAvailability({
     required int doctorId,
     String? date,
   }) async {
@@ -18,24 +19,18 @@ class BookingSessionService {
       params['date'] = date;
     }
 
-    return client.request<ApiResponse<Map<String, dynamic>>>(
+    return client.request<ApiResponse<DoctorAvailabilityModel>>(
       (dio) => dio.get(
         'book-session/availability/$doctorId',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<Map<String, dynamic>>.fromJson(
+        return ApiResponse<DoctorAvailabilityModel>.fromJson(
           json as Map<String, dynamic>,
           (data) {
-            if (data == null) return {};
-            final map = data as Map<String, dynamic>;
-            final datesList = map['availableDates'] as List<dynamic>? ?? [];
-            final slotsList = map['timeSlots'] as List<dynamic>? ?? [];
-            return {
-              'availableDates': datesList.map((e) => DateTime.parse(e.toString())).toList(),
-              'timeSlots': slotsList.map((e) => TimeSlot.fromJson(e as Map<String, dynamic>)).toList(),
-            };
+            if (data == null) return DoctorAvailabilityModel(availableDates: [], timeSlots: []);
+            return DoctorAvailabilityModel.fromJson(data as Map<String, dynamic>);
           },
         );
       },
@@ -43,7 +38,7 @@ class BookingSessionService {
   }
 
   /// Retrieve modalities and pricing details for a specific doctor
-  static Future<ApiResponse<Map<String, dynamic>>?> getSessionInfo({
+  static Future<ApiResponse<SessionInfoModel>?> getSessionInfo({
     required int doctorId,
     String? lastUpdated,
   }) async {
@@ -52,18 +47,18 @@ class BookingSessionService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<Map<String, dynamic>>>(
+    return client.request<ApiResponse<SessionInfoModel>>(
       (dio) => dio.get(
         'book-session/info/$doctorId',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<Map<String, dynamic>>.fromJson(
+        return ApiResponse<SessionInfoModel>.fromJson(
           json as Map<String, dynamic>,
           (data) {
-            if (data == null) return {};
-            return data as Map<String, dynamic>;
+            if (data == null) return SessionInfoModel(modalities: [], durations: []);
+            return SessionInfoModel.fromJson(data as Map<String, dynamic>);
           },
         );
       },

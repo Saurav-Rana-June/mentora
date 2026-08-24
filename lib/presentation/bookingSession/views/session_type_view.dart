@@ -26,16 +26,16 @@ class SessionTypeView extends GetView<BookingSessionController> {
       }
 
       final List<Map<String, dynamic>> modalities = controller.apiModalities.map((item) {
-        final type = item["type"] as String;
+        final type = item.type;
         return {
           "type": type,
-          "title": item["title"] ?? (type == "Video Call" ? "Video Session" : "Voice Session"),
-          "description": item["description"] ?? "",
+          "title": item.title,
+          "description": item.description,
           "icon": type == "Video Call" ? Icons.videocam_rounded : Icons.phone_rounded,
         };
       }).toList();
 
-      final List<int> durations = controller.apiDurations.map((item) => item["minutes"] as int).toList();
+      final List<int> durations = controller.apiDurations.map((item) => item.minutes).toList();
       final hourlyRate = doctor.startingPricePerHour ?? 100.0;
       final activeModality = controller.selectedSessionType.value;
 
@@ -321,14 +321,13 @@ class SessionTypeView extends GetView<BookingSessionController> {
             itemBuilder: (context, index) {
               final min = durations[index];
               final isSelected = controller.selectedDuration.value == min;
-              final durationItem = controller.apiDurations.firstWhere(
-                (d) => d['minutes'] == min,
-                orElse: () => <String, dynamic>{},
+              final durationItem = controller.apiDurations.firstWhereOrNull(
+                (d) => d.minutes == min,
               );
               final calculatedPrice = activeModality == "Video Call"
-                  ? ((durationItem["videoCallPrice"] ?? (hourlyRate * (min / 60.0) * 1.0)) as num).toDouble()
-                  : ((durationItem["voiceCallPrice"] ?? (hourlyRate * (min / 60.0) * 0.8)) as num).toDouble();
-              final durationSubtitle = durationItem["subtitle"] as String? ?? "Consultation";
+                  ? (durationItem?.videoCallPrice ?? (hourlyRate * (min / 60.0) * 1.0))
+                  : (durationItem?.voiceCallPrice ?? (hourlyRate * (min / 60.0) * 0.8));
+              final durationSubtitle = durationItem?.subtitle ?? "Consultation";
 
               return GestureDetector(
                 onTap: () {
