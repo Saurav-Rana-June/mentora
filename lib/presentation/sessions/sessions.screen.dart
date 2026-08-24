@@ -75,6 +75,11 @@ class SessionsScreen extends GetView<SessionsController> {
         Spacing.s12.h,
         Expanded(
           child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
             final isUpcoming = controller.isUpcomingSelected.value;
             final sessionsList = isUpcoming
                 ? controller.upcomingSessions
@@ -166,23 +171,37 @@ class SessionsScreen extends GetView<SessionsController> {
     required bool isUpcoming,
   }) {
     if (sessions.isEmpty) {
-      return buildEmptyState(
-        context,
-        isUpcoming
-            ? "No upcoming sessions scheduled."
-            : "No completed sessions yet.",
+      return RefreshIndicator(
+        onRefresh: () => controller.fetchSessions(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            alignment: Alignment.center,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: buildEmptyState(
+              context,
+              isUpcoming
+                  ? "No upcoming sessions scheduled."
+                  : "No completed sessions yet.",
+            ),
+          ),
+        ),
       );
     }
-    return ListView.builder(
-      itemCount: sessions.length,
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
+    return RefreshIndicator(
+      onRefresh: () => controller.fetchSessions(),
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: sessions.length,
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s4.symmetric.horizontal,
+        ),
+        itemBuilder: (context, index) {
+          final session = sessions[index];
+          return buildSessionTile(context, session);
+        },
       ),
-      itemBuilder: (context, index) {
-        final session = sessions[index];
-        return buildSessionTile(context, session);
-      },
     );
   }
 

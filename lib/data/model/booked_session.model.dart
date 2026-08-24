@@ -18,6 +18,9 @@ class BookedSession {
   final String bookingStatus;
   final String createdAt;
   final String updatedAt;
+  final String? doctorName;
+  final String? doctorSpeciality;
+  final String? doctorImage;
 
   BookedSession({
     required this.id,
@@ -34,6 +37,9 @@ class BookedSession {
     required this.bookingStatus,
     required this.createdAt,
     required this.updatedAt,
+    this.doctorName,
+    this.doctorSpeciality,
+    this.doctorImage,
   });
 
   factory BookedSession.fromJson(Map<String, dynamic> json) =>

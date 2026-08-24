@@ -22,6 +22,9 @@ BookedSession _$BookedSessionFromJson(Map<String, dynamic> json) =>
       bookingStatus: json['bookingStatus'] as String,
       createdAt: json['createdAt'] as String,
       updatedAt: json['updatedAt'] as String,
+      doctorName: json['doctorName'] as String?,
+      doctorSpeciality: json['doctorSpeciality'] as String?,
+      doctorImage: json['doctorImage'] as String?,
     );
 
 Map<String, dynamic> _$BookedSessionToJson(BookedSession instance) =>
@@ -40,4 +43,7 @@ Map<String, dynamic> _$BookedSessionToJson(BookedSession instance) =>
       'bookingStatus': instance.bookingStatus,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
+      'doctorName': instance.doctorName,
+      'doctorSpeciality': instance.doctorSpeciality,
+      'doctorImage': instance.doctorImage,
     };
