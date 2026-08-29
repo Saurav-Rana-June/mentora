@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
-import 'package:my_spacing/spacing.enum.dart';
 
 import 'controllers/introduction.controller.dart';
 
@@ -33,7 +32,7 @@ class IntroductionScreen extends GetView<IntroductionController> {
       safeAreaTop: false,
       body: Stack(
         children: [
-          buildBackgroundImageSection(),
+          buildBackgroundImageSection(context),
           buildMainContentSection(context),
         ],
       ),
@@ -156,8 +155,179 @@ class IntroductionScreen extends GetView<IntroductionController> {
     );
   }
 
-  RepaintBoundary buildBackgroundImageSection() {
-    return RepaintBoundary(child: Container(color: primary));
+  Widget buildBackgroundImageSection(BuildContext context) {
+    return Container(
+      width: Get.width,
+      height: Get.height - (Get.height / 2) + 50.h,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [primary.withValues(alpha: 0.8), primary],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.only(top: 20.h, bottom: 40.h),
+          child: PageView.builder(
+            controller: controller.imagePageController,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.items.length,
+            itemBuilder: (context, index) {
+              return buildImagePage(context, index);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildImagePage(BuildContext context, int index) {
+    if (index == 0) {
+      return Center(
+        child: SizedBox(
+          height: 300.h,
+          width: Get.width,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_2.png',
+                scale: 0.82,
+                rotate: -0.15,
+                offset: Offset(-55.w, 10.h),
+                opacity: 0.8,
+              ),
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_1.png',
+                scale: 0.95,
+                rotate: 0.05,
+                offset: Offset(35.w, -5.h),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (index == 1) {
+      return Center(
+        child: SizedBox(
+          height: 300.h,
+          width: Get.width,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_4.png',
+                scale: 0.82,
+                rotate: -0.18,
+                offset: Offset(-75.w, 15.h),
+                opacity: 0.8,
+              ),
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_5.png',
+                scale: 0.82,
+                rotate: 0.18,
+                offset: Offset(75.w, 15.h),
+                opacity: 0.8,
+              ),
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_3.png',
+                scale: 0.95,
+                rotate: 0.0,
+                offset: Offset(0, 0),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Center(
+        child: SizedBox(
+          height: 300.h,
+          width: Get.width,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_7.png',
+                scale: 0.82,
+                rotate: -0.18,
+                offset: Offset(-75.w, 15.h),
+                opacity: 0.8,
+              ),
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_8.png',
+                scale: 0.82,
+                rotate: 0.18,
+                offset: Offset(75.w, 15.h),
+                opacity: 0.8,
+              ),
+              buildScreenshot(
+                assetPath: 'assets/images/light_mode_ss/ssd_6.png',
+                scale: 0.95,
+                rotate: 0.0,
+                offset: Offset(0, 0),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget buildScreenshot({
+    required String assetPath,
+    double scale = 1.0,
+    double rotate = 0.0,
+    Offset offset = Offset.zero,
+    double opacity = 1.0,
+  }) {
+    return Transform.translate(
+      offset: offset,
+      child: Transform.rotate(
+        angle: rotate,
+        child: Transform.scale(
+          scale: scale,
+          child: Opacity(
+            opacity: opacity,
+            child: Container(
+              height: 250.h,
+              width: 120.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.4),
+                  width: 2.w,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14.r),
+                child: Image.asset(
+                  assetPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.broken_image, color: Colors.grey),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

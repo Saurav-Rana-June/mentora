@@ -50,6 +50,7 @@ flutter:
   assets:
     - assets/logos/
     - assets/images/
+    - assets/images/light_mode_ss/
     - assets/gifs/
     - assets/moods/
 
