@@ -146,7 +146,7 @@ class IntroductionScreen extends GetView<IntroductionController> {
               ),
               onPressed: () async {
                 await AppMethod.setHasSeenIntroduction(true);
-                Get.offAllNamed(Routes.CONTINUE);
+                Get.offAllNamed(Routes.SIGN_IN);
               },
             ),
           ),

@@ -27,10 +27,7 @@ class ContinueScreen extends GetView<ContinueController> {
       ),
     );
 
-    return CustomScreenWrapper(
-      safeAreaTop: false,
-      body: buildBody(context),
-    );
+    return CustomScreenWrapper(safeAreaTop: false, body: buildBody(context));
   }
 
   Padding buildBody(BuildContext context) {

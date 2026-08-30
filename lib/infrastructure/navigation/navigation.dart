@@ -39,11 +39,13 @@ class Nav {
       page: () => IntroductionScreen(),
       binding: IntroductionControllerBinding(),
     ),
+    /*
     GetPage(
       name: Routes.CONTINUE,
       page: () => const ContinueScreen(),
       binding: ContinueControllerBinding(),
     ),
+    */
     GetPage(
       name: Routes.SIGN_UP,
       page: () => SignUpScreen(),

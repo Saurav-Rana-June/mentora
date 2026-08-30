@@ -3,7 +3,7 @@ import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:Mentora/widgets/others/custom.check.box.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
-import 'package:Mentora/widgets/others/custom.divider.dart';
+// import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -255,6 +255,7 @@ class SignUpScreen extends GetView<SignUpController> {
               ),
               Spacing.s32.h,
 
+              /*
               Row(
                 children: [
                   Expanded(
@@ -314,6 +315,7 @@ class SignUpScreen extends GetView<SignUpController> {
                   ),
                 ],
               ),
+              */
             ],
           ),
         ),

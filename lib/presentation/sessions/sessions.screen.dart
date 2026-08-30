@@ -38,26 +38,21 @@ class SessionsScreen extends GetView<SessionsController> {
             width: 25,
             child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
           ),
-          Text(
-            "Sessions",
-            textAlign: TextAlign.center,
-            style: h2.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(
-            height: 25,
-            width: 25,
-            child: Center(
-              child: Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
+          Expanded(
+            child: Row(
+              children: [
+                Spacing.s40.w,
+                Spacing.s40.w,
+                Spacing.s16.w,
+                Text(
+                  "Sessions",
+                  textAlign: TextAlign.center,
+                  style: h2.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -76,9 +71,7 @@ class SessionsScreen extends GetView<SessionsController> {
         Expanded(
           child: Obx(() {
             if (controller.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
             final isUpcoming = controller.isUpcomingSelected.value;
             final sessionsList = isUpcoming

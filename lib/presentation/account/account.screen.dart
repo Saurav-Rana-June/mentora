@@ -16,6 +16,9 @@ import 'controllers/account.controller.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 import 'views/edit_account.dart';
+import 'package:Mentora/widgets/others/custom.confirmation.box.widget.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/data/enums/snackbar_enum.dart';
 
 class AccountScreen extends GetView<AccountController> {
   AccountScreen({super.key});
@@ -25,197 +28,244 @@ class AccountScreen extends GetView<AccountController> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return Obx(
+      () => Stack(
+        children: [
+          CustomScreenWrapper(
+            safeAreaTop: false,
+            appBar: buildAppbar(context),
+            body: SizedBox(
+              width: Get.width,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s16.value,
+                  vertical: Spacing.s16.value,
+                ),
+                child: Column(
+                  children: [
+                    buildUpgradeBanner(context),
+                    Spacing.s16.h,
 
-    return CustomScreenWrapper(
-      safeAreaTop: false,
-      appBar: buildAppbar(context),
-      body: SizedBox(
-          width: Get.width,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s16.value,
-              vertical: Spacing.s16.value,
-            ),
-            child: Column(
-              children: [
-                buildUpgradeBanner(context),
-                Spacing.s16.h,
+                    Obx(() => buildProfileDetailsSection(context)),
+                    Spacing.s16.h,
 
-                Obx(() => buildProfileDetailsSection(context)),
-                Spacing.s16.h,
-
-                // Preferences & Badges
-                CustomPrimaryCard(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Spacing.s8.value,
-                    horizontal: Spacing.s8.value,
-                  ),
-                  child: Column(
-                    children: [
-                      buildOptionRow(
-                        context,
-                        '\u{f336}', // badge-check
-                        "My Badges",
-                        onTap: () {},
+                    // Preferences & Badges
+                    CustomPrimaryCard(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Spacing.s8.value,
+                        horizontal: Spacing.s8.value,
                       ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
-                      ),
-                      buildOptionRow(
-                        context,
-                        '\u{f017}', // clock
-                        "Daily Reminder",
-                        trailing: Obx(
-                          () => CustomSwitch(
-                            value: controller.dailyReminder.value,
-                            onChanged: (val) =>
-                                controller.dailyReminder.value = val,
+                      child: Column(
+                        children: [
+                          buildOptionRow(
+                            context,
+                            '\u{f336}', // badge-check
+                            "My Badges",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
                           ),
-                        ),
-                      ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
-                      ),
-                      buildOptionRow(
-                        context,
-                        '\u{f013}', // gear
-                        "Preferences",
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                Spacing.s16.h,
-
-                // App & Security Settings
-                CustomPrimaryCard(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Spacing.s8.value,
-                    horizontal: Spacing.s8.value,
-                  ),
-                  child: Column(
-                    children: [
-                      buildOptionRow(
-                        context,
-                        '\u{f2f7}', // shield-check
-                        "Account & Security",
-                        onTap: () {},
-                      ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
-                      ),
-                      buildOptionRow(
-                        context,
-                        '\u{f0c1}', // link
-                        "Linked Accounts",
-                        onTap: () {},
-                      ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
-                      ),
-                      buildOptionRow(
-                        context,
-                        '\u{f186}', // moon (Dark Mode)
-                        "Dark Mode",
-                        trailing: Obx(
-                          () => CustomSwitch(
-                            value: controller.isDarkMode.value,
-                            onChanged: (val) => controller.toggleTheme(val),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f017}', // clock
+                            "Daily Reminder",
+                            trailing: Obx(
+                              () => CustomSwitch(
+                                value: controller.dailyReminder.value,
+                                onChanged: (val) =>
+                                    controller.dailyReminder.value = val,
+                              ),
+                            ),
                           ),
-                        ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f013}', // gear
+                            "Preferences",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                        ],
                       ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
-                      ),
-                      buildOptionRow(
-                        context,
-                        '\u{f1fe}', // chart-area
-                        "Data & Analytics",
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                Spacing.s16.h,
+                    ),
+                    Spacing.s16.h,
 
-                // Payments & Billing
-                CustomPrimaryCard(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Spacing.s8.value,
-                    horizontal: Spacing.s8.value,
-                  ),
-                  child: Column(
-                    children: [
-                      buildOptionRow(
-                        context,
-                        '\u{f09d}', // credit-card
-                        "Payment Methods",
-                        onTap: () {},
+                    // App & Security Settings
+                    CustomPrimaryCard(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Spacing.s8.value,
+                        horizontal: Spacing.s8.value,
                       ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
+                      child: Column(
+                        children: [
+                          buildOptionRow(
+                            context,
+                            '\u{f2f7}', // shield-check
+                            "Account & Security",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f0c1}', // link
+                            "Linked Accounts",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f186}', // moon (Dark Mode)
+                            "Dark Mode",
+                            trailing: Obx(
+                              () => CustomSwitch(
+                                value: controller.isDarkMode.value,
+                                onChanged: (val) => controller.toggleTheme(val),
+                              ),
+                            ),
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f1fe}', // chart-area
+                            "Data & Analytics",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                        ],
                       ),
-                      buildOptionRow(
-                        context,
-                        '\u{f005}', // star
-                        "Billing and Subscription",
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                Spacing.s16.h,
+                    ),
+                    Spacing.s16.h,
 
-                // Support & Actions
-                CustomPrimaryCard(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Spacing.s8.value,
-                    horizontal: Spacing.s8.value,
-                  ),
-                  child: Column(
-                    children: [
-                      buildOptionRow(
-                        context,
-                        '\u{f059}', // question-circle
-                        "Help & Support",
-                        onTap: () {},
+                    // Payments & Billing
+                    CustomPrimaryCard(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Spacing.s8.value,
+                        horizontal: Spacing.s8.value,
                       ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
+                      child: Column(
+                        children: [
+                          buildOptionRow(
+                            context,
+                            '\u{f09d}', // credit-card
+                            "Payment Methods",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f005}', // star
+                            "Billing and Subscription",
+                            onTap: () => AppUtils.snackbar(
+                              "Info",
+                              "This Feature is not currently avaialbe, Coming Soon!",
+                              SnackBarType.INFO,
+                            ),
+                          ),
+                        ],
                       ),
-                      buildOptionRow(
-                        context,
-                        '\u{f05a}', // info-circle
-                        "About Mentora",
-                        onTap: () {},
+                    ),
+                    Spacing.s16.h,
+
+                    // Support & Actions
+                    CustomPrimaryCard(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Spacing.s8.value,
+                        horizontal: Spacing.s8.value,
                       ),
-                      CustomDivider(
-                        indent: 40.w,
-                        endIndent: 8.w,
+                      child: Column(
+                        children: [
+                          buildOptionRow(
+                            context,
+                            '\u{f059}', // question-circle
+                            "Help & Support",
+                            onTap: () {},
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f05a}', // info-circle
+                            "About Mentora",
+                            onTap: () {},
+                          ),
+                          CustomDivider(indent: 40.w, endIndent: 8.w),
+                          buildOptionRow(
+                            context,
+                            '\u{f2f5}', // sign-out
+                            "Log Out",
+                            color: dangerColor,
+                            onTap: () {
+                              Get.dialog(
+                                CustomConfirmationBox(
+                                  title: "Log Out",
+                                  message:
+                                      "Are you sure you want to log out of Mentora?",
+                                  confirmLabel: "Log Out",
+                                  isDestructive: true,
+                                  icon: Container(
+                                    height: 54.h,
+                                    width: 54.h,
+                                    decoration: BoxDecoration(
+                                      color: dangerColor.withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '\u{f2f5}', // sign-out icon
+                                        style: TextStyle(
+                                          fontFamily: 'FontAwesomeSolid',
+                                          fontSize: 24.sp,
+                                          color: dangerColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  onConfirm: () {
+                                    Get.back();
+                                    controller.logout();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      buildOptionRow(
-                        context,
-                        '\u{f2f5}', // sign-out
-                        "Log Out",
-                        color: dangerColor,
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      );
+          if (controller.isLoggingOut.value)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.5),
+                child: const Center(child: Loader(strokeWidth: 3)),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget buildUpgradeBanner(BuildContext context) {

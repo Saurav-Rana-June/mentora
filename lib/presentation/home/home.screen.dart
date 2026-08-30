@@ -904,15 +904,15 @@ class HomeScreen extends GetView<HomeController> {
 
           Row(
             children: [
-              Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
-                ),
-              ),
-              Spacing.s12.w,
+              // Text(
+              //   MyIcons.magnifyingGlass,
+              //   style: TextStyle(
+              //     fontFamily: 'FontAwesomeLight',
+              //     fontSize: 20,
+              //     color: slate[500],
+              //   ),
+              // ),
+              // Spacing.s12.w,
               Obx(() {
                 final globalController = Get.find<GlobalController>();
                 final profile = globalController.userProfile.value;

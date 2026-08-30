@@ -4,9 +4,9 @@ import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
-import 'package:Mentora/widgets/others/custom.check.box.dart';
+// import 'package:Mentora/widgets/others/custom.check.box.dart';
 import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
-import 'package:Mentora/widgets/others/custom.divider.dart';
+// import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -164,6 +164,7 @@ class SignInScreen extends GetView<SignInController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  /*
                   Row(
                     children: [
                       SizedBox(
@@ -187,7 +188,8 @@ class SignInScreen extends GetView<SignInController> {
                       ),
                     ],
                   ),
-
+                  */
+                  const SizedBox(),
                   TextButton(
                     onPressed: () {
                       Get.to(
@@ -213,6 +215,7 @@ class SignInScreen extends GetView<SignInController> {
               ),
               Spacing.s32.h,
 
+              /*
               Row(
                 children: [
                   Expanded(
@@ -273,6 +276,7 @@ class SignInScreen extends GetView<SignInController> {
                 ],
               ),
               Spacing.s32.h,
+              */
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
