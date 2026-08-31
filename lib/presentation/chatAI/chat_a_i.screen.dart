@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
@@ -501,11 +502,17 @@ class ChatAIScreen extends GetView<ChatAIController> {
                         ),
                       ],
                     ),
-                    child: Text(
-                      message.message,
-                      style: r16.copyWith(
-                        color: theme.textTheme.bodyLarge!.color,
-                        fontWeight: FontWeight.w400,
+                    child: MarkdownBody(
+                      data: message.message,
+                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                        p: r16.copyWith(
+                          color: theme.textTheme.bodyLarge!.color,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        pPadding: EdgeInsets.zero,
+                        listBullet: r16.copyWith(
+                          color: theme.textTheme.bodyLarge!.color,
+                        ),
                       ),
                     ),
                   ),

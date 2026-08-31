@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../infrastructure/dal/services/ai_service.dart';
+
 class ChatAIController extends GetxController {
   final GlobalKey exportKey = GlobalKey();
   
@@ -44,7 +46,7 @@ class ChatAIController extends GetxController {
     }
   }
 
-  void sendMessage(String text) {
+  void sendMessage(String text) async {
     if (text.trim().isEmpty) return;
     messages.add(MessageModel(message: text, isMe: true));
     messageController.clear();
@@ -52,16 +54,36 @@ class ChatAIController extends GetxController {
     isScrolled.value = false;
     _scrollToBottom();
 
-    // Simulate AI thinking and replying with a natural delay
-    Future.delayed(const Duration(milliseconds: 600), () {
+    // Add a placeholder "Thinking..." message
+    final placeholder = MessageModel(message: "Thinking...", isMe: false);
+    messages.add(placeholder);
+    _scrollToBottom();
+
+    try {
+      final response = await AIService.queryAI(query: text);
+      messages.remove(placeholder);
+
+      if (response != null && response.data != null) {
+        final aiMessage = response.data!['response'] as String;
+        messages.add(MessageModel(message: aiMessage, isMe: false));
+      } else {
+        messages.add(
+          MessageModel(
+            message: "Sorry, I couldn't reach Mentora AI at the moment. Please try again later.",
+            isMe: false,
+          ),
+        );
+      }
+    } catch (e) {
+      messages.remove(placeholder);
       messages.add(
         MessageModel(
-          message: "Thank you for sharing that. Mentora is here to support you. Let's take it one step at a time. Tell me a bit more about how you're feeling?",
+          message: "Sorry, an unexpected error occurred. Please check your internet connection and try again.",
           isMe: false,
         ),
       );
-      _scrollToBottom();
-    });
+    }
+    _scrollToBottom();
   }
 
   void clearChat() {
