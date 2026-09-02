@@ -61,17 +61,23 @@ class ChatAIController extends GetxController {
 
   void _loadSessions() {
     try {
-      final storedData = StorageUtils.read<List<dynamic>>(StorageKeys.CHAT_AI_SESSIONS);
+      final storedData =
+          StorageUtils.read<List<dynamic>>(StorageKeys.CHAT_AI_SESSIONS);
       if (storedData != null && storedData.isNotEmpty) {
         final loaded = storedData
-            .map((e) => ChatSessionModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map(
+              (e) => ChatSessionModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList();
         // Sort by most recently updated
         loaded.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         sessions.assignAll(loaded);
       }
 
-      final currentId = StorageUtils.read<String>(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+      final currentId =
+          StorageUtils.read<String>(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
       if (currentId != null) {
         final match = sessions.firstWhereOrNull((s) => s.id == currentId);
         if (match != null && match.messages.isNotEmpty) {
@@ -81,6 +87,22 @@ class ChatAIController extends GetxController {
       }
     } catch (e) {
       debugPrint('Error loading chat sessions: $e');
+    }
+
+    // Sync latest from backend in background
+    fetchRemoteSessions();
+  }
+
+  /// Sync conversation sessions list from backend
+  Future<void> fetchRemoteSessions() async {
+    try {
+      final response = await AIService.fetchSessions();
+      if (response != null && response.data != null) {
+        sessions.assignAll(response.data!);
+        _saveSessions();
+      }
+    } catch (e) {
+      debugPrint('Error fetching remote sessions: $e');
     }
   }
 
@@ -111,8 +133,8 @@ class ChatAIController extends GetxController {
     StorageUtils.remove(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
   }
 
-  /// Select and load a historical session
-  void selectSession(ChatSessionModel session) {
+  /// Select and load a historical session (locally and from backend)
+  void selectSession(ChatSessionModel session) async {
     currentSession.value = session;
     messages.assignAll(session.messages);
     messageController.clear();
@@ -120,12 +142,31 @@ class ChatAIController extends GetxController {
     isScrolled.value = false;
     StorageUtils.write(StorageKeys.CHAT_AI_CURRENT_SESSION_ID, session.id);
     _scrollToBottom();
+
+    // Load full message history from backend
+    try {
+      final detailRes = await AIService.fetchSessionDetails(session.id);
+      if (detailRes != null && detailRes.data != null) {
+        final fullSession = detailRes.data!;
+        currentSession.value = fullSession;
+        messages.assignAll(fullSession.messages);
+        final idx = sessions.indexWhere((s) => s.id == fullSession.id);
+        if (idx != -1) {
+          sessions[idx] = fullSession;
+        }
+        _saveSessions();
+        _scrollToBottom();
+      }
+    } catch (e) {
+      debugPrint('Error loading full session messages: $e');
+    }
   }
 
   /// Delete a single chat session
   void deleteSession(String sessionId) {
     sessions.removeWhere((s) => s.id == sessionId);
     _saveSessions();
+    AIService.deleteSession(sessionId);
     if (currentSession.value?.id == sessionId) {
       createNewChat();
     }
@@ -135,12 +176,14 @@ class ChatAIController extends GetxController {
   void clearAllHistory() {
     sessions.clear();
     _saveSessions();
+    AIService.clearAllSessions();
     createNewChat();
   }
 
   /// Open the Chat History Drawer from the right side
   void openHistory() {
     historySearchQuery.value = "";
+    fetchRemoteSessions();
     scaffoldKey.currentState?.openEndDrawer();
   }
 
@@ -180,7 +223,11 @@ class ChatAIController extends GetxController {
     _scrollToBottom();
 
     try {
-      final response = await AIService.queryAI(query: cleanText);
+      final response = await AIService.queryAI(
+        query: cleanText,
+        sessionId: currentSession.value?.id,
+        title: currentSession.value?.title,
+      );
       messages.remove(placeholder);
 
       String aiReply = "";

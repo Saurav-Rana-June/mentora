@@ -561,7 +561,7 @@ class ChatAIDrawer extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            "${chat.messages.length} ${chat.messages.length == 1 ? 'msg' : 'msgs'}",
+                            "${chat.displayMessageCount} ${chat.displayMessageCount == 1 ? 'msg' : 'msgs'}",
                             style: r10.copyWith(
                               color: theme.textTheme.bodySmall!.color,
                               fontWeight: FontWeight.w500,

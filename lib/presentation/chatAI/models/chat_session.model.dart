@@ -20,12 +20,15 @@ class MessageModel {
       };
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
-        id: json['id'] as String?,
+        id: json['id']?.toString(),
         message: json['message'] as String? ?? '',
         isMe: json['isMe'] as bool? ?? false,
-        timestamp: json['timestamp'] != null
-            ? DateTime.tryParse(json['timestamp'] as String) ?? DateTime.now()
-            : DateTime.now(),
+        timestamp: json['createdAt'] != null
+            ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
+            : (json['timestamp'] != null
+                ? DateTime.tryParse(json['timestamp'] as String) ??
+                    DateTime.now()
+                : DateTime.now()),
       );
 }
 
@@ -35,6 +38,8 @@ class ChatSessionModel {
   final DateTime createdAt;
   DateTime updatedAt;
   List<MessageModel> messages;
+  int? messageCount;
+  String? lastMessage;
 
   ChatSessionModel({
     String? id,
@@ -42,20 +47,35 @@ class ChatSessionModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<MessageModel>? messages,
+    this.messageCount,
+    this.lastMessage,
   })  : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now(),
         messages = messages ?? [];
 
+  int get displayMessageCount => messageCount ?? messages.length;
+
   String get lastMessageSnippet {
-    if (messages.isEmpty) return 'No messages yet';
-    final last = messages.last;
-    final prefix = last.isMe ? 'You: ' : 'Mentora: ';
-    final cleanMsg = last.message.replaceAll('\n', ' ').trim();
-    if (cleanMsg.length > 50) {
-      return '$prefix${cleanMsg.substring(0, 50)}...';
+    if (messages.isNotEmpty) {
+      final last = messages.last;
+      final prefix = last.isMe ? 'You: ' : 'Mentora: ';
+      final cleanMsg = last.message.replaceAll('\n', ' ').trim();
+      if (cleanMsg.length > 50) {
+        return '$prefix${cleanMsg.substring(0, 50)}...';
+      }
+      return '$prefix$cleanMsg';
     }
-    return '$prefix$cleanMsg';
+
+    if (lastMessage != null && lastMessage!.trim().isNotEmpty) {
+      final cleanMsg = lastMessage!.replaceAll('\n', ' ').trim();
+      if (cleanMsg.length > 50) {
+        return '${cleanMsg.substring(0, 50)}...';
+      }
+      return cleanMsg;
+    }
+
+    return 'No messages yet';
   }
 
   String get formattedDate {
@@ -101,6 +121,8 @@ class ChatSessionModel {
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
         'messages': messages.map((m) => m.toJson()).toList(),
+        'messageCount': messageCount,
+        'lastMessage': lastMessage,
       };
 
   factory ChatSessionModel.fromJson(Map<String, dynamic> json) =>
@@ -113,6 +135,8 @@ class ChatSessionModel {
         updatedAt: json['updatedAt'] != null
             ? DateTime.tryParse(json['updatedAt'] as String) ?? DateTime.now()
             : DateTime.now(),
+        messageCount: json['messageCount'] as int?,
+        lastMessage: json['lastMessage'] as String?,
         messages: (json['messages'] as List<dynamic>?)
                 ?.map((e) => MessageModel.fromJson(e as Map<String, dynamic>))
                 .toList() ??
