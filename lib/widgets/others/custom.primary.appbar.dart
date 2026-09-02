@@ -40,7 +40,7 @@ class CustomPrimaryAppBar extends StatelessWidget implements PreferredSizeWidget
     return AppBar(
       title: title,
       leading: leading,
-      actions: actions,
+      actions: actions ?? const <Widget>[],
       flexibleSpace: flexibleSpace,
       bottom: bottom,
       elevation: elevation,

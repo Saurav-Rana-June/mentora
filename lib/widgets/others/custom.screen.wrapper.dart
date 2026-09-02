@@ -7,6 +7,7 @@ class CustomScreenWrapper extends StatelessWidget {
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? drawer;
+  final Widget? endDrawer;
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final bool useSafeArea;
@@ -28,6 +29,7 @@ class CustomScreenWrapper extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.drawer,
+    this.endDrawer,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = true,
     this.useSafeArea = true,
@@ -53,6 +55,7 @@ class CustomScreenWrapper extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       drawer: drawer,
+      endDrawer: endDrawer,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
     );
 

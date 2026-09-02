@@ -110,4 +110,9 @@ class StorageKeys {
   static String sessionInfoLastUpdated(int doctorId) => 'booking_info_last_updated_$doctorId';
   static const String MY_SESSIONS = 'my_sessions_cache';
   static const String MY_SESSIONS_LAST_UPDATED = 'my_sessions_last_updated';
+
+  // Chat AI Keys
+  static const String CHAT_AI_SESSIONS = 'chat_ai_sessions_cache';
+  static const String CHAT_AI_CURRENT_SESSION_ID = 'chat_ai_current_session_id';
 }
+

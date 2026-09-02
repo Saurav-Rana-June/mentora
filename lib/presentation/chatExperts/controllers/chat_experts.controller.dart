@@ -1,4 +1,5 @@
 import 'package:Mentora/presentation/chatAI/controllers/chat_a_i.controller.dart';
+import 'package:Mentora/presentation/chatAI/models/chat_session.model.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 
@@ -251,8 +252,6 @@ class ChatExpertsController extends GetxController {
 
   RxBool isChatsSelected = true.obs;
 }
-
-
 
 class Chat {
   final String? image;

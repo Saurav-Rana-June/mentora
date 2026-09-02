@@ -7,12 +7,21 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../infrastructure/dal/services/ai_service.dart';
+import '../../../../data/utils/storage_utils.dart';
+import '../../../../infrastructure/dal/services/ai_service.dart';
+import '../models/chat_session.model.dart';
 
 class ChatAIController extends GetxController {
   final GlobalKey exportKey = GlobalKey();
-  
-  // Start with empty messages so the landing view shows by default
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // All stored chat sessions
+  final RxList<ChatSessionModel> sessions = <ChatSessionModel>[].obs;
+
+  // Active chat session
+  final Rxn<ChatSessionModel> currentSession = Rxn<ChatSessionModel>();
+
+  // Current session messages (mirrors currentSession.value?.messages)
   final RxList<MessageModel> messages = <MessageModel>[].obs;
 
   final TextEditingController messageController = TextEditingController();
@@ -20,6 +29,7 @@ class ChatAIController extends GetxController {
   final ScrollController landingScrollController = ScrollController();
 
   final RxString currentInputText = "".obs;
+  final RxString historySearchQuery = "".obs;
 
   RxBool isSearching = false.obs;
   final RxBool isScrolled = false.obs;
@@ -32,6 +42,7 @@ class ChatAIController extends GetxController {
     });
     scrollController.addListener(_scrollListener);
     landingScrollController.addListener(_landingScrollListener);
+    _loadSessions();
   }
 
   void _scrollListener() {
@@ -46,9 +57,118 @@ class ChatAIController extends GetxController {
     }
   }
 
+  // --- PERSISTENCE & SESSION MANAGEMENT ---
+
+  void _loadSessions() {
+    try {
+      final storedData = StorageUtils.read<List<dynamic>>(StorageKeys.CHAT_AI_SESSIONS);
+      if (storedData != null && storedData.isNotEmpty) {
+        final loaded = storedData
+            .map((e) => ChatSessionModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+        // Sort by most recently updated
+        loaded.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        sessions.assignAll(loaded);
+      }
+
+      final currentId = StorageUtils.read<String>(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+      if (currentId != null) {
+        final match = sessions.firstWhereOrNull((s) => s.id == currentId);
+        if (match != null && match.messages.isNotEmpty) {
+          currentSession.value = match;
+          messages.assignAll(match.messages);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading chat sessions: $e');
+    }
+  }
+
+  Future<void> _saveSessions() async {
+    try {
+      final data = sessions.map((s) => s.toJson()).toList();
+      await StorageUtils.write(StorageKeys.CHAT_AI_SESSIONS, data);
+      if (currentSession.value != null) {
+        await StorageUtils.write(
+          StorageKeys.CHAT_AI_CURRENT_SESSION_ID,
+          currentSession.value!.id,
+        );
+      } else {
+        await StorageUtils.remove(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+      }
+    } catch (e) {
+      debugPrint('Error saving chat sessions: $e');
+    }
+  }
+
+  /// Create a fresh new chat conversation and reset to landing view
+  void createNewChat() {
+    currentSession.value = null;
+    messages.clear();
+    messageController.clear();
+    currentInputText.value = "";
+    isScrolled.value = false;
+    StorageUtils.remove(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+  }
+
+  /// Select and load a historical session
+  void selectSession(ChatSessionModel session) {
+    currentSession.value = session;
+    messages.assignAll(session.messages);
+    messageController.clear();
+    currentInputText.value = "";
+    isScrolled.value = false;
+    StorageUtils.write(StorageKeys.CHAT_AI_CURRENT_SESSION_ID, session.id);
+    _scrollToBottom();
+  }
+
+  /// Delete a single chat session
+  void deleteSession(String sessionId) {
+    sessions.removeWhere((s) => s.id == sessionId);
+    _saveSessions();
+    if (currentSession.value?.id == sessionId) {
+      createNewChat();
+    }
+  }
+
+  /// Clear all saved chat history
+  void clearAllHistory() {
+    sessions.clear();
+    _saveSessions();
+    createNewChat();
+  }
+
+  /// Open the Chat History Drawer from the right side
+  void openHistory() {
+    historySearchQuery.value = "";
+    scaffoldKey.currentState?.openEndDrawer();
+  }
+
+  // --- MESSAGING FLOW ---
+
   void sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
-    messages.add(MessageModel(message: text, isMe: true));
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
+
+    // Check if we need to initialize a new session
+    if (currentSession.value == null) {
+      final newSession = ChatSessionModel(
+        title: _generateSessionTitle(cleanText),
+      );
+      currentSession.value = newSession;
+      sessions.insert(0, newSession);
+    } else {
+      // Move active session to top of the history list
+      sessions.removeWhere((s) => s.id == currentSession.value!.id);
+      sessions.insert(0, currentSession.value!);
+    }
+
+    final userMsg = MessageModel(message: cleanText, isMe: true);
+    messages.add(userMsg);
+    currentSession.value!.messages.add(userMsg);
+    currentSession.value!.updatedAt = DateTime.now();
+    _saveSessions();
+
     messageController.clear();
     currentInputText.value = "";
     isScrolled.value = false;
@@ -60,34 +180,63 @@ class ChatAIController extends GetxController {
     _scrollToBottom();
 
     try {
-      final response = await AIService.queryAI(query: text);
+      final response = await AIService.queryAI(query: cleanText);
       messages.remove(placeholder);
 
+      String aiReply = "";
       if (response != null && response.data != null) {
-        final aiMessage = response.data!['response'] as String;
-        messages.add(MessageModel(message: aiMessage, isMe: false));
+        aiReply = response.data!['response'] as String;
       } else {
-        messages.add(
-          MessageModel(
-            message: "Sorry, I couldn't reach Mentora AI at the moment. Please try again later.",
-            isMe: false,
-          ),
-        );
+        aiReply = "Sorry, I couldn't reach Mentora AI at the moment. Please try again later.";
       }
+
+      final aiMsg = MessageModel(message: aiReply, isMe: false);
+      messages.add(aiMsg);
+      currentSession.value!.messages.add(aiMsg);
+      currentSession.value!.updatedAt = DateTime.now();
+      _saveSessions();
     } catch (e) {
       messages.remove(placeholder);
-      messages.add(
-        MessageModel(
-          message: "Sorry, an unexpected error occurred. Please check your internet connection and try again.",
-          isMe: false,
-        ),
+      final errorMsg = MessageModel(
+        message: "Sorry, an unexpected error occurred. Please check your internet connection and try again.",
+        isMe: false,
       );
+      messages.add(errorMsg);
+      currentSession.value!.messages.add(errorMsg);
+      currentSession.value!.updatedAt = DateTime.now();
+      _saveSessions();
     }
     _scrollToBottom();
   }
 
+  String _generateSessionTitle(String prompt) {
+    final trimmed = prompt.replaceAll('\n', ' ').trim();
+    if (trimmed.toLowerCase().contains("feeling really anxious") ||
+        trimmed.toLowerCase().contains("calm down")) {
+      return "Calming Anxiety";
+    }
+    if (trimmed.toLowerCase().contains("breathing exercise")) {
+      return "Breathing Exercise";
+    }
+    if (trimmed.toLowerCase().contains("stress") ||
+        trimmed.toLowerCase().contains("overwhelmed")) {
+      return "Stress Relief";
+    }
+    if (trimmed.toLowerCase().contains("mindfulness quote")) {
+      return "Mindfulness Quote";
+    }
+    if (trimmed.length > 32) {
+      return '${trimmed.substring(0, 32)}...';
+    }
+    return trimmed.isEmpty ? "New Conversation" : trimmed;
+  }
+
   void clearChat() {
-    messages.clear();
+    if (currentSession.value != null) {
+      deleteSession(currentSession.value!.id);
+    } else {
+      messages.clear();
+    }
     isScrolled.value = false;
   }
 
@@ -133,11 +282,4 @@ class ChatAIController extends GetxController {
     landingScrollController.dispose();
     super.onClose();
   }
-}
-
-class MessageModel {
-  final String message;
-  final bool isMe;
-
-  MessageModel({required this.message, required this.isMe});
 }

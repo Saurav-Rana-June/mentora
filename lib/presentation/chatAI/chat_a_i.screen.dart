@@ -11,12 +11,13 @@ import '../../infrastructure/theme/theme.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
-import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
 import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/chat_a_i.controller.dart';
+import 'models/chat_session.model.dart';
+import 'widgets/chat_a_i_drawer.dart';
 
 class ChatAIScreen extends GetView<ChatAIController> {
   final bool showAppBar;
@@ -37,6 +38,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
           return RepaintBoundary(
             key: controller.exportKey,
             child: CustomScreenWrapper(
+              scaffoldKey: controller.scaffoldKey,
+              endDrawer: ChatAIDrawer(controller: controller),
               safeAreaTop: false,
               body: body,
             ),
@@ -75,7 +78,12 @@ class ChatAIScreen extends GetView<ChatAIController> {
       child: SingleChildScrollView(
         controller: controller.landingScrollController,
         physics: const BouncingScrollPhysics(),
-        // padding: EdgeInsets.fromLTRB(0, 0, 0, Spacing.s12.symmetric.horizontal),
+        padding: EdgeInsets.fromLTRB(
+          0,
+          Spacing.s32.symmetric.vertical,
+          0,
+          Spacing.s24.symmetric.horizontal,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,6 +121,88 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildRecentChatsList(BuildContext context) {
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.symmetric.horizontal,
+      ),
+      child: Obx(() {
+        final recent = controller.sessions.take(4).toList();
+        return Row(
+          children: recent.map((session) {
+            return Padding(
+              padding: EdgeInsets.only(right: Spacing.s12.symmetric.horizontal),
+              child: CustomPrimaryCard(
+                borderRadius: 16,
+                width: 190.w,
+                height: 100.h,
+                padding: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
+                border: Border.all(
+                  color:
+                      theme.dividerTheme.color ??
+                      primary.withValues(alpha: 0.1),
+                  width: 0.8,
+                ),
+                onTap: () => controller.selectSession(session),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '\u{f0e5}', // chat icon
+                          style: TextStyle(
+                            fontFamily: 'FontAwesomeSolid',
+                            fontSize: 12,
+                            color: primary,
+                          ),
+                        ),
+                        Spacing.s8.w,
+                        Expanded(
+                          child: Text(
+                            session.title,
+                            style: r14.copyWith(
+                              color: theme.textTheme.bodyLarge!.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      session.lastMessageSnippet,
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodyMedium!.color!.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      session.formattedDate,
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodySmall!.color!.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      }),
     );
   }
 
@@ -432,8 +522,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
           child: Container(
             margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
             padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s12.symmetric.horizontal,
-              vertical: Spacing.s8.symmetric.horizontal,
+              horizontal: Spacing.s8.symmetric.horizontal,
+              vertical: Spacing.s4.symmetric.horizontal,
             ),
             decoration: BoxDecoration(
               color: primary,
@@ -483,8 +573,8 @@ class ChatAIScreen extends GetView<ChatAIController> {
                   constraints: BoxConstraints(maxWidth: 0.7.sw),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.s12.symmetric.horizontal,
-                      vertical: Spacing.s8.symmetric.horizontal,
+                      horizontal: Spacing.s8.symmetric.horizontal,
+                      vertical: Spacing.s4.symmetric.horizontal,
                     ),
                     decoration: BoxDecoration(
                       color: theme.cardTheme.color,
@@ -635,30 +725,35 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   Widget buildAppbar(BuildContext context) {
     final theme = Theme.of(context);
+    final topPadding = MediaQuery.paddingOf(context).top;
     return Obx(() {
       final isScrolled = controller.isScrolled.value;
 
-      final appBar = CustomPrimaryAppBar(
-        title: controller.isSearching.value
+      final barContent = Container(
+        padding: EdgeInsets.fromLTRB(
+          Spacing.s4.symmetric.horizontal,
+          topPadding + Spacing.s4.symmetric.vertical,
+          Spacing.s8.symmetric.horizontal,
+          Spacing.s8.symmetric.vertical,
+        ),
+        color: isScrolled
+            ? theme.primaryColorLight.withValues(alpha: 0.85)
+            : Colors.transparent,
+        child: controller.isSearching.value
             ? buildSearchAppbar(context)
             : buildNormalAppbar(context),
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        backgroundColor: isScrolled
-            ? theme.primaryColorLight.withValues(alpha: 0.8)
-            : Colors.transparent,
       );
 
       if (isScrolled) {
         return ClipRect(
           child: BackdropFilter(
             filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: appBar,
+            child: barContent,
           ),
         );
       }
 
-      return appBar;
+      return barContent;
     });
   }
 
@@ -770,7 +865,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: () {},
+              onTap: () => controller.openHistory(),
               child: Container(
                 height: 38.h,
                 width: 38.h,
@@ -786,18 +881,93 @@ class ChatAIScreen extends GetView<ChatAIController> {
                 ),
                 child: Center(
                   child: Text(
-                    '\u{f0c9}',
+                    '\u{f1da}',
                     style: TextStyle(
                       fontFamily: 'FontAwesomeSolid',
-                      fontSize: 16,
-                      color: theme.textTheme.bodyLarge!.color,
+                      fontSize: 15,
+                      color: primary,
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        buildOptionsDropdownButtton(context),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // History Button
+            Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(50),
+                onTap: () => controller.openHistory(),
+                child: Container(
+                  height: 36.h,
+                  width: 36.h,
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          theme.dividerTheme.color ??
+                          primary.withValues(alpha: 0.08),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '\u{f1da}', // history icon
+                      style: TextStyle(
+                        fontFamily: 'FontAwesomeSolid',
+                        fontSize: 14,
+                        color: primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s8.w,
+            // New Chat Button
+            Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(50),
+                onTap: () => controller.createNewChat(),
+                child: Container(
+                  height: 36.h,
+                  width: 36.h,
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          theme.dividerTheme.color ??
+                          primary.withValues(alpha: 0.08),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '\u{f044}', // pen-to-square / compose / new chat
+                      style: TextStyle(
+                        fontFamily: 'FontAwesomeSolid',
+                        fontSize: 14,
+                        color: primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s8.w,
+            buildOptionsDropdownButtton(context),
+          ],
+        ),
       ],
     );
   }
@@ -809,6 +979,12 @@ class ChatAIScreen extends GetView<ChatAIController> {
       offset: const Offset(0, 48),
       onSelected: (value) {
         switch (value) {
+          case 'new_chat':
+            controller.createNewChat();
+            break;
+          case 'history':
+            controller.openHistory();
+            break;
           case 'search':
             controller.isSearching.value = true;
             break;
@@ -832,6 +1008,52 @@ class ChatAIScreen extends GetView<ChatAIController> {
         }
       },
       itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'new_chat',
+          child: Row(
+            children: [
+              Text(
+                '\u{f044}', // pen-to-square
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 14,
+                  color: primary,
+                ),
+              ),
+              Spacing.s12.w,
+              Text(
+                'New Chat',
+                style: r16.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'history',
+          child: Row(
+            children: [
+              Text(
+                '\u{f1da}', // history
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
+              Spacing.s12.w,
+              Text(
+                'Chat History',
+                style: r16.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
         PopupMenuItem(
           value: 'search',
           child: Row(
