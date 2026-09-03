@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
@@ -18,6 +17,7 @@ import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/chat_a_i.controller.dart';
 import 'models/chat_session.model.dart';
 import 'widgets/chat_a_i_drawer.dart';
+import 'widgets/futuristic_ai_bubble.widget.dart';
 
 class ChatAIScreen extends GetView<ChatAIController> {
   final bool showAppBar;
@@ -553,83 +553,10 @@ class ChatAIScreen extends GetView<ChatAIController> {
         ),
       );
     } else {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: Container(
-          margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.only(right: Spacing.s8.symmetric.horizontal),
-                height: 32.h,
-                width: 32.h,
-                decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '\u{f890}', // sparkles icon
-                    style: TextStyle(
-                      fontFamily: 'FontAwesomeSolid',
-                      fontSize: 14,
-                      color: primary,
-                    ),
-                  ),
-                ),
-              ),
-              Flexible(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 0.7.sw),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Spacing.s8.symmetric.horizontal,
-                          vertical: Spacing.s4.symmetric.horizontal,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.cardTheme.color,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                            bottomLeft: Radius.circular(4),
-                            bottomRight: Radius.circular(16),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromRGBO(0, 0, 0, 0.03),
-                              offset: const Offset(0, 1),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: MarkdownBody(
-                          data: message.message,
-                          styleSheet: MarkdownStyleSheet.fromTheme(theme)
-                              .copyWith(
-                                p: r16.copyWith(
-                                  color: theme.textTheme.bodyLarge!.color,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                pPadding: EdgeInsets.zero,
-                                listBullet: r16.copyWith(
-                                  color: theme.textTheme.bodyLarge!.color,
-                                ),
-                              ),
-                        ),
-                      ),
-                      buildAiActionRow(context, message, index),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      return FuturisticAiBubble(
+        message: message,
+        index: index,
+        controller: controller,
       );
     }
   }
@@ -677,46 +604,6 @@ class ChatAIScreen extends GetView<ChatAIController> {
               tooltip: 'Retry',
               isActive: false,
               onTap: () => controller.retryMessage(message, index),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget buildAiActionRow(
-    BuildContext context,
-    MessageModel message,
-    int index,
-  ) {
-    if (message.message == "Thinking...") {
-      return const SizedBox.shrink();
-    }
-
-    return Obx(() {
-      final isSpeaking =
-          controller.currentlySpeakingMessageId.value == message.id;
-      final isCopied = controller.copiedMessageId.value == message.id;
-
-      return Padding(
-        padding: EdgeInsets.only(top: 4.h, left: 2.w),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            buildActionIconButton(
-              iconUnicode: isSpeaking
-                  ? '\u{f04d}'
-                  : '\u{f028}', // stop or speaker
-              tooltip: isSpeaking ? 'Stop speaking' : 'Speak',
-              isActive: isSpeaking,
-              onTap: () => controller.toggleSpeak(message),
-            ),
-            Spacing.s4.w,
-            buildActionIconButton(
-              iconUnicode: isCopied ? '\u{f00c}' : '\u{f0c5}', // check or copy
-              tooltip: isCopied ? 'Copied' : 'Copy',
-              isActive: isCopied,
-              onTap: () => controller.copyMessage(message),
             ),
           ],
         ),

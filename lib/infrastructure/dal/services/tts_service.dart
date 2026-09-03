@@ -9,16 +9,18 @@ class TTSService {
   final FlutterTts _flutterTts = FlutterTts();
   bool _isInitialized = false;
 
-  Future<void> init() async {
-    if (_isInitialized) return;
+  Future<bool> init() async {
+    if (_isInitialized) return true;
     try {
       await _flutterTts.setLanguage("en-US");
       await _flutterTts.setPitch(1.0);
       await _flutterTts.setSpeechRate(0.5);
       await _flutterTts.awaitSpeakCompletion(true);
       _isInitialized = true;
+      return true;
     } catch (e) {
       debugPrint("TTS init error: $e");
+      return false;
     }
   }
 
@@ -28,8 +30,12 @@ class TTSService {
     VoidCallback? onError,
     VoidCallback? onCancel,
   }) async {
-    await init();
     try {
+      final initialized = await init();
+      if (!initialized) {
+        onError?.call();
+        return;
+      }
       _flutterTts.setCompletionHandler(() {
         onComplete?.call();
       });
