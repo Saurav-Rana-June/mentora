@@ -494,9 +494,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
       controller: controller.scrollController,
       itemCount: controller.messages.length,
       padding: EdgeInsets.fromLTRB(
-        Spacing.s12.symmetric.horizontal,
+        Spacing.s8.symmetric.horizontal,
         topPadding + 56.h + Spacing.s12.symmetric.vertical,
-        Spacing.s12.symmetric.horizontal,
+        Spacing.s8.symmetric.horizontal,
         Spacing.s12.symmetric.vertical,
       ),
       itemBuilder: (context, index) {
@@ -519,25 +519,36 @@ class ChatAIScreen extends GetView<ChatAIController> {
         alignment: Alignment.centerRight,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 0.75.sw),
-          child: Container(
-            margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
-            padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s8.symmetric.horizontal,
-              vertical: Spacing.s4.symmetric.horizontal,
-            ),
-            decoration: BoxDecoration(
-              color: primary,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 4.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s8.symmetric.horizontal,
+                  vertical: Spacing.s4.symmetric.horizontal,
+                ),
+                decoration: BoxDecoration(
+                  color: primary,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(4),
+                  ),
+                ),
+                child: Text(
+                  message.message,
+                  style: r16.copyWith(
+                    color: white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
-            ),
-            child: Text(
-              message.message,
-              style: r16.copyWith(color: white, fontWeight: FontWeight.w500),
-            ),
+              buildUserActionRow(context, message, index),
+              Spacing.s8.h,
+            ],
           ),
         ),
       );
@@ -571,40 +582,48 @@ class ChatAIScreen extends GetView<ChatAIController> {
               Flexible(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 0.7.sw),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.s8.symmetric.horizontal,
-                      vertical: Spacing.s4.symmetric.horizontal,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.cardTheme.color,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                        bottomLeft: Radius.circular(4),
-                        bottomRight: Radius.circular(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Spacing.s8.symmetric.horizontal,
+                          vertical: Spacing.s4.symmetric.horizontal,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.cardTheme.color,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                            bottomLeft: Radius.circular(4),
+                            bottomRight: Radius.circular(16),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromRGBO(0, 0, 0, 0.03),
+                              offset: const Offset(0, 1),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: MarkdownBody(
+                          data: message.message,
+                          styleSheet: MarkdownStyleSheet.fromTheme(theme)
+                              .copyWith(
+                                p: r16.copyWith(
+                                  color: theme.textTheme.bodyLarge!.color,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                pPadding: EdgeInsets.zero,
+                                listBullet: r16.copyWith(
+                                  color: theme.textTheme.bodyLarge!.color,
+                                ),
+                              ),
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromRGBO(0, 0, 0, 0.03),
-                          offset: const Offset(0, 1),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: MarkdownBody(
-                      data: message.message,
-                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                        p: r16.copyWith(
-                          color: theme.textTheme.bodyLarge!.color,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        pPadding: EdgeInsets.zero,
-                        listBullet: r16.copyWith(
-                          color: theme.textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                    ),
+                      buildAiActionRow(context, message, index),
+                    ],
                   ),
                 ),
               ),
@@ -615,13 +634,138 @@ class ChatAIScreen extends GetView<ChatAIController> {
     }
   }
 
+  Widget buildUserActionRow(
+    BuildContext context,
+    MessageModel message,
+    int index,
+  ) {
+    return Obx(() {
+      final isSpeaking =
+          controller.currentlySpeakingMessageId.value == message.id;
+      final isCopied = controller.copiedMessageId.value == message.id;
+
+      return Padding(
+        padding: EdgeInsets.only(right: 2.w),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildActionIconButton(
+              iconUnicode: isSpeaking
+                  ? '\u{f04d}'
+                  : '\u{f028}', // stop or speaker
+              tooltip: isSpeaking ? 'Stop speaking' : 'Speak',
+              isActive: isSpeaking,
+              onTap: () => controller.toggleSpeak(message),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: isCopied ? '\u{f00c}' : '\u{f0c5}', // check or copy
+              tooltip: isCopied ? 'Copied' : 'Copy',
+              isActive: isCopied,
+              onTap: () => controller.copyMessage(message),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: '\u{f304}', // pen-to-square
+              tooltip: 'Edit',
+              isActive: false,
+              onTap: () => controller.startEditMessage(message, index),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: '\u{f01e}', // rotate-right / retry
+              tooltip: 'Retry',
+              isActive: false,
+              onTap: () => controller.retryMessage(message, index),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget buildAiActionRow(
+    BuildContext context,
+    MessageModel message,
+    int index,
+  ) {
+    if (message.message == "Thinking...") {
+      return const SizedBox.shrink();
+    }
+
+    return Obx(() {
+      final isSpeaking =
+          controller.currentlySpeakingMessageId.value == message.id;
+      final isCopied = controller.copiedMessageId.value == message.id;
+
+      return Padding(
+        padding: EdgeInsets.only(top: 4.h, left: 2.w),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildActionIconButton(
+              iconUnicode: isSpeaking
+                  ? '\u{f04d}'
+                  : '\u{f028}', // stop or speaker
+              tooltip: isSpeaking ? 'Stop speaking' : 'Speak',
+              isActive: isSpeaking,
+              onTap: () => controller.toggleSpeak(message),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: isCopied ? '\u{f00c}' : '\u{f0c5}', // check or copy
+              tooltip: isCopied ? 'Copied' : 'Copy',
+              isActive: isCopied,
+              onTap: () => controller.copyMessage(message),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget buildActionIconButton({
+    required String iconUnicode,
+    required String tooltip,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final defaultColor = theme.textTheme.bodySmall!.color!.withValues(
+          alpha: 0.6,
+        );
+
+        return Tooltip(
+          message: tooltip,
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(
+                  iconUnicode,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 12,
+                    color: isActive ? primary : defaultColor,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Container buildMessageBoxArea(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s12.symmetric.horizontal,
-        vertical: Spacing.s8.symmetric.vertical,
-      ),
       decoration: BoxDecoration(
         color: theme.primaryColorLight,
         border: Border(
@@ -631,93 +775,136 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Material(
-          //   color: Colors.transparent,
-          //   shape: const CircleBorder(),
-          //   child: InkWell(
-          //     customBorder: const CircleBorder(),
-          //     onTap: () {},
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8),
-          //       child: Text(
-          //         '\u{002b}',
-          //         style: TextStyle(
-          //           fontFamily: 'FontAwesomeRegular',
-          //           fontSize: 22,
-          //           color: theme.textTheme.bodyMedium!.color!.withValues(
-          //             alpha: 0.6,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Spacing.s8.w,
-          Expanded(
-            child: CustomTextFormField(
-              hintText: "Write a message...",
-              controller: controller.messageController,
-              keyboardType: TextInputType.multiline,
-              textInputAction: TextInputAction.send,
-              maxLines: 3,
-              minLines: 1,
-              borderWidth: 0.8,
-              borderColor:
-                  theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
-              fillColor: theme.cardTheme.color,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-                vertical: Spacing.s8.symmetric.vertical,
-              ),
-              onFieldSubmitted: (value) {
-                final text = value.trim();
-                if (text.isNotEmpty) {
-                  controller.sendMessage(text);
-                }
-              },
-            ),
-          ),
-          Spacing.s16.w,
           Obx(() {
-            final text = controller.currentInputText.value;
-            final isNotEmpty = text.trim().isNotEmpty;
-            return Material(
-              color: Colors.transparent,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                borderRadius: BorderRadius.circular(50),
-                onTap: isNotEmpty ? () => controller.sendMessage(text) : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 40.h,
-                  width: 40.h,
-                  decoration: BoxDecoration(
-                    color: isNotEmpty
-                        ? primary
-                        : primary.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
+            final editingMsg = controller.editingMessage.value;
+            if (editingMsg == null) return const SizedBox.shrink();
+            final snippet = editingMsg.message.replaceAll('\n', ' ').trim();
+            final displaySnippet = snippet.length > 40
+                ? '${snippet.substring(0, 40)}...'
+                : snippet;
+
+            return Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s12.symmetric.horizontal,
+                vertical: 6.h,
+              ),
+              color: primary.withValues(alpha: 0.1),
+              child: Row(
+                children: [
+                  Text(
+                    '\u{f304}',
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 12,
+                      color: primary,
+                    ),
                   ),
-                  child: Center(
+                  Spacing.s8.w,
+                  Expanded(
                     child: Text(
-                      '\u{f1d8}',
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 16,
-                        color: isNotEmpty
-                            ? white
-                            : theme.textTheme.bodyMedium!.color!.withValues(
-                                alpha: 0.3,
-                              ),
+                      'Editing: "$displaySnippet"',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: r12.copyWith(
+                        color: theme.textTheme.bodyMedium!.color,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: controller.cancelEdit,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: theme.textTheme.bodySmall!.color,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s12.symmetric.horizontal,
+              vertical: Spacing.s8.symmetric.vertical,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    hintText: "Write a message...",
+                    controller: controller.messageController,
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.send,
+                    maxLines: 3,
+                    minLines: 1,
+                    borderWidth: 0.8,
+                    borderColor:
+                        theme.dividerTheme.color ??
+                        primary.withValues(alpha: 0.1),
+                    fillColor: theme.cardTheme.color,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s8.symmetric.horizontal,
+                      vertical: Spacing.s8.symmetric.vertical,
+                    ),
+                    onFieldSubmitted: (value) {
+                      final text = value.trim();
+                      if (text.isNotEmpty) {
+                        controller.sendMessage(text);
+                      }
+                    },
+                  ),
+                ),
+                Spacing.s16.w,
+                Obx(() {
+                  final text = controller.currentInputText.value;
+                  final isNotEmpty = text.trim().isNotEmpty;
+                  final isEditing = controller.editingMessage.value != null;
+                  return Material(
+                    color: Colors.transparent,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      borderRadius: BorderRadius.circular(50),
+                      onTap: isNotEmpty
+                          ? () => controller.sendMessage(text)
+                          : null,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: 40.h,
+                        width: 40.h,
+                        decoration: BoxDecoration(
+                          color: isNotEmpty
+                              ? primary
+                              : primary.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            isEditing ? '\u{f00c}' : '\u{f1d8}',
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 16,
+                              color: isNotEmpty
+                                  ? white
+                                  : theme.textTheme.bodyMedium!.color!
+                                        .withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
         ],
       ),
     );

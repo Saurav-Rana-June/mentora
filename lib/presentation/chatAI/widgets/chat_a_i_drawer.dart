@@ -19,91 +19,6 @@ class ChatAIDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // High quality dummy conversations to showcase when list is fresh or dummy preview
-    final dummyChats = [
-      ChatSessionModel(
-        id: 'dummy_1',
-        title: 'Overcoming Morning Anxiety',
-        updatedAt: DateTime.now().subtract(const Duration(minutes: 25)),
-        messages: [
-          MessageModel(
-            message: 'I feel really anxious when I wake up in the morning.',
-            isMe: true,
-          ),
-          MessageModel(
-            message:
-                'Morning anxiety is very common due to cortisol spikes. Let’s try 3 grounding steps together.',
-            isMe: false,
-          ),
-        ],
-      ),
-      ChatSessionModel(
-        id: 'dummy_2',
-        title: 'Mindfulness & Sleep Routine',
-        updatedAt: DateTime.now().subtract(const Duration(hours: 3)),
-        messages: [
-          MessageModel(
-            message: 'Can you guide me on a bedtime wind-down routine?',
-            isMe: true,
-          ),
-          MessageModel(
-            message:
-                'Here is a peaceful 15-minute routine with dim lighting, 4-7-8 breathing, and gratitude reflection.',
-            isMe: false,
-          ),
-        ],
-      ),
-      ChatSessionModel(
-        id: 'dummy_3',
-        title: 'Deep Breathing Session',
-        updatedAt: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
-        messages: [
-          MessageModel(
-            message: 'Could we do a quick 2-minute box breathing session?',
-            isMe: true,
-          ),
-          MessageModel(
-            message:
-                'Inhale for 4 seconds... Hold for 4... Exhale for 4... Hold for 4.',
-            isMe: false,
-          ),
-        ],
-      ),
-      ChatSessionModel(
-        id: 'dummy_4',
-        title: 'Work Stress & Burnout Relief',
-        updatedAt: DateTime.now().subtract(const Duration(days: 2, hours: 5)),
-        messages: [
-          MessageModel(
-            message:
-                'I have a lot of deadlines and feeling completely overwhelmed.',
-            isMe: true,
-          ),
-          MessageModel(
-            message:
-                'Take a deep breath. Let’s break down your tasks into micro-steps to reduce cognitive overload.',
-            isMe: false,
-          ),
-        ],
-      ),
-      ChatSessionModel(
-        id: 'dummy_5',
-        title: 'Daily Mindfulness Quote',
-        updatedAt: DateTime.now().subtract(const Duration(days: 4)),
-        messages: [
-          MessageModel(
-            message: 'Give me a mindfulness quote for reflection.',
-            isMe: true,
-          ),
-          MessageModel(
-            message:
-                '"You cannot control the waves, but you can learn to surf." – Jon Kabat-Zinn',
-            isMe: false,
-          ),
-        ],
-      ),
-    ];
-
     return Drawer(
       width: 0.86.sw,
       backgroundColor: theme.primaryColorLight,
@@ -144,13 +59,15 @@ class ChatAIDrawer extends StatelessWidget {
               // Chat List Grouped by Date
               Expanded(
                 child: Obx(() {
+                  final allChats = controller.sessions.toList();
+
+                  if (allChats.isEmpty) {
+                    return _buildEmptyHistoryState(context);
+                  }
+
                   final query = controller.historySearchQuery.value
                       .trim()
                       .toLowerCase();
-
-                  final allChats = controller.sessions.isNotEmpty
-                      ? controller.sessions.toList()
-                      : dummyChats;
 
                   final filtered = allChats.where((s) {
                     if (query.isEmpty) return true;
@@ -732,6 +649,59 @@ class ChatAIDrawer extends StatelessWidget {
             );
           }),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyHistoryState(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(Spacing.s24.symmetric.horizontal),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 52.h,
+              height: 52.h,
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: primary.withValues(alpha: 0.25),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  '\u{f0e5}', // comment bubble
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 20,
+                    color: primary,
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s16.h,
+            Text(
+              "No Conversations Yet",
+              style: r16.copyWith(
+                color: theme.textTheme.bodyLarge!.color,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Spacing.s4.h,
+            Text(
+              "Start a new conversation with Mentora AI for mindfulness, guided reflections, and daily wellness support.",
+              style: r12.copyWith(
+                color: theme.textTheme.bodySmall!.color!.withValues(alpha: 0.7),
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
