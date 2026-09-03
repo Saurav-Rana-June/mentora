@@ -4,8 +4,13 @@ import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import '../../infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
+import '../../widgets/others/custom.primary.appbar.dart';
 import '../../widgets/others/custom.primary.card.dart';
+import '../../widgets/others/custom.divider.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
+import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'controllers/sessions.controller.dart';
 
 class SessionsScreen extends GetView<SessionsController> {
@@ -16,18 +21,15 @@ class SessionsScreen extends GetView<SessionsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
       floatingActionButton: buildFloatingActionButton(context),
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -36,26 +38,21 @@ class SessionsScreen extends GetView<SessionsController> {
             width: 25,
             child: Image.asset('assets/logos/logo.png', fit: BoxFit.fill),
           ),
-          Text(
-            "Sessions",
-            textAlign: TextAlign.center,
-            style: h2.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(
-            height: 25,
-            width: 25,
-            child: Center(
-              child: Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
+          Expanded(
+            child: Row(
+              children: [
+                Spacing.s40.w,
+                Spacing.s40.w,
+                Spacing.s16.w,
+                Text(
+                  "Sessions",
+                  textAlign: TextAlign.center,
+                  style: h2.copyWith(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -73,6 +70,9 @@ class SessionsScreen extends GetView<SessionsController> {
         Spacing.s12.h,
         Expanded(
           child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
             final isUpcoming = controller.isUpcomingSelected.value;
             final sessionsList = isUpcoming
                 ? controller.upcomingSessions
@@ -164,23 +164,37 @@ class SessionsScreen extends GetView<SessionsController> {
     required bool isUpcoming,
   }) {
     if (sessions.isEmpty) {
-      return buildEmptyState(
-        context,
-        isUpcoming
-            ? "No upcoming sessions scheduled."
-            : "No completed sessions yet.",
+      return RefreshIndicator(
+        onRefresh: () => controller.fetchSessions(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            alignment: Alignment.center,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: buildEmptyState(
+              context,
+              isUpcoming
+                  ? "No upcoming sessions scheduled."
+                  : "No completed sessions yet.",
+            ),
+          ),
+        ),
       );
     }
-    return ListView.builder(
-      itemCount: sessions.length,
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-        vertical: Spacing.s4.symmetric.horizontal,
+    return RefreshIndicator(
+      onRefresh: () => controller.fetchSessions(),
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: sessions.length,
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.s8.symmetric.horizontal,
+          vertical: Spacing.s4.symmetric.horizontal,
+        ),
+        itemBuilder: (context, index) {
+          final session = sessions[index];
+          return buildSessionTile(context, session);
+        },
       ),
-      itemBuilder: (context, index) {
-        final session = sessions[index];
-        return buildSessionTile(context, session);
-      },
     );
   }
 
@@ -309,7 +323,7 @@ class SessionsScreen extends GetView<SessionsController> {
             ),
 
             Spacing.s12.h,
-            const Divider(height: 1),
+            const CustomDivider(),
             Spacing.s16.h,
 
             // Middle Row: Avatar and Details
@@ -383,35 +397,21 @@ class SessionsScreen extends GetView<SessionsController> {
 
             if (!isCompleted) ...[
               Spacing.s20.h,
-              Material(
-                color: primary,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Join Session",
-                          style: r14.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Spacing.s8.w,
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
+              CustomPrimaryButton(
+                text: "Join Session",
+                borderRadius: 100,
+                height: 45.h,
+                backgroundColor: primary,
+                suffixIcon: const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: Colors.white,
                 ),
+                textStyle: r14.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                onPressed: () {},
               ),
             ],
           ],
@@ -423,15 +423,7 @@ class SessionsScreen extends GetView<SessionsController> {
   FloatingActionButton buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Get.snackbar(
-          "Booking Flow",
-          "Session booking flow coming soon!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: primary,
-          colorText: white,
-          margin: EdgeInsets.all(Spacing.s16.symmetric.horizontal),
-          borderRadius: 12,
-        );
+        Get.toNamed(Routes.DOCTOR_LIST);
       },
       backgroundColor: primary,
       child: Text(

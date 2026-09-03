@@ -5,8 +5,6 @@ import '../../../../presentation/moodCheckin/controllers/mood_checkin.controller
 class MoodCheckinControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<MoodCheckinController>(
-      () => MoodCheckinController(),
-    );
+    Get.lazyPut<MoodCheckinController>(() => MoodCheckinController());
   }
 }

@@ -1,3 +1,4 @@
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../../widgets/buttons/custom_back_button.widet.dart';
+import '../../../widgets/others/custom.primary.appbar.dart';
+import '../../../widgets/others/custom.screen.wrapper.dart';
 import '../controllers/chat_experts.controller.dart';
 
 class ChatExpertChatView extends GetView<ChatExpertsController> {
@@ -15,8 +18,7 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );
@@ -141,8 +143,8 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -254,10 +256,8 @@ class ChatExpertChatView extends GetView<ChatExpertsController> {
           ),
         ],
       ),
-      surfaceTintColor: Colors.transparent,
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
     );
   }
 }

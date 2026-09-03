@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
-import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import '../../../infrastructure/theme/theme.dart';
 
 class MoodCheckinController extends GetxController {

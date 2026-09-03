@@ -5,8 +5,6 @@ import '../../../../presentation/explore/controllers/explore.controller.dart';
 class ExploreControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<ExploreController>(
-      () => ExploreController(),
-    );
+    Get.lazyPut<ExploreController>(() => ExploreController());
   }
 }

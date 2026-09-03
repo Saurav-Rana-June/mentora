@@ -4,10 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
-import 'meditation_session.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
 
 class FeaturedMeditationCard extends StatelessWidget {
-  final MeditationSession session;
+  final MeditationSessionModel session;
   final bool isFavorited;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteTap;
@@ -46,7 +46,7 @@ class FeaturedMeditationCard extends StatelessWidget {
                 // Background Image
                 Positioned.fill(
                   child: CachedNetworkImage(
-                    imageUrl: session.imageUrl,
+                     imageUrl: session.imageUrl ?? '',
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: Theme.of(context).cardTheme.color,
@@ -100,7 +100,7 @@ class FeaturedMeditationCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      session.category,
+                      session.category ?? '',
                       style: r10.copyWith(
                         color: white,
                         fontWeight: FontWeight.w600,
@@ -148,7 +148,7 @@ class FeaturedMeditationCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        session.title,
+                        session.title ?? '',
                         style: r18.copyWith(
                           color: white,
                           fontWeight: FontWeight.w700,
@@ -166,7 +166,7 @@ class FeaturedMeditationCard extends StatelessWidget {
                           ),
                           Spacing.s4.w,
                           Text(
-                            session.duration,
+                            session.duration ?? '',
                             style: r12.copyWith(
                               color: white.withValues(alpha: 0.8),
                               fontWeight: FontWeight.w500,

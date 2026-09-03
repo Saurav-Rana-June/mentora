@@ -1,12 +1,13 @@
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/controllers/global.controller.dart';
-import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
+import 'package:Mentora/data/model/growth_areas_response.model.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/coaching_banner_response.model.dart';
+import 'package:Mentora/data/model/coaching_banner_response.model.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 
 class InsightsController extends GetxController {
+  final GlobalController globalController = Get.find<GlobalController>();
   final RxInt selectedGrowthTab = 0.obs;
   final RxInt selectedMoodTab = 0.obs;
 
@@ -28,17 +29,19 @@ class InsightsController extends GetxController {
     super.onInit();
     final initialFilter = selectedDateFilter.value;
     fetchGrowthAreas(initialFilter);
-    Get.find<GlobalController>().fetchMoodTrackerStats(
-      dateFilter: initialFilter.name,
-    );
+    globalController.fetchMoodTrackerStats(dateFilter: initialFilter.name);
     fetchCoachingBanner();
   }
 
-  static const String _coachingBannerCacheKey = 'insights_coaching_banner_data';
+  static const String _coachingBannerCacheKey = StorageKeys.COACHING_BANNER;
   static const String _coachingBannerLastUpdatedKey =
-      'insights_coaching_banner_last_updated';
+      StorageKeys.COACHING_BANNER_LAST_UPDATED;
 
   Future<void> fetchCoachingBanner({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_coachingBannerCacheKey);
+      await StorageUtils.remove(_coachingBannerLastUpdatedKey);
+    }
     try {
       final cachedData = StorageUtils.read<Map<String, dynamic>>(
         _coachingBannerCacheKey,
@@ -79,7 +82,10 @@ class InsightsController extends GetxController {
       final response = await InsightsService.getCoachingBanner(timezone: 'UTC');
       if (response != null && response.data != null) {
         coachingBannerData.value = response.data;
-        await StorageUtils.write(_coachingBannerCacheKey, response.data!.toJson());
+        await StorageUtils.write(
+          _coachingBannerCacheKey,
+          response.data!.toJson(),
+        );
         if (response.lastUpdated != null) {
           await StorageUtils.write(
             _coachingBannerLastUpdatedKey,
@@ -98,13 +104,22 @@ class InsightsController extends GetxController {
     DateFilter filter, {
     bool forceRefresh = false,
   }) async {
-    final String growthAreasCacheKey = 'insights_growth_areas_${filter.name}';
+    final String growthAreasCacheKey = StorageKeys.growthAreas(filter.name);
     final String growthAreasLastUpdatedKey =
-        'insights_growth_areas_last_updated_${filter.name}';
+        StorageKeys.growthAreasLastUpdated(filter.name);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(growthAreasCacheKey);
+      await StorageUtils.remove(growthAreasLastUpdatedKey);
+    }
 
     try {
-      final cachedData = StorageUtils.read<Map<String, dynamic>>(growthAreasCacheKey);
-      final cachedLastUpdated = StorageUtils.read<String>(growthAreasLastUpdatedKey);
+      final cachedData = StorageUtils.read<Map<String, dynamic>>(
+        growthAreasCacheKey,
+      );
+      final cachedLastUpdated = StorageUtils.read<String>(
+        growthAreasLastUpdatedKey,
+      );
 
       bool hasCache = false;
       if (cachedData != null && cachedLastUpdated != null) {

@@ -1,4 +1,10 @@
+import 'dart:async';
 import 'package:get/get.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
+import '../../../infrastructure/dal/services/sleep_service.dart';
+import 'package:Mentora/data/model/sound.model.dart';
+import 'package:Mentora/data/model/calm_music.model.dart';
+import 'package:Mentora/data/model/story.model.dart';
 
 class SleepController extends GetxController {
   final selectedTabIndex = 0.obs;
@@ -9,7 +15,8 @@ class SleepController extends GetxController {
 
   RxInt selectedSoundIndex = (-1).obs;
 
-  RxList<String> categories = <String>[
+  // Active list buffers
+  final RxList<String> categories = <String>[
     'All',
     'Popular',
     'Nature',
@@ -19,218 +26,232 @@ class SleepController extends GetxController {
     'Music',
   ].obs;
 
-  RxList<CalmMusic> calmMusics = <CalmMusic>[
-    CalmMusic(
-      title: "Peaceful Piano & Soft Rain",
-      duration: "3 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    ),
-    CalmMusic(
-      title: "Deep Sleep Meditation Music",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    ),
-    CalmMusic(
-      title: "Relaxing Nature Sounds",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    ),
-    CalmMusic(
-      title: "Ocean Waves & Soft Breeze",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    ),
-    CalmMusic(
-      title: "Forest Ambience for Focus",
-      duration: "7 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
-    ),
-    CalmMusic(
-      title: "Healing Tibetan Bowls",
-      duration: "8 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773",
-    ),
-    CalmMusic(
-      title: "Soft Guitar Evening Calm",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
-    ),
-    CalmMusic(
-      title: "Morning Mindfulness Bells",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500534314209-a26db0f5d74a",
-    ),
-    CalmMusic(
-      title: "Rainy Night for Deep Sleep",
-      duration: "9 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-    ),
-    CalmMusic(
-      title: "Zen Garden Meditation",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    ),
-    CalmMusic(
-      title: "Soft Flute Serenity",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500534314209-a26db0f5d74a",
-    ),
-    CalmMusic(
-      title: "Night Sky Ambient Tones",
-      duration: "7 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
-    ),
-    CalmMusic(
-      title: "Deep Focus Background Calm",
-      duration: "10 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773",
-    ),
-    CalmMusic(
-      title: "Water Stream Relaxation",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    ),
-    CalmMusic(
-      title: "Evening Wind Chimes",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    ),
-  ].obs;
+  final RxList<SoundModel> sounds = <SoundModel>[].obs;
+  final RxList<CalmMusicModel> calmMusics = <CalmMusicModel>[].obs;
+  final RxList<StoryModel> stories = <StoryModel>[].obs;
 
-  RxList<Story> stories = <Story>[
-    Story(
-      title: "A Quiet Morning by the Lake",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    ),
-    Story(
-      title: "The Night the Stars Spoke",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
-    ),
-    Story(
-      title: "Whispers of the Forest",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
-    ),
-    Story(
-      title: "Rain on the Old Window",
-      duration: "7 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-    ),
-    Story(
-      title: "The Calm Between Waves",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    ),
-    Story(
-      title: "A Letter Never Sent",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500534314209-a26db0f5d74a",
-    ),
-    Story(
-      title: "Lanterns in the Evening Wind",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    ),
-    Story(
-      title: "The Sound of Falling Leaves",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    ),
-    Story(
-      title: "Under the Quiet Moon",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
-    ),
-    Story(
-      title: "The Path Home",
-      duration: "7 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
-    ),
-    Story(
-      title: "Moments Between Heartbeats",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773",
-    ),
-    Story(
-      title: "When the Rain Finally Stopped",
-      duration: "6 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-    ),
-    Story(
-      title: "A Soft Goodbye",
-      duration: "4 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1500534314209-a26db0f5d74a",
-    ),
-    Story(
-      title: "Echoes in the Valley",
-      duration: "7 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    ),
-    Story(
-      title: "The Light After Dusk",
-      duration: "5 mins read",
-      imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    ),
-  ].obs;
+  final RxBool isLoading = true.obs;
 
-  final List<Sound> sounds = [
-    Sound(emoji: "🌧️", title: "Rainy Mood"),
-    Sound(emoji: "🔥", title: "Fireplace"),
-    Sound(emoji: "🌊", title: "Ocean Waves"),
-    Sound(emoji: "🌲", title: "Forest"),
-    Sound(emoji: "⛈️", title: "Thunder"),
-    Sound(emoji: "❄️", title: "Snowfall"),
+  // Cache keys
+  static const String soundsCacheKey = StorageKeys.SLEEP_SOUNDS;
+  static const String soundsLastUpdatedKey = StorageKeys.SLEEP_SOUNDS_LAST_UPDATED;
 
-    Sound(emoji: "🌬️", title: "Wind Breeze"),
-    Sound(emoji: "☀️", title: "Sunny Day"),
-    Sound(emoji: "🌙", title: "Night Ambience"),
-    Sound(emoji: "🐦", title: "Birds Chirping"),
-    Sound(emoji: "🦗", title: "Crickets"),
-    Sound(emoji: "🌾", title: "Countryside"),
+  static const String musicCacheKey = StorageKeys.SLEEP_MUSIC;
+  static const String musicLastUpdatedKey = StorageKeys.SLEEP_MUSIC_LAST_UPDATED;
 
-    Sound(emoji: "💧", title: "Water Drops"),
-    Sound(emoji: "🚿", title: "Shower Rain"),
-    Sound(emoji: "🏞️", title: "Mountain Air"),
-    Sound(emoji: "🌋", title: "Volcano Rumble"),
-    Sound(emoji: "🕯️", title: "Candle Crackle"),
-    Sound(emoji: "🎐", title: "Wind Chimes"),
+  static const String storiesCacheKey = StorageKeys.SLEEP_STORIES;
+  static const String storiesLastUpdatedKey = StorageKeys.SLEEP_STORIES_LAST_UPDATED;
 
-    Sound(emoji: "🚂", title: "Train Ride"),
-    Sound(emoji: "🌌", title: "Deep Space"),
-    Sound(emoji: "🌆", title: "City Night"),
-    Sound(emoji: "🏕️", title: "Campfire Night"),
-  ];
-}
+  @override
+  void onInit() {
+    super.onInit();
+    fetchSleepData();
+  }
 
-class Sound {
-  final String emoji;
-  final String title;
+  /// Fetch all sleep data (sounds, music, stories) in parallel
+  Future<void> fetchSleepData({bool forceRefresh = false}) async {
+    final hasSoundsCache =
+        StorageUtils.read<List<dynamic>>(soundsCacheKey) != null &&
+        StorageUtils.read<String>(soundsLastUpdatedKey) != null;
+    final hasMusicCache =
+        StorageUtils.read<List<dynamic>>(musicCacheKey) != null &&
+        StorageUtils.read<String>(musicLastUpdatedKey) != null;
+    final hasStoriesCache =
+        StorageUtils.read<List<dynamic>>(storiesCacheKey) != null &&
+        StorageUtils.read<String>(storiesLastUpdatedKey) != null;
 
-  Sound({required this.emoji, required this.title});
-}
+    final hasAllCache = hasSoundsCache && hasMusicCache && hasStoriesCache;
 
-class CalmMusic {
-  final String title;
-  final String duration;
-  final String imageUrl;
+    if (!hasAllCache && !forceRefresh) {
+      isLoading.value = true;
+    } else {
+      isLoading.value = false;
+    }
 
-  CalmMusic({
-    required this.title,
-    required this.duration,
-    required this.imageUrl,
-  });
-}
+    await Future.wait([
+      fetchSounds(forceRefresh: forceRefresh),
+      fetchMusic(forceRefresh: forceRefresh),
+      fetchStories(forceRefresh: forceRefresh),
+    ]);
+    isLoading.value = false;
+  }
 
-class Story {
-  final String title;
-  final String duration;
-  final String imageUrl;
+  /// Fetch Sleep Sounds (with local caching & lastUpdated checks)
+  Future<void> fetchSounds({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(soundsCacheKey);
+      await StorageUtils.remove(soundsLastUpdatedKey);
+    }
+    try {
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        soundsCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        soundsLastUpdatedKey,
+      );
 
-  const Story({
-    required this.title,
-    required this.duration,
-    required this.imageUrl,
-  });
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        sounds.assignAll(
+          cachedData
+              .map((e) => SoundModel.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache && !forceRefresh) {
+        final checkRes = await SleepService.getSleepSounds(
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date
+            return;
+          }
+        }
+      }
+
+      final res = await SleepService.getSleepSounds();
+      if (res != null && res.data != null) {
+        sounds.assignAll(res.data!);
+        await StorageUtils.write(
+          soundsCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            soundsLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Failed to load sleep sounds: $e");
+    }
+  }
+
+  /// Fetch Sleep Music (with local caching & lastUpdated checks)
+  Future<void> fetchMusic({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(musicCacheKey);
+      await StorageUtils.remove(musicLastUpdatedKey);
+    }
+    try {
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        musicCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        musicLastUpdatedKey,
+      );
+
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        calmMusics.assignAll(
+          cachedData
+              .map(
+                (e) => CalmMusicModel.fromJson(Map<String, dynamic>.from(e as Map)),
+              )
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache && !forceRefresh) {
+        final checkRes = await SleepService.getSleepMusic(
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date
+            return;
+          }
+        }
+      }
+
+      final res = await SleepService.getSleepMusic();
+      if (res != null && res.data != null) {
+        calmMusics.assignAll(res.data!);
+        await StorageUtils.write(
+          musicCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            musicLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Failed to load sleep music: $e");
+    }
+  }
+
+  /// Fetch Sleep Stories (with local caching & lastUpdated checks)
+  Future<void> fetchStories({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(storiesCacheKey);
+      await StorageUtils.remove(storiesLastUpdatedKey);
+    }
+    try {
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        storiesCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        storiesLastUpdatedKey,
+      );
+
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        stories.assignAll(
+          cachedData
+              .map((e) => StoryModel.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache && !forceRefresh) {
+        final checkRes = await SleepService.getSleepStories(
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final DateTime? cachedDateTime = DateTime.tryParse(
+            cachedLastUpdated!,
+          );
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            // Cache is up to date
+            return;
+          }
+        }
+      }
+
+      final res = await SleepService.getSleepStories();
+      if (res != null && res.data != null) {
+        stories.assignAll(res.data!);
+        await StorageUtils.write(
+          storiesCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            storiesLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Failed to load sleep stories: $e");
+    }
+  }
 }

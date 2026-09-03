@@ -1,23 +1,30 @@
+import 'package:Mentora/presentation/videoSession/controllers/video_session.controller.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
-import 'package:Mentora/presentation/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import '../../infrastructure/theme/theme.dart';
 import 'controllers/explore.controller.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
+import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
+import 'package:Mentora/presentation/meditation/controllers/meditation.controller.dart';
+import 'package:Mentora/data/model/video_session.model.dart';
+import 'package:Mentora/presentation/videoSession/widgets/video_card.dart';
 
 class ExploreScreen extends GetView<ExploreController> {
-  const ExploreScreen({super.key});
+  ExploreScreen({super.key});
+
+  @override
+  final controller = Get.put(ExploreController());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: SingleChildScrollView(
         child: Column(
@@ -91,6 +98,7 @@ class ExploreScreen extends GetView<ExploreController> {
                   icon: '\u{e480}',
                   title: 'Breathing',
                   subtitle: 'Find your focus',
+                  onTap: () => Get.toNamed(Routes.BREATHING),
                 ),
               ),
             ],
@@ -114,6 +122,7 @@ class ExploreScreen extends GetView<ExploreController> {
                   icon: '\u{f328}',
                   title: 'Journaling',
                   subtitle: 'Reflect on today',
+                  onTap: () => Get.toNamed(Routes.JOURNALING),
                 ),
               ),
             ],
@@ -191,6 +200,8 @@ class ExploreScreen extends GetView<ExploreController> {
   }
 
   Widget buildDiscoverMeditation(BuildContext context) {
+    final globalController = controller.globalController;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -209,7 +220,9 @@ class ExploreScreen extends GetView<ExploreController> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(Routes.MEDITATION);
+                },
                 borderRadius: BorderRadius.circular(4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -229,51 +242,95 @@ class ExploreScreen extends GetView<ExploreController> {
           ),
         ),
         Spacing.s8.h,
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s4.symmetric.horizontal,
-          ),
-          child: Row(
-            children: [
-              buildDiscoverFeatureTile(
-                context,
-                category: 'STRESS',
-                icon: '\u{f119}', // Change icon :- face-frown
-                title: 'Stress Management',
-                duration: '11 mins',
+        Obx(() {
+          if (globalController.isLoadingFeaturedMeditations.value) {
+            return const ExploreMeditationLoading();
+          }
+
+          final list = globalController.featuredMeditations;
+          if (list.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s8.symmetric.horizontal,
               ),
-              Spacing.s12.w,
-              buildDiscoverFeatureTile(
-                context,
-                category: 'MOOD',
-                icon: '\u{e027}', // Change icon :- rocket-launch
-                title: 'Mood Boost Blueprint',
-                duration: '25 mins',
+              child: Text(
+                "No featured meditations found.",
+                style: r14.copyWith(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
               ),
-              Spacing.s12.w,
-              buildDiscoverFeatureTile(
-                context,
-                category: 'ANXIETY',
-                icon: '\u{e36a}', // Change icon :- face-anxious-sweat
-                title: 'Anxiety Reducing',
-                duration: '45 mins',
-              ),
-              Spacing.s12.w,
-              buildDiscoverFeatureTile(
-                context,
-                category: 'BREATH',
-                icon: '\u{e480}', // Change icon :- face-exhaling
-                title: 'Wim Hoff Technique',
-                duration: '10 mins',
-              ),
-            ],
-          ),
-        ),
+            );
+          }
+
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s8.symmetric.horizontal,
+              vertical: Spacing.s4.symmetric.horizontal,
+            ),
+            child: Row(
+              children: list.map((item) {
+                return Padding(
+                  padding: EdgeInsets.only(right: Spacing.s12.value.w),
+                  child: buildDiscoverFeatureTile(
+                    context,
+                    category: (item.category ?? 'General').toUpperCase(),
+                    icon: _getCategoryIcon(item.category),
+                    title: item.title ?? 'Meditation Session',
+                    duration: item.duration ?? '10 min',
+                    onTap: () {
+                      final meditationController =
+                          Get.isRegistered<MeditationController>()
+                          ? Get.find<MeditationController>()
+                          : Get.put(MeditationController());
+                      Get.to(
+                        () => MusicPlayerView(
+                          audioUrl: item.soundTrack ?? '',
+                          title: item.title ?? '',
+                          category: item.category ?? '',
+                          imageUrl: item.imageUrl ?? '',
+                          description: item.description ?? '',
+                          duration: item.duration ?? '',
+                          isFavorited: meditationController.getIsFavoritedRx(
+                            item.id?.toString() ?? '',
+                          ),
+                          onFavoriteTap: () => meditationController
+                              .toggleFavorite(item.id?.toString() ?? ''),
+                        ),
+                        transition: Transition.rightToLeft,
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }),
       ],
     );
+  }
+
+  String _getCategoryIcon(String? category) {
+    if (category == null) return '\u{f111}'; // default circle
+    final lower = category.toLowerCase();
+    if (lower.contains('stress')) {
+      return '\u{f119}'; // face-frown
+    } else if (lower.contains('mood') || lower.contains('esteem')) {
+      return '\u{e027}'; // rocket-launch
+    } else if (lower.contains('anxiety') ||
+        lower.contains('grief') ||
+        lower.contains('anger')) {
+      return '\u{e36a}'; // face-anxious-sweat
+    } else if (lower.contains('breath')) {
+      return '\u{e480}'; // face-exhaling
+    } else if (lower.contains('sleep')) {
+      return '\u{f236}'; // bed
+    } else if (lower.contains('focus')) {
+      return '\u{f11e}'; // target/bullseye
+    } else {
+      return '\u{f02d}'; // book/journal default
+    }
   }
 
   Widget buildDiscoverFeatureTile(
@@ -282,9 +339,10 @@ class ExploreScreen extends GetView<ExploreController> {
     required String icon,
     required String title,
     required String duration,
+    required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: CustomPrimaryCard(
         padding: EdgeInsets.all(Spacing.s12.symmetric.horizontal),
@@ -402,14 +460,16 @@ class ExploreScreen extends GetView<ExploreController> {
   }
 
   Widget buildVideoSection(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s8.symmetric.horizontal,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final videoSessionController = Get.isRegistered<VideoSessionController>()
+        ? Get.find<VideoSessionController>()
+        : Get.put(VideoSessionController());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: Spacing.s16.value.w),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -420,7 +480,9 @@ class ExploreScreen extends GetView<ExploreController> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(Routes.VIDEO_SESSION);
+                },
                 borderRadius: BorderRadius.circular(4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -438,133 +500,50 @@ class ExploreScreen extends GetView<ExploreController> {
               ),
             ],
           ),
-          Spacing.s8.h,
-          buildVideoTile(
-            context,
-            category: "STRESS MANAGEMENT",
-            title: "10-Minute Morning Yoga Flow for Beginners",
-            duration: "10 mins",
-            author: "Coach Jessica",
-          ),
-          buildVideoTile(
-            context,
-            category: "SLEEP SCIENCE",
-            title: "Deep Sleep Guided Visualization & Breathing",
-            duration: "25 mins",
-            author: "Dr. Sarah Cole",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildVideoTile(
-    BuildContext context, {
-    required String title,
-    required String category,
-    required String duration,
-    required String author,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: CustomPrimaryCard(
-        padding: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
-        child: Row(
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: 100.w,
-                    height: 75.h,
-                    child: Image.asset(
-                      "assets/images/banner.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 32.h,
-                  width: 32.h,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 18.sp,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Spacing.s12.w,
-            Expanded(
-              child: SizedBox(
-                height: 75.h,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category,
-                      style: r10.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2.h),
-                        child: Text(
-                          title,
-                          style: r14.copyWith(
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 11.sp,
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                        Spacing.s4.w,
-                        Text(
-                          "$duration • by $author",
-                          style: r10.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+        ),
+        Spacing.s8.h,
+        Obx(() {
+          if (videoSessionController.isLoading.value &&
+              videoSessionController.videoSessions.isEmpty) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            );
+          }
+          final list = videoSessionController.videoSessions;
+          if (list.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s16.value.w,
+                vertical: 12,
+              ),
+              child: Text(
+                "No video sessions found.",
+                style: r14.copyWith(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
+            );
+          }
+          final displayList = list.take(2).toList();
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: displayList.map((session) {
+              return VideoCard(session: session);
+            }).toList(),
+          );
+        }),
+      ],
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -594,6 +573,78 @@ class ExploreScreen extends GetView<ExploreController> {
       ),
       centerTitle: true,
       automaticallyImplyLeading: false,
+    );
+  }
+}
+
+class ExploreMeditationLoading extends StatefulWidget {
+  const ExploreMeditationLoading({super.key});
+
+  @override
+  State<ExploreMeditationLoading> createState() =>
+      _ExploreMeditationLoadingState();
+}
+
+class _ExploreMeditationLoadingState extends State<ExploreMeditationLoading>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.35,
+      end: 0.75,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final skeletonColor = isDark ? slate[700]! : slate[200]!;
+
+    return AnimatedBuilder(
+      animation: _opacityAnimation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _opacityAnimation.value,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s8.symmetric.horizontal,
+              vertical: Spacing.s4.symmetric.horizontal,
+            ),
+            child: Row(
+              children: List.generate(3, (index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: Spacing.s12.value.w),
+                  child: Container(
+                    width: 180.w,
+                    height: 125.h,
+                    decoration: BoxDecoration(
+                      color: skeletonColor,
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        );
+      },
     );
   }
 }

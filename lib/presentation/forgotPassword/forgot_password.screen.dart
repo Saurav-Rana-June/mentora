@@ -3,12 +3,13 @@ import 'package:Mentora/presentation/forgotPassword/views/otp.view.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
-import 'package:my_spacing/spacing.enum.dart';
 
 import 'controllers/forgot_password.controller.dart';
 
@@ -19,7 +20,7 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
   final controller = Get.put(ForgotPasswordController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScreenWrapper(
       appBar: buildAppbar(),
       body: Stack(
         alignment: AlignmentGeometry.bottomCenter,
@@ -119,10 +120,9 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
     );
   }
 
-  AppBar buildAppbar() => AppBar(
-    title: CustomBackButton(),
+  PreferredSizeWidget buildAppbar() => const CustomPrimaryAppBar(
+    leading: Center(child: CustomBackButton()),
     automaticallyImplyLeading: false,
     centerTitle: false,
-    surfaceTintColor: Colors.transparent,
   );
 }

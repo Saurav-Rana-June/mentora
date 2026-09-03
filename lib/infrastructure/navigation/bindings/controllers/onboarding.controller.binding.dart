@@ -5,8 +5,6 @@ import '../../../../presentation/onboarding/controllers/onboarding.controller.da
 class OnboardingControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<OnboardingController>(
-      () => OnboardingController(),
-    );
+    Get.lazyPut<OnboardingController>(() => OnboardingController());
   }
 }

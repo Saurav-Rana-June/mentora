@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 
 import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
 
-import '../environment/environment.dart';
 import '../../presentation/screens.dart';
+import '../environment/environment.dart';
 import 'bindings/controllers/controllers_bindings.dart';
 import 'bindings/controllers/home.controller.binding.dart';
 import 'routes.dart';
@@ -39,11 +39,13 @@ class Nav {
       page: () => IntroductionScreen(),
       binding: IntroductionControllerBinding(),
     ),
+    /*
     GetPage(
       name: Routes.CONTINUE,
       page: () => const ContinueScreen(),
       binding: ContinueControllerBinding(),
     ),
+    */
     GetPage(
       name: Routes.SIGN_UP,
       page: () => SignUpScreen(),
@@ -101,7 +103,7 @@ class Nav {
     ),
     GetPage(
       name: Routes.EXPLORE,
-      page: () => const ExploreScreen(),
+      page: () => ExploreScreen(),
       binding: ExploreControllerBinding(),
     ),
     GetPage(
@@ -129,9 +131,27 @@ class Nav {
       page: () => AccountScreen(),
       binding: AccountControllerBinding(),
     ),
+    GetPage(name: Routes.MEDITATION, page: () => MeditationScreen()),
+    GetPage(name: Routes.BREATHING, page: () => BreathingScreen()),
+    GetPage(name: Routes.JOURNALING, page: () => JournalingScreen()),
     GetPage(
-      name: Routes.MEDITATION,
-      page: () => MeditationScreen(),
+      name: Routes.VIDEO_SESSION,
+      page: () => VideoSessionScreen(),
+      binding: VideoSessionControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.BOOKING_SESSION,
+      page: () => BookingSessionScreen(),
+      binding: BookingSessionControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.DOCTOR_LIST,
+      page: () => DoctorListScreen(),
+      binding: DoctorListControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.BOOKING_CONFIRMATION,
+      page: () => const BookingConfirmationScreen(),
     ),
   ];
 }

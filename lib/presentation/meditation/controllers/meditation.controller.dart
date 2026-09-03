@@ -1,27 +1,27 @@
 import 'dart:async';
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
-import '../widgets/meditation_session.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
 import '../../../infrastructure/dal/services/meditation_service.dart';
 
 class MeditationController extends GetxController {
+  final GlobalController globalController = Get.find<GlobalController>();
   final RxString selectedCategory = 'All'.obs;
   final RxString searchQuery = ''.obs;
   final RxBool isLoading = true.obs;
   final RxSet<String> favoritedIds = {'1', '3'}.obs;
 
   // API list buffers
-  final RxList<MeditationSession> allSessionsList = <MeditationSession>[].obs;
-  final RxList<MeditationSession> featuredSessionsList =
-      <MeditationSession>[].obs;
+  final RxList<MeditationSessionModel> allSessionsList =
+      <MeditationSessionModel>[].obs;
+
   final RxList<String> categoriesList = <String>[].obs;
 
-
-
   // Cache keys constants
-  static const String _categoriesCacheKey = 'meditation_categories_filters';
+  static const String _categoriesCacheKey = StorageKeys.MEDITATION_CATEGORIES;
   static const String _categoriesLastUpdatedCacheKey =
-      'meditation_categories_last_updated';
+      StorageKeys.MEDITATION_CATEGORIES_LAST_UPDATED;
 
   @override
   void onInit() {
@@ -42,6 +42,10 @@ class MeditationController extends GetxController {
 
   /// Fetch available category filters from the API (with local caching)
   Future<void> fetchFilters({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_categoriesCacheKey);
+      await StorageUtils.remove(_categoriesLastUpdatedCacheKey);
+    }
     try {
       // 1. Try to load categories filters from cache first
       final List<dynamic>? cachedCategories = StorageUtils.read<List<dynamic>>(
@@ -99,60 +103,46 @@ class MeditationController extends GetxController {
 
   /// Fetch meditations from the API based on selected filters and queries (with local caching)
   Future<void> fetchSessions({bool forceRefresh = false}) async {
-    final String allCacheKey =
-        'meditations_all_${selectedCategory.value}_${searchQuery.value}';
-    final String featuredCacheKey =
-        'meditations_featured_${selectedCategory.value}_${searchQuery.value}';
-    final String allLastUpdatedCacheKey =
-        'meditations_all_last_updated_${selectedCategory.value}_${searchQuery.value}';
-    final String featuredLastUpdatedCacheKey =
-        'meditations_featured_last_updated_${selectedCategory.value}_${searchQuery.value}';
+    final String allCacheKey = StorageKeys.meditationAll(
+      selectedCategory.value,
+      searchQuery.value,
+    );
+    final String allLastUpdatedCacheKey = StorageKeys.meditationAllLastUpdated(
+      selectedCategory.value,
+      searchQuery.value,
+    );
+
+    if (forceRefresh) {
+      await StorageUtils.remove(allCacheKey);
+      await StorageUtils.remove(allLastUpdatedCacheKey);
+    }
 
     try {
       // 1. Check cache first
-      final List<dynamic>? cachedAll = StorageUtils.read<List<dynamic>>(allCacheKey);
-      final List<dynamic>? cachedFeatured = StorageUtils.read<List<dynamic>>(
-        featuredCacheKey,
+      final List<dynamic>? cachedAll = StorageUtils.read<List<dynamic>>(
+        allCacheKey,
       );
       final String? cachedAllLastUpdated = StorageUtils.read<String>(
         allLastUpdatedCacheKey,
       );
-      final String? cachedFeaturedLastUpdated = StorageUtils.read<String>(
-        featuredLastUpdatedCacheKey,
-      );
 
       bool hasAllCache = cachedAll != null && cachedAllLastUpdated != null;
-      bool hasFeaturedCache =
-          cachedFeatured != null && cachedFeaturedLastUpdated != null;
 
       if (hasAllCache) {
-        final List<MeditationSession> allList = cachedAll
+        final List<MeditationSessionModel> allList = cachedAll
             .map(
-              (e) => MeditationSession.fromJson(
-                Map<String, dynamic>.from(e as Map),
-              ),
+              (e) =>
+                  MeditationSessionModel.fromJson(Map<String, dynamic>.from(e)),
             )
             .toList();
         allSessionsList.assignAll(allList);
       }
 
-      if (hasFeaturedCache) {
-        final List<MeditationSession> featuredList = cachedFeatured
-            .map(
-              (e) => MeditationSession.fromJson(
-                Map<String, dynamic>.from(e as Map),
-              ),
-            )
-            .toList();
-        featuredSessionsList.assignAll(featuredList);
-      }
-
-      if (hasAllCache || hasFeaturedCache) {
+      if (hasAllCache) {
         isLoading.value = false; // Show cached/memory data instantly
       }
 
       bool needFetchAll = !hasAllCache || forceRefresh;
-      bool needFetchFeatured = !hasFeaturedCache || forceRefresh;
 
       // 2. Perform lightweight timestamp checks if not force-refreshing
       if (hasAllCache && !forceRefresh) {
@@ -168,21 +158,7 @@ class MeditationController extends GetxController {
         }
       }
 
-      if (hasFeaturedCache && !forceRefresh) {
-        final checkRes = await MeditationService.getFeaturedMeditations(
-          category: selectedCategory.value,
-          search: searchQuery.value,
-          lastUpdated: cachedFeaturedLastUpdated,
-        );
-        if (checkRes == null ||
-            checkRes.lastUpdated == null ||
-            checkRes.lastUpdated !=
-                DateTime.tryParse(cachedFeaturedLastUpdated)) {
-          needFetchFeatured = true;
-        }
-      }
-
-      if (!needFetchAll && !needFetchFeatured) {
+      if (!needFetchAll) {
         // Cache is fully up-to-date! Stop here.
         return;
       }
@@ -190,69 +166,26 @@ class MeditationController extends GetxController {
       if (needFetchAll && !hasAllCache) {
         isLoading.value = true;
       }
-      if (needFetchFeatured && !hasFeaturedCache) {
-        isLoading.value = true;
-      }
 
-      // 3. Execute parallel API calls in the background to fetch only what is needed
-      final List<Future<dynamic>> fetchFutures = [];
-
-      if (needFetchFeatured) {
-        // Fetch fresh featured meditations in background
-        fetchFutures.add(
-          MeditationService.getFeaturedMeditations(
-            category: selectedCategory.value,
-            search: searchQuery.value,
-          ),
-        );
-      } else {
-        fetchFutures.add(Future.value(null));
-      }
-
+      // 3. Execute API call in the background to fetch all meditations
       if (needFetchAll) {
-        // Fetch fresh all meditations in background
-        fetchFutures.add(
-          MeditationService.getMeditations(
-            category: selectedCategory.value,
-            search: searchQuery.value,
-          ),
+        final allRes = await MeditationService.getMeditations(
+          category: selectedCategory.value,
+          search: searchQuery.value,
         );
-      } else {
-        fetchFutures.add(Future.value(null));
-      }
 
-      final results = await Future.wait(fetchFutures);
-      final featuredRes = results[0];
-      final allRes = results[1];
+        // Update and cache all meditations, and update lastUpdated timestamp cache
+        if (allRes != null && allRes.data != null) {
+          allSessionsList.assignAll(allRes.data!);
+          final serializedAll = allRes.data!.map((e) => e.toJson()).toList();
+          await StorageUtils.write(allCacheKey, serializedAll);
 
-      // Update and cache featured meditations
-      if (needFetchFeatured &&
-          featuredRes != null &&
-          featuredRes.data != null) {
-        featuredSessionsList.assignAll(featuredRes.data!);
-        final serializedFeatured = featuredRes.data!
-            .map((e) => e.toJson())
-            .toList();
-        await StorageUtils.write(featuredCacheKey, serializedFeatured);
-        if (featuredRes.lastUpdated != null) {
-          await StorageUtils.write(
-            featuredLastUpdatedCacheKey,
-            featuredRes.lastUpdated!.toIso8601String(),
-          );
-        }
-      }
-
-      // Update and cache all meditations, and update lastUpdated timestamp cache
-      if (needFetchAll && allRes != null && allRes.data != null) {
-        allSessionsList.assignAll(allRes.data!);
-        final serializedAll = allRes.data!.map((e) => e.toJson()).toList();
-        await StorageUtils.write(allCacheKey, serializedAll);
-
-        if (allRes.lastUpdated != null) {
-          await StorageUtils.write(
-            allLastUpdatedCacheKey,
-            allRes.lastUpdated!.toIso8601String(),
-          );
+          if (allRes.lastUpdated != null) {
+            await StorageUtils.write(
+              allLastUpdatedCacheKey,
+              allRes.lastUpdated!.toIso8601String(),
+            );
+          }
         }
       }
     } catch (e) {
@@ -282,8 +215,7 @@ class MeditationController extends GetxController {
   }
 
   // UI-compatible getters pointing to reactive API datasets
-  List<MeditationSession> get filteredSessions => allSessionsList;
-  List<MeditationSession> get featuredSessions => featuredSessionsList;
+  List<MeditationSessionModel> get filteredSessions => allSessionsList;
 
   // Derived RxBool that synchronizes with the favoritedIds reactive set
   RxBool getIsFavoritedRx(String id) {

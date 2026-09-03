@@ -7,6 +7,7 @@ import 'package:Mentora/presentation/musicPlayer/music_player_view.dart';
 
 import 'controllers/meditation.controller.dart';
 import 'widgets/meditation_header.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/others/custom.searchbar.widget.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'widgets/meditation_section_title.dart';
@@ -41,8 +42,7 @@ class MeditationScreen extends GetView<MeditationController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );
@@ -56,90 +56,98 @@ class MeditationScreen extends GetView<MeditationController> {
     );
   }
 
-  SafeArea buildBody(BuildContext context) {
-    return SafeArea(
-      child: Obx(() {
-        final isInitialLoad =
-            controller.isLoading.value &&
-            controller.allSessionsList.isEmpty &&
-            controller.featuredSessionsList.isEmpty;
+  Widget buildBody(BuildContext context) {
+    return Obx(() {
+      final isInitialLoad =
+          controller.isLoading.value &&
+          controller.allSessionsList.isEmpty &&
+          controller.globalController.featuredMeditations.isEmpty;
 
-        if (isInitialLoad) {
-          return const MeditationLoading();
-        }
+      if (isInitialLoad) {
+        return const MeditationLoading();
+      }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await Future.wait([
-              controller.fetchFilters(forceRefresh: true),
-              controller.fetchSessions(forceRefresh: true),
-            ]);
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Search Input
-                CustomSearchBar(
+      return RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait([
+            controller.fetchFilters(forceRefresh: true),
+            controller.globalController.fetchFeaturedMeditations(
+              forceRefresh: true,
+            ),
+            controller.fetchSessions(forceRefresh: true),
+          ]);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Spacing.s8.h,
+
+              // Search Input
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s8.symmetric.horizontal,
+                ),
+                child: CustomSearchBar(
                   controller: _searchController,
                   focusNode: _searchFocusNode,
                   onChanged: (val) => controller.updateSearchQuery(val),
                   hintText: "Search meditations...",
                 ),
-                Spacing.s8.h,
+              ),
+              Spacing.s16.h,
 
-                // Category Pill Filter
-                Obx(
-                  () => CustomHorizontalScrollableFilter<String>(
-                    items: controller.categoriesList.isNotEmpty
-                        ? controller.categoriesList
-                        : _categories,
-                    selectedItem: controller.selectedCategory.value,
-                    labelBuilder: (cat) => cat,
-                    onItemSelected: (cat) => controller.changeCategory(cat),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.s8.symmetric.horizontal,
-                    ),
+              // Category Pill Filter
+              Obx(
+                () => CustomHorizontalScrollableFilter<String>(
+                  items: controller.categoriesList.isNotEmpty
+                      ? controller.categoriesList
+                      : _categories,
+                  selectedItem: controller.selectedCategory.value,
+                  labelBuilder: (cat) => cat,
+                  onItemSelected: (cat) => controller.changeCategory(cat),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Spacing.s8.symmetric.horizontal,
                   ),
                 ),
-                Spacing.s12.h,
+              ),
+              Spacing.s12.h,
 
-                // Content Area
-                Obx(() {
-                  if (controller.isLoading.value) {
-                    return const MeditationContentLoading();
-                  }
+              // Content Area
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return const MeditationContentLoading();
+                }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Horizontally Scrolling Featured Carousel
-                      buildFeaturedSection(context),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Horizontally Scrolling Featured Carousel
+                    buildFeaturedSection(context),
 
-                      // Vertical List Section Title
-                      if (controller.filteredSessions.isNotEmpty)
-                        const MeditationSectionTitle(title: "All Meditations"),
+                    // Vertical List Section Title
+                    if (controller.filteredSessions.isNotEmpty)
+                      const MeditationSectionTitle(title: "All Meditations"),
 
-                      // Vertical List of Sessions
-                      buildAllMeditationsList(context),
-                    ],
-                  );
-                }),
+                    // Vertical List of Sessions
+                    buildAllMeditationsList(context),
+                  ],
+                );
+              }),
 
-                // Bottom Safe Spacing
-                Spacing.s32.h,
-              ],
-            ),
+              // Bottom Safe Spacing
+              Spacing.s32.h,
+            ],
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   // Decompose Featured Section
   Widget buildFeaturedSection(BuildContext context) {
-    final featuredList = controller.featuredSessions;
+    final featuredList = controller.globalController.featuredMeditations;
     if (featuredList.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -161,27 +169,33 @@ class MeditationScreen extends GetView<MeditationController> {
             itemBuilder: (context, index) {
               final session = featuredList[index];
               return Obx(() {
-                final isFav = controller.favoritedIds.contains(session.id);
+                final isFav = controller.favoritedIds.contains(
+                  session.id?.toString() ?? '',
+                );
                 return FeaturedMeditationCard(
                   session: session,
                   isFavorited: isFav,
                   onTap: () {
                     Get.to(
                       () => MusicPlayerView(
-                        audioUrl: session.soundTrack,
-                        title: session.title,
-                        category: session.category,
-                        imageUrl: session.imageUrl,
-                        description: session.description,
-                        duration: session.duration,
-                        isFavorited: controller.getIsFavoritedRx(session.id),
-                        onFavoriteTap: () =>
-                            controller.toggleFavorite(session.id),
+                        audioUrl: session.soundTrack ?? '',
+                        title: session.title ?? '',
+                        category: session.category ?? '',
+                        imageUrl: session.imageUrl ?? '',
+                        description: session.description ?? '',
+                        duration: session.duration ?? '',
+                        isFavorited: controller.getIsFavoritedRx(
+                          session.id?.toString() ?? '',
+                        ),
+                        onFavoriteTap: () => controller.toggleFavorite(
+                          session.id?.toString() ?? '',
+                        ),
                       ),
                       transition: Transition.rightToLeft,
                     );
                   },
-                  onFavoriteTap: () => controller.toggleFavorite(session.id),
+                  onFavoriteTap: () =>
+                      controller.toggleFavorite(session.id?.toString() ?? ''),
                 );
               });
             },
@@ -207,26 +221,32 @@ class MeditationScreen extends GetView<MeditationController> {
       mainAxisSize: MainAxisSize.min,
       children: sessionsList.map((session) {
         return Obx(() {
-          final isFav = controller.favoritedIds.contains(session.id);
+          final isFav = controller.favoritedIds.contains(
+            session.id?.toString() ?? '',
+          );
           return MeditationCard(
             session: session,
             isFavorited: isFav,
             onTap: () {
               Get.to(
                 () => MusicPlayerView(
-                  audioUrl: session.soundTrack,
-                  title: session.title,
-                  category: session.category,
-                  imageUrl: session.imageUrl,
-                  description: session.description,
-                  duration: session.duration,
-                  isFavorited: controller.getIsFavoritedRx(session.id),
-                  onFavoriteTap: () => controller.toggleFavorite(session.id),
+                  audioUrl: session.soundTrack ?? '',
+                  title: session.title ?? '',
+                  category: session.category ?? '',
+                  imageUrl: session.imageUrl ?? '',
+                  description: session.description ?? '',
+                  duration: session.duration ?? '',
+                  isFavorited: controller.getIsFavoritedRx(
+                    session.id?.toString() ?? '',
+                  ),
+                  onFavoriteTap: () =>
+                      controller.toggleFavorite(session.id?.toString() ?? ''),
                 ),
                 transition: Transition.rightToLeft,
               );
             },
-            onFavoriteTap: () => controller.toggleFavorite(session.id),
+            onFavoriteTap: () =>
+                controller.toggleFavorite(session.id?.toString() ?? ''),
           );
         });
       }).toList(),

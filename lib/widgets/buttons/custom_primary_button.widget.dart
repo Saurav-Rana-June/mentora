@@ -1,3 +1,4 @@
+import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 
@@ -42,9 +43,10 @@ class CustomPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = onPressed == null || isLoading;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final Color effectiveBackgroundColor = isDisabled
-        ? (disabledColor ?? Colors.grey.shade400)
+        ? (disabledColor ?? (isDark ? slate[600]! : slate[200]!))
         : (backgroundColor ?? Theme.of(context).primaryColor);
 
     return SizedBox(
@@ -64,10 +66,7 @@ class CustomPrimaryButton extends StatelessWidget {
                       const SizedBox(
                         width: 24,
                         height: 24,
-                        child: Loader(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
+                        child: Loader(strokeWidth: 2, color: Colors.white),
                       ))
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,

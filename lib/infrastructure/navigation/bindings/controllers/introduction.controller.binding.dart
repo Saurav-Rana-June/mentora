@@ -5,8 +5,6 @@ import '../../../../presentation/introduction/controllers/introduction.controlle
 class IntroductionControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<IntroductionController>(
-      () => IntroductionController(),
-    );
+    Get.lazyPut<IntroductionController>(() => IntroductionController());
   }
 }

@@ -1,6 +1,7 @@
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
+import 'package:Mentora/presentation/insights/controllers/insights.controller.dart';
 import 'package:Mentora/presentation/moodCheckin/views/add_notes.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/mood_history.view.dart';
 import 'package:Mentora/presentation/moodCheckin/views/extact_feeling.view.dart';
@@ -9,6 +10,9 @@ import 'package:Mentora/presentation/moodCheckin/views/reason_selection.view.dar
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
@@ -22,19 +26,16 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
   const MoodCheckinScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColorLight,
-        appBar: buildAppbar(context),
-        body: Obx(() => bodyWidget(controller.currentIndex.value)),
-        bottomNavigationBar: Obx(() => buildButton()),
-      ),
+    return CustomScreenWrapper(
+      safeAreaTop: false,
+      appBar: buildAppbar(context),
+      body: Obx(() => bodyWidget(controller.currentIndex.value)),
+      bottomNavigationBar: Obx(() => buildButton()),
     );
   }
 
-  Padding buildButton() {
-    return Padding(
+  Widget buildButton() {
+    return CustomPrimaryBottomBar(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s4.symmetric.vertical,
@@ -56,8 +57,18 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
                   final success = await controller.saveCheckIn();
                   if (success) {
                     if (Get.isRegistered<GlobalController>()) {
-                      Get.find<GlobalController>().addMoodCheckin(
+                      controller.globalController.addMoodCheckin(
                         controller.selectedMood.value,
+                      );
+                      controller.globalController.fetchMoodTrackerStats(
+                        forceRefresh: true,
+                      );
+                      Get.find<InsightsController>().fetchGrowthAreas(
+                        DateFilter.thisWeek,
+                        forceRefresh: true,
+                      );
+                      Get.find<InsightsController>().fetchCoachingBanner(
+                        forceRefresh: true,
                       );
                     }
                     Get.back();
@@ -68,13 +79,11 @@ class MoodCheckinScreen extends GetView<MoodCheckinController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      title: CustomBackButton(icon: MyIcons.xmark),
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
+      leading: CustomBackButton(icon: MyIcons.xmark),
       centerTitle: false,
       automaticallyImplyLeading: false,
-      backgroundColor: Theme.of(context).primaryColorLight,
       actions: [
         IconButton(
           icon: Text(

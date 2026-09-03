@@ -5,8 +5,6 @@ import '../../../../presentation/sleep/controllers/sleep.controller.dart';
 class SleepControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<SleepController>(
-      () => SleepController(),
-    );
+    Get.lazyPut<SleepController>(() => SleepController());
   }
 }

@@ -1,20 +1,24 @@
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
-import 'package:Mentora/data/model/assessment/paginated_daily_mood_assessments.model.dart';
+import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/paginated_daily_mood_assessments.model.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
-import 'package:Mentora/data/model/assessment/mood_tracker_stats.model.dart';
-import 'package:Mentora/data/model/auth/profile.model.dart';
+import 'package:Mentora/data/model/mood_tracker_stats.model.dart';
+import 'package:Mentora/data/model/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
+import 'package:Mentora/infrastructure/dal/services/meditation_service.dart';
 
 class GlobalController extends GetxController {
   final Rx<DateFilter> selectedDateFilter = DateFilter.allTime.obs;
   bool _isFetchingHistory = false;
   final RxBool isLoadingMoodTracker = false.obs;
   final Rxn<MoodTrackerStatsModel> moodTrackerStats =
+      Rxn<MoodTrackerStatsModel>();
+  final Rxn<MoodTrackerStatsModel> moodTrackerStatsThisWeek =
       Rxn<MoodTrackerStatsModel>();
 
   final RxList<DailyMoodAssessmentModel> moodHistoryList =
@@ -31,11 +35,25 @@ class GlobalController extends GetxController {
   final RxBool isLoadingProfile = false.obs;
   final RxString latestMood = ''.obs;
 
+  // Featured Meditations
+  final featuredMeditations = <MeditationSessionModel>[].obs;
+  final RxBool isLoadingFeaturedMeditations = false.obs;
+
+  static const String _featuredMeditationsCacheKey =
+      StorageKeys.FEATURED_MEDITATIONS;
+  static const String _featuredMeditationsLastUpdatedKey =
+      StorageKeys.FEATURED_MEDITATIONS_LAST_UPDATED;
+
   @override
   void onInit() {
     super.onInit();
     fetchUserProfile();
-    Future.wait([fetchMoodHistory(), fetchMoodTrackerStats()]);
+
+    Future.wait([
+      fetchMoodHistory(),
+      fetchMoodTrackerStats(),
+      fetchFeaturedMeditations(),
+    ]);
   }
 
   Future<void> fetchUserProfile() async {
@@ -53,18 +71,33 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
-    final String moodHistoryCacheKey = 'global_mood_history_${selectedDateFilter.value.name}';
-    final String moodHistoryLastUpdatedKey = 'global_mood_history_last_updated_${selectedDateFilter.value.name}';
+    final String moodHistoryCacheKey = StorageKeys.globalMoodHistory(
+      selectedDateFilter.value.name,
+    );
+    final String moodHistoryLastUpdatedKey =
+        StorageKeys.globalMoodHistoryLastUpdated(selectedDateFilter.value.name);
+
+    if (forceRefresh) {
+      await StorageUtils.remove(moodHistoryCacheKey);
+      await StorageUtils.remove(moodHistoryLastUpdatedKey);
+    }
 
     try {
       // 1. Try to load check-ins from cache first
-      final cachedHistory = StorageUtils.read<Map<String, dynamic>>(moodHistoryCacheKey);
-      final cachedLastUpdated = StorageUtils.read<String>(moodHistoryLastUpdatedKey);
+      final cachedHistory = StorageUtils.read<Map<String, dynamic>>(
+        moodHistoryCacheKey,
+      );
+      final cachedLastUpdated = StorageUtils.read<String>(
+        moodHistoryLastUpdatedKey,
+      );
 
       bool hasCache = cachedHistory != null && cachedLastUpdated != null;
       if (hasCache) {
-        final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(cachedHistory);
-        final List<DailyMoodAssessmentModel> history = paginatedModel.items;
+        final paginatedModel = PaginatedDailyMoodAssessmentsModel.fromJson(
+          cachedHistory,
+        );
+        final List<DailyMoodAssessmentModel> history =
+            paginatedModel.items ?? [];
         moodHistoryList.assignAll(history);
 
         checkInDates.clear();
@@ -105,7 +138,8 @@ class GlobalController extends GetxController {
         );
         if (checkRes != null) {
           final DateTime? cachedDateTime = DateTime.tryParse(cachedLastUpdated);
-          if (checkRes.lastUpdated != null && checkRes.lastUpdated == cachedDateTime) {
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
             // Cache is up to date! Stop here.
             return;
           }
@@ -119,7 +153,8 @@ class GlobalController extends GetxController {
         dateFilter: selectedDateFilter.value,
       );
       if (response != null && response.data != null) {
-        final List<DailyMoodAssessmentModel> history = response.data!.items;
+        final List<DailyMoodAssessmentModel> history =
+            response.data!.items ?? [];
 
         moodHistoryList.assignAll(history);
 
@@ -309,8 +344,15 @@ class GlobalController extends GetxController {
     final String suffix = fromDate != null || toDate != null
         ? '${fromDate}_$toDate'
         : actualFilter;
-    final String cacheKey = 'insights_mood_tracker_$suffix';
-    final String lastUpdatedKey = 'insights_mood_tracker_last_updated_$suffix';
+    final String cacheKey = StorageKeys.insightsMoodTracker(suffix);
+    final String lastUpdatedKey = StorageKeys.insightsMoodTrackerLastUpdated(
+      suffix,
+    );
+
+    if (forceRefresh) {
+      await StorageUtils.remove(cacheKey);
+      await StorageUtils.remove(lastUpdatedKey);
+    }
 
     try {
       // 1. Try to load from local cache first
@@ -319,7 +361,11 @@ class GlobalController extends GetxController {
 
       bool hasCache = cachedData != null && cachedLastUpdated != null;
       if (hasCache) {
-        moodTrackerStats.value = MoodTrackerStatsModel.fromJson(cachedData);
+        final model = MoodTrackerStatsModel.fromJson(cachedData);
+        if (actualFilter == "thisWeek" && fromDate == null && toDate == null) {
+          moodTrackerStatsThisWeek.value = model;
+        }
+        moodTrackerStats.value = model;
         hasCache = true;
       }
 
@@ -356,16 +402,93 @@ class GlobalController extends GetxController {
         timezone: 'UTC',
       );
       if (res != null && res.data != null) {
+        if (actualFilter == "thisWeek" && fromDate == null && toDate == null) {
+          moodTrackerStatsThisWeek.value = res.data;
+        }
         moodTrackerStats.value = res.data;
         await StorageUtils.write(cacheKey, res.data!.toJson());
         if (res.lastUpdated != null) {
-          await StorageUtils.write(lastUpdatedKey, res.lastUpdated!.toIso8601String());
+          await StorageUtils.write(
+            lastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
         }
       }
     } catch (e) {
       Get.log("Error fetching global mood tracker stats: $e");
     } finally {
       isLoadingMoodTracker.value = false;
+    }
+  }
+
+  Future<void> fetchFeaturedMeditations({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_featuredMeditationsCacheKey);
+      await StorageUtils.remove(_featuredMeditationsLastUpdatedKey);
+    }
+
+    try {
+      // 1. Try to load from cache
+      final List<dynamic>? cachedData = StorageUtils.read<List<dynamic>>(
+        _featuredMeditationsCacheKey,
+      );
+      final String? cachedLastUpdated = StorageUtils.read<String>(
+        _featuredMeditationsLastUpdatedKey,
+      );
+
+      bool hasCache = false;
+      if (cachedData != null && cachedLastUpdated != null) {
+        featuredMeditations.assignAll(
+          cachedData
+              .map(
+                (e) => MeditationSessionModel.fromJson(
+                  Map<String, dynamic>.from(e as Map),
+                ),
+              )
+              .toList(),
+        );
+        hasCache = true;
+      }
+
+      if (hasCache) {
+        isLoadingFeaturedMeditations.value = false;
+      } else {
+        isLoadingFeaturedMeditations.value = true;
+      }
+
+      // 2. Perform lightweight timestamp verification check if not force-refreshing
+      if (hasCache && !forceRefresh) {
+        final checkRes = await MeditationService.getFeaturedMeditations(
+          lastUpdated: cachedLastUpdated,
+        );
+        if (checkRes != null) {
+          final cachedDateTime = DateTime.tryParse(cachedLastUpdated!);
+          if (checkRes.lastUpdated != null &&
+              checkRes.lastUpdated == cachedDateTime) {
+            return;
+          }
+        }
+      }
+
+      // 3. Fetch fresh data
+      final res = await MeditationService.getFeaturedMeditations();
+      if (res != null && res.data != null) {
+        featuredMeditations.assignAll(res.data!);
+        await StorageUtils.write(
+          _featuredMeditationsCacheKey,
+          res.data!.map((e) => e.toJson()).toList(),
+        );
+        if (res.lastUpdated != null) {
+          await StorageUtils.write(
+            _featuredMeditationsLastUpdatedKey,
+            res.lastUpdated!.toIso8601String(),
+          );
+        }
+      }
+    } catch (e) {
+      Get.log("Error fetching featured meditations: $e");
+    } finally {
+      isLoadingFeaturedMeditations.value = false;
     }
   }
 }

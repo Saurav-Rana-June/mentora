@@ -5,9 +5,12 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
-import 'package:Mentora/data/model/assessment/daily_mood_assessment.model.dart';
+import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import 'package:Mentora/widgets/others/custom.dashed.line.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,8 +30,7 @@ class HomeScreen extends GetView<HomeController> {
   final controller = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
       body: buildBody(context),
     );
@@ -70,7 +72,11 @@ class HomeScreen extends GetView<HomeController> {
             // Spacing.s16.h,
             buildMoodTrendsCard(context),
             Spacing.s16.h,
-            buildTodayPlanSection(context),
+            Obx(
+              () => controller.plans.isNotEmpty
+                  ? buildTodayPlanSection(context)
+                  : SizedBox(),
+            ),
           ],
         ),
       ),
@@ -165,7 +171,7 @@ class HomeScreen extends GetView<HomeController> {
     final globalController = Get.find<GlobalController>();
 
     return Obx(() {
-      final stats = globalController.moodTrackerStats.value;
+      final stats = globalController.moodTrackerStatsThisWeek.value;
       final checkedInMoods =
           stats?.data?.map((d) => d.feeling).whereType<String>().toList() ?? [];
       final historyLength = checkedInMoods.length;
@@ -299,7 +305,9 @@ class HomeScreen extends GetView<HomeController> {
       }
 
       final total = controller.plans.length;
-      final completed = controller.plans.where((p) => p.isComplete).length;
+      final completed = controller.plans
+          .where((p) => p.isComplete == true)
+          .length;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -327,7 +335,7 @@ class HomeScreen extends GetView<HomeController> {
                 plan.uiIcon,
                 index == 0 ? true : false,
                 index + 1 == total ? true : false,
-                plan.isComplete,
+                plan.isComplete ?? false,
                 () {
                   controller.togglePlanCompletion(index);
                 },
@@ -706,7 +714,6 @@ class HomeScreen extends GetView<HomeController> {
     final moodIcon = AppUtils.getMoodImage(mood);
     final moodColor = _getMoodColor(mood);
     final timeStr = _formatTime(checkIn.createdAt ?? '');
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
@@ -793,7 +800,7 @@ class HomeScreen extends GetView<HomeController> {
             if ((checkIn.exactFeeling?.isNotEmpty ?? false) ||
                 (checkIn.why?.isNotEmpty ?? false)) ...[
               Spacing.s12.h,
-              Divider(color: isDarkMode ? slate[700]! : slate[100]!, height: 1),
+              const CustomDivider(),
               Spacing.s12.h,
               Wrap(
                 spacing: 8.w,
@@ -871,10 +878,8 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -899,15 +904,15 @@ class HomeScreen extends GetView<HomeController> {
 
           Row(
             children: [
-              Text(
-                MyIcons.magnifyingGlass,
-                style: TextStyle(
-                  fontFamily: 'FontAwesomeLight',
-                  fontSize: 20,
-                  color: slate[500],
-                ),
-              ),
-              Spacing.s12.w,
+              // Text(
+              //   MyIcons.magnifyingGlass,
+              //   style: TextStyle(
+              //     fontFamily: 'FontAwesomeLight',
+              //     fontSize: 20,
+              //     color: slate[500],
+              //   ),
+              // ),
+              // Spacing.s12.w,
               Obx(() {
                 final globalController = Get.find<GlobalController>();
                 final profile = globalController.userProfile.value;

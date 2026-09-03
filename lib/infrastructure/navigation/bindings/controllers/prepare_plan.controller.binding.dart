@@ -5,8 +5,6 @@ import '../../../../presentation/preparePlan/controllers/prepare_plan.controller
 class PreparePlanControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<PreparePlanController>(
-      () => PreparePlanController(),
-    );
+    Get.lazyPut<PreparePlanController>(() => PreparePlanController());
   }
 }

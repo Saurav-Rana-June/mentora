@@ -1,20 +1,20 @@
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
-import 'package:Mentora/data/model/tasks/plan.model.dart';
+import 'package:Mentora/data/model/plan.model.dart';
 import 'package:Mentora/infrastructure/dal/services/tasks_service.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/storage_utils.dart';
-import 'package:Mentora/data/model/assessment/streak_stats.model.dart';
+import 'package:Mentora/data/model/streak_stats.model.dart';
 
 class HomeController extends GetxController {
   final GlobalController globalController = Get.find<GlobalController>();
   final RxInt streakCount = 0.obs;
   final RxInt weeklyCheckInCount = 0.obs;
 
-  static const String _streakStatsCacheKey = 'home_streak_stats_data';
-  static const String _streakStatsLastUpdatedCacheKey = 'home_streak_stats_last_updated';
-  static const String _dailyPlanCacheKey = 'home_daily_plan_data';
+  static const String _streakStatsCacheKey = StorageKeys.STREAK_STATS;
+  static const String _streakStatsLastUpdatedCacheKey = StorageKeys.STREAK_STATS_LAST_UPDATED;
+  static const String _dailyPlanCacheKey = StorageKeys.DAILY_PLAN;
 
   // Trusted Contact Info
   final RxString trustedContactName = ''.obs;
@@ -37,6 +37,10 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchStreakStats({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_streakStatsCacheKey);
+      await StorageUtils.remove(_streakStatsLastUpdatedCacheKey);
+    }
     try {
       // 1. Try to load stats from cache first
       final cachedStats = StorageUtils.read<Map<String, dynamic>>(_streakStatsCacheKey);
@@ -84,6 +88,9 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchDailyPlan({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      await StorageUtils.remove(_dailyPlanCacheKey);
+    }
     try {
       // 1. Try to load plans from cache first
       final cachedPlans = StorageUtils.read<List<dynamic>>(_dailyPlanCacheKey);
@@ -116,7 +123,7 @@ class HomeController extends GetxController {
   Future<void> togglePlanCompletion(int index) async {
     if (index >= 0 && index < plans.length) {
       final plan = plans[index];
-      final newStatus = !plan.isComplete;
+      final newStatus = !(plan.isComplete ?? false);
 
       // Optimistically update UI
       final updatedPlan = PlanModel(
@@ -135,7 +142,7 @@ class HomeController extends GetxController {
 
       try {
         final response = await TasksService.updatePlanItemCompletion(
-          planItemId: plan.id,
+          planItemId: plan.id ?? 0,
           isComplete: newStatus,
         );
         if (response != null && response.data != null) {

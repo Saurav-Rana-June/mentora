@@ -1,6 +1,8 @@
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
+import 'package:Mentora/widgets/others/custom.primary.bottombar.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,49 +16,50 @@ class AllSetScreen extends GetView<AllSetController> {
   const AllSetScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s16.symmetric.horizontal,
-          vertical: Spacing.s4.symmetric.horizontal,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              MyIcons.circleCheck,
-              style: TextStyle(
-                fontFamily: 'FontAwesomeLight',
-                fontSize: 100,
-                color: primary,
+          padding: EdgeInsets.symmetric(
+            horizontal: Spacing.s16.symmetric.horizontal,
+            vertical: Spacing.s4.symmetric.horizontal,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                MyIcons.circleCheck,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeLight',
+                  fontSize: 100,
+                  color: primary,
+                ),
               ),
-            ),
-            Spacing.s8.h,
+              Spacing.s8.h,
 
-            Text(
-              "You're All Set!",
-              textAlign: TextAlign.center,
-              style: h2.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).textTheme.headlineMedium!.color,
+              Text(
+                "You're All Set!",
+                textAlign: TextAlign.center,
+                style: h2.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).textTheme.headlineMedium!.color,
+                ),
               ),
-            ),
-            Text(
-              "Onboarding is compelete, Now you're all ready to use Mentora.",
-              textAlign: TextAlign.center,
-              style: r14.copyWith(
-                color: Theme.of(context).textTheme.bodySmall!.color,
+              Text(
+                "Onboarding is compelete, Now you're all ready to use Mentora.",
+                textAlign: TextAlign.center,
+                style: r14.copyWith(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: buildButton(),
-    );
+        bottomNavigationBar: buildButton(),
+      );
   }
 
-  Padding buildButton() {
-    return Padding(
+  Widget buildButton() {
+    return CustomPrimaryBottomBar(
       padding: EdgeInsets.symmetric(
         horizontal: Spacing.s8.symmetric.horizontal,
         vertical: Spacing.s4.symmetric.vertical,

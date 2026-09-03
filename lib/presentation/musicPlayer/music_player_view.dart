@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 
 import 'controllers/music_player.controller.dart';
 import 'widgets/music_player_artwork.dart';
@@ -80,7 +81,8 @@ class _MusicPlayerViewState extends State<MusicPlayerView> {
 
     final colors = widget.gradientColors ?? defaultGradientColors;
 
-    return Scaffold(
+    return CustomScreenWrapper(
+      useSafeArea: false,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

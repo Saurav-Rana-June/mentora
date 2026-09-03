@@ -10,9 +10,14 @@ import '../../infrastructure/theme/theme.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../../widgets/bottomsheets/clear_chat.bottomsheet.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import '../../widgets/buttons/custom_back_button.widet.dart';
 import '../../widgets/fields/custom_textfield.widget.dart';
+import '../../widgets/others/custom.primary.card.dart';
 import 'controllers/chat_a_i.controller.dart';
+import 'models/chat_session.model.dart';
+import 'widgets/chat_a_i_drawer.dart';
+import 'widgets/futuristic_ai_bubble.widget.dart';
 
 class ChatAIScreen extends GetView<ChatAIController> {
   final bool showAppBar;
@@ -32,9 +37,11 @@ class ChatAIScreen extends GetView<ChatAIController> {
           final body = buildBody(context);
           return RepaintBoundary(
             key: controller.exportKey,
-            child: Scaffold(
-              backgroundColor: Theme.of(context).primaryColorLight,
-              body: SafeArea(top: false, child: body),
+            child: CustomScreenWrapper(
+              scaffoldKey: controller.scaffoldKey,
+              endDrawer: ChatAIDrawer(controller: controller),
+              safeAreaTop: false,
+              body: body,
             ),
           );
         },
@@ -71,7 +78,12 @@ class ChatAIScreen extends GetView<ChatAIController> {
       child: SingleChildScrollView(
         controller: controller.landingScrollController,
         physics: const BouncingScrollPhysics(),
-        // padding: EdgeInsets.fromLTRB(0, 0, 0, Spacing.s12.symmetric.horizontal),
+        padding: EdgeInsets.fromLTRB(
+          0,
+          Spacing.s32.symmetric.vertical,
+          0,
+          Spacing.s24.symmetric.horizontal,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,6 +121,88 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildRecentChatsList(BuildContext context) {
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s16.symmetric.horizontal,
+      ),
+      child: Obx(() {
+        final recent = controller.sessions.take(4).toList();
+        return Row(
+          children: recent.map((session) {
+            return Padding(
+              padding: EdgeInsets.only(right: Spacing.s12.symmetric.horizontal),
+              child: CustomPrimaryCard(
+                borderRadius: 16,
+                width: 190.w,
+                height: 100.h,
+                padding: EdgeInsets.all(Spacing.s8.symmetric.horizontal),
+                border: Border.all(
+                  color:
+                      theme.dividerTheme.color ??
+                      primary.withValues(alpha: 0.1),
+                  width: 0.8,
+                ),
+                onTap: () => controller.selectSession(session),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '\u{f0e5}', // chat icon
+                          style: TextStyle(
+                            fontFamily: 'FontAwesomeSolid',
+                            fontSize: 12,
+                            color: primary,
+                          ),
+                        ),
+                        Spacing.s8.w,
+                        Expanded(
+                          child: Text(
+                            session.title,
+                            style: r14.copyWith(
+                              color: theme.textTheme.bodyLarge!.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      session.lastMessageSnippet,
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodyMedium!.color!.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      session.formattedDate,
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodySmall!.color!.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      }),
     );
   }
 
@@ -159,22 +253,20 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   Widget buildCenterMessageBoxArea(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
-          width: 0.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: primary.withValues(alpha: 0.08),
-            blurRadius: 16,
-            spreadRadius: 2,
-          ),
-        ],
+    return CustomPrimaryCard(
+      borderRadius: 20,
+      border: Border.all(
+        color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
+        width: 0.8,
       ),
+      boxShadow: [
+        BoxShadow(
+          color: primary.withValues(alpha: 0.08),
+          blurRadius: 16,
+          spreadRadius: 2,
+        ),
+      ],
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -334,75 +426,65 @@ class ChatAIScreen extends GetView<ChatAIController> {
     required String query,
   }) {
     final theme = Theme.of(context);
-    return Material(
-      color: theme.cardTheme.color,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => controller.sendMessage(query),
-        child: Container(
-          width: 200.w,
-          height: 120.h,
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s8.symmetric.horizontal,
-            vertical: Spacing.s8.symmetric.vertical,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color:
-                  theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
-              width: 0.8,
+    return CustomPrimaryCard(
+      borderRadius: 20,
+      width: 200.w,
+      height: 120.h,
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.s8.symmetric.horizontal,
+        vertical: Spacing.s8.symmetric.vertical,
+      ),
+      border: Border.all(
+        color: theme.dividerTheme.color ?? primary.withValues(alpha: 0.08),
+        width: 0.8,
+      ),
+      onTap: () => controller.sendMessage(query),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              iconUnicode,
+              style: TextStyle(
+                fontFamily: 'FontAwesomeSolid',
+                fontSize: 16,
+                color: theme.colorScheme.primary,
+              ),
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  iconUnicode,
-                  style: TextStyle(
-                    fontFamily: 'FontAwesomeSolid',
-                    fontSize: 16,
-                    color: theme.colorScheme.primary,
+          Spacing.s16.w,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: r14.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge!.color,
                   ),
                 ),
-              ),
-              Spacing.s16.w,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: r14.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge!.color,
-                      ),
+                // Spacing.s4.h,
+                Text(
+                  description,
+                  style: r12.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: theme.textTheme.bodySmall!.color!.withValues(
+                      alpha: 0.7,
                     ),
-                    // Spacing.s4.h,
-                    Text(
-                      description,
-                      style: r12.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: theme.textTheme.bodySmall!.color!.withValues(
-                          alpha: 0.7,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -412,9 +494,9 @@ class ChatAIScreen extends GetView<ChatAIController> {
       controller: controller.scrollController,
       itemCount: controller.messages.length,
       padding: EdgeInsets.fromLTRB(
-        Spacing.s12.symmetric.horizontal,
+        Spacing.s8.symmetric.horizontal,
         topPadding + 56.h + Spacing.s12.symmetric.vertical,
-        Spacing.s12.symmetric.horizontal,
+        Spacing.s8.symmetric.horizontal,
         Spacing.s12.symmetric.vertical,
       ),
       itemBuilder: (context, index) {
@@ -437,103 +519,140 @@ class ChatAIScreen extends GetView<ChatAIController> {
         alignment: Alignment.centerRight,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 0.75.sw),
-          child: Container(
-            margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
-            padding: EdgeInsets.symmetric(
-              horizontal: Spacing.s12.symmetric.horizontal,
-              vertical: Spacing.s8.symmetric.horizontal,
-            ),
-            decoration: BoxDecoration(
-              color: primary,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(4),
-              ),
-            ),
-            child: Text(
-              message.message,
-              style: r16.copyWith(color: white, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ),
-      );
-    } else {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: Container(
-          margin: EdgeInsets.only(bottom: Spacing.s12.symmetric.horizontal),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                margin: EdgeInsets.only(right: Spacing.s8.symmetric.horizontal),
-                height: 32.h,
-                width: 32.h,
+                margin: EdgeInsets.only(bottom: 4.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.s8.symmetric.horizontal,
+                  vertical: Spacing.s4.symmetric.horizontal,
+                ),
                 decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
+                  color: primary,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(4),
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    '\u{f890}', // sparkles icon
-                    style: TextStyle(
-                      fontFamily: 'FontAwesomeSolid',
-                      fontSize: 14,
-                      color: primary,
-                    ),
+                child: Text(
+                  message.message,
+                  style: r16.copyWith(
+                    color: white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              Flexible(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 0.7.sw),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.s12.symmetric.horizontal,
-                      vertical: Spacing.s8.symmetric.horizontal,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.cardTheme.color,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                        bottomLeft: Radius.circular(4),
-                        bottomRight: Radius.circular(16),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromRGBO(0, 0, 0, 0.03),
-                          offset: const Offset(0, 1),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      message.message,
-                      style: r16.copyWith(
-                        color: theme.textTheme.bodyLarge!.color,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              buildUserActionRow(context, message, index),
+              Spacing.s8.h,
             ],
           ),
         ),
       );
+    } else {
+      return FuturisticAiBubble(
+        message: message,
+        index: index,
+        controller: controller,
+      );
     }
+  }
+
+  Widget buildUserActionRow(
+    BuildContext context,
+    MessageModel message,
+    int index,
+  ) {
+    return Obx(() {
+      final isSpeaking =
+          controller.currentlySpeakingMessageId.value == message.id;
+      final isCopied = controller.copiedMessageId.value == message.id;
+
+      return Padding(
+        padding: EdgeInsets.only(right: 2.w),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildActionIconButton(
+              iconUnicode: isSpeaking
+                  ? '\u{f04d}'
+                  : '\u{f028}', // stop or speaker
+              tooltip: isSpeaking ? 'Stop speaking' : 'Speak',
+              isActive: isSpeaking,
+              onTap: () => controller.toggleSpeak(message),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: isCopied ? '\u{f00c}' : '\u{f0c5}', // check or copy
+              tooltip: isCopied ? 'Copied' : 'Copy',
+              isActive: isCopied,
+              onTap: () => controller.copyMessage(message),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: '\u{f304}', // pen-to-square
+              tooltip: 'Edit',
+              isActive: false,
+              onTap: () => controller.startEditMessage(message, index),
+            ),
+            Spacing.s4.w,
+            buildActionIconButton(
+              iconUnicode: '\u{f01e}', // rotate-right / retry
+              tooltip: 'Retry',
+              isActive: false,
+              onTap: () => controller.retryMessage(message, index),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget buildActionIconButton({
+    required String iconUnicode,
+    required String tooltip,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final defaultColor = theme.textTheme.bodySmall!.color!.withValues(
+          alpha: 0.6,
+        );
+
+        return Tooltip(
+          message: tooltip,
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(
+                  iconUnicode,
+                  style: TextStyle(
+                    fontFamily: 'FontAwesomeSolid',
+                    fontSize: 12,
+                    color: isActive ? primary : defaultColor,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Container buildMessageBoxArea(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Spacing.s12.symmetric.horizontal,
-        vertical: Spacing.s8.symmetric.vertical,
-      ),
       decoration: BoxDecoration(
         color: theme.primaryColorLight,
         border: Border(
@@ -543,93 +662,136 @@ class ChatAIScreen extends GetView<ChatAIController> {
           ),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Material(
-          //   color: Colors.transparent,
-          //   shape: const CircleBorder(),
-          //   child: InkWell(
-          //     customBorder: const CircleBorder(),
-          //     onTap: () {},
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8),
-          //       child: Text(
-          //         '\u{002b}',
-          //         style: TextStyle(
-          //           fontFamily: 'FontAwesomeRegular',
-          //           fontSize: 22,
-          //           color: theme.textTheme.bodyMedium!.color!.withValues(
-          //             alpha: 0.6,
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Spacing.s8.w,
-          Expanded(
-            child: CustomTextFormField(
-              hintText: "Write a message...",
-              controller: controller.messageController,
-              keyboardType: TextInputType.multiline,
-              textInputAction: TextInputAction.send,
-              maxLines: 3,
-              minLines: 1,
-              borderWidth: 0.8,
-              borderColor:
-                  theme.dividerTheme.color ?? primary.withValues(alpha: 0.1),
-              fillColor: theme.cardTheme.color,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: Spacing.s8.symmetric.horizontal,
-                vertical: Spacing.s8.symmetric.vertical,
-              ),
-              onFieldSubmitted: (value) {
-                final text = value.trim();
-                if (text.isNotEmpty) {
-                  controller.sendMessage(text);
-                }
-              },
-            ),
-          ),
-          Spacing.s16.w,
           Obx(() {
-            final text = controller.currentInputText.value;
-            final isNotEmpty = text.trim().isNotEmpty;
-            return Material(
-              color: Colors.transparent,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                borderRadius: BorderRadius.circular(50),
-                onTap: isNotEmpty ? () => controller.sendMessage(text) : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 40.h,
-                  width: 40.h,
-                  decoration: BoxDecoration(
-                    color: isNotEmpty
-                        ? primary
-                        : primary.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
+            final editingMsg = controller.editingMessage.value;
+            if (editingMsg == null) return const SizedBox.shrink();
+            final snippet = editingMsg.message.replaceAll('\n', ' ').trim();
+            final displaySnippet = snippet.length > 40
+                ? '${snippet.substring(0, 40)}...'
+                : snippet;
+
+            return Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.s12.symmetric.horizontal,
+                vertical: 6.h,
+              ),
+              color: primary.withValues(alpha: 0.1),
+              child: Row(
+                children: [
+                  Text(
+                    '\u{f304}',
+                    style: TextStyle(
+                      fontFamily: 'FontAwesomeSolid',
+                      fontSize: 12,
+                      color: primary,
+                    ),
                   ),
-                  child: Center(
+                  Spacing.s8.w,
+                  Expanded(
                     child: Text(
-                      '\u{f1d8}',
-                      style: TextStyle(
-                        fontFamily: 'FontAwesomeSolid',
-                        fontSize: 16,
-                        color: isNotEmpty
-                            ? white
-                            : theme.textTheme.bodyMedium!.color!.withValues(
-                                alpha: 0.3,
-                              ),
+                      'Editing: "$displaySnippet"',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: r12.copyWith(
+                        color: theme.textTheme.bodyMedium!.color,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: controller.cancelEdit,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: theme.textTheme.bodySmall!.color,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Spacing.s12.symmetric.horizontal,
+              vertical: Spacing.s8.symmetric.vertical,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    hintText: "Write a message...",
+                    controller: controller.messageController,
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.send,
+                    maxLines: 3,
+                    minLines: 1,
+                    borderWidth: 0.8,
+                    borderColor:
+                        theme.dividerTheme.color ??
+                        primary.withValues(alpha: 0.1),
+                    fillColor: theme.cardTheme.color,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: Spacing.s8.symmetric.horizontal,
+                      vertical: Spacing.s8.symmetric.vertical,
+                    ),
+                    onFieldSubmitted: (value) {
+                      final text = value.trim();
+                      if (text.isNotEmpty) {
+                        controller.sendMessage(text);
+                      }
+                    },
+                  ),
+                ),
+                Spacing.s16.w,
+                Obx(() {
+                  final text = controller.currentInputText.value;
+                  final isNotEmpty = text.trim().isNotEmpty;
+                  final isEditing = controller.editingMessage.value != null;
+                  return Material(
+                    color: Colors.transparent,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      borderRadius: BorderRadius.circular(50),
+                      onTap: isNotEmpty
+                          ? () => controller.sendMessage(text)
+                          : null,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: 40.h,
+                        width: 40.h,
+                        decoration: BoxDecoration(
+                          color: isNotEmpty
+                              ? primary
+                              : primary.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            isEditing ? '\u{f00c}' : '\u{f1d8}',
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 16,
+                              color: isNotEmpty
+                                  ? white
+                                  : theme.textTheme.bodyMedium!.color!
+                                        .withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -637,32 +799,35 @@ class ChatAIScreen extends GetView<ChatAIController> {
 
   Widget buildAppbar(BuildContext context) {
     final theme = Theme.of(context);
+    final topPadding = MediaQuery.paddingOf(context).top;
     return Obx(() {
       final isScrolled = controller.isScrolled.value;
 
-      final appBar = AppBar(
-        title: controller.isSearching.value
+      final barContent = Container(
+        padding: EdgeInsets.fromLTRB(
+          Spacing.s4.symmetric.horizontal,
+          topPadding + Spacing.s4.symmetric.vertical,
+          Spacing.s8.symmetric.horizontal,
+          Spacing.s8.symmetric.vertical,
+        ),
+        color: isScrolled
+            ? theme.primaryColorLight.withValues(alpha: 0.85)
+            : Colors.transparent,
+        child: controller.isSearching.value
             ? buildSearchAppbar(context)
             : buildNormalAppbar(context),
-        surfaceTintColor: Colors.transparent,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        backgroundColor: isScrolled
-            ? theme.primaryColorLight.withValues(alpha: 0.8)
-            : Colors.transparent,
-        elevation: 0,
       );
 
       if (isScrolled) {
         return ClipRect(
           child: BackdropFilter(
             filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: appBar,
+            child: barContent,
           ),
         );
       }
 
-      return appBar;
+      return barContent;
     });
   }
 
@@ -774,7 +939,7 @@ class ChatAIScreen extends GetView<ChatAIController> {
             shape: const CircleBorder(),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: () {},
+              onTap: () => controller.openHistory(),
               child: Container(
                 height: 38.h,
                 width: 38.h,
@@ -790,18 +955,93 @@ class ChatAIScreen extends GetView<ChatAIController> {
                 ),
                 child: Center(
                   child: Text(
-                    '\u{f0c9}',
+                    '\u{f1da}',
                     style: TextStyle(
                       fontFamily: 'FontAwesomeSolid',
-                      fontSize: 16,
-                      color: theme.textTheme.bodyLarge!.color,
+                      fontSize: 15,
+                      color: primary,
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        buildOptionsDropdownButtton(context),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // History Button
+            Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(50),
+                onTap: () => controller.openHistory(),
+                child: Container(
+                  height: 36.h,
+                  width: 36.h,
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          theme.dividerTheme.color ??
+                          primary.withValues(alpha: 0.08),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '\u{f1da}', // history icon
+                      style: TextStyle(
+                        fontFamily: 'FontAwesomeSolid',
+                        fontSize: 14,
+                        color: primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s8.w,
+            // New Chat Button
+            Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                borderRadius: BorderRadius.circular(50),
+                onTap: () => controller.createNewChat(),
+                child: Container(
+                  height: 36.h,
+                  width: 36.h,
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          theme.dividerTheme.color ??
+                          primary.withValues(alpha: 0.08),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '\u{f044}', // pen-to-square / compose / new chat
+                      style: TextStyle(
+                        fontFamily: 'FontAwesomeSolid',
+                        fontSize: 14,
+                        color: primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Spacing.s8.w,
+            buildOptionsDropdownButtton(context),
+          ],
+        ),
       ],
     );
   }
@@ -813,6 +1053,12 @@ class ChatAIScreen extends GetView<ChatAIController> {
       offset: const Offset(0, 48),
       onSelected: (value) {
         switch (value) {
+          case 'new_chat':
+            controller.createNewChat();
+            break;
+          case 'history':
+            controller.openHistory();
+            break;
           case 'search':
             controller.isSearching.value = true;
             break;
@@ -836,6 +1082,52 @@ class ChatAIScreen extends GetView<ChatAIController> {
         }
       },
       itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'new_chat',
+          child: Row(
+            children: [
+              Text(
+                '\u{f044}', // pen-to-square
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 14,
+                  color: primary,
+                ),
+              ),
+              Spacing.s12.w,
+              Text(
+                'New Chat',
+                style: r16.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'history',
+          child: Row(
+            children: [
+              Text(
+                '\u{f1da}', // history
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
+              Spacing.s12.w,
+              Text(
+                'Chat History',
+                style: r16.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
         PopupMenuItem(
           value: 'search',
           child: Row(

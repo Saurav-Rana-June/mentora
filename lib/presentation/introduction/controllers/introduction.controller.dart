@@ -12,6 +12,7 @@ class CarouselItem {
 
 class IntroductionController extends GetxController {
   final PageController pageController = PageController();
+  final PageController imagePageController = PageController();
   final RxInt currentIndex = 0.obs;
 
   final List<Map<String, String>> items = [
@@ -53,12 +54,20 @@ class IntroductionController extends GetxController {
 
   void onPageChanged(int index) {
     currentIndex.value = index;
+    if (imagePageController.hasClients) {
+      imagePageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
   void onClose() {
     timer?.cancel();
     pageController.dispose();
+    imagePageController.dispose();
     super.onClose();
   }
 }

@@ -3,14 +3,29 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../data/utils/storage_utils.dart';
+import '../../../../infrastructure/dal/services/ai_service.dart';
+import '../../../../infrastructure/dal/services/tts_service.dart';
+import '../../../../infrastructure/theme/theme.dart';
+import '../../../../widgets/bottomsheets/edit_message.bottomsheet.dart';
+import '../models/chat_session.model.dart';
+
 class ChatAIController extends GetxController {
   final GlobalKey exportKey = GlobalKey();
-  
-  // Start with empty messages so the landing view shows by default
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // All stored chat sessions
+  final RxList<ChatSessionModel> sessions = <ChatSessionModel>[].obs;
+
+  // Active chat session
+  final Rxn<ChatSessionModel> currentSession = Rxn<ChatSessionModel>();
+
+  // Current session messages (mirrors currentSession.value?.messages)
   final RxList<MessageModel> messages = <MessageModel>[].obs;
 
   final TextEditingController messageController = TextEditingController();
@@ -18,9 +33,16 @@ class ChatAIController extends GetxController {
   final ScrollController landingScrollController = ScrollController();
 
   final RxString currentInputText = "".obs;
+  final RxString historySearchQuery = "".obs;
 
   RxBool isSearching = false.obs;
   final RxBool isScrolled = false.obs;
+
+  // TTS, Copy & Edit state
+  final RxString currentlySpeakingMessageId = "".obs;
+  final RxString copiedMessageId = "".obs;
+  final Rxn<MessageModel> editingMessage = Rxn<MessageModel>();
+  final RxInt editingMessageIndex = (-1).obs;
 
   @override
   void onInit() {
@@ -30,6 +52,7 @@ class ChatAIController extends GetxController {
     });
     scrollController.addListener(_scrollListener);
     landingScrollController.addListener(_landingScrollListener);
+    _loadSessions();
   }
 
   void _scrollListener() {
@@ -44,28 +67,294 @@ class ChatAIController extends GetxController {
     }
   }
 
-  void sendMessage(String text) {
-    if (text.trim().isEmpty) return;
-    messages.add(MessageModel(message: text, isMe: true));
+  // --- PERSISTENCE & SESSION MANAGEMENT ---
+
+  void _loadSessions() {
+    try {
+      final storedData =
+          StorageUtils.read<List<dynamic>>(StorageKeys.CHAT_AI_SESSIONS);
+      if (storedData != null && storedData.isNotEmpty) {
+        final loaded = storedData
+            .map(
+              (e) => ChatSessionModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
+            .toList();
+        // Sort by most recently updated
+        loaded.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        sessions.assignAll(loaded);
+      }
+
+      final currentId =
+          StorageUtils.read<String>(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+      if (currentId != null) {
+        final match = sessions.firstWhereOrNull((s) => s.id == currentId);
+        if (match != null && match.messages.isNotEmpty) {
+          currentSession.value = match;
+          messages.assignAll(match.messages);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading chat sessions: $e');
+    }
+
+    // Sync latest from backend in background
+    fetchRemoteSessions();
+  }
+
+  /// Sync conversation sessions list from backend
+  Future<void> fetchRemoteSessions() async {
+    try {
+      final response = await AIService.fetchSessions();
+      if (response != null && response.data != null) {
+        sessions.assignAll(response.data!);
+        _saveSessions();
+      }
+    } catch (e) {
+      debugPrint('Error fetching remote sessions: $e');
+    }
+  }
+
+  Future<void> _saveSessions() async {
+    try {
+      final data = sessions.map((s) => s.toJson()).toList();
+      await StorageUtils.write(StorageKeys.CHAT_AI_SESSIONS, data);
+      if (currentSession.value != null) {
+        await StorageUtils.write(
+          StorageKeys.CHAT_AI_CURRENT_SESSION_ID,
+          currentSession.value!.id,
+        );
+      } else {
+        await StorageUtils.remove(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+      }
+    } catch (e) {
+      debugPrint('Error saving chat sessions: $e');
+    }
+  }
+
+  /// Create a fresh new chat conversation and reset to landing view
+  void createNewChat() {
+    TTSService().stop();
+    currentlySpeakingMessageId.value = "";
+    cancelEdit();
+    currentSession.value = null;
+    messages.clear();
+    messageController.clear();
+    currentInputText.value = "";
+    isScrolled.value = false;
+    StorageUtils.remove(StorageKeys.CHAT_AI_CURRENT_SESSION_ID);
+  }
+
+  /// Select and load a historical session (locally and from backend)
+  void selectSession(ChatSessionModel session) async {
+    TTSService().stop();
+    currentlySpeakingMessageId.value = "";
+    cancelEdit();
+    currentSession.value = session;
+    messages.assignAll(session.messages);
+    messageController.clear();
+    currentInputText.value = "";
+    isScrolled.value = false;
+    StorageUtils.write(StorageKeys.CHAT_AI_CURRENT_SESSION_ID, session.id);
+    _scrollToBottom();
+
+    // Load full message history from backend
+    try {
+      final detailRes = await AIService.fetchSessionDetails(session.id);
+      if (detailRes != null && detailRes.data != null) {
+        final fullSession = detailRes.data!;
+        currentSession.value = fullSession;
+        messages.assignAll(fullSession.messages);
+        final idx = sessions.indexWhere((s) => s.id == fullSession.id);
+        if (idx != -1) {
+          sessions[idx] = fullSession;
+        }
+        _saveSessions();
+        _scrollToBottom();
+      }
+    } catch (e) {
+      debugPrint('Error loading full session messages: $e');
+    }
+  }
+
+  /// Delete a single chat session
+  void deleteSession(String sessionId) {
+    if (currentlySpeakingMessageId.value.isNotEmpty) {
+      TTSService().stop();
+      currentlySpeakingMessageId.value = "";
+    }
+    sessions.removeWhere((s) => s.id == sessionId);
+    _saveSessions();
+    AIService.deleteSession(sessionId);
+    if (currentSession.value?.id == sessionId) {
+      createNewChat();
+    }
+  }
+
+  /// Clear all saved chat history
+  void clearAllHistory() {
+    TTSService().stop();
+    currentlySpeakingMessageId.value = "";
+    cancelEdit();
+    sessions.clear();
+    _saveSessions();
+    AIService.clearAllSessions();
+    createNewChat();
+  }
+
+  /// Open the Chat History Drawer from the right side
+  void openHistory() {
+    historySearchQuery.value = "";
+    fetchRemoteSessions();
+    scaffoldKey.currentState?.openEndDrawer();
+  }
+
+  // --- MESSAGING FLOW ---
+
+  void sendMessage(String text) async {
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
+
+    final editingMsg = editingMessage.value;
+    final editIdx = editingMessageIndex.value;
+    cancelEdit();
+
+    // Check if we need to initialize a new session
+    if (currentSession.value == null) {
+      final newSession = ChatSessionModel(
+        title: _generateSessionTitle(cleanText),
+      );
+      currentSession.value = newSession;
+      sessions.insert(0, newSession);
+    } else {
+      // Move active session to top of the history list
+      sessions.removeWhere((s) => s.id == currentSession.value!.id);
+      sessions.insert(0, currentSession.value!);
+    }
+
+    if (editingMsg != null && editIdx != -1 && editIdx < messages.length) {
+      // Replace user message at editIdx and truncate following responses
+      final updatedUserMsg = MessageModel(
+        id: editingMsg.id,
+        message: cleanText,
+        isMe: true,
+        timestamp: DateTime.now(),
+      );
+      messages[editIdx] = updatedUserMsg;
+      if (editIdx + 1 < messages.length) {
+        messages.removeRange(editIdx + 1, messages.length);
+      }
+      if (currentSession.value != null) {
+        if (editIdx < currentSession.value!.messages.length) {
+          currentSession.value!.messages[editIdx] = updatedUserMsg;
+        }
+        if (editIdx + 1 < currentSession.value!.messages.length) {
+          currentSession.value!.messages.removeRange(
+            editIdx + 1,
+            currentSession.value!.messages.length,
+          );
+        }
+        currentSession.value!.updatedAt = DateTime.now();
+      }
+      _saveSessions();
+
+      messageController.clear();
+      currentInputText.value = "";
+      isScrolled.value = false;
+      _scrollToBottom();
+
+      await _queryAIAndAppend(cleanText);
+      return;
+    }
+
+    final userMsg = MessageModel(message: cleanText, isMe: true);
+    messages.add(userMsg);
+    currentSession.value!.messages.add(userMsg);
+    currentSession.value!.updatedAt = DateTime.now();
+    _saveSessions();
+
     messageController.clear();
     currentInputText.value = "";
     isScrolled.value = false;
     _scrollToBottom();
 
-    // Simulate AI thinking and replying with a natural delay
-    Future.delayed(const Duration(milliseconds: 600), () {
-      messages.add(
-        MessageModel(
-          message: "Thank you for sharing that. Mentora is here to support you. Let's take it one step at a time. Tell me a bit more about how you're feeling?",
-          isMe: false,
-        ),
+    await _queryAIAndAppend(cleanText);
+  }
+
+  Future<void> _queryAIAndAppend(String cleanText) async {
+    // Add a placeholder "Thinking..." message
+    final placeholder = MessageModel(message: "Thinking...", isMe: false);
+    messages.add(placeholder);
+    _scrollToBottom();
+
+    try {
+      final response = await AIService.queryAI(
+        query: cleanText,
+        sessionId: currentSession.value?.id,
+        title: currentSession.value?.title,
       );
-      _scrollToBottom();
-    });
+      messages.remove(placeholder);
+
+      String aiReply = "";
+      if (response != null && response.data != null) {
+        aiReply = response.data!['response'] as String;
+      } else {
+        aiReply =
+            "Sorry, I couldn't reach Mentora AI at the moment. Please try again later.";
+      }
+
+      final aiMsg = MessageModel(message: aiReply, isMe: false);
+      messages.add(aiMsg);
+      currentSession.value!.messages.add(aiMsg);
+      currentSession.value!.updatedAt = DateTime.now();
+      _saveSessions();
+    } catch (e) {
+      messages.remove(placeholder);
+      final errorMsg = MessageModel(
+        message:
+            "Sorry, an unexpected error occurred. Please check your internet connection and try again.",
+        isMe: false,
+      );
+      messages.add(errorMsg);
+      currentSession.value!.messages.add(errorMsg);
+      currentSession.value!.updatedAt = DateTime.now();
+      _saveSessions();
+    }
+    _scrollToBottom();
+  }
+
+  String _generateSessionTitle(String prompt) {
+    final trimmed = prompt.replaceAll('\n', ' ').trim();
+    if (trimmed.toLowerCase().contains("feeling really anxious") ||
+        trimmed.toLowerCase().contains("calm down")) {
+      return "Calming Anxiety";
+    }
+    if (trimmed.toLowerCase().contains("breathing exercise")) {
+      return "Breathing Exercise";
+    }
+    if (trimmed.toLowerCase().contains("stress") ||
+        trimmed.toLowerCase().contains("overwhelmed")) {
+      return "Stress Relief";
+    }
+    if (trimmed.toLowerCase().contains("mindfulness quote")) {
+      return "Mindfulness Quote";
+    }
+    if (trimmed.length > 32) {
+      return '${trimmed.substring(0, 32)}...';
+    }
+    return trimmed.isEmpty ? "New Conversation" : trimmed;
   }
 
   void clearChat() {
-    messages.clear();
+    TTSService().stop();
+    currentlySpeakingMessageId.value = "";
+    cancelEdit();
+    if (currentSession.value != null) {
+      deleteSession(currentSession.value!.id);
+    } else {
+      messages.clear();
+    }
     isScrolled.value = false;
   }
 
@@ -104,18 +393,125 @@ class ChatAIController extends GetxController {
     }
   }
 
+  // --- CHAT BUBBLE ACTIONS: SPEAK, COPY, EDIT ---
+
+  void toggleSpeak(MessageModel message) async {
+    if (currentlySpeakingMessageId.value == message.id) {
+      await TTSService().stop();
+      currentlySpeakingMessageId.value = "";
+    } else {
+      await TTSService().stop();
+      currentlySpeakingMessageId.value = message.id;
+      await TTSService().speak(
+        message.message,
+        onComplete: () {
+          if (currentlySpeakingMessageId.value == message.id) {
+            currentlySpeakingMessageId.value = "";
+          }
+        },
+        onCancel: () {
+          if (currentlySpeakingMessageId.value == message.id) {
+            currentlySpeakingMessageId.value = "";
+          }
+        },
+        onError: () {
+          if (currentlySpeakingMessageId.value == message.id) {
+            currentlySpeakingMessageId.value = "";
+          }
+        },
+      );
+    }
+  }
+
+  void copyMessage(MessageModel message) async {
+    await Clipboard.setData(ClipboardData(text: message.message));
+    copiedMessageId.value = message.id;
+    Get.rawSnackbar(
+      messageText: Text(
+        "Message copied to clipboard",
+        style: r14.copyWith(color: white, fontWeight: FontWeight.w500),
+      ),
+      backgroundColor: slate[900] ?? Colors.black87,
+      snackPosition: SnackPosition.BOTTOM,
+      borderRadius: 12,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      duration: const Duration(seconds: 2),
+      animationDuration: const Duration(milliseconds: 300),
+      icon: Icon(Icons.check_circle_rounded, color: primary, size: 20),
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (copiedMessageId.value == message.id) {
+        copiedMessageId.value = "";
+      }
+    });
+  }
+
+  void startEditMessage(MessageModel message, int index) {
+    editingMessage.value = message;
+    editingMessageIndex.value = index;
+    messageController.text = message.message;
+    messageController.selection = TextSelection.fromPosition(
+      TextPosition(offset: messageController.text.length),
+    );
+    _scrollToBottom();
+  }
+
+  void openEditBottomSheet(MessageModel message, int index) {
+    Get.bottomSheet(
+      EditMessageBottomsheet(
+        initialText: message.message,
+        onSave: (updatedText) {
+          sendMessage(updatedText);
+        },
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  void retryMessage(MessageModel message, int index) async {
+    TTSService().stop();
+    currentlySpeakingMessageId.value = "";
+    cancelEdit();
+
+    final targetIndex =
+        index < messages.length && messages[index].id == message.id
+            ? index
+            : messages.indexWhere((m) => m.id == message.id);
+
+    if (targetIndex != -1) {
+      // Truncate all responses after this clicked user query
+      if (targetIndex + 1 < messages.length) {
+        messages.removeRange(targetIndex + 1, messages.length);
+      }
+      if (currentSession.value != null &&
+          targetIndex + 1 < currentSession.value!.messages.length) {
+        currentSession.value!.messages.removeRange(
+          targetIndex + 1,
+          currentSession.value!.messages.length,
+        );
+      }
+      _saveSessions();
+      _scrollToBottom();
+      await _queryAIAndAppend(message.message);
+    } else {
+      sendMessage(message.message);
+    }
+  }
+
+  void cancelEdit() {
+    editingMessage.value = null;
+    editingMessageIndex.value = -1;
+    messageController.clear();
+    currentInputText.value = "";
+  }
+
   @override
   void onClose() {
+    TTSService().stop();
     messageController.dispose();
     scrollController.dispose();
     landingScrollController.dispose();
     super.onClose();
   }
-}
-
-class MessageModel {
-  final String message;
-  final bool isMe;
-
-  MessageModel({required this.message, required this.isMe});
 }

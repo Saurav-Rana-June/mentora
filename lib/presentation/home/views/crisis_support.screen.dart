@@ -3,6 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 import '../../../infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import '../controllers/home.controller.dart';
 
 class CrisisSupportScreen extends StatefulWidget {
@@ -151,12 +155,8 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
-      appBar: AppBar(
-        backgroundColor: theme.primaryColorLight,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
+    return CustomScreenWrapper(
+      appBar: CustomPrimaryAppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Get.back(),
@@ -208,7 +208,7 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
             ),
             
             Spacing.s24.h,
-            Divider(color: isDark ? slate[700] : slate[200]),
+            const CustomDivider(),
             Spacing.s16.h,
 
             // Localized Hotlines
@@ -267,16 +267,14 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
               children: hotlines[selectedRegion]!.map((item) {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
-                  child: Container(
+                  child: CustomPrimaryCard(
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    decoration: BoxDecoration(
-                      color: theme.cardTheme.color,
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: isDark ? slate[700]! : Colors.grey.shade200,
-                        width: 1,
-                      ),
+                    borderRadius: 16.r,
+                    border: Border.all(
+                      color: isDark ? slate[700]! : Colors.grey.shade200,
+                      width: 1,
                     ),
+                    boxShadow: const [],
                     child: Row(
                       children: [
                         Container(
@@ -359,7 +357,7 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
             ),
 
             Spacing.s24.h,
-            Divider(color: isDark ? slate[700] : slate[200]),
+            const CustomDivider(),
             Spacing.s16.h,
 
             // Trusted Contact Section
@@ -373,16 +371,14 @@ class _CrisisSupportScreenState extends State<CrisisSupportScreen> {
               style: r14.copyWith(color: theme.textTheme.bodySmall!.color),
             ),
             Spacing.s16.h,
-            Container(
+            CustomPrimaryCard(
               padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: theme.cardTheme.color,
-                borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(
-                  color: isDark ? slate[700]! : Colors.grey.shade200,
-                  width: 1,
-                ),
+              borderRadius: 20.r,
+              border: Border.all(
+                color: isDark ? slate[700]! : Colors.grey.shade200,
+                width: 1,
               ),
+              boxShadow: const [],
               child: Column(
                 children: [
                   TextField(

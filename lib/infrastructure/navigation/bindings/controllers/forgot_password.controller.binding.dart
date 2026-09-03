@@ -5,8 +5,6 @@ import '../../../../presentation/forgotPassword/controllers/forgot_password.cont
 class ForgotPasswordControllerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<ForgotPasswordController>(
-      () => ForgotPasswordController(),
-    );
+    Get.lazyPut<ForgotPasswordController>(() => ForgotPasswordController());
   }
 }

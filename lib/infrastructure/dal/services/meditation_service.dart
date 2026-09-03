@@ -1,6 +1,6 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../presentation/meditation/widgets/meditation_session.dart';
+import 'package:Mentora/data/model/meditation_session.model.dart';
 
 class MeditationService {
   MeditationService._();
@@ -36,7 +36,7 @@ class MeditationService {
   }
 
   /// Retrieve all meditations based on optional category and search query filters
-  static Future<ApiResponse<List<MeditationSession>>?> getMeditations({
+  static Future<ApiResponse<List<MeditationSessionModel>>?> getMeditations({
     String? category,
     String? search,
     String? lastUpdated,
@@ -52,20 +52,20 @@ class MeditationService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<List<MeditationSession>>>(
+    return client.request<ApiResponse<List<MeditationSessionModel>>>(
       (dio) => dio.get(
         'meditations',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<List<MeditationSession>>.fromJson(
+        return ApiResponse<List<MeditationSessionModel>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
             if (data == null) return [];
             final list = data as List<dynamic>;
             return list
-                .map((e) => MeditationSession.fromJson(e as Map<String, dynamic>))
+                .map((e) => MeditationSessionModel.fromJson(e as Map<String, dynamic>))
                 .toList();
           },
         );
@@ -74,7 +74,7 @@ class MeditationService {
   }
 
   /// Retrieve featured meditations based on optional category and search query filters
-  static Future<ApiResponse<List<MeditationSession>>?> getFeaturedMeditations({
+  static Future<ApiResponse<List<MeditationSessionModel>>?> getFeaturedMeditations({
     String? category,
     String? search,
     String? lastUpdated,
@@ -90,22 +90,47 @@ class MeditationService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<List<MeditationSession>>>(
+    return client.request<ApiResponse<List<MeditationSessionModel>>>(
       (dio) => dio.get(
         'meditations/featured',
         queryParameters: params,
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<List<MeditationSession>>.fromJson(
+        return ApiResponse<List<MeditationSessionModel>>.fromJson(
           json as Map<String, dynamic>,
           (data) {
             if (data == null) return [];
             final list = data as List<dynamic>;
             return list
-                .map((e) => MeditationSession.fromJson(e as Map<String, dynamic>))
+                .map((e) => MeditationSessionModel.fromJson(e as Map<String, dynamic>))
                 .toList();
           },
+        );
+      },
+    );
+  }
+
+  /// Retrieve details for a single meditation by its ID
+  static Future<ApiResponse<MeditationSessionModel>?> getMeditationDetails({
+    required int meditationId,
+    String? lastUpdated,
+  }) async {
+    final Map<String, dynamic> params = {};
+    if (lastUpdated != null && lastUpdated.isNotEmpty) {
+      params['lastUpdated'] = lastUpdated;
+    }
+
+    return client.request<ApiResponse<MeditationSessionModel>>(
+      (dio) => dio.get(
+        'meditations/$meditationId',
+        queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<MeditationSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => MeditationSessionModel.fromJson(data as Map<String, dynamic>),
         );
       },
     );

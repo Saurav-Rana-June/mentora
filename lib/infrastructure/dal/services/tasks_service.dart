@@ -1,6 +1,6 @@
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
-import '../../../../data/model/tasks/plan.model.dart';
+import '../../../../data/model/plan.model.dart';
 
 class TasksService {
   TasksService._();

@@ -1,8 +1,11 @@
 import 'dart:math';
 import 'package:Mentora/presentation/home/controllers/home.controller.dart';
 import 'package:Mentora/widgets/others/custom.circular.progressbar.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/others/custom.toggle.dart';
+import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.horizontal.scrollable.filter.widget.dart';
 import 'package:Mentora/widgets/charts/custom.line.chart.dart';
 import 'package:Mentora/widgets/charts/custom.bar.chart.dart';
@@ -16,7 +19,7 @@ import 'controllers/insights.controller.dart';
 import 'package:Mentora/presentation/widgets/loaders/loader.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
-import 'package:Mentora/data/model/assessment/growth_areas_response.model.dart';
+import 'package:Mentora/data/model/growth_areas_response.model.dart';
 
 class InsightsScreen extends GetView<InsightsController> {
   InsightsScreen({super.key});
@@ -34,36 +37,50 @@ class InsightsScreen extends GetView<InsightsController> {
       horizontal: Spacing.s8.symmetric.horizontal,
     );
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+    return CustomScreenWrapper(
       appBar: buildAppbar(context),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: Spacing.s4.symmetric.horizontal,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: horizontalPadding,
-              child: Obx(
-                () => buildPersonalizedCoachingCard(context, homeController),
-              ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait({
+            controller.fetchGrowthAreas(
+              controller.selectedDateFilter.value,
+              forceRefresh: true,
             ),
-            buildDateFilters(context),
-            Spacing.s20.h,
-            Padding(
-              padding: horizontalPadding,
-              child: Column(
-                children: [
-                  buildGrowthAreaCard(context),
-                  Spacing.s20.h,
-                  buildMoodTrackerCard(context, homeController),
-                  Spacing.s12.h,
-                ],
-              ),
+            controller.fetchCoachingBanner(forceRefresh: true),
+            controller.globalController.fetchMoodTrackerStats(
+              dateFilter: controller.selectedDateFilter.value.name,
+              forceRefresh: true,
             ),
-          ],
+          });
+        },
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            vertical: Spacing.s4.symmetric.horizontal,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: horizontalPadding,
+                child: Obx(
+                  () => buildPersonalizedCoachingCard(context, homeController),
+                ),
+              ),
+              buildDateFilters(context),
+              Spacing.s20.h,
+              Padding(
+                padding: horizontalPadding,
+                child: Column(
+                  children: [
+                    buildGrowthAreaCard(context),
+                    Spacing.s20.h,
+                    buildMoodTrackerCard(context, homeController),
+                    Spacing.s12.h,
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -89,8 +106,8 @@ class InsightsScreen extends GetView<InsightsController> {
       return const SizedBox.shrink();
     }
 
-    final title = banner.title;
-    final description = banner.description;
+    final title = banner.title ?? '';
+    final description = banner.description ?? '';
 
     // Map backend icon tag to FontAwesome solid unicode string:
     // 'calendar' -> \u{f073}
@@ -202,7 +219,7 @@ class InsightsScreen extends GetView<InsightsController> {
             ],
           ),
           Spacing.s4.h,
-          const Divider(),
+          const CustomDivider(),
           Spacing.s16.h,
           Obx(() {
             if (controller.isLoadingGrowth.value) {
@@ -219,7 +236,7 @@ class InsightsScreen extends GetView<InsightsController> {
               return const SizedBox();
             }
 
-            if (!data.hasSufficientData) {
+            if (data.hasSufficientData != true) {
               return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 16.w),
@@ -301,20 +318,20 @@ class InsightsScreen extends GetView<InsightsController> {
             if (areas.isNotEmpty)
               buildGrowthProgressIndicators(
                 context,
-                areas[0].progress,
-                areas[0].title,
+                areas[0].progress ?? 0.0,
+                areas[0].title ?? '',
               ),
             if (areas.length > 1)
               buildGrowthProgressIndicators(
                 context,
-                areas[1].progress,
-                areas[1].title,
+                areas[1].progress ?? 0.0,
+                areas[1].title ?? '',
               ),
             if (areas.length > 2)
               buildGrowthProgressIndicators(
                 context,
-                areas[2].progress,
-                areas[2].title,
+                areas[2].progress ?? 0.0,
+                areas[2].title ?? '',
               ),
           ],
         ),
@@ -325,20 +342,20 @@ class InsightsScreen extends GetView<InsightsController> {
             if (areas.length > 3)
               buildGrowthProgressIndicators(
                 context,
-                areas[3].progress,
-                areas[3].title,
+                areas[3].progress ?? 0.0,
+                areas[3].title ?? '',
               ),
             if (areas.length > 4)
               buildGrowthProgressIndicators(
                 context,
-                areas[4].progress,
-                areas[4].title,
+                areas[4].progress ?? 0.0,
+                areas[4].title ?? '',
               ),
             if (areas.length > 5)
               buildGrowthProgressIndicators(
                 context,
-                areas[5].progress,
-                areas[5].title,
+                areas[5].progress ?? 0.0,
+                areas[5].title ?? '',
               ),
           ],
         ),
@@ -372,7 +389,7 @@ class InsightsScreen extends GetView<InsightsController> {
                       Icon(area.iconData, color: primary, size: 20),
                       Spacing.s8.w,
                       Text(
-                        area.title,
+                        area.title ?? '',
                         style: r14.copyWith(
                           color: theme.textTheme.bodyLarge!.color,
                           fontWeight: FontWeight.w600,
@@ -381,7 +398,7 @@ class InsightsScreen extends GetView<InsightsController> {
                     ],
                   ),
                   Text(
-                    "${(area.progress * 100).toInt()}%",
+                    "${((area.progress ?? 0.0) * 100).toInt()}%",
                     style: r14.copyWith(
                       color: primary,
                       fontWeight: FontWeight.bold,
@@ -393,7 +410,7 @@ class InsightsScreen extends GetView<InsightsController> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value: area.progress,
+                  value: area.progress ?? 0.0,
                   minHeight: 6.h,
                   backgroundColor: slate[100],
                   valueColor: AlwaysStoppedAnimation<Color>(primary),
@@ -401,7 +418,7 @@ class InsightsScreen extends GetView<InsightsController> {
               ),
               Spacing.s8.h,
               Text(
-                area.tip,
+                area.tip ?? '',
                 style: r12.copyWith(
                   color: theme.textTheme.bodyMedium!.color!.withValues(
                     alpha: 0.8,
@@ -499,7 +516,7 @@ class InsightsScreen extends GetView<InsightsController> {
             ],
           ),
           Spacing.s4.h,
-          const Divider(),
+          const CustomDivider(),
           Spacing.s16.h,
           Obx(() {
             final globalController = Get.find<GlobalController>();
@@ -687,10 +704,8 @@ class InsightsScreen extends GetView<InsightsController> {
     );
   }
 
-  AppBar buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColorLight,
-      surfaceTintColor: Colors.transparent,
+  PreferredSizeWidget buildAppbar(BuildContext context) {
+    return CustomPrimaryAppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -795,7 +810,7 @@ class GrowthRadarChartPainter extends CustomPainter {
     final points = <Offset>[];
 
     for (int i = 0; i < sides; i++) {
-      final double progress = growthAreas[i].progress;
+      final double progress = growthAreas[i].progress ?? 0.0;
       final double r = maxRadius * progress;
       final double angle = i * angleStep - pi / 2;
       final double x = center.dx + r * cos(angle);

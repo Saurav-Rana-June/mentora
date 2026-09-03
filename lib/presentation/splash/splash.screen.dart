@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import '../../infrastructure/theme/theme.dart';
+import '../../widgets/others/custom.screen.wrapper.dart';
 import 'controllers/splash.controller.dart';
 
 class SplashScreen extends GetView<SplashController> {
@@ -26,7 +27,7 @@ class SplashScreen extends GetView<SplashController> {
       ),
     );
 
-    return Scaffold(
+    return CustomScreenWrapper(
       body: Center(
         child: Container(
           decoration: BoxDecoration(
@@ -43,6 +44,7 @@ class SplashScreen extends GetView<SplashController> {
               Spacing.s8.w,
               IntrinsicHeight(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

@@ -1,0 +1,29 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'paginated_experts.model.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+PaginatedExpertsModel _$PaginatedExpertsModelFromJson(
+  Map<String, dynamic> json,
+) => PaginatedExpertsModel(
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => Expert.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  page: (json['page'] as num?)?.toInt(),
+  size: (json['size'] as num?)?.toInt(),
+  totalItems: (json['totalItems'] as num?)?.toInt(),
+  totalPages: (json['totalPages'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$PaginatedExpertsModelToJson(
+  PaginatedExpertsModel instance,
+) => <String, dynamic>{
+  'items': instance.items?.map((e) => e.toJson()).toList(),
+  'page': instance.page,
+  'size': instance.size,
+  'totalItems': instance.totalItems,
+  'totalPages': instance.totalPages,
+};

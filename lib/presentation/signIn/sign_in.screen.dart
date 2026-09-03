@@ -4,7 +4,10 @@ import 'package:Mentora/presentation/screens.dart';
 import 'package:Mentora/widgets/buttons/custom_back_button.widet.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
-import 'package:Mentora/widgets/others/custom.check.box.dart';
+// import 'package:Mentora/widgets/others/custom.check.box.dart';
+import 'package:Mentora/widgets/others/custom.primary.appbar.dart';
+// import 'package:Mentora/widgets/others/custom.divider.dart';
+import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,14 +25,12 @@ class SignInScreen extends GetView<SignInController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScreenWrapper(
+      safeAreaTop: false,
       appBar: buildAppbar(),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          alignment: AlignmentGeometry.bottomCenter,
-          children: [buildForm(context), buildButton()],
-        ),
+      body: Stack(
+        alignment: AlignmentGeometry.bottomCenter,
+        children: [buildForm(context), buildButton()],
       ),
     );
   }
@@ -163,6 +164,7 @@ class SignInScreen extends GetView<SignInController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  /*
                   Row(
                     children: [
                       SizedBox(
@@ -186,7 +188,8 @@ class SignInScreen extends GetView<SignInController> {
                       ),
                     ],
                   ),
-
+                  */
+                  const SizedBox(),
                   TextButton(
                     onPressed: () {
                       Get.to(
@@ -212,10 +215,11 @@ class SignInScreen extends GetView<SignInController> {
               ),
               Spacing.s32.h,
 
+              /*
               Row(
                 children: [
                   Expanded(
-                    child: Divider(
+                    child: CustomDivider(
                       color: Theme.of(context).textTheme.bodySmall!.color,
                       height: 0.5,
                       thickness: 1,
@@ -232,7 +236,7 @@ class SignInScreen extends GetView<SignInController> {
                   ),
                   Spacing.s8.w,
                   Expanded(
-                    child: Divider(
+                    child: CustomDivider(
                       color: Theme.of(context).textTheme.bodySmall!.color,
                       height: 0.5,
                       thickness: 1,
@@ -272,6 +276,7 @@ class SignInScreen extends GetView<SignInController> {
                 ],
               ),
               Spacing.s32.h,
+              */
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -369,10 +374,9 @@ class SignInScreen extends GetView<SignInController> {
     );
   }
 
-  AppBar buildAppbar() => AppBar(
-    title: CustomBackButton(),
+  PreferredSizeWidget buildAppbar() => const CustomPrimaryAppBar(
+    leading: Center(child: CustomBackButton()),
     automaticallyImplyLeading: false,
     centerTitle: false,
-    surfaceTintColor: Colors.transparent,
   );
 }

@@ -1,11 +1,8 @@
-import 'package:Mentora/data/model/extras/page.model.dart';
-import 'package:Mentora/presentation/home/home.screen.dart';
+import 'package:Mentora/data/model/page.model.dart';
 import 'package:Mentora/presentation/screens.dart';
 import 'package:get/get.dart';
 import 'package:my_icons/icons.dart';
 import '../infrastructure/navigation/routes.dart';
-import '../presentation/explore/explore.screen.dart';
-import '../presentation/insights/insights.screen.dart';
 
 class BottamNavController extends GetxController {
   static String TAG = "BottamNavController";

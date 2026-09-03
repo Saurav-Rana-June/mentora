@@ -1,9 +1,9 @@
+import 'package:Mentora/controllers/global.controller.dart';
 import 'package:get/get.dart';
 
 class ExploreController extends GetxController {
-  //TODO: Implement ExploreController
+  final GlobalController globalController = Get.find<GlobalController>();
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -18,6 +18,4 @@ class ExploreController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }
