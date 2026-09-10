@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/chatAI/controllers/chat_a_i.controller.dart';
+import '../../../../presentation/app/chatAI/controllers/chat_a_i.controller.dart';
 
 class ChatAIControllerBinding extends Bindings {
   @override

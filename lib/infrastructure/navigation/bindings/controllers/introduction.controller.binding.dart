@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/introduction/controllers/introduction.controller.dart';
+import '../../../../presentation/app/introduction/controllers/introduction.controller.dart';
 
 class IntroductionControllerBinding extends Bindings {
   @override

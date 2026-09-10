@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/doctorList/controllers/doctor_list_controller.dart';
+import '../../../../presentation/app/doctorList/controllers/doctor_list_controller.dart';
 
 class DoctorListControllerBinding extends Bindings {
   @override

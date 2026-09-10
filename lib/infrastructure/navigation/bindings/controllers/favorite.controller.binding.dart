@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/favorite/controllers/favorite.controller.dart';
+import '../../../../presentation/app/favorite/controllers/favorite.controller.dart';
 
 class FavoriteControllerBinding extends Bindings {
   @override

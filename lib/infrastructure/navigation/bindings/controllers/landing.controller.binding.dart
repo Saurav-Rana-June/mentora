@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/landing/controllers/landing.controller.dart';
+import '../../../../presentation/app/landing/controllers/landing.controller.dart';
 
 class LandingControllerBinding extends Bindings {
   @override

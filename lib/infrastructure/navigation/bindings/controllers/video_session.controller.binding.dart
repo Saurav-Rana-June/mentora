@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/videoSession/controllers/video_session.controller.dart';
+import '../../../../presentation/app/videoSession/controllers/video_session.controller.dart';
 
 class VideoSessionControllerBinding extends Bindings {
   @override

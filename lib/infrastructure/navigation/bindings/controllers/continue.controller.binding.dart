@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/continue/controllers/continue.controller.dart';
+import '../../../../presentation/app/continue/controllers/continue.controller.dart';
 
 class ContinueControllerBinding extends Bindings {
   @override

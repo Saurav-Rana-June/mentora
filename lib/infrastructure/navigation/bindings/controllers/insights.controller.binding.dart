@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/insights/controllers/insights.controller.dart';
+import '../../../../presentation/app/insights/controllers/insights.controller.dart';
 
 class InsightsControllerBinding extends Bindings {
   @override

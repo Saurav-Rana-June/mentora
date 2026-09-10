@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/sessions/controllers/sessions.controller.dart';
+import '../../../../presentation/app/sessions/controllers/sessions.controller.dart';
 
 class SessionsControllerBinding extends Bindings {
   @override

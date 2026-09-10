@@ -1,6 +1,6 @@
 import '../../../data/methods/api_client.dart';
 import '../../../data/model/api_response.dart';
-import '../../../presentation/chatAI/models/chat_session.model.dart';
+import 'package:Mentora/presentation/app/chatAI/models/chat_session.model.dart';
 
 class AIService {
   AIService._();

@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:Mentora/presentation/moodCheckin/controllers/mood_checkin.controller.dart';
+import 'package:Mentora/presentation/app/moodCheckin/controllers/mood_checkin.controller.dart';
 import 'package:flutter/material.dart';
 
 class RatingGauge extends StatefulWidget {

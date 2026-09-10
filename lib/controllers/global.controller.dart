@@ -8,7 +8,7 @@ import 'package:Mentora/infrastructure/dal/services/insights_service.dart';
 import 'package:Mentora/data/model/mood_tracker_stats.model.dart';
 import 'package:Mentora/data/model/profile.model.dart';
 import 'package:Mentora/infrastructure/dal/services/profile_service.dart';
-import 'package:Mentora/presentation/home/controllers/home.controller.dart';
+import 'package:Mentora/presentation/app/home/controllers/home.controller.dart';
 import 'package:Mentora/data/model/meditation_session.model.dart';
 import 'package:Mentora/infrastructure/dal/services/meditation_service.dart';
 

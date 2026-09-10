@@ -1,6 +1,6 @@
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:Mentora/presentation/widgets/loaders/loader.dart';
+import 'package:Mentora/presentation/app/widgets/loaders/loader.dart';
 
 class CustomPrimaryButton extends StatelessWidget {
   final String text;

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../../presentation/sleep/controllers/sleep.controller.dart';
+import '../../../../presentation/app/sleep/controllers/sleep.controller.dart';
 
 class SleepControllerBinding extends Bindings {
   @override
