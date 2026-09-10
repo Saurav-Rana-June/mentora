@@ -5,21 +5,49 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "mentora",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "mentora (profile mode)",
+            "name": "Mentora App (Mobile)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "args": [
+                "--dart-define=FLAVOR=app"
+            ]
         },
         {
-            "name": "mentora (release mode)",
+            "name": "Mentora CMS (Web - Chrome)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "deviceId": "chrome",
+            "args": [
+                "-d",
+                "chrome",
+                "--dart-define=FLAVOR=cms"
+            ]
+        },
+        {
+            "name": "Mentora CMS (General)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=FLAVOR=cms"
+            ]
+        },
+        {
+            "name": "Mentora App (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define=FLAVOR=app"
+            ]
+        },
+        {
+            "name": "Mentora App (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=FLAVOR=app"
+            ]
         }
     ]
 }
