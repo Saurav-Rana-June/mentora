@@ -22,4 +22,6 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/video_ses
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/booking_session.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/doctor_list.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/login_admin.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing_admin.controller.binding.dart';
+
 

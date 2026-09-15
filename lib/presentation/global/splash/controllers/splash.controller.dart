@@ -45,7 +45,7 @@ class SplashController extends GetxController {
     if (AppFlavor.current.isCms) {
       // CMS Flavor: Redirect to Admin screens
       if (isAuthenticated) {
-        Get.offAllNamed(Routes.LOGIN_ADMIN);
+        Get.offAllNamed(Routes.LANDING_ADMIN);
       } else {
         Get.offAllNamed(Routes.LOGIN_ADMIN);
       }

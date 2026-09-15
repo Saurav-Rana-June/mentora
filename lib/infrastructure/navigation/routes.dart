@@ -35,5 +35,7 @@ class Routes {
   static const BOOKING_CONFIRMATION = '/booking-confirmation';
   static const LOGIN_ADMIN = '/login-admin';
   static const ADMIN_LOGIN = LOGIN_ADMIN;
+  static const LANDING_ADMIN = '/landing-admin';
+  static const ADMIN_LANDING = LANDING_ADMIN;
 }
 

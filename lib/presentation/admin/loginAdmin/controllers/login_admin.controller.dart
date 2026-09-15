@@ -5,6 +5,7 @@ import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 
 class LoginAdminController extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -62,6 +63,8 @@ class LoginAdminController extends GetxController {
             'Successfully logged into Mentora CMS',
             SnackBarType.SUCCESS,
           );
+
+          Get.offAllNamed(Routes.LANDING_ADMIN);
         }
       } else {
         AppUtils.snackbar(

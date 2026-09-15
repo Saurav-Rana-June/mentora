@@ -155,5 +155,10 @@ class Nav {
       page: () => LoginAdminScreen(),
       binding: LoginAdminControllerBinding(),
     ),
+    GetPage(
+      name: Routes.LANDING_ADMIN,
+      page: () => LandingAdminScreen(),
+      binding: LandingAdminControllerBinding(),
+    ),
   ];
 }
