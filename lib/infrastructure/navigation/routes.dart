@@ -33,4 +33,7 @@ class Routes {
   static const BOOKING_SESSION = '/booking-session';
   static const DOCTOR_LIST = '/doctor-list';
   static const BOOKING_CONFIRMATION = '/booking-confirmation';
+  static const LOGIN_ADMIN = '/login-admin';
+  static const ADMIN_LOGIN = LOGIN_ADMIN;
 }
+

@@ -47,7 +47,7 @@ class SignInController extends GetxController {
         await AppMethod.saveUserEmail(email);
 
         if (Get.isRegistered<GlobalController>()) {
-          Get.find<GlobalController>().fetchUserProfile();
+          Get.find<GlobalController>().initUserData();
         }
 
         AppUtils.snackbar(

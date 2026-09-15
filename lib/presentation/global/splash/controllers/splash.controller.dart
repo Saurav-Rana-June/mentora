@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:Mentora/apps/app_flavor.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
@@ -41,16 +42,26 @@ class SplashController extends GetxController {
       );
     }
 
-    if (isAuthenticated) {
-      if (Get.isRegistered<GlobalController>()) {
-        Get.find<GlobalController>().fetchUserProfile();
-      }
-      Get.offAllNamed(Routes.LANDING);
-    } else {
-      if (AppMethod.hasSeenIntroduction()) {
-        Get.offAllNamed(Routes.SIGN_IN);
+    if (AppFlavor.current.isCms) {
+      // CMS Flavor: Redirect to Admin screens
+      if (isAuthenticated) {
+        Get.offAllNamed(Routes.LOGIN_ADMIN);
       } else {
-        Get.offAllNamed(Routes.INTRODUCTION);
+        Get.offAllNamed(Routes.LOGIN_ADMIN);
+      }
+    } else {
+      // Mobile App Flavor: Redirect to App screens
+      if (isAuthenticated) {
+        if (Get.isRegistered<GlobalController>()) {
+          Get.find<GlobalController>().initUserData();
+        }
+        Get.offAllNamed(Routes.LANDING);
+      } else {
+        if (AppMethod.hasSeenIntroduction()) {
+          Get.offAllNamed(Routes.SIGN_IN);
+        } else {
+          Get.offAllNamed(Routes.INTRODUCTION);
+        }
       }
     }
   }

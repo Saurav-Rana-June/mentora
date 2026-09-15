@@ -55,11 +55,11 @@ class AuthService {
   }
 
   /// Change password for authenticated user
-  static Future<ApiResponse<void>?> changePassword({
+  static Future<ApiResponse<dynamic>?> changePassword({
     required String oldPassword,
     required String newPassword,
   }) async {
-    return client.request<ApiResponse<void>>(
+    return client.request<ApiResponse<dynamic>>(
       (dio) => dio.post(
         'users/change-password',
         data: {
@@ -69,25 +69,25 @@ class AuthService {
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<void>.fromJson(
+        return ApiResponse<dynamic>.fromJson(
           json as Map<String, dynamic>,
-          (_) => null,
+          (data) => data,
         );
       },
     );
   }
 
   /// Log out the user
-  static Future<ApiResponse<void>?> logout() async {
-    return client.request<ApiResponse<void>>(
+  static Future<ApiResponse<dynamic>?> logout() async {
+    return client.request<ApiResponse<dynamic>>(
       (dio) => dio.post(
         'users/logout',
       ),
       withAccessToken: true,
       parser: (json) {
-        return ApiResponse<void>.fromJson(
+        return ApiResponse<dynamic>.fromJson(
           json as Map<String, dynamic>,
-          (_) => null,
+          (data) => data,
         );
       },
     );
@@ -104,6 +104,68 @@ class AuthService {
         return ApiResponse<UserModel>.fromJson(
           json as Map<String, dynamic>,
           (data) => UserModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Log in an admin user for Mentora CMS
+  static Future<ApiResponse<TokenResponseModel>?> adminLogin({
+    required String email,
+    required String password,
+  }) async {
+    return client.request<ApiResponse<TokenResponseModel>>(
+      (dio) => dio.post(
+        'admin/login',
+        data: {
+          'email': email,
+          'password': password,
+        },
+      ),
+      withAccessToken: false,
+      parser: (json) {
+        return ApiResponse<TokenResponseModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => TokenResponseModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Change password for authenticated admin
+  static Future<ApiResponse<dynamic>?> adminChangePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    return client.request<ApiResponse<dynamic>>(
+      (dio) => dio.post(
+        'admin/change-password',
+        data: {
+          'old_password': oldPassword,
+          'new_password': newPassword,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => data,
+        );
+      },
+    );
+  }
+
+  /// Log out the admin user
+  static Future<ApiResponse<dynamic>?> adminLogout() async {
+    return client.request<ApiResponse<dynamic>>(
+      (dio) => dio.post(
+        'admin/logout',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<dynamic>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => data,
         );
       },
     );

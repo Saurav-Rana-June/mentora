@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import 'package:Mentora/apps/app_flavor.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/navigation/navigation.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
@@ -16,6 +17,8 @@ class MentoraCmsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppFlavor.current = AppFlavor.cms;
+
     return ScreenUtilInit(
       designSize: const Size(1440, 900),
       minTextAdapt: true,

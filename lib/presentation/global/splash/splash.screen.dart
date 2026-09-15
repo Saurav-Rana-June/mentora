@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/apps/app_flavor.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'controllers/splash.controller.dart';
@@ -27,6 +27,8 @@ class SplashScreen extends GetView<SplashController> {
       ),
     );
 
+    final bool isCms = AppFlavor.current.isCms;
+
     return CustomScreenWrapper(
       body: Center(
         child: Container(
@@ -48,14 +50,14 @@ class SplashScreen extends GetView<SplashController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mentora',
+                      isCms ? 'Mentora CMS' : 'Mentora',
                       style: h1.copyWith(
                         height: 1,
                         color: Theme.of(context).textTheme.headlineLarge?.color,
                       ),
                     ),
                     Text(
-                      'Your Wellness App',
+                      isCms ? 'Admin Portal' : 'Your Wellness App',
                       style: r14.copyWith(
                         height: 1,
                         color: Theme.of(context).textTheme.bodySmall?.color,

@@ -17,9 +17,11 @@ void main({AppFlavor? flavor, Widget? appWidget}) async {
   await GetStorage.init();
 
   final resolvedFlavor = flavor ?? _detectFlavor();
+  AppFlavor.current = resolvedFlavor;
   final initialRoute = await Routes.initialRoute;
 
-  final Widget app = appWidget ?? _buildAppForFlavor(resolvedFlavor, initialRoute);
+  final Widget app =
+      appWidget ?? _buildAppForFlavor(resolvedFlavor, initialRoute);
 
   runApp(app);
 }

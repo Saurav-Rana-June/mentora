@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:Mentora/infrastructure/navigation/bindings/controllers/splash.controller.binding.dart';
-
 import '../../presentation/screens.dart';
 import '../environment/environment.dart';
 import 'bindings/controllers/controllers_bindings.dart';
-import 'bindings/controllers/home.controller.binding.dart';
 import 'routes.dart';
 
 class EnvironmentsBadge extends StatelessWidget {
@@ -152,6 +149,11 @@ class Nav {
     GetPage(
       name: Routes.BOOKING_CONFIRMATION,
       page: () => const BookingConfirmationScreen(),
+    ),
+    GetPage(
+      name: Routes.LOGIN_ADMIN,
+      page: () => LoginAdminScreen(),
+      binding: LoginAdminControllerBinding(),
     ),
   ];
 }

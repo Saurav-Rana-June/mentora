@@ -1,4 +1,6 @@
+import 'package:Mentora/apps/app_flavor.dart';
 import 'package:Mentora/data/enums/date_filter_enum.dart';
+import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/model/daily_mood_assessment.model.dart';
 import 'package:Mentora/data/model/paginated_daily_mood_assessments.model.dart';
 import 'package:Mentora/infrastructure/dal/services/assessment_service.dart';
@@ -47,16 +49,30 @@ class GlobalController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchUserProfile();
+    final token = AppMethod.getUserToken();
+    if (AppFlavor.current.isApp && token != null && token.isNotEmpty) {
+      initUserData();
+    }
+  }
 
-    Future.wait([
-      fetchMoodHistory(),
-      fetchMoodTrackerStats(),
-      fetchFeaturedMeditations(),
-    ]);
+  void initUserData() {
+    final token = AppMethod.getUserToken();
+    if (token == null || token.isEmpty) return;
+
+    fetchUserProfile();
+    if (AppFlavor.current.isApp) {
+      Future.wait([
+        fetchMoodHistory(),
+        fetchMoodTrackerStats(),
+        fetchFeaturedMeditations(),
+      ]);
+    }
   }
 
   Future<void> fetchUserProfile() async {
+    final token = AppMethod.getUserToken();
+    if (token == null || token.isEmpty) return;
+
     try {
       isLoadingProfile.value = true;
       final response = await ProfileService.getProfile();
@@ -71,6 +87,9 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchMoodHistory({bool forceRefresh = false}) async {
+    final token = AppMethod.getUserToken();
+    if (token == null || token.isEmpty) return;
+
     final String moodHistoryCacheKey = StorageKeys.globalMoodHistory(
       selectedDateFilter.value.name,
     );
@@ -339,6 +358,9 @@ class GlobalController extends GetxController {
     String? toDate,
     bool forceRefresh = false,
   }) async {
+    final token = AppMethod.getUserToken();
+    if (token == null || token.isEmpty) return;
+
     if (_isFetchingHistory) return;
     final String actualFilter = dateFilter ?? "thisWeek";
     final String suffix = fromDate != null || toDate != null
@@ -422,6 +444,9 @@ class GlobalController extends GetxController {
   }
 
   Future<void> fetchFeaturedMeditations({bool forceRefresh = false}) async {
+    final token = AppMethod.getUserToken();
+    if (token == null || token.isEmpty) return;
+
     if (forceRefresh) {
       await StorageUtils.remove(_featuredMeditationsCacheKey);
       await StorageUtils.remove(_featuredMeditationsLastUpdatedKey);

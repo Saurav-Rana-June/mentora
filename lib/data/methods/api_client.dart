@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response, FormData;
 import 'package:logger/logger.dart';
 
 import '../enums/snackbar_enum.dart';
 import '../utils/app_utils.dart';
+import '../../apps/app_flavor.dart';
 import '../../infrastructure/environment/environment.dart';
 import '../../infrastructure/navigation/routes.dart';
 import 'app_method.dart';
@@ -114,12 +114,26 @@ class ApiClient {
     // Handle 401 Unauthorized globally - clear credentials and boot user out
     if (statusCode == 401) {
       AppMethod.clearUserSession();
-      AppUtils.snackbar(
-        'Session Expired',
-        'Please sign in again.',
-        SnackBarType.WARNING,
-      );
-      Get.offAllNamed(Routes.SIGN_IN);
+
+      final currentRoute = Get.currentRoute;
+      final isAuthOrSplashRoute = currentRoute == Routes.SPLASH ||
+          currentRoute == Routes.SIGN_IN ||
+          currentRoute == Routes.LOGIN_ADMIN ||
+          currentRoute == Routes.INTRODUCTION ||
+          currentRoute.isEmpty;
+
+      if (!isAuthOrSplashRoute) {
+        AppUtils.snackbar(
+          'Session Expired',
+          'Please sign in again.',
+          SnackBarType.WARNING,
+        );
+        if (AppFlavor.current.isCms) {
+          Get.offAllNamed(Routes.LOGIN_ADMIN);
+        } else {
+          Get.offAllNamed(Routes.SIGN_IN);
+        }
+      }
       return;
     }
 
