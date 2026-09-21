@@ -97,4 +97,63 @@ class VideoSessionService {
       },
     );
   }
+
+  // ---------------- ADMIN CMS ENDPOINTS ---------------- //
+
+  /// Create a new video session (Admin CMS)
+  static Future<ApiResponse<VideoSessionModel>?> createVideoSession(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<VideoSessionModel>>(
+      (dio) => dio.post(
+        'admin/video_session',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<VideoSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => VideoSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update an existing video session (Admin CMS)
+  static Future<ApiResponse<VideoSessionModel>?> updateVideoSession(
+    int videoSessionId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<VideoSessionModel>>(
+      (dio) => dio.put(
+        'admin/video_session/$videoSessionId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<VideoSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => VideoSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a video session (Admin CMS)
+  static Future<ApiResponse<VideoSessionModel>?> deleteVideoSession(
+    int videoSessionId,
+  ) async {
+    return client.request<ApiResponse<VideoSessionModel>>(
+      (dio) => dio.delete(
+        'admin/video_session/$videoSessionId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<VideoSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => VideoSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

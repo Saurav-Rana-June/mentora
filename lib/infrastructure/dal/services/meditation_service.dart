@@ -135,4 +135,63 @@ class MeditationService {
       },
     );
   }
+
+  // ---------------- ADMIN CMS ENDPOINTS ---------------- //
+
+  /// Create a new meditation session (Admin CMS)
+  static Future<ApiResponse<MeditationSessionModel>?> createMeditation(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<MeditationSessionModel>>(
+      (dio) => dio.post(
+        'admin/meditations',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<MeditationSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => MeditationSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update an existing meditation session (Admin CMS)
+  static Future<ApiResponse<MeditationSessionModel>?> updateMeditation(
+    int meditationId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<MeditationSessionModel>>(
+      (dio) => dio.put(
+        'admin/meditations/$meditationId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<MeditationSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => MeditationSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a meditation session (Admin CMS)
+  static Future<ApiResponse<MeditationSessionModel>?> deleteMeditation(
+    int meditationId,
+  ) async {
+    return client.request<ApiResponse<MeditationSessionModel>>(
+      (dio) => dio.delete(
+        'admin/meditations/$meditationId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<MeditationSessionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => MeditationSessionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

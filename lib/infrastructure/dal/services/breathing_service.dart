@@ -62,4 +62,58 @@ class BreathingService {
       },
     );
   }
+
+  // ---------------- ADMIN CMS ENDPOINTS ---------------- //
+
+  /// Create a new breathing technique preset (Admin CMS)
+  static Future<ApiResponse<BreathingPatternModel>?> createBreathingTechnique(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<BreathingPatternModel>>(
+      (dio) => dio.post('admin/breathing', data: body),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<BreathingPatternModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) =>
+              BreathingPatternModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update an existing breathing technique preset (Admin CMS)
+  static Future<ApiResponse<BreathingPatternModel>?> updateBreathingTechnique(
+    int breathingId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<BreathingPatternModel>>(
+      (dio) => dio.put('admin/breathing/$breathingId', data: body),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<BreathingPatternModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) =>
+              BreathingPatternModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a breathing technique preset (Admin CMS)
+  static Future<ApiResponse<BreathingPatternModel>?> deleteBreathingTechnique(
+    int breathingId,
+  ) async {
+    return client.request<ApiResponse<BreathingPatternModel>>(
+      (dio) => dio.delete('admin/breathing/$breathingId'),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<BreathingPatternModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) =>
+              BreathingPatternModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

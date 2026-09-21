@@ -9,7 +9,7 @@ class DoctorService {
   static final ApiClient client = ApiClient();
 
   /// Retrieve all doctors with optional filters (paginated)
-  static Future<ApiResponse<PaginatedExpertsModel>?> getDoctors({
+  static Future<ApiResponse<PaginatedExpertsModel>> getDoctors({
     String? speciality,
     String? search,
     int? page,
@@ -33,7 +33,7 @@ class DoctorService {
       params['lastUpdated'] = lastUpdated;
     }
 
-    return client.request<ApiResponse<PaginatedExpertsModel>>(
+    final response = await client.request<ApiResponse<PaginatedExpertsModel>>(
       (dio) => dio.get(
         'doctors',
         queryParameters: params,
@@ -46,6 +46,19 @@ class DoctorService {
         );
       },
     );
+
+    return response ??
+        ApiResponse<PaginatedExpertsModel>(
+          status: 500,
+          message: 'Failed to fetch doctors',
+          data: PaginatedExpertsModel(
+            items: [],
+            page: 1,
+            size: 10,
+            totalItems: 0,
+            totalPages: 1,
+          ),
+        );
   }
 
   /// Retrieve details of a single doctor by ID
@@ -62,6 +75,65 @@ class DoctorService {
       (dio) => dio.get(
         'doctors/$doctorId',
         queryParameters: params,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<Expert>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => Expert.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  // ---------------- ADMIN CMS ENDPOINTS ---------------- //
+
+  /// Create a new doctor profile (Admin CMS)
+  static Future<ApiResponse<Expert>?> createDoctor(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<Expert>>(
+      (dio) => dio.post(
+        'admin/doctors',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<Expert>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => Expert.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update an existing doctor profile (Admin CMS)
+  static Future<ApiResponse<Expert>?> updateDoctor(
+    int doctorId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<Expert>>(
+      (dio) => dio.put(
+        'admin/doctors/$doctorId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<Expert>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => Expert.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a doctor profile (Admin CMS)
+  static Future<ApiResponse<Expert>?> deleteDoctor(
+    int doctorId,
+  ) async {
+    return client.request<ApiResponse<Expert>>(
+      (dio) => dio.delete(
+        'admin/doctors/$doctorId',
       ),
       withAccessToken: true,
       parser: (json) {

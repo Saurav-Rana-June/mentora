@@ -110,4 +110,181 @@ class SleepService {
       },
     );
   }
+
+  // ---------------- ADMIN CMS ENDPOINTS: SLEEP SOUNDS ---------------- //
+
+  /// Create a new sleep sound (Admin CMS)
+  static Future<ApiResponse<SoundModel>?> createSleepSound(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<SoundModel>>(
+      (dio) => dio.post(
+        'admin/sleep/sounds',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<SoundModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => SoundModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update a sleep sound (Admin CMS)
+  static Future<ApiResponse<SoundModel>?> updateSleepSound(
+    int soundId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<SoundModel>>(
+      (dio) => dio.put(
+        'admin/sleep/sounds/$soundId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<SoundModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => SoundModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a sleep sound (Admin CMS)
+  static Future<ApiResponse<SoundModel>?> deleteSleepSound(
+    int soundId,
+  ) async {
+    return client.request<ApiResponse<SoundModel>>(
+      (dio) => dio.delete(
+        'admin/sleep/sounds/$soundId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<SoundModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => SoundModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  // ---------------- ADMIN CMS ENDPOINTS: SLEEP MUSIC ---------------- //
+
+  /// Create a new sleep music track (Admin CMS)
+  static Future<ApiResponse<CalmMusicModel>?> createSleepMusic(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<CalmMusicModel>>(
+      (dio) => dio.post(
+        'admin/sleep/music',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<CalmMusicModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => CalmMusicModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update a sleep music track (Admin CMS)
+  static Future<ApiResponse<CalmMusicModel>?> updateSleepMusic(
+    int musicId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<CalmMusicModel>>(
+      (dio) => dio.put(
+        'admin/sleep/music/$musicId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<CalmMusicModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => CalmMusicModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a sleep music track (Admin CMS)
+  static Future<ApiResponse<CalmMusicModel>?> deleteSleepMusic(
+    int musicId,
+  ) async {
+    return client.request<ApiResponse<CalmMusicModel>>(
+      (dio) => dio.delete(
+        'admin/sleep/music/$musicId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<CalmMusicModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => CalmMusicModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  // ---------------- ADMIN CMS ENDPOINTS: SLEEP STORIES ---------------- //
+
+  /// Create a new bedtime story (Admin CMS)
+  static Future<ApiResponse<StoryModel>?> createSleepStory(
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<StoryModel>>(
+      (dio) => dio.post(
+        'admin/sleep/stories',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<StoryModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => StoryModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update a bedtime story (Admin CMS)
+  static Future<ApiResponse<StoryModel>?> updateSleepStory(
+    int storyId,
+    Map<String, dynamic> body,
+  ) async {
+    return client.request<ApiResponse<StoryModel>>(
+      (dio) => dio.put(
+        'admin/sleep/stories/$storyId',
+        data: body,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<StoryModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => StoryModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a bedtime story (Admin CMS)
+  static Future<ApiResponse<StoryModel>?> deleteSleepStory(
+    int storyId,
+  ) async {
+    return client.request<ApiResponse<StoryModel>>(
+      (dio) => dio.delete(
+        'admin/sleep/stories/$storyId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<StoryModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => StoryModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

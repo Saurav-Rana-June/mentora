@@ -134,4 +134,67 @@ class JournalingService {
       },
     );
   }
+
+  // ---------------- ADMIN CMS ENDPOINTS: PRESET QUESTIONS ---------------- //
+
+  /// Create a new preset journal question (Admin CMS)
+  static Future<ApiResponse<JournalQuestionModel>?> createPresetQuestion(
+    String questionText,
+  ) async {
+    return client.request<ApiResponse<JournalQuestionModel>>(
+      (dio) => dio.post(
+        'admin/journaling/questions',
+        data: {
+          'questionText': questionText,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<JournalQuestionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => JournalQuestionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Update an existing preset journal question (Admin CMS)
+  static Future<ApiResponse<JournalQuestionModel>?> updatePresetQuestion(
+    int questionId,
+    String questionText,
+  ) async {
+    return client.request<ApiResponse<JournalQuestionModel>>(
+      (dio) => dio.put(
+        'admin/journaling/questions/$questionId',
+        data: {
+          'questionText': questionText,
+        },
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<JournalQuestionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => JournalQuestionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
+  /// Delete a preset journal question (Admin CMS)
+  static Future<ApiResponse<JournalQuestionModel>?> deletePresetQuestion(
+    int questionId,
+  ) async {
+    return client.request<ApiResponse<JournalQuestionModel>>(
+      (dio) => dio.delete(
+        'admin/journaling/questions/$questionId',
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<JournalQuestionModel>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => JournalQuestionModel.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }
