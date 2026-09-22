@@ -103,11 +103,13 @@ class AdminSectionHeader extends StatelessWidget {
         Spacing.s16.h,
         // Search bar & filters
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (onSearchChanged != null)
               Expanded(
                 child: Container(
                   height: 44.h,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF242522) : white,
                     borderRadius: BorderRadius.circular(10.r),
@@ -119,10 +121,12 @@ class AdminSectionHeader extends StatelessWidget {
                   ),
                   child: TextField(
                     onChanged: onSearchChanged,
+                    textAlignVertical: TextAlignVertical.center,
                     style: r14.copyWith(
                       color: theme.textTheme.bodyLarge?.color,
                     ),
                     decoration: InputDecoration(
+                      isDense: true,
                       hintText: searchHint,
                       hintStyle: r14.copyWith(color: slate[400]),
                       prefixIcon: Icon(

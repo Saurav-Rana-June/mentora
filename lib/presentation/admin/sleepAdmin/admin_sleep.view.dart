@@ -11,6 +11,7 @@ import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_sleep.controller.dart';
 import 'views/admin_music_form.dialog.dart';
 import 'views/admin_sound_form.dialog.dart';
@@ -162,12 +163,18 @@ class _AdminSleepViewState extends State<AdminSleepView>
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
-              );
+              final tab = controller.activeTab.value;
+              if (tab == 0) {
+                return const AdminGridSkeleton(
+                  childAspectRatio: 1.6,
+                  cardType: AdminSkeletonCardType.emoji,
+                );
+              } else {
+                return const AdminGridSkeleton(
+                  childAspectRatio: 1.35,
+                  cardType: AdminSkeletonCardType.standard,
+                );
+              }
             }
 
             final tab = controller.activeTab.value;
@@ -205,7 +212,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 16.w,
             mainAxisSpacing: 16.h,
-            childAspectRatio: 1.8,
+            childAspectRatio: 1.6,
           ),
           itemCount: controller.sounds.length,
           itemBuilder: (context, index) {
@@ -223,6 +230,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
     AdminSleepController controller,
   ) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return CustomPrimaryCard(
       child: Padding(
@@ -231,18 +239,24 @@ class _AdminSleepViewState extends State<AdminSleepView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 52.w,
+                  height: 52.w,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
                   ),
                   child: Center(
                     child: Text(
                       sound.emoji ?? '🌧️',
-                      style: TextStyle(fontSize: 22.spMin),
+                      style: TextStyle(fontSize: 24.spMin),
                     ),
                   ),
                 ),
@@ -251,6 +265,24 @@ class _AdminSleepViewState extends State<AdminSleepView>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 3.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          sound.category ?? 'Nature',
+                          style: r10.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Spacing.s4.h,
                       Text(
                         sound.title ?? 'Ambient Sound',
                         style: r14.copyWith(
@@ -260,10 +292,27 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Spacing.s4.h,
-                      Text(
-                        sound.category ?? 'All',
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.graphic_eq_rounded,
+                            size: 13.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Expanded(
+                            child: Text(
+                              sound.audioUrl?.split('/').last ?? 'Looping audio',
+                              style: r10.copyWith(
+                                color: isDark ? slate[400] : slate[500],
+                                fontFamily: 'monospace',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -271,31 +320,78 @@ class _AdminSleepViewState extends State<AdminSleepView>
               ],
             ),
             const Spacer(),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
+            Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${sound.id ?? 0}',
-                  style: r10.copyWith(color: slate[400], fontFamily: 'monospace'),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${sound.id ?? 0}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Sound',
-                      onPressed: () => AdminSoundFormDialog.show(
-                        context: context,
-                        sound: sound,
+                    Tooltip(
+                      message: 'Edit Sound',
+                      child: InkWell(
+                        onTap: () => AdminSoundFormDialog.show(
+                          context: context,
+                          sound: sound,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Delete Sound',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Sound',
-                        itemName: sound.title ?? 'Sound',
-                        onConfirm: () => controller.deleteSound(sound.id ?? 0),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Delete Sound',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Sound',
+                          itemName: sound.title ?? 'Sound',
+                          onConfirm: () => controller.deleteSound(sound.id ?? 0),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -329,7 +425,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 16.w,
             mainAxisSpacing: 16.h,
-            childAspectRatio: 1.4,
+            childAspectRatio: 1.35,
           ),
           itemCount: controller.musicList.length,
           itemBuilder: (context, index) {
@@ -347,6 +443,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
     AdminSleepController controller,
   ) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return CustomPrimaryCard(
       child: Padding(
@@ -355,19 +452,34 @@ class _AdminSleepViewState extends State<AdminSleepView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Image.network(
-                    item.imageUrl ?? '',
-                    width: 52.w,
-                    height: 52.w,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 52.w,
-                      height: 52.w,
-                      color: primary.withValues(alpha: 0.15),
-                      child: const Center(child: Text('🎵', style: TextStyle(fontSize: 20))),
+                Container(
+                  width: 56.w,
+                  height: 56.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11.r),
+                    child: Image.network(
+                      item.imageUrl ?? '',
+                      width: 56.w,
+                      height: 56.w,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 56.w,
+                        height: 56.w,
+                        color: primary.withValues(alpha: 0.15),
+                        child: const Center(
+                          child: Text('🎵', style: TextStyle(fontSize: 22)),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -376,6 +488,24 @@ class _AdminSleepViewState extends State<AdminSleepView>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 3.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          item.category ?? 'Calm Music',
+                          style: r10.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Spacing.s4.h,
                       Text(
                         item.title ?? 'Music Track',
                         style: r14.copyWith(
@@ -385,50 +515,114 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Spacing.s4.h,
-                      Text(
-                        '${item.category ?? 'Music'} • ${item.duration ?? '10 min'}',
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            item.duration ?? '10 min',
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Spacing.s8.h,
+            SizedBox(height: 10.h),
             Expanded(
               child: Text(
                 item.description ?? '',
-                style: r12.copyWith(color: theme.textTheme.bodyMedium?.color),
+                style: r12.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                  height: 1.35,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
+            Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${item.id ?? 0}',
-                  style: r10.copyWith(color: slate[400], fontFamily: 'monospace'),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${item.id ?? 0}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Music',
-                      onPressed: () => AdminMusicFormDialog.show(
-                        context: context,
-                        music: item,
+                    Tooltip(
+                      message: 'Edit Music',
+                      child: InkWell(
+                        onTap: () => AdminMusicFormDialog.show(
+                          context: context,
+                          music: item,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Delete Music',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Music Track',
-                        itemName: item.title ?? 'Track',
-                        onConfirm: () => controller.deleteMusic(item.id ?? 0),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Delete Music',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Music Track',
+                          itemName: item.title ?? 'Track',
+                          onConfirm: () => controller.deleteMusic(item.id ?? 0),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -462,7 +656,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 16.w,
             mainAxisSpacing: 16.h,
-            childAspectRatio: 1.4,
+            childAspectRatio: 1.35,
           ),
           itemCount: controller.stories.length,
           itemBuilder: (context, index) {
@@ -480,6 +674,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
     AdminSleepController controller,
   ) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return CustomPrimaryCard(
       child: Padding(
@@ -488,19 +683,34 @@ class _AdminSleepViewState extends State<AdminSleepView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Image.network(
-                    story.imageUrl ?? '',
-                    width: 52.w,
-                    height: 52.w,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 52.w,
-                      height: 52.w,
-                      color: primary.withValues(alpha: 0.15),
-                      child: const Center(child: Text('📖', style: TextStyle(fontSize: 20))),
+                Container(
+                  width: 56.w,
+                  height: 56.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11.r),
+                    child: Image.network(
+                      story.imageUrl ?? '',
+                      width: 56.w,
+                      height: 56.w,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 56.w,
+                        height: 56.w,
+                        color: primary.withValues(alpha: 0.15),
+                        child: const Center(
+                          child: Text('📖', style: TextStyle(fontSize: 22)),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -509,6 +719,24 @@ class _AdminSleepViewState extends State<AdminSleepView>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 3.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          story.category ?? 'Bedtime Story',
+                          style: r10.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Spacing.s4.h,
                       Text(
                         story.title ?? 'Bedtime Story',
                         style: r14.copyWith(
@@ -518,50 +746,114 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Spacing.s4.h,
-                      Text(
-                        '${story.category ?? 'Story'} • ${story.duration ?? '15 min'}',
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            story.duration ?? '15 min',
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Spacing.s8.h,
+            SizedBox(height: 10.h),
             Expanded(
               child: Text(
                 story.description ?? '',
-                style: r12.copyWith(color: theme.textTheme.bodyMedium?.color),
+                style: r12.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                  height: 1.35,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
+            Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${story.id ?? 0}',
-                  style: r10.copyWith(color: slate[400], fontFamily: 'monospace'),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${story.id ?? 0}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Story',
-                      onPressed: () => AdminStoryFormDialog.show(
-                        context: context,
-                        story: story,
+                    Tooltip(
+                      message: 'Edit Story',
+                      child: InkWell(
+                        onTap: () => AdminStoryFormDialog.show(
+                          context: context,
+                          story: story,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Delete Story',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Story',
-                        itemName: story.title ?? 'Story',
-                        onConfirm: () => controller.deleteStory(story.id ?? 0),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Delete Story',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Story',
+                          itemName: story.title ?? 'Story',
+                          onConfirm: () => controller.deleteStory(story.id ?? 0),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],

@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_video_session.controller.dart';
 import 'views/admin_video_session_form.dialog.dart';
 
@@ -37,6 +38,8 @@ class AdminVideoSessionView extends StatelessWidget {
               onRefresh: controller.fetchSessions,
               filterWidget: controller.categories.length > 1
                   ? Container(
+                      height: 44.h,
+                      alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF242522) : white,
@@ -50,6 +53,9 @@ class AdminVideoSessionView extends StatelessWidget {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: controller.selectedCategory.value,
+                          isDense: true,
+                          alignment: AlignmentDirectional.centerStart,
+                          dropdownColor: isDark ? const Color(0xFF242522) : white,
                           items: controller.categories.map((cat) {
                             return DropdownMenuItem<String>(
                               value: cat,
@@ -57,6 +63,7 @@ class AdminVideoSessionView extends StatelessWidget {
                                 cat,
                                 style: r14.copyWith(
                                   color: theme.textTheme.bodyLarge?.color,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             );
@@ -78,11 +85,9 @@ class AdminVideoSessionView extends StatelessWidget {
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+              return const AdminGridSkeleton(
+                childAspectRatio: 1.35,
+                cardType: AdminSkeletonCardType.standard,
               );
             }
 
@@ -153,34 +158,49 @@ class AdminVideoSessionView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.network(
-                        item.imageUrl,
-                        width: 56.w,
-                        height: 56.w,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: 56.w,
-                          height: 56.w,
-                          color: primary.withValues(alpha: 0.15),
-                          child: Icon(Icons.play_circle_fill_rounded, color: primary, size: 28.spMin),
+                Container(
+                  width: 58.w,
+                  height: 58.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11.r),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          item.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: primary.withValues(alpha: 0.15),
+                            child: Icon(Icons.play_circle_fill_rounded, color: primary, size: 28.spMin),
+                          ),
                         ),
-                      ),
-                      Container(
-                        width: 24.w,
-                        height: 24.w,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
+                        Container(
+                          color: Colors.black.withValues(alpha: 0.25),
                         ),
-                        child: Icon(Icons.play_arrow_rounded, color: white, size: 16.spMin),
-                      ),
-                    ],
+                        Center(
+                          child: Container(
+                            width: 24.w,
+                            height: 24.w,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.55),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.play_arrow_rounded, color: white, size: 16.spMin),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Spacing.s12.w,
@@ -196,7 +216,7 @@ class AdminVideoSessionView extends StatelessWidget {
                         ),
                         child: Text(
                           item.category,
-                          style: r10.copyWith(color: primary, fontWeight: FontWeight.w600),
+                          style: r10.copyWith(color: primary, fontWeight: FontWeight.w700),
                         ),
                       ),
                       Spacing.s4.h,
@@ -209,52 +229,114 @@ class AdminVideoSessionView extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        item.duration,
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            item.duration,
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Spacing.s8.h,
+            SizedBox(height: 10.h),
             Expanded(
               child: Text(
                 item.description,
-                style: r12.copyWith(color: theme.textTheme.bodyMedium?.color, height: 1.3),
+                style: r12.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                  height: 1.35,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Spacing.s8.h,
-            const Divider(height: 1),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
             Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${item.id}',
-                  style: r10.copyWith(color: isDark ? slate[400] : slate[500], fontFamily: 'monospace'),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${item.id}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Video',
-                      onPressed: () => AdminVideoSessionFormDialog.show(
-                        context: context,
-                        session: item,
+                    Tooltip(
+                      message: 'Edit Video Session',
+                      child: InkWell(
+                        onTap: () => AdminVideoSessionFormDialog.show(
+                          context: context,
+                          session: item,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Delete Video',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Video Session',
-                        itemName: item.title,
-                        onConfirm: () => controller.deleteSession(item.id),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Delete Video Session',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Video Session',
+                          itemName: item.title,
+                          onConfirm: () => controller.deleteSession(item.id),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],

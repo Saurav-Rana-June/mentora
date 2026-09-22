@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/theme/theme.dart';
@@ -122,7 +121,7 @@ class _AdminDeleteDialogState extends State<AdminDeleteDialog> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: _isLoading ? null : () => Get.back(result: false),
+                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
                   child: Text(
                     'Cancel',
                     style: r14.copyWith(
@@ -139,9 +138,13 @@ class _AdminDeleteDialogState extends State<AdminDeleteDialog> {
                           setState(() => _isLoading = true);
                           try {
                             await widget.onConfirm();
-                            Get.back(result: true);
+                            if (context.mounted) {
+                              Navigator.of(context, rootNavigator: true).pop(true);
+                            }
                           } catch (_) {
-                            setState(() => _isLoading = false);
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
                           }
                         },
                   style: ElevatedButton.styleFrom(

@@ -98,7 +98,9 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
 
     if (mounted) {
       setState(() => _isLoading = false);
-      if (success) Get.back(result: true);
+      if (success) {
+        Navigator.of(context, rootNavigator: true).pop(true);
+      }
     }
   }
 
@@ -132,7 +134,7 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
                     ),
                   ),
                   IconButton(
-                    onPressed: () => Get.back(),
+                    onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close_rounded),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -202,7 +204,7 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Get.back(),
+                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                     child: Text('Cancel', style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
                   ),
                   Spacing.s12.w,

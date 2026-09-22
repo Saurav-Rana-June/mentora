@@ -102,7 +102,9 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
 
     if (mounted) {
       setState(() => _isLoading = false);
-      if (success) Get.back(result: true);
+      if (success) {
+        Navigator.of(context, rootNavigator: true).pop(true);
+      }
     }
   }
 
@@ -136,7 +138,7 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => Get.back(),
+                    onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close_rounded),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -147,13 +149,11 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTextField(
-                        context,
                         label: 'Title *',
                         controller: _titleController,
-                        hint: 'e.g. Morning Clarity & Focus',
+                        hint: 'e.g. Morning Mindfulness',
                         validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
                       ),
                       Spacing.s12.h,
@@ -161,67 +161,49 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
                         children: [
                           Expanded(
                             child: _buildTextField(
-                              context,
-                              label: 'Category *',
+                              label: 'Category',
                               controller: _categoryController,
-                              hint: 'e.g. Focus, Sleep, Stress Relief',
-                              validator: (v) =>
-                                  v == null || v.isEmpty ? 'Category is required' : null,
+                              hint: 'Mindfulness, Focus, Anxiety',
                             ),
                           ),
                           Spacing.s12.w,
                           Expanded(
                             child: _buildTextField(
-                              context,
                               label: 'Duration *',
                               controller: _durationController,
                               hint: 'e.g. 10 min',
-                              validator: (v) =>
-                                  v == null || v.isEmpty ? 'Duration is required' : null,
+                              validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                             ),
                           ),
                         ],
                       ),
                       Spacing.s12.h,
                       _buildTextField(
-                        context,
-                        label: 'Image URL *',
+                        label: 'Cover Image URL *',
                         controller: _imageUrlController,
                         hint: 'https://...',
-                        validator: (v) =>
-                            v == null || v.isEmpty ? 'Image URL is required' : null,
+                        validator: (v) => v == null || v.isEmpty ? 'Cover image URL required' : null,
                       ),
                       Spacing.s12.h,
                       _buildTextField(
-                        context,
-                        label: 'Soundtrack Audio URL',
+                        label: 'Audio Stream URL *',
                         controller: _soundTrackController,
                         hint: 'https://...',
+                        validator: (v) => v == null || v.isEmpty ? 'Audio stream URL required' : null,
                       ),
                       Spacing.s12.h,
                       _buildTextField(
-                        context,
                         label: 'Description',
                         controller: _descriptionController,
-                        hint: 'Overview description of the session...',
+                        hint: 'Brief session description and guidance steps...',
                         maxLines: 3,
                       ),
                       Spacing.s12.h,
                       SwitchListTile(
                         value: _isFeatured,
                         onChanged: (val) => setState(() => _isFeatured = val),
-                        title: Text(
-                          'Mark as Featured Session',
-                          style: r14.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.textTheme.bodyLarge?.color,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Featured sessions will appear highlighted on the home/explore tabs',
-                          style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-                        ),
-                        activeTrackColor: primary.withValues(alpha: 0.5),
+                        title: Text('Feature on Home Banner', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                        subtitle: Text('Prominently display this session on patient home dashboard', style: r12.copyWith(color: slate[400])),
                         activeThumbColor: primary,
                         contentPadding: EdgeInsets.zero,
                       ),
@@ -234,7 +216,7 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Get.back(),
+                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                     child: Text(
                       'Cancel',
                       style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
@@ -277,8 +259,7 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
     );
   }
 
-  Widget _buildTextField(
-    BuildContext context, {
+  Widget _buildTextField({
     required String label,
     required TextEditingController controller,
     String? hint,

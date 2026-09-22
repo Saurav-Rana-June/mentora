@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_journaling.controller.dart';
 import 'views/admin_journal_form.dialog.dart';
 
@@ -36,12 +37,7 @@ class AdminJournalingView extends StatelessWidget {
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
-              );
+              return const AdminListSkeleton(itemCount: 6);
             }
 
             final list = controller.filteredQuestions;
@@ -100,11 +96,16 @@ class AdminJournalingView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 38.w,
-              height: 38.w,
+              width: 42.w,
+              height: 42.w,
               decoration: BoxDecoration(
                 color: primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : slate[200]!,
+                ),
               ),
               child: Center(
                 child: Text(
@@ -123,18 +124,40 @@ class AdminJournalingView extends StatelessWidget {
                 children: [
                   Text(
                     q.questionText,
-                    style: r16.copyWith(
+                    style: r14.copyWith(
                       fontWeight: FontWeight.w600,
                       color: theme.textTheme.headlineLarge?.color,
                     ),
                   ),
-                  Spacing.s4.h,
-                  Text(
-                    'DB ID: ${q.id} • Created: ${q.createdAt.toLocal().toString().split(' ')[0]}',
-                    style: r10.copyWith(
-                      color: isDark ? slate[400] : slate[500],
-                      fontFamily: 'monospace',
-                    ),
+                  SizedBox(height: 6.h),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF282926) : slate[100],
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        child: Text(
+                          'ID: #${q.id}',
+                          style: r10.copyWith(
+                            color: isDark ? slate[400] : slate[600],
+                            fontFamily: 'monospace',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Icon(Icons.calendar_today_rounded, size: 12.spMin, color: slate[400]),
+                      SizedBox(width: 4.w),
+                      Text(
+                        q.createdAt.toLocal().toString().split(' ')[0],
+                        style: r10.copyWith(
+                          color: isDark ? slate[400] : slate[500],
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -143,22 +166,51 @@ class AdminJournalingView extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: Icon(Icons.edit_outlined, size: 20.spMin, color: primary),
-                  tooltip: 'Edit Prompt',
-                  onPressed: () => AdminJournalQuestionFormDialog.show(
-                    context: context,
-                    question: q,
+                Tooltip(
+                  message: 'Edit Prompt',
+                  child: InkWell(
+                    onTap: () => AdminJournalQuestionFormDialog.show(
+                      context: context,
+                      question: q,
+                    ),
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: Container(
+                      padding: EdgeInsets.all(6.r),
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(
+                        Icons.edit_outlined,
+                        size: 16.spMin,
+                        color: primary,
+                      ),
+                    ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.delete_outline_rounded, size: 20.spMin, color: dangerColor),
-                  tooltip: 'Delete Prompt',
-                  onPressed: () => AdminDeleteDialog.show(
-                    context: context,
-                    title: 'Delete Prompt Question',
-                    itemName: q.questionText,
-                    onConfirm: () => controller.deleteQuestion(q.id),
+                SizedBox(width: 8.w),
+                Tooltip(
+                  message: 'Delete Prompt',
+                  child: InkWell(
+                    onTap: () => AdminDeleteDialog.show(
+                      context: context,
+                      title: 'Delete Prompt Question',
+                      itemName: q.questionText,
+                      onConfirm: () => controller.deleteQuestion(q.id),
+                    ),
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: Container(
+                      padding: EdgeInsets.all(6.r),
+                      decoration: BoxDecoration(
+                        color: dangerColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(
+                        Icons.delete_outline_rounded,
+                        size: 16.spMin,
+                        color: dangerColor,
+                      ),
+                    ),
                   ),
                 ),
               ],

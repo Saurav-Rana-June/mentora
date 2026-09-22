@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_breathing.controller.dart';
 import 'views/admin_breathing_form.dialog.dart';
 
@@ -36,11 +37,10 @@ class AdminBreathingView extends StatelessWidget {
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+              return const AdminGridSkeleton(
+                childAspectRatio: 1.35,
+                cardType: AdminSkeletonCardType.emoji,
+                hasChipsRow: true,
               );
             }
 
@@ -113,11 +113,16 @@ class AdminBreathingView extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 50.w,
+                  height: 50.w,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -141,16 +146,26 @@ class AdminBreathingView extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Spacing.s4.h,
-                      Text(
-                        'Total Cycle: ${item.cycleDuration}s',
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        child: Text(
+                          'Cycle: ${item.cycleDuration}s',
+                          style: r10.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Spacing.s12.h,
+            SizedBox(height: 10.h),
             // Phase chips
             Row(
               children: [
@@ -169,43 +184,85 @@ class AdminBreathingView extends StatelessWidget {
                 item.description ?? '',
                 style: r12.copyWith(
                   color: theme.textTheme.bodyMedium?.color,
-                  height: 1.3,
+                  height: 1.35,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Spacing.s8.h,
-            const Divider(height: 1),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
             Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${item.id ?? 0}',
-                  style: r10.copyWith(
-                    color: isDark ? slate[400] : slate[500],
-                    fontFamily: 'monospace',
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${item.id ?? 0}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Technique',
-                      onPressed: () => AdminBreathingFormDialog.show(
-                        context: context,
-                        pattern: item,
+                    Tooltip(
+                      message: 'Edit Technique',
+                      child: InkWell(
+                        onTap: () => AdminBreathingFormDialog.show(
+                          context: context,
+                          pattern: item,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Delete Technique',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Breathing Technique',
-                        itemName: item.name ?? 'Technique',
-                        onConfirm: () => controller.deletePattern(item.id ?? 0),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Delete Technique',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Breathing Technique',
+                          itemName: item.name ?? 'Technique',
+                          onConfirm: () => controller.deletePattern(item.id ?? 0),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -223,7 +280,7 @@ class AdminBreathingView extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 4.h),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
+          color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(6.r),
         ),
         child: Column(

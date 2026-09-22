@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_meditation.controller.dart';
 import 'views/admin_meditation_form.dialog.dart';
 
@@ -37,7 +38,9 @@ class AdminMeditationsView extends StatelessWidget {
               onRefresh: controller.fetchMeditations,
               filterWidget: controller.categories.length > 1
                   ? Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      height: 44.h,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(horizontal: 14.w),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF242522) : white,
                         borderRadius: BorderRadius.circular(10.r),
@@ -50,6 +53,7 @@ class AdminMeditationsView extends StatelessWidget {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: controller.selectedCategory.value,
+                          isDense: true,
                           items: controller.categories.map((cat) {
                             return DropdownMenuItem<String>(
                               value: cat,
@@ -78,11 +82,9 @@ class AdminMeditationsView extends StatelessWidget {
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+              return const AdminGridSkeleton(
+                childAspectRatio: 1.35,
+                cardType: AdminSkeletonCardType.standard,
               );
             }
 
@@ -101,11 +103,6 @@ class AdminMeditationsView extends StatelessWidget {
                       Text(
                         'No meditations found',
                         style: h3.copyWith(color: slate[500]),
-                      ),
-                      Spacing.s8.h,
-                      Text(
-                        'Click "Add Meditation" to create your first session.',
-                        style: r14.copyWith(color: slate[400]),
                       ),
                     ],
                   ),
@@ -126,7 +123,7 @@ class AdminMeditationsView extends StatelessWidget {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16.w,
                     mainAxisSpacing: 16.h,
-                    childAspectRatio: 1.35,
+                    childAspectRatio: 1.45,
                   ),
                   itemCount: controller.meditations.length,
                   itemBuilder: (context, index) {
@@ -157,25 +154,38 @@ class AdminMeditationsView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Image.network(
-                    item.imageUrl ?? '',
-                    width: 56.w,
-                    height: 56.w,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 56.w,
-                      height: 56.w,
-                      color: primary.withValues(alpha: 0.15),
-                      child: Center(
-                        child: Text(
-                          '\u{f4b8}',
-                          style: TextStyle(
-                            fontFamily: 'FontAwesomeSolid',
-                            fontSize: 22.spMin,
-                            color: primary,
+                Container(
+                  width: 58.w,
+                  height: 58.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11.r),
+                    child: Image.network(
+                      item.imageUrl ?? '',
+                      width: 58.w,
+                      height: 58.w,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 58.w,
+                        height: 58.w,
+                        color: primary.withValues(alpha: 0.15),
+                        child: Center(
+                          child: Text(
+                            '\u{f4b8}',
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 22.spMin,
+                              color: primary,
+                            ),
                           ),
                         ),
                       ),
@@ -202,7 +212,7 @@ class AdminMeditationsView extends StatelessWidget {
                               item.category ?? 'Mindfulness',
                               style: r10.copyWith(
                                 color: primary,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -222,7 +232,7 @@ class AdminMeditationsView extends StatelessWidget {
                                 children: [
                                   Icon(
                                     Icons.star_rounded,
-                                    size: 10.spMin,
+                                    size: 11.spMin,
                                     color: warningColor,
                                   ),
                                   SizedBox(width: 2.w),
@@ -230,7 +240,7 @@ class AdminMeditationsView extends StatelessWidget {
                                     'Featured',
                                     style: r10.copyWith(
                                       color: warningColor,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ],
@@ -249,66 +259,114 @@ class AdminMeditationsView extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        item.duration ?? '10 min',
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            item.duration ?? '10 min',
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            Spacing.s12.h,
+            SizedBox(height: 10.h),
             Expanded(
               child: Text(
                 item.description ?? '',
                 style: r12.copyWith(
                   color: theme.textTheme.bodyMedium?.color,
-                  height: 1.4,
+                  height: 1.35,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Spacing.s8.h,
-            const Divider(height: 1),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
             Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${item.id ?? 0}',
-                  style: r10.copyWith(
-                    color: isDark ? slate[400] : slate[500],
-                    fontFamily: 'monospace',
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF282926) : slate[100],
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'ID: #${item.id ?? 0}',
+                    style: r10.copyWith(
+                      color: isDark ? slate[400] : slate[600],
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.edit_outlined,
-                        size: 18.spMin,
-                        color: primary,
-                      ),
-                      tooltip: 'Edit Meditation',
-                      onPressed: () => AdminMeditationFormDialog.show(
-                        context: context,
-                        meditation: item,
+                    Tooltip(
+                      message: 'Edit Meditation',
+                      child: InkWell(
+                        onTap: () => AdminMeditationFormDialog.show(
+                          context: context,
+                          meditation: item,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.delete_outline_rounded,
-                        size: 18.spMin,
-                        color: dangerColor,
-                      ),
-                      tooltip: 'Delete Meditation',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Delete Meditation',
-                        itemName: item.title ?? 'Session',
-                        onConfirm: () => controller.deleteMeditation(item.id ?? 0),
+                    Spacing.s8.w,
+                    Tooltip(
+                      message: 'Delete Meditation',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Delete Meditation',
+                          itemName: item.title ?? 'Session',
+                          onConfirm: () => controller.deleteMeditation(item.id ?? 0),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],

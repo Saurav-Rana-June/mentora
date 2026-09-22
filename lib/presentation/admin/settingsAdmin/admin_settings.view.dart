@@ -59,7 +59,7 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () => Get.back(),
+                            onPressed: () => Navigator.of(context).pop(),
                             icon: const Icon(Icons.close_rounded),
                           ),
                         ],
@@ -100,7 +100,7 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            onPressed: isSubmitting ? null : () => Get.back(),
+                            onPressed: isSubmitting ? null : () => Navigator.of(context).pop(),
                             child: Text('Cancel', style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
                           ),
                           Spacing.s12.w,
@@ -116,7 +116,9 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
                                         newPassword: newPasswordController.text.trim(),
                                       );
                                       if (res != null) {
-                                        Get.back();
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
                                         AppUtils.snackbar(
                                           'Success',
                                           'Password changed successfully',

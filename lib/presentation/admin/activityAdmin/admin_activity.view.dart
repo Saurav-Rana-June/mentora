@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
+import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_activity.controller.dart';
 import 'views/admin_activity_form.dialog.dart';
 
@@ -36,6 +37,8 @@ class AdminActivityView extends StatelessWidget {
               onAddPressed: () => AdminActivityFormDialog.show(context: context),
               onRefresh: controller.fetchActivities,
               filterWidget: Container(
+                height: 44.h,
+                alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 12.w),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF242522) : white,
@@ -49,6 +52,9 @@ class AdminActivityView extends StatelessWidget {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: controller.selectedCategory.value,
+                    isDense: true,
+                    alignment: AlignmentDirectional.centerStart,
+                    dropdownColor: isDark ? const Color(0xFF242522) : white,
                     items: controller.categories.map((cat) {
                       return DropdownMenuItem<String>(
                         value: cat,
@@ -56,6 +62,7 @@ class AdminActivityView extends StatelessWidget {
                           cat.capitalizeFirst ?? cat,
                           style: r14.copyWith(
                             color: theme.textTheme.bodyLarge?.color,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       );
@@ -76,11 +83,9 @@ class AdminActivityView extends StatelessWidget {
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40.h),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+              return const AdminGridSkeleton(
+                childAspectRatio: 1.35,
+                cardType: AdminSkeletonCardType.emoji,
               );
             }
 
@@ -152,13 +157,19 @@ class AdminActivityView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 50.w,
+                  height: 50.w,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : slate[200]!,
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -199,7 +210,7 @@ class AdminActivityView extends StatelessWidget {
                               ),
                               child: Text(
                                 'Crisis Priority',
-                                style: r10.copyWith(color: dangerColor, fontWeight: FontWeight.w600),
+                                style: r10.copyWith(color: dangerColor, fontWeight: FontWeight.w700),
                               ),
                             ),
                           ],
@@ -215,9 +226,23 @@ class AdminActivityView extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        item.duration,
-                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12.spMin,
+                            color: slate[400],
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            item.duration,
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -249,39 +274,108 @@ class AdminActivityView extends StatelessWidget {
             Expanded(
               child: Text(
                 item.caption,
-                style: r12.copyWith(color: theme.textTheme.bodyMedium?.color, height: 1.3),
+                style: r12.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                  height: 1.35,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Spacing.s8.h,
-            const Divider(height: 1),
+            SizedBox(height: 6.h),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : slate[200]!,
+            ),
             Spacing.s8.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'ID: #${item.id} • ${item.isActive ? 'Active' : 'Archived'}',
-                  style: r10.copyWith(color: isDark ? slate[400] : slate[500], fontFamily: 'monospace'),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF282926) : slate[100],
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        'ID: #${item.id}',
+                        style: r10.copyWith(
+                          color: isDark ? slate[400] : slate[600],
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: item.isActive
+                            ? successColor.withValues(alpha: 0.12)
+                            : slate[300]!.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        item.isActive ? 'Active' : 'Archived',
+                        style: r10.copyWith(
+                          color: item.isActive ? successColor : slate[500],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
-                      tooltip: 'Edit Activity',
-                      onPressed: () => AdminActivityFormDialog.show(
-                        context: context,
-                        activity: item,
+                    Tooltip(
+                      message: 'Edit Activity',
+                      child: InkWell(
+                        onTap: () => AdminActivityFormDialog.show(
+                          context: context,
+                          activity: item,
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 16.spMin,
+                            color: primary,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
-                      tooltip: 'Archive Activity',
-                      onPressed: () => AdminDeleteDialog.show(
-                        context: context,
-                        title: 'Archive Activity',
-                        itemName: item.title,
-                        onConfirm: () => controller.deleteActivity(item.id),
+                    SizedBox(width: 8.w),
+                    Tooltip(
+                      message: 'Archive Activity',
+                      child: InkWell(
+                        onTap: () => AdminDeleteDialog.show(
+                          context: context,
+                          title: 'Archive Activity',
+                          itemName: item.title,
+                          onConfirm: () => controller.deleteActivity(item.id),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: dangerColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            size: 16.spMin,
+                            color: dangerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
