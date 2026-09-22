@@ -8,6 +8,7 @@ import 'package:Mentora/data/model/sound.model.dart';
 import 'package:Mentora/data/model/story.model.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
+import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
 import 'controllers/admin_sleep.controller.dart';
@@ -15,12 +16,54 @@ import 'views/admin_music_form.dialog.dart';
 import 'views/admin_sound_form.dialog.dart';
 import 'views/admin_story_form.dialog.dart';
 
-class AdminSleepView extends StatelessWidget {
+class AdminSleepView extends StatefulWidget {
   const AdminSleepView({super.key});
 
   @override
+  State<AdminSleepView> createState() => _AdminSleepViewState();
+}
+
+class _AdminSleepViewState extends State<AdminSleepView>
+    with SingleTickerProviderStateMixin {
+  late final AdminSleepController controller;
+  late final TabController _tabController;
+  late final Worker _tabWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.isRegistered<AdminSleepController>()
+        ? Get.find<AdminSleepController>()
+        : Get.put(AdminSleepController());
+
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: controller.activeTab.value,
+    );
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        controller.switchTab(_tabController.index);
+      }
+    });
+
+    _tabWorker = ever(controller.activeTab, (int index) {
+      if (_tabController.index != index) {
+        _tabController.animateTo(index);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _tabWorker.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AdminSleepController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -53,41 +96,69 @@ class AdminSleepView extends StatelessWidget {
           ),
           Spacing.s16.h,
           // Segmented Tabs
-          Obx(
-            () => Container(
-              padding: EdgeInsets.all(4.r),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF242522) : const Color(0xFFF1F3EB),
-                borderRadius: BorderRadius.circular(12.r),
+          Obx(() {
+            final segmentTabs = [
+              SegmentTab(
+                label: '🌧️  Ambient Sounds (${controller.sounds.length})',
+                color: primary,
+                selectedTextColor: Colors.white,
+                textColor: isDark ? slate[400] : slate[600],
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTabButton(
-                    context,
-                    title: 'Ambient Sounds (${controller.sounds.length})',
-                    icon: '🌧️',
-                    isSelected: controller.activeTab.value == 0,
-                    onTap: () => controller.switchTab(0),
-                  ),
-                  _buildTabButton(
-                    context,
-                    title: 'Calm Music (${controller.musicList.length})',
-                    icon: '🎵',
-                    isSelected: controller.activeTab.value == 1,
-                    onTap: () => controller.switchTab(1),
-                  ),
-                  _buildTabButton(
-                    context,
-                    title: 'Bedtime Stories (${controller.stories.length})',
-                    icon: '📖',
-                    isSelected: controller.activeTab.value == 2,
-                    onTap: () => controller.switchTab(2),
-                  ),
-                ],
+              SegmentTab(
+                label: '🎵  Calm Music (${controller.musicList.length})',
+                color: primary,
+                selectedTextColor: Colors.white,
+                textColor: isDark ? slate[400] : slate[600],
               ),
-            ),
-          ),
+              SegmentTab(
+                label: '📖  Bedtime Stories (${controller.stories.length})',
+                color: primary,
+                selectedTextColor: Colors.white,
+                textColor: isDark ? slate[400] : slate[600],
+              ),
+            ];
+
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 640.w),
+                child: CustomSegmentedTab(
+                  tabs: segmentTabs,
+                  controller: _tabController,
+                  height: 44.h,
+                  indicatorPadding: EdgeInsets.all(3.r),
+                  textStyle: r14.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? slate[400] : slate[600],
+                  ),
+                  selectedTextStyle: r14.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  barDecoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF242522) : const Color(0xFFF1F3EB),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : slate[200]!,
+                    ),
+                  ),
+                  indicatorDecoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: BorderRadius.circular(9.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primary.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
           Spacing.s20.h,
           Obx(() {
             if (controller.isLoading.value) {
@@ -109,47 +180,6 @@ class AdminSleepView extends StatelessWidget {
             }
           }),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTabButton(
-    BuildContext context, {
-    required String title,
-    required String icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Material(
-      color: isSelected
-          ? (isDark ? const Color(0xFF1E1F1D) : white)
-          : Colors.transparent,
-      borderRadius: BorderRadius.circular(8.r),
-      elevation: isSelected ? 1 : 0,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8.r),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Row(
-            children: [
-              Text(icon, style: TextStyle(fontSize: 14.spMin)),
-              Spacing.s8.w,
-              Text(
-                title,
-                style: r14.copyWith(
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? theme.textTheme.bodyLarge?.color
-                      : theme.textTheme.bodySmall?.color,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

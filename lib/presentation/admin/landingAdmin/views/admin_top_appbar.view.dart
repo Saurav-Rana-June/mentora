@@ -84,27 +84,91 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
                   ],
                 ),
               ),
-              Spacing.s16.w,
-              Container(
-                padding: EdgeInsets.all(8.r),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : slate[200]!,
-                  ),
-                ),
-                child: Icon(
-                  Icons.notifications_none_rounded,
-                  size: 20.spMin,
-                  color: theme.textTheme.bodyMedium?.color,
-                ),
-              ),
+              Spacing.s12.w,
+              buildThemeModeButton(context, isDark),
+              Spacing.s12.w,
+              buildNotificationButton(context, isDark),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildThemeModeButton(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
+
+    return Tooltip(
+      message: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: controller.toggleThemeMode,
+          customBorder: const CircleBorder(),
+          hoverColor: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05),
+          child: Container(
+            padding: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : slate[200]!,
+              ),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                key: ValueKey<bool>(isDark),
+                size: 20.spMin,
+                color: isDark
+                    ? const Color(0xFFFFB800)
+                    : theme.textTheme.bodyMedium?.color,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildNotificationButton(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
+
+    return Tooltip(
+      message: 'Notifications',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          customBorder: const CircleBorder(),
+          hoverColor: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05),
+          child: Container(
+            padding: EdgeInsets.all(8.r),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : slate[200]!,
+              ),
+            ),
+            child: Icon(
+              Icons.notifications_none_rounded,
+              size: 20.spMin,
+              color: theme.textTheme.bodyMedium?.color,
+            ),
+          ),
+        ),
       ),
     );
   }

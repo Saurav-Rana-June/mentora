@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/controllers/global.controller.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/data/methods/app_method.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 
 class AccountController extends GetxController {
@@ -13,7 +14,12 @@ class AccountController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    isDarkMode.value = Get.isDarkMode;
+    final savedTheme = StorageUtils.read<String>(StorageKeys.THEME_MODE);
+    if (savedTheme != null) {
+      isDarkMode.value = savedTheme == 'dark';
+    } else {
+      isDarkMode.value = Get.isDarkMode;
+    }
 
     if (Get.isRegistered<GlobalController>()) {
       final globalController = Get.find<GlobalController>();
@@ -37,6 +43,7 @@ class AccountController extends GetxController {
   void toggleTheme(bool value) {
     isDarkMode.value = value;
     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+    StorageUtils.write(StorageKeys.THEME_MODE, value ? 'dark' : 'light');
   }
 
   Future<void> logout() async {

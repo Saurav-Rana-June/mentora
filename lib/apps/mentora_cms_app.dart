@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import 'package:Mentora/apps/app_flavor.dart';
 import 'package:Mentora/controllers/global.controller.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/navigation/navigation.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
@@ -14,6 +15,13 @@ class MentoraCmsApp extends StatelessWidget {
     super.key,
     required this.initialRoute,
   });
+
+  ThemeMode _getInitialThemeMode() {
+    final saved = StorageUtils.read<String>(StorageKeys.THEME_MODE);
+    if (saved == 'dark') return ThemeMode.dark;
+    if (saved == 'light') return ThemeMode.light;
+    return ThemeMode.system;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class MentoraCmsApp extends StatelessWidget {
           getPages: Nav.routes,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
+          themeMode: _getInitialThemeMode(),
         );
       },
     );

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 
@@ -23,6 +24,7 @@ class LandingAdminController extends GetxController {
   final RxBool isSidebarCollapsed = false.obs;
   final RxBool isLoggingOut = false.obs;
   final RxString adminEmail = ''.obs;
+  final RxBool isDarkMode = false.obs;
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -78,6 +80,19 @@ class LandingAdminController extends GetxController {
   void onInit() {
     super.onInit();
     adminEmail.value = AppMethod.getUserEmail() ?? 'admin@mentora.com';
+    final savedTheme = StorageUtils.read<String>(StorageKeys.THEME_MODE);
+    if (savedTheme != null) {
+      isDarkMode.value = savedTheme == 'dark';
+    } else {
+      isDarkMode.value = Get.isDarkMode;
+    }
+  }
+
+  void toggleThemeMode() {
+    final bool newDark = !Get.isDarkMode;
+    isDarkMode.value = newDark;
+    Get.changeThemeMode(newDark ? ThemeMode.dark : ThemeMode.light);
+    StorageUtils.write(StorageKeys.THEME_MODE, newDark ? 'dark' : 'light');
   }
 
   void changeMenuIndex(int index) {

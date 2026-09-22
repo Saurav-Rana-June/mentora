@@ -24,6 +24,9 @@ class StorageUtils {
 class StorageKeys {
   StorageKeys._();
 
+  // Theme Keys
+  static const String THEME_MODE = 'app_theme_mode';
+
   // Meditation Keys
   static const String MEDITATION_CATEGORIES = 'meditation_categories_filters';
   static const String MEDITATION_CATEGORIES_LAST_UPDATED =
