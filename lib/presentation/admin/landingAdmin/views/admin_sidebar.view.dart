@@ -154,9 +154,11 @@ class AdminSidebarView extends GetView<LandingAdminController> {
       itemCount: controller.menuItems.length,
       itemBuilder: (context, index) {
         final item = controller.menuItems[index];
-        final isSelected = controller.selectedMenuIndex.value == index;
 
-        return buildNavItem(context, item, index, isSelected, isCollapsed);
+        return Obx(() {
+          final isSelected = controller.selectedMenuIndex.value == index;
+          return buildNavItem(context, item, index, isSelected, isCollapsed);
+        });
       },
     );
   }
@@ -177,63 +179,73 @@ class AdminSidebarView extends GetView<LandingAdminController> {
         ? const Color(0xFFA3A3A3)
         : const Color(0xFF525252);
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 6.h),
-      child: Material(
-        color: isSelected ? activeBg : Colors.transparent,
+    Widget navItemWidget = Material(
+      color: isSelected ? activeBg : Colors.transparent,
+      borderRadius: BorderRadius.circular(10.r),
+      child: InkWell(
+        onTap: () => controller.changeMenuIndex(index),
         borderRadius: BorderRadius.circular(10.r),
-        child: InkWell(
-          onTap: () => controller.changeMenuIndex(index),
-          borderRadius: BorderRadius.circular(10.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isCollapsed ? 12.w : 14.w,
-              vertical: 11.h,
-            ),
-            child: Row(
-              mainAxisAlignment: isCollapsed
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.start,
-              children: [
-                Text(
-                  item.icon,
-                  style: TextStyle(
-                    fontFamily: 'FontAwesomeSolid',
-                    fontSize: 16.spMin,
-                    color: isSelected ? activeColor : inactiveColor,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isCollapsed ? 12.w : 14.w,
+            vertical: 11.h,
+          ),
+          child: Row(
+            mainAxisAlignment: isCollapsed
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
+            children: [
+              Text(
+                item.icon,
+                style: TextStyle(
+                  fontFamily: 'FontAwesomeSolid',
+                  fontSize: 16.spMin,
+                  color: isSelected ? activeColor : inactiveColor,
+                ),
+              ),
+              if (!isCollapsed) ...[
+                Spacing.s12.w,
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: r14.copyWith(
+                      color: isSelected
+                          ? (isDark ? white : const Color(0xFF171717))
+                          : inactiveColor,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (!isCollapsed) ...[
-                  Spacing.s12.w,
-                  Expanded(
-                    child: Text(
-                      item.title,
-                      style: r14.copyWith(
-                        color: isSelected
-                            ? (isDark ? white : const Color(0xFF171717))
-                            : inactiveColor,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                if (isSelected)
+                  Container(
+                    width: 6.w,
+                    height: 6.w,
+                    decoration: BoxDecoration(
+                      color: primary,
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  if (isSelected)
-                    Container(
-                      width: 6.w,
-                      height: 6.w,
-                      decoration: BoxDecoration(
-                        color: primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),
+    );
+
+    if (isCollapsed) {
+      navItemWidget = Tooltip(
+        message: item.title,
+        waitDuration: const Duration(milliseconds: 300),
+        child: navItemWidget,
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 6.h),
+      child: navItemWidget,
     );
   }
 

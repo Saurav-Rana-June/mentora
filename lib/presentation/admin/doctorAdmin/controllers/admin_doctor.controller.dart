@@ -105,4 +105,20 @@ class AdminDoctorController extends GetxController {
     }
     return false;
   }
+
+  Future<String?> uploadAvatar(String filePath, String fileName) async {
+    try {
+      final res = await DoctorService.uploadDoctorAvatar(
+        filePath: filePath,
+        fileName: fileName,
+      );
+      if (res?.data != null && res!.data!.isNotEmpty) {
+        return res.data;
+      }
+      return null;
+    } catch (e) {
+      Get.log('Error uploading doctor avatar: $e');
+      return null;
+    }
+  }
 }

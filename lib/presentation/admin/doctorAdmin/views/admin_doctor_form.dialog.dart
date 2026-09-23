@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/model/expert.model.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
+import 'package:Mentora/widgets/bottomsheets/change_profile_picture.bottomsheet.dart';
+import 'package:Mentora/widgets/others/custom.avatar.dart';
 import '../controllers/admin_doctor.controller.dart';
 
 class AdminDoctorFormDialog extends StatefulWidget {
@@ -45,6 +51,8 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
   bool _videoCallFeature = true;
   bool _isAvailable = true;
   bool _isLoading = false;
+  bool _isUploadingImage = false;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -85,6 +93,101 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     _specialtiesController.dispose();
     _bioController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+
+      final CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Doctor Picture',
+            toolbarColor: primary,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            aspectRatioPresets: [CropAspectRatioPreset.square],
+          ),
+          IOSUiSettings(
+            title: 'Crop Doctor Picture',
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+            aspectRatioPresets: [CropAspectRatioPreset.square],
+          ),
+        ],
+      );
+      if (croppedFile == null) return;
+
+      if (mounted) setState(() => _isUploadingImage = true);
+
+      final String fileName =
+          croppedFile.path.replaceAll(r'\', '/').split('/').last;
+      final uploadedUrl =
+          await _controller.uploadAvatar(croppedFile.path, fileName);
+
+      if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+        if (mounted) {
+          setState(() {
+            _imageController.text = uploadedUrl;
+          });
+        }
+        AppUtils.snackbar(
+          'Success',
+          'Doctor profile photo uploaded',
+          SnackBarType.SUCCESS,
+        );
+      } else {
+        AppUtils.snackbar(
+          'Error',
+          'Failed to upload doctor photo',
+          SnackBarType.ERROR,
+        );
+      }
+    } catch (e) {
+      Get.log('Error in _pickAndUploadImage: $e');
+      AppUtils.snackbar(
+        'Error',
+        'Failed to pick or upload image',
+        SnackBarType.ERROR,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUploadingImage = false);
+      }
+    }
+  }
+
+  void _deleteImage() {
+    setState(() {
+      _imageController.text = '';
+    });
+    AppUtils.snackbar(
+      'Success',
+      'Doctor photo removed',
+      SnackBarType.SUCCESS,
+    );
+  }
+
+  void _showImagePickerOptions(BuildContext context) {
+    final hasPhoto = _imageController.text.trim().isNotEmpty;
+
+    Get.bottomSheet(
+      ChangeProfilePictureBottomsheet(
+        onTakePhoto: () => _pickAndUploadImage(ImageSource.camera),
+        onChooseFromGallery: () => _pickAndUploadImage(ImageSource.gallery),
+        showRemoveOption: hasPhoto,
+        onRemovePhoto: _deleteImage,
+      ),
+      isScrollControlled: true,
+    );
   }
 
   Future<void> _submit() async {
@@ -170,6 +273,8 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      buildAvatarPicker(context),
+                      Spacing.s16.h,
                       Row(
                         children: [
                           Expanded(
@@ -178,6 +283,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                               controller: _nameController,
                               hint: 'e.g. Dr. William Butcher',
                               validator: (v) => v == null || v.isEmpty ? 'Name required' : null,
+                              onChanged: (_) => setState(() {}),
                             ),
                           ),
                           Spacing.s12.w,
@@ -195,8 +301,20 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                       _buildTextField(
                         label: 'Avatar / Profile Image URL *',
                         controller: _imageController,
-                        hint: 'https://...',
+                        hint: 'https://... or upload using camera icon',
                         validator: (v) => v == null || v.isEmpty ? 'Image URL required' : null,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.add_a_photo_rounded,
+                            color: primary,
+                            size: 20.spMin,
+                          ),
+                          tooltip: 'Upload photo from camera/gallery',
+                          onPressed: _isUploadingImage
+                              ? null
+                              : () => _showImagePickerOptions(context),
+                        ),
+                        onChanged: (_) => setState(() {}),
                       ),
                       Spacing.s12.h,
                       Row(
@@ -286,12 +404,14 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                    onPressed: _isLoading || _isUploadingImage
+                        ? null
+                        : () => Navigator.of(context).pop(),
                     child: Text('Cancel', style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
                   ),
                   Spacing.s12.w,
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
+                    onPressed: _isLoading || _isUploadingImage ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary,
                       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
@@ -302,7 +422,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                         ? SizedBox(
                             width: 18.w,
                             height: 18.w,
-                            child: CircularProgressIndicator(
+                            child: const CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
@@ -321,6 +441,97 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     );
   }
 
+  Widget buildAvatarPicker(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final imageUrl = _imageController.text.trim();
+
+    return Center(
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: primary, width: 2),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CustomAvatar(
+                      radius: 46.r,
+                      imageUrl: imageUrl.isNotEmpty ? imageUrl : null,
+                      name: _nameController.text.isNotEmpty
+                          ? _nameController.text
+                          : 'Dr.',
+                    ),
+                    if (_isUploadingImage)
+                      Container(
+                        width: 92.r,
+                        height: 92.r,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: _isUploadingImage
+                    ? null
+                    : () => _showImagePickerOptions(context),
+                child: Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF1E1F1D) : Colors.white,
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.15),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.photo_camera_rounded,
+                    size: 16.spMin,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Spacing.s8.h,
+          Text(
+            _isUploadingImage
+                ? 'Uploading photo...'
+                : 'Click photo or camera icon to upload',
+            style: r12.copyWith(
+              color: _isUploadingImage ? primary : theme.textTheme.bodySmall?.color,
+              fontWeight: _isUploadingImage ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -328,6 +539,8 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    Widget? suffixIcon,
+    void Function(String)? onChanged,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -345,6 +558,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
           maxLines: maxLines,
           keyboardType: keyboardType,
           validator: validator,
+          onChanged: onChanged,
           style: r14.copyWith(color: theme.textTheme.bodyLarge?.color),
           decoration: InputDecoration(
             hintText: hint,
@@ -352,6 +566,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
             filled: true,
             fillColor: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
             contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            suffixIcon: suffixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
               borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : slate[300]!),

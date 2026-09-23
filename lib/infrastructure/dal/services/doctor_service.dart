@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import '../../../../data/methods/api_client.dart';
 import '../../../../data/model/api_response.dart';
 import '../../../../data/model/expert.model.dart';
@@ -143,5 +145,62 @@ class DoctorService {
         );
       },
     );
+  }
+
+  /// Upload doctor avatar image (Admin CMS)
+  static Future<ApiResponse<String>?> uploadDoctorAvatar({
+    required String filePath,
+    required String fileName,
+  }) async {
+    final safeName = fileName.isEmpty ? 'doctor.jpg' : fileName;
+    final formData = FormData.fromMap({
+      'data': MultipartFile.fromFileSync(
+        filePath,
+        filename: safeName,
+        contentType: _mediaTypeForImagePath(filePath),
+      ),
+    });
+
+    return client.request<ApiResponse<String>>(
+      (dio) => dio.post(
+        'admin/doctors/upload-avatar',
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<String>.fromJson(
+          json as Map<String, dynamic>,
+          (data) {
+            if (data is Map && data.containsKey('url')) {
+              return data['url'].toString();
+            }
+            return data.toString();
+          },
+        );
+      },
+    );
+  }
+
+  static MediaType _mediaTypeForImagePath(String path) {
+    final ext = path
+        .replaceAll(r'\', '/')
+        .split('/')
+        .last
+        .split('.')
+        .last
+        .toLowerCase();
+    switch (ext) {
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'gif':
+        return MediaType('image', 'gif');
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return MediaType('image', 'jpeg');
+    }
   }
 }
