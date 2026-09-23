@@ -149,16 +149,32 @@ class DoctorService {
 
   /// Upload doctor avatar image (Admin CMS)
   static Future<ApiResponse<String>?> uploadDoctorAvatar({
-    required String filePath,
+    List<int>? bytes,
+    String? filePath,
     required String fileName,
   }) async {
     final safeName = fileName.isEmpty ? 'doctor.jpg' : fileName;
-    final formData = FormData.fromMap({
-      'data': MultipartFile.fromFileSync(
+    final mediaType = _mediaTypeForImagePath(safeName);
+
+    final MultipartFile multipartFile;
+    if (bytes != null) {
+      multipartFile = MultipartFile.fromBytes(
+        bytes,
+        filename: safeName,
+        contentType: mediaType,
+      );
+    } else if (filePath != null) {
+      multipartFile = MultipartFile.fromFileSync(
         filePath,
         filename: safeName,
-        contentType: _mediaTypeForImagePath(filePath),
-      ),
+        contentType: mediaType,
+      );
+    } else {
+      throw ArgumentError('Either bytes or filePath must be provided');
+    }
+
+    final formData = FormData.fromMap({
+      'data': multipartFile,
     });
 
     return client.request<ApiResponse<String>>(

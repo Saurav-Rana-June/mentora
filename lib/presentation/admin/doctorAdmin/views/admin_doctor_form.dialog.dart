@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -95,43 +96,66 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     super.dispose();
   }
 
-  Future<void> _pickAndUploadImage(ImageSource source) async {
+  Future<void> _pickAndUploadImage({ImageSource source = ImageSource.gallery}) async {
     try {
       final XFile? image = await _picker.pickImage(
         source: source,
-        maxWidth: 512,
-        maxHeight: 512,
+        maxWidth: 1024,
+        maxHeight: 1024,
         imageQuality: 85,
       );
       if (image == null) return;
 
-      final CroppedFile? croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Doctor Picture',
-            toolbarColor: primary,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-            aspectRatioPresets: [CropAspectRatioPreset.square],
-          ),
-          IOSUiSettings(
-            title: 'Crop Doctor Picture',
-            aspectRatioLockEnabled: true,
-            resetAspectRatioEnabled: false,
-            aspectRatioPresets: [CropAspectRatioPreset.square],
-          ),
-        ],
-      );
-      if (croppedFile == null) return;
-
       if (mounted) setState(() => _isUploadingImage = true);
 
-      final String fileName =
-          croppedFile.path.replaceAll(r'\', '/').split('/').last;
-      final uploadedUrl =
-          await _controller.uploadAvatar(croppedFile.path, fileName);
+      Uint8List? fileBytes;
+      String fileName = image.name.isNotEmpty ? image.name : 'doctor.jpg';
+
+      if (!kIsWeb) {
+        try {
+          final CroppedFile? croppedFile = await ImageCropper().cropImage(
+            sourcePath: image.path,
+            uiSettings: [
+              AndroidUiSettings(
+                toolbarTitle: 'Crop Doctor Picture',
+                toolbarColor: primary,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.square,
+                lockAspectRatio: true,
+                aspectRatioPresets: [CropAspectRatioPreset.square],
+              ),
+              IOSUiSettings(
+                title: 'Crop Doctor Picture',
+                aspectRatioLockEnabled: true,
+                resetAspectRatioEnabled: false,
+                aspectRatioPresets: [CropAspectRatioPreset.square],
+              ),
+            ],
+          );
+          if (croppedFile != null) {
+            fileBytes = await croppedFile.readAsBytes();
+            fileName = croppedFile.path.replaceAll(r'\', '/').split('/').last;
+          } else {
+            if (mounted) setState(() => _isUploadingImage = false);
+            return;
+          }
+        } catch (cropErr) {
+          Get.log('Cropper skipped/failed: $cropErr');
+          fileBytes = await image.readAsBytes();
+        }
+      } else {
+        fileBytes = await image.readAsBytes();
+      }
+
+      if (fileBytes.isEmpty) {
+        if (mounted) setState(() => _isUploadingImage = false);
+        return;
+      }
+
+      final uploadedUrl = await _controller.uploadAvatar(
+        bytes: fileBytes,
+        fileName: fileName,
+      );
 
       if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
         if (mounted) {
@@ -176,17 +200,97 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     );
   }
 
-  void _showImagePickerOptions(BuildContext context) {
+  void _handleAvatarTap(BuildContext context) {
+    if (_isUploadingImage) return;
+
     final hasPhoto = _imageController.text.trim().isNotEmpty;
 
-    Get.bottomSheet(
-      ChangeProfilePictureBottomsheet(
-        onTakePhoto: () => _pickAndUploadImage(ImageSource.camera),
-        onChooseFromGallery: () => _pickAndUploadImage(ImageSource.gallery),
-        showRemoveOption: hasPhoto,
-        onRemovePhoto: _deleteImage,
+    if (kIsWeb) {
+      if (!hasPhoto) {
+        _pickAndUploadImage(source: ImageSource.gallery);
+      } else {
+        _showWebPhotoOptions(context);
+      }
+    } else {
+      Get.bottomSheet(
+        ChangeProfilePictureBottomsheet(
+          onTakePhoto: () => _pickAndUploadImage(source: ImageSource.camera),
+          onChooseFromGallery: () =>
+              _pickAndUploadImage(source: ImageSource.gallery),
+          showRemoveOption: hasPhoto,
+          onRemovePhoto: _deleteImage,
+        ),
+        isScrollControlled: true,
+      );
+    }
+  }
+
+  void _showWebPhotoOptions(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        title: Text(
+          'Doctor Photo',
+          style: h3.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.headlineMedium?.color,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_library_rounded, color: primary),
+              title: Text(
+                'Upload New Image',
+                style: r14.copyWith(
+                  color: theme.textTheme.bodyLarge?.color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              onTap: () {
+                Navigator.of(dialogCtx).pop();
+                _pickAndUploadImage(source: ImageSource.gallery);
+              },
+            ),
+            Spacing.s8.h,
+            ListTile(
+              leading: Icon(Icons.delete_outline_rounded, color: dangerColor),
+              title: Text(
+                'Remove Photo',
+                style: r14.copyWith(
+                  color: dangerColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              onTap: () {
+                Navigator.of(dialogCtx).pop();
+                _deleteImage();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(
+              'Cancel',
+              style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+            ),
+          ),
+        ],
       ),
-      isScrollControlled: true,
     );
   }
 
@@ -301,18 +405,18 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                       _buildTextField(
                         label: 'Avatar / Profile Image URL *',
                         controller: _imageController,
-                        hint: 'https://... or upload using camera icon',
+                        hint: 'https://... or upload photo',
                         validator: (v) => v == null || v.isEmpty ? 'Image URL required' : null,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            Icons.add_a_photo_rounded,
+                            Icons.add_photo_alternate_rounded,
                             color: primary,
                             size: 20.spMin,
                           ),
-                          tooltip: 'Upload photo from camera/gallery',
+                          tooltip: 'Upload photo from files',
                           onPressed: _isUploadingImage
                               ? null
-                              : () => _showImagePickerOptions(context),
+                              : () => _handleAvatarTap(context),
                         ),
                         onChanged: (_) => setState(() {}),
                       ),
@@ -488,9 +592,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                 ),
               ),
               GestureDetector(
-                onTap: _isUploadingImage
-                    ? null
-                    : () => _showImagePickerOptions(context),
+                onTap: _isUploadingImage ? null : () => _handleAvatarTap(context),
                 child: Container(
                   padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
@@ -509,7 +611,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                     ],
                   ),
                   child: Icon(
-                    Icons.photo_camera_rounded,
+                    Icons.add_a_photo_rounded,
                     size: 16.spMin,
                     color: Colors.white,
                   ),
@@ -521,7 +623,9 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
           Text(
             _isUploadingImage
                 ? 'Uploading photo...'
-                : 'Click photo or camera icon to upload',
+                : (kIsWeb
+                    ? 'Click avatar to choose an image from files'
+                    : 'Click avatar to upload photo'),
             style: r12.copyWith(
               color: _isUploadingImage ? primary : theme.textTheme.bodySmall?.color,
               fontWeight: _isUploadingImage ? FontWeight.w600 : FontWeight.w500,

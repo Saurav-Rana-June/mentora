@@ -106,9 +106,14 @@ class AdminDoctorController extends GetxController {
     return false;
   }
 
-  Future<String?> uploadAvatar(String filePath, String fileName) async {
+  Future<String?> uploadAvatar({
+    List<int>? bytes,
+    String? filePath,
+    required String fileName,
+  }) async {
     try {
       final res = await DoctorService.uploadDoctorAvatar(
+        bytes: bytes,
         filePath: filePath,
         fileName: fileName,
       );
