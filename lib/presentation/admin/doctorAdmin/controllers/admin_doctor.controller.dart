@@ -1,34 +1,108 @@
 import 'package:get/get.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/model/expert.model.dart';
+import 'package:Mentora/data/model/speciality.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_service.dart';
+import 'package:Mentora/infrastructure/dal/services/speciality_service.dart';
 
 class AdminDoctorController extends GetxController {
   final RxList<Expert> doctors = <Expert>[].obs;
+  final RxList<Speciality> specialities = <Speciality>[].obs;
+
   final RxInt currentPage = 1.obs;
   final RxInt totalPages = 1.obs;
   final RxInt totalItems = 0.obs;
   final RxString selectedSpeciality = 'All'.obs;
   final RxString searchQuery = ''.obs;
+
   final RxBool isLoading = false.obs;
+  final RxBool isLoadingSpecialities = false.obs;
   final RxBool isSubmitting = false.obs;
 
-  final List<String> specialities = [
-    'All',
-    'Clinical Psychologist',
-    'Family Counseling',
-    'Cognitive Behavioral',
-    'Trauma & PTSD',
-    'Mindfulness Coach',
-    'Anxiety & Stress',
-  ];
+  List<String> get specialityFilterOptions {
+    final list = <String>['All'];
+    for (final s in specialities) {
+      if (s.name.isNotEmpty && !list.contains(s.name)) {
+        list.add(s.name);
+      }
+    }
+    return list;
+  }
+
+  List<String> get availableSpecialityNames {
+    return specialities.map((s) => s.name).where((n) => n.isNotEmpty).toList();
+  }
 
   @override
   void onInit() {
     super.onInit();
+    fetchSpecialities();
     fetchDoctors();
   }
+
+  // --- SPECIALITIES MANAGEMENT ---
+
+  Future<void> fetchSpecialities() async {
+    try {
+      isLoadingSpecialities.value = true;
+      final res = await SpecialityService.getSpecialities(includeInactive: true);
+      if (res?.data != null) {
+        specialities.assignAll(res!.data!);
+      }
+    } catch (e) {
+      Get.log('Error fetching specialities: $e');
+    } finally {
+      isLoadingSpecialities.value = false;
+    }
+  }
+
+  Future<bool> createSpeciality(Map<String, dynamic> body) async {
+    try {
+      isSubmitting.value = true;
+      final res = await SpecialityService.createSpeciality(body);
+      if (res?.data != null) {
+        AppUtils.snackbar('Success', 'Speciality created successfully', SnackBarType.SUCCESS);
+        await fetchSpecialities();
+        return true;
+      }
+      return false;
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
+
+  Future<bool> updateSpeciality(int id, Map<String, dynamic> body) async {
+    try {
+      isSubmitting.value = true;
+      final res = await SpecialityService.updateSpeciality(id, body);
+      if (res?.data != null) {
+        AppUtils.snackbar('Success', 'Speciality updated successfully', SnackBarType.SUCCESS);
+        await fetchSpecialities();
+        return true;
+      }
+      return false;
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
+
+  Future<bool> deleteSpeciality(int id) async {
+    try {
+      isSubmitting.value = true;
+      final res = await SpecialityService.deleteSpeciality(id);
+      if (res?.data != null) {
+        specialities.removeWhere((s) => s.id == id);
+        AppUtils.snackbar('Deleted', 'Speciality removed', SnackBarType.INFO);
+        return true;
+      }
+      return false;
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
+
+  // --- DOCTOR MANAGEMENT ---
 
   Future<void> fetchDoctors({int? page}) async {
     if (page != null) currentPage.value = page;
@@ -70,7 +144,7 @@ class AdminDoctorController extends GetxController {
       isSubmitting.value = true;
       final res = await DoctorService.createDoctor(body);
       if (res?.data != null) {
-        AppUtils.snackbar('Success', 'Doctor profile registered', SnackBarType.SUCCESS);
+        AppUtils.snackbar('Success', 'Doctor profile registered successfully', SnackBarType.SUCCESS);
         await fetchDoctors();
         return true;
       }
@@ -85,7 +159,7 @@ class AdminDoctorController extends GetxController {
       isSubmitting.value = true;
       final res = await DoctorService.updateDoctor(id, body);
       if (res?.data != null) {
-        AppUtils.snackbar('Success', 'Doctor profile updated', SnackBarType.SUCCESS);
+        AppUtils.snackbar('Success', 'Doctor profile updated successfully', SnackBarType.SUCCESS);
         await fetchDoctors();
         return true;
       }

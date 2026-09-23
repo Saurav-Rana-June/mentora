@@ -18,6 +18,22 @@ class Expert {
   final double? startingPricePerHour;
   final List<String>? specialties;
   final bool? isAvailable;
+
+  // Educational Information
+  final String? degree;
+  final String? university;
+  final int? graduationYear;
+  final String? licenseNumber;
+  final List<String>? certifications;
+  final List<String>? languages;
+
+  // Availability Information
+  final List<String>? availableDays;
+  final String? workingHoursStart;
+  final String? workingHoursEnd;
+  final List<String>? availableShifts;
+  final List<int>? sessionDurations;
+
   final String? createdAt;
   final String? updatedAt;
 
@@ -36,6 +52,17 @@ class Expert {
     this.startingPricePerHour,
     this.specialties,
     this.isAvailable,
+    this.degree,
+    this.university,
+    this.graduationYear,
+    this.licenseNumber,
+    this.certifications,
+    this.languages,
+    this.availableDays,
+    this.workingHoursStart,
+    this.workingHoursEnd,
+    this.availableShifts,
+    this.sessionDurations,
     this.createdAt,
     this.updatedAt,
   });

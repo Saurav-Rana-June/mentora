@@ -23,6 +23,27 @@ Expert _$ExpertFromJson(Map<String, dynamic> json) => Expert(
       ?.map((e) => e as String)
       .toList(),
   isAvailable: json['isAvailable'] as bool?,
+  degree: json['degree'] as String?,
+  university: json['university'] as String?,
+  graduationYear: (json['graduationYear'] as num?)?.toInt(),
+  licenseNumber: json['licenseNumber'] as String?,
+  certifications: (json['certifications'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  languages: (json['languages'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  availableDays: (json['availableDays'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  workingHoursStart: json['workingHoursStart'] as String?,
+  workingHoursEnd: json['workingHoursEnd'] as String?,
+  availableShifts: (json['availableShifts'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  sessionDurations: (json['sessionDurations'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
   createdAt: json['createdAt'] as String?,
   updatedAt: json['updatedAt'] as String?,
 );
@@ -42,6 +63,17 @@ Map<String, dynamic> _$ExpertToJson(Expert instance) => <String, dynamic>{
   'startingPricePerHour': instance.startingPricePerHour,
   'specialties': instance.specialties,
   'isAvailable': instance.isAvailable,
+  'degree': instance.degree,
+  'university': instance.university,
+  'graduationYear': instance.graduationYear,
+  'licenseNumber': instance.licenseNumber,
+  'certifications': instance.certifications,
+  'languages': instance.languages,
+  'availableDays': instance.availableDays,
+  'workingHoursStart': instance.workingHoursStart,
+  'workingHoursEnd': instance.workingHoursEnd,
+  'availableShifts': instance.availableShifts,
+  'sessionDurations': instance.sessionDurations,
   'createdAt': instance.createdAt,
   'updatedAt': instance.updatedAt,
 };

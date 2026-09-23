@@ -11,6 +11,10 @@ class AdminSectionHeader extends StatelessWidget {
   final ValueChanged<String>? onSearchChanged;
   final String? buttonText;
   final VoidCallback? onAddPressed;
+  final String? secondaryButtonText;
+  final IconData? secondaryButtonIcon;
+  final VoidCallback? onSecondaryPressed;
+  final List<Widget>? extraActions;
   final Widget? filterWidget;
   final VoidCallback? onRefresh;
 
@@ -22,6 +26,10 @@ class AdminSectionHeader extends StatelessWidget {
     this.onSearchChanged,
     this.buttonText,
     this.onAddPressed,
+    this.secondaryButtonText,
+    this.secondaryButtonIcon,
+    this.onSecondaryPressed,
+    this.extraActions,
     this.filterWidget,
     this.onRefresh,
   });
@@ -71,6 +79,38 @@ class AdminSectionHeader extends StatelessWidget {
                     ),
                     tooltip: 'Refresh',
                   ),
+                if (extraActions != null) ...extraActions!,
+                if (secondaryButtonText != null && onSecondaryPressed != null) ...[
+                  Spacing.s12.w,
+                  OutlinedButton.icon(
+                    onPressed: onSecondaryPressed,
+                    icon: Icon(
+                      secondaryButtonIcon ?? Icons.tune_rounded,
+                      size: 18.spMin,
+                      color: primary,
+                    ),
+                    label: Text(
+                      secondaryButtonText!,
+                      style: r14.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: primary,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: primary.withValues(alpha: 0.35),
+                        width: 1.2,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                    ),
+                  ),
+                ],
                 if (buttonText != null && onAddPressed != null) ...[
                   Spacing.s12.w,
                   ElevatedButton.icon(

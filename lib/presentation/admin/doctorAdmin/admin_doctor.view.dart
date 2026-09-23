@@ -10,7 +10,8 @@ import '../widgets/admin_delete_dialog.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
 import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_doctor.controller.dart';
-import 'views/admin_doctor_form.dialog.dart';
+import 'views/admin_doctor_wizard.dialog.dart';
+import 'views/admin_specialities_dialog.widget.dart';
 
 class AdminDoctorView extends StatelessWidget {
   const AdminDoctorView({super.key});
@@ -30,12 +31,18 @@ class AdminDoctorView extends StatelessWidget {
             () => AdminSectionHeader(
               title: 'Doctors & Experts Directory CMS',
               subtitle:
-                  'Manage verified psychologists, therapists, consultation rates, and specialist tags.',
+                  'Manage verified psychologists, therapists, consultation rates, specialities, and working schedules.',
               searchHint: 'Search doctors by name or speciality...',
               onSearchChanged: controller.onSearchChanged,
+              secondaryButtonText: 'Specialities',
+              secondaryButtonIcon: Icons.category_outlined,
+              onSecondaryPressed: () => AdminSpecialitiesDialog.show(context),
               buttonText: 'Register Doctor',
-              onAddPressed: () => AdminDoctorFormDialog.show(context: context),
-              onRefresh: controller.fetchDoctors,
+              onAddPressed: () => AdminDoctorWizardDialog.show(context: context),
+              onRefresh: () {
+                controller.fetchSpecialities();
+                controller.fetchDoctors();
+              },
               filterWidget: Container(
                 height: 44.h,
                 alignment: Alignment.center,
@@ -51,11 +58,13 @@ class AdminDoctorView extends StatelessWidget {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: controller.selectedSpeciality.value,
+                    value: controller.specialityFilterOptions.contains(controller.selectedSpeciality.value)
+                        ? controller.selectedSpeciality.value
+                        : controller.specialityFilterOptions.firstOrNull ?? 'All Specialities',
                     isDense: true,
                     alignment: AlignmentDirectional.centerStart,
                     dropdownColor: isDark ? const Color(0xFF242522) : white,
-                    items: controller.specialities.map((spec) {
+                    items: controller.specialityFilterOptions.map((spec) {
                       return DropdownMenuItem<String>(
                         value: spec,
                         child: Text(
@@ -127,7 +136,7 @@ class AdminDoctorView extends StatelessWidget {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 16.w,
                         mainAxisSpacing: 16.h,
-                        childAspectRatio: 1.28,
+                        childAspectRatio: crossAxisCount == 1 ? 1.35 : 1.08,
                       ),
                       itemCount: controller.doctors.length,
                       itemBuilder: (context, index) {
@@ -299,6 +308,100 @@ class AdminDoctorView extends StatelessWidget {
               ],
             ),
             Spacing.s8.h,
+            // Education snippet
+            if ((doc.degree != null && doc.degree!.isNotEmpty) ||
+                (doc.university != null && doc.university!.isNotEmpty)) ...[
+              Row(
+                children: [
+                  Icon(Icons.school_outlined, size: 13.spMin, color: primary),
+                  SizedBox(width: 4.w),
+                  Expanded(
+                    child: Text(
+                      [doc.degree, doc.university]
+                          .where((s) => s != null && s.isNotEmpty)
+                          .join(' • '),
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodySmall?.color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              Spacing.s4.h,
+            ],
+            // Modalities & Availability chips
+            Row(
+              children: [
+                if (doc.callFeature == true)
+                  Container(
+                    margin: EdgeInsets.only(right: 4.w),
+                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: infoColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.call_rounded, size: 10.spMin, color: infoColor),
+                        SizedBox(width: 3.w),
+                        Text(
+                          'Voice',
+                          style: r10.copyWith(
+                            color: infoColor,
+                            fontSize: 9.spMin,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (doc.videoCallFeature == true)
+                  Container(
+                    margin: EdgeInsets.only(right: 4.w),
+                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.videocam_rounded, size: 10.spMin, color: primary),
+                        SizedBox(width: 3.w),
+                        Text(
+                          'Video',
+                          style: r10.copyWith(
+                            color: primary,
+                            fontSize: 9.spMin,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (doc.availableDays != null && doc.availableDays!.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF282926) : slate[100],
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    child: Text(
+                      '${doc.availableDays!.length} days/wk',
+                      style: r10.copyWith(
+                        color: theme.textTheme.bodySmall?.color,
+                        fontSize: 9.spMin,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            Spacing.s4.h,
             // Specialties badges
             if (doc.specialties != null && doc.specialties!.isNotEmpty) ...[
               Wrap(
@@ -318,7 +421,7 @@ class AdminDoctorView extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              Spacing.s8.h,
+              Spacing.s4.h,
             ],
             Expanded(
               child: Text(
@@ -362,7 +465,7 @@ class AdminDoctorView extends StatelessWidget {
                     Tooltip(
                       message: 'Edit Doctor Profile',
                       child: InkWell(
-                        onTap: () => AdminDoctorFormDialog.show(
+                        onTap: () => AdminDoctorWizardDialog.show(
                           context: context,
                           doctor: doc,
                         ),
