@@ -14,11 +14,14 @@ class AdminSidebarView extends GetView<LandingAdminController> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Obx(
-      () => AnimatedContainer(
+    return Obx(() {
+      final isCollapsed = controller.isSidebarCollapsed.value;
+      final targetWidth = isCollapsed ? 80.w : 260.w;
+
+      return AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
-        width: controller.isSidebarCollapsed.value ? 80.w : 260.w,
+        width: targetWidth,
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1F1D) : white,
           border: Border(
@@ -37,15 +40,25 @@ class AdminSidebarView extends GetView<LandingAdminController> {
             ),
           ],
         ),
-        child: Column(
-          children: [
-            buildSidebarHeader(context),
-            Expanded(child: buildSidebarNavList(context)),
-            buildSidebarAdminProfile(context),
-          ],
+        child: ClipRect(
+          child: OverflowBox(
+            minWidth: targetWidth,
+            maxWidth: targetWidth,
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: targetWidth,
+              child: Column(
+                children: [
+                  buildSidebarHeader(context),
+                  Expanded(child: buildSidebarNavList(context)),
+                  buildSidebarAdminProfile(context),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget buildSidebarHeader(BuildContext context) {
@@ -93,40 +106,49 @@ class AdminSidebarView extends GetView<LandingAdminController> {
               ],
             )
           : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 38.spMin,
-                      width: 38.spMin,
-                      child: Image.asset(
-                        'assets/logos/logo.png',
-                        fit: BoxFit.contain,
+                Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 38.spMin,
+                        width: 38.spMin,
+                        child: Image.asset(
+                          'assets/logos/logo.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                    Spacing.s12.w,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Mentora CMS',
-                          style: h3.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: theme.textTheme.headlineLarge?.color,
-                          ),
+                      Spacing.s12.w,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Mentora CMS',
+                              style: h3.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: theme.textTheme.headlineLarge?.color,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Admin Console',
+                              style: r10.copyWith(
+                                color: theme.textTheme.bodySmall?.color,
+                                letterSpacing: 0.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Admin Console',
-                          style: r10.copyWith(
-                            color: theme.textTheme.bodySmall?.color,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
+                Spacing.s8.w,
                 IconButton(
                   icon: Icon(
                     Icons.menu_open_rounded,
