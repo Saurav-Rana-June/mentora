@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/expert.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -23,7 +24,10 @@ class AdminDoctorView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,9 +48,9 @@ class AdminDoctorView extends StatelessWidget {
                 controller.fetchDoctors();
               },
               filterWidget: Container(
-                height: 44.h,
+                height: 44,
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF242522) : white,
                   borderRadius: BorderRadius.circular(10.r),
@@ -81,7 +85,7 @@ class AdminDoctorView extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      size: 20.spMin,
+                      size: 20,
                       color: theme.textTheme.bodyMedium?.color,
                     ),
                   ),
@@ -101,10 +105,10 @@ class AdminDoctorView extends StatelessWidget {
             if (controller.doctors.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: const EdgeInsets.all(48),
                   child: Column(
                     children: [
-                      Icon(Icons.person_search_rounded, size: 48.spMin, color: slate[400]),
+                      Icon(Icons.person_search_rounded, size: 48, color: slate[400]),
                       Spacing.s12.h,
                       Text(
                         'No doctors or experts found',
@@ -127,16 +131,20 @@ class AdminDoctorView extends StatelessWidget {
                   builder: (context, constraints) {
                     final crossAxisCount = constraints.maxWidth > 1100
                         ? 3
-                        : (constraints.maxWidth > 700 ? 2 : 1);
+                        : (constraints.maxWidth > 650 ? 2 : 1);
+
+                    final double childAspectRatio = crossAxisCount == 1
+                        ? (constraints.maxWidth < 400 ? 1.35 : 1.6)
+                        : 1.15;
 
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 16.w,
-                        mainAxisSpacing: 16.h,
-                        childAspectRatio: crossAxisCount == 1 ? 1.35 : 1.08,
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                        childAspectRatio: childAspectRatio,
                       ),
                       itemCount: controller.doctors.length,
                       itemBuilder: (context, index) {
@@ -166,7 +174,7 @@ class AdminDoctorView extends StatelessWidget {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -184,7 +192,7 @@ class AdminDoctorView extends StatelessWidget {
                     ),
                   ),
                   child: CircleAvatar(
-                    radius: 26.r,
+                    radius: 24.r,
                     backgroundColor: primary.withValues(alpha: 0.15),
                     backgroundImage: doc.image != null && doc.image!.isNotEmpty
                         ? NetworkImage(doc.image!)
@@ -219,9 +227,9 @@ class AdminDoctorView extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6.w,
-                              vertical: 2.h,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
                             ),
                             decoration: BoxDecoration(
                               color: doc.isAvailable == true
@@ -233,14 +241,14 @@ class AdminDoctorView extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  width: 6.w,
-                                  height: 6.w,
+                                  width: 6,
+                                  height: 6,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: doc.isAvailable == true ? successColor : slate[400],
                                   ),
                                 ),
-                                SizedBox(width: 4.w),
+                                const SizedBox(width: 4),
                                 Text(
                                   doc.isAvailable == true ? 'Active' : 'Offline',
                                   style: r10.copyWith(
@@ -255,7 +263,7 @@ class AdminDoctorView extends StatelessWidget {
                       ),
                       Spacing.s4.h,
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4.r),
@@ -271,8 +279,8 @@ class AdminDoctorView extends StatelessWidget {
                       Spacing.s4.h,
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 14.spMin, color: warningColor),
-                          SizedBox(width: 2.w),
+                          Icon(Icons.star_rounded, size: 14, color: warningColor),
+                          const SizedBox(width: 2),
                           Text(
                             '${doc.rating ?? 5.0}',
                             style: r10.copyWith(
@@ -280,14 +288,14 @@ class AdminDoctorView extends StatelessWidget {
                               color: theme.textTheme.bodyMedium?.color,
                             ),
                           ),
-                          SizedBox(width: 2.w),
+                          const SizedBox(width: 2),
                           Text(
                             '(${doc.reviewsCount ?? 0})',
                             style: r10.copyWith(color: theme.textTheme.bodySmall?.color),
                           ),
                           const Spacer(),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: isDark ? const Color(0xFF282926) : slate[100],
                               borderRadius: BorderRadius.circular(4.r),
@@ -313,8 +321,8 @@ class AdminDoctorView extends StatelessWidget {
                 (doc.university != null && doc.university!.isNotEmpty)) ...[
               Row(
                 children: [
-                  Icon(Icons.school_outlined, size: 13.spMin, color: primary),
-                  SizedBox(width: 4.w),
+                  Icon(Icons.school_outlined, size: 14, color: primary),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       [doc.degree, doc.university]
@@ -333,12 +341,13 @@ class AdminDoctorView extends StatelessWidget {
               Spacing.s4.h,
             ],
             // Modalities & Availability chips
-            Row(
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
               children: [
                 if (doc.callFeature == true)
                   Container(
-                    margin: EdgeInsets.only(right: 4.w),
-                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     decoration: BoxDecoration(
                       color: infoColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4.r),
@@ -346,13 +355,12 @@ class AdminDoctorView extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.call_rounded, size: 10.spMin, color: infoColor),
-                        SizedBox(width: 3.w),
+                        Icon(Icons.call_rounded, size: 12, color: infoColor),
+                        const SizedBox(width: 3),
                         Text(
                           'Voice',
                           style: r10.copyWith(
                             color: infoColor,
-                            fontSize: 9.spMin,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -361,8 +369,7 @@ class AdminDoctorView extends StatelessWidget {
                   ),
                 if (doc.videoCallFeature == true)
                   Container(
-                    margin: EdgeInsets.only(right: 4.w),
-                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     decoration: BoxDecoration(
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4.r),
@@ -370,13 +377,12 @@ class AdminDoctorView extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.videocam_rounded, size: 10.spMin, color: primary),
-                        SizedBox(width: 3.w),
+                        Icon(Icons.videocam_rounded, size: 12, color: primary),
+                        const SizedBox(width: 3),
                         Text(
                           'Video',
                           style: r10.copyWith(
                             color: primary,
-                            fontSize: 9.spMin,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -385,7 +391,7 @@ class AdminDoctorView extends StatelessWidget {
                   ),
                 if (doc.availableDays != null && doc.availableDays!.isNotEmpty)
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF282926) : slate[100],
                       borderRadius: BorderRadius.circular(4.r),
@@ -394,47 +400,13 @@ class AdminDoctorView extends StatelessWidget {
                       '${doc.availableDays!.length} days/wk',
                       style: r10.copyWith(
                         color: theme.textTheme.bodySmall?.color,
-                        fontSize: 9.spMin,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
               ],
             ),
-            Spacing.s4.h,
-            // Specialties badges
-            if (doc.specialties != null && doc.specialties!.isNotEmpty) ...[
-              Wrap(
-                spacing: 4.w,
-                runSpacing: 4.h,
-                children: doc.specialties!.take(3).map((s) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF282926) : const Color(0xFFF1F3EB),
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      s,
-                      style: r10.copyWith(color: theme.textTheme.bodySmall?.color),
-                    ),
-                  );
-                }).toList(),
-              ),
-              Spacing.s4.h,
-            ],
-            Expanded(
-              child: Text(
-                doc.bio ?? '',
-                style: r12.copyWith(
-                  color: theme.textTheme.bodyMedium?.color,
-                  height: 1.35,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(height: 6.h),
+            const Spacer(),
             Divider(
               height: 1,
               color: isDark
@@ -446,16 +418,15 @@ class AdminDoctorView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
                   ),
                   child: Text(
-                    'ID: #${doc.id ?? 0}',
+                    'Exp: ${doc.experienceYears ?? 1} yrs',
                     style: r10.copyWith(
                       color: isDark ? slate[400] : slate[600],
-                      fontFamily: 'monospace',
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -463,7 +434,7 @@ class AdminDoctorView extends StatelessWidget {
                 Row(
                   children: [
                     Tooltip(
-                      message: 'Edit Doctor Profile',
+                      message: 'Edit Doctor',
                       child: InkWell(
                         onTap: () => AdminDoctorWizardDialog.show(
                           context: context,
@@ -471,22 +442,22 @@ class AdminDoctorView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Tooltip(
-                      message: 'Delete Doctor Profile',
+                      message: 'Delete Doctor',
                       child: InkWell(
                         onTap: () => AdminDeleteDialog.show(
                           context: context,
@@ -496,14 +467,14 @@ class AdminDoctorView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -524,41 +495,62 @@ class AdminDoctorView extends StatelessWidget {
     AdminDoctorController controller,
   ) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Obx(
-      () => Row(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1F1D) : white,
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+        ),
+      ),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Showing ${controller.doctors.length} of ${controller.totalItems.value} professionals',
-            style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+          Obx(
+            () => Text(
+              'Showing ${controller.doctors.length} of ${controller.totalItems.value} doctors',
+              style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+            ),
           ),
           Row(
             children: [
-              IconButton(
-                onPressed: controller.currentPage.value > 1
-                    ? () => controller.fetchDoctors(page: controller.currentPage.value - 1)
-                    : null,
-                icon: const Icon(Icons.chevron_left_rounded),
-                tooltip: 'Previous Page',
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6.r),
-                ),
-                child: Text(
-                  'Page ${controller.currentPage.value} of ${controller.totalPages.value}',
-                  style: r12.copyWith(color: primary, fontWeight: FontWeight.w600),
+              Obx(
+                () => OutlinedButton(
+                  onPressed: controller.currentPage.value > 1
+                      ? () => controller.fetchDoctors(page: controller.currentPage.value - 1)
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                  ),
+                  child: Text('Previous', style: r12),
                 ),
               ),
-              IconButton(
-                onPressed: controller.currentPage.value < controller.totalPages.value
-                    ? () => controller.fetchDoctors(page: controller.currentPage.value + 1)
-                    : null,
-                icon: const Icon(Icons.chevron_right_rounded),
-                tooltip: 'Next Page',
+              Spacing.s8.w,
+              Obx(
+                () => Text(
+                  'Page ${controller.currentPage.value}',
+                  style: r12.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ),
+              Spacing.s8.w,
+              Obx(
+                () => OutlinedButton(
+                  onPressed: controller.currentPage.value < controller.totalPages.value
+                      ? () => controller.fetchDoctors(page: controller.currentPage.value + 1)
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                  ),
+                  child: Text('Next', style: r12),
+                ),
               ),
             ],
           ),

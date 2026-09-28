@@ -7,6 +7,7 @@ import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/auth_service.dart';
 import 'package:Mentora/infrastructure/environment/environment.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../landingAdmin/controllers/landing_admin.controller.dart';
@@ -33,15 +34,20 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
       builder: (context) {
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
+        final isMobile = AppScale.isMobile;
 
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return Dialog(
               backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 40,
+                vertical: 24,
+              ),
               child: Container(
-                width: 440.w,
-                padding: EdgeInsets.all(24.w),
+                width: AppScale.dialogMaxWidth(440),
+                padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
                 child: Form(
                   key: formKey,
                   child: Column(
@@ -51,11 +57,13 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Change Admin Password',
-                            style: h3.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: theme.textTheme.headlineLarge?.color,
+                          Expanded(
+                            child: Text(
+                              'Change Admin Password',
+                              style: h3.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: theme.textTheme.headlineLarge?.color,
+                              ),
                             ),
                           ),
                           IconButton(
@@ -213,7 +221,10 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
     final env = ConfigEnvironments.getEnvironments();
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(context),
+        vertical: AppScale.pagePaddingVertical(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -230,157 +241,172 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
             style: r14.copyWith(color: theme.textTheme.bodySmall?.color),
           ),
           Spacing.s24.h,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Admin Account Card
-              Expanded(
-                child: CustomPrimaryCard(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24.r,
-                              backgroundColor: primary.withValues(alpha: 0.15),
-                              child: Text(
-                                '\u{f4fe}',
-                                style: TextStyle(
-                                  fontFamily: 'FontAwesomeSolid',
-                                  fontSize: 18.spMin,
-                                  color: primary,
-                                ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 900;
+
+              final adminAccountCard = CustomPrimaryCard(
+                child: Padding(
+                  padding: EdgeInsets.all(AppScale.isMobile ? 16.0 : 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 24.r,
+                            backgroundColor: primary.withValues(alpha: 0.15),
+                            child: Text(
+                              '\u{f4fe}',
+                              style: TextStyle(
+                                fontFamily: 'FontAwesomeSolid',
+                                fontSize: 18,
+                                color: primary,
                               ),
                             ),
-                            Spacing.s12.w,
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Admin Account',
-                                    style: h3.copyWith(fontWeight: FontWeight.w700),
-                                  ),
-                                  Obx(
-                                    () => Text(
-                                      _landingController.adminEmail.value,
-                                      style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Spacing.s16.h,
-                        const Divider(),
-                        Spacing.s16.h,
-                        _buildSettingRow(
-                          title: 'Portal Role',
-                          value: 'Super Administrator',
-                          badgeColor: primary,
-                        ),
-                        Spacing.s12.h,
-                        _buildSettingRow(
-                          title: 'Session Status',
-                          value: 'Authenticated (Active)',
-                          badgeColor: successColor,
-                        ),
-                        Spacing.s20.h,
-                        Row(
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: _showChangePasswordDialog,
-                              icon: Icon(Icons.lock_reset_rounded, size: 18.spMin, color: white),
-                              label: Text('Change Password', style: r14.copyWith(color: white, fontWeight: FontWeight.w600)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primary,
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                                elevation: 0,
-                              ),
-                            ),
-                            Spacing.s12.w,
-                            OutlinedButton.icon(
-                              onPressed: _landingController.logout,
-                              icon: Icon(Icons.logout_rounded, size: 18.spMin, color: dangerColor),
-                              label: Text('Logout', style: r14.copyWith(color: dangerColor, fontWeight: FontWeight.w600)),
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: dangerColor.withValues(alpha: 0.5)),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Spacing.s16.w,
-              // Server Environment Card
-              Expanded(
-                child: CustomPrimaryCard(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: infoColor.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: Icon(Icons.cloud_done_rounded, color: infoColor, size: 24.spMin),
-                            ),
-                            Spacing.s12.w,
-                            Column(
+                          ),
+                          Spacing.s12.w,
+                          Expanded(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Backend Environment', style: h3.copyWith(fontWeight: FontWeight.w700)),
-                                Text('REST API Gateway', style: r12.copyWith(color: theme.textTheme.bodySmall?.color)),
+                                Text(
+                                  'Admin Account',
+                                  style: h3.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                Obx(
+                                  () => Text(
+                                    _landingController.adminEmail.value,
+                                    style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                                  ),
+                                ),
                               ],
                             ),
-                          ],
-                        ),
-                        Spacing.s16.h,
-                        const Divider(),
-                        Spacing.s16.h,
-                        _buildSettingRow(
-                          title: 'Active Environment',
-                          value: (env['env'] ?? 'PROD').toUpperCase(),
-                          badgeColor: infoColor,
-                        ),
-                        Spacing.s12.h,
-                        _buildSettingRow(
-                          title: 'API Base URL',
-                          value: env['url'] ?? '',
-                          isMono: true,
-                        ),
-                        Spacing.s12.h,
-                        _buildSettingRow(
-                          title: 'Connection Status',
-                          value: 'Connected (HTTP 200)',
-                          badgeColor: successColor,
-                        ),
-                        Spacing.s20.h,
-                        Text(
-                          'Mentora CMS Console v2.0 • Flutter Web / Desktop',
-                          style: r10.copyWith(color: isDark ? slate[400] : slate[500]),
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      Spacing.s16.h,
+                      const Divider(),
+                      Spacing.s16.h,
+                      _buildSettingRow(
+                        title: 'Portal Role',
+                        value: 'Super Administrator',
+                        badgeColor: primary,
+                      ),
+                      Spacing.s12.h,
+                      _buildSettingRow(
+                        title: 'Session Status',
+                        value: 'Authenticated (Active)',
+                        badgeColor: successColor,
+                      ),
+                      Spacing.s20.h,
+                      Wrap(
+                        spacing: 12.0,
+                        runSpacing: 8.0,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: _showChangePasswordDialog,
+                            icon: Icon(Icons.lock_reset_rounded, size: 18, color: white),
+                            label: Text('Change Password', style: r14.copyWith(color: white, fontWeight: FontWeight.w600)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primary,
+                              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                              elevation: 0,
+                            ),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _landingController.logout,
+                            icon: Icon(Icons.logout_rounded, size: 18, color: dangerColor),
+                            label: Text('Logout', style: r14.copyWith(color: dangerColor, fontWeight: FontWeight.w600)),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: dangerColor.withValues(alpha: 0.5)),
+                              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+              );
+
+              final serverEnvCard = CustomPrimaryCard(
+                child: Padding(
+                  padding: EdgeInsets.all(AppScale.isMobile ? 16.0 : 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: infoColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            child: Icon(Icons.cloud_done_rounded, color: infoColor, size: 24),
+                          ),
+                          Spacing.s12.w,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Backend Environment', style: h3.copyWith(fontWeight: FontWeight.w700)),
+                              Text('REST API Gateway', style: r12.copyWith(color: theme.textTheme.bodySmall?.color)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Spacing.s16.h,
+                      const Divider(),
+                      Spacing.s16.h,
+                      _buildSettingRow(
+                        title: 'Active Environment',
+                        value: (env['env'] ?? 'PROD').toUpperCase(),
+                        badgeColor: infoColor,
+                      ),
+                      Spacing.s12.h,
+                      _buildSettingRow(
+                        title: 'API Base URL',
+                        value: env['url'] ?? '',
+                        isMono: true,
+                      ),
+                      Spacing.s12.h,
+                      _buildSettingRow(
+                        title: 'Connection Status',
+                        value: 'Connected (HTTP 200)',
+                        badgeColor: successColor,
+                      ),
+                      Spacing.s20.h,
+                      Text(
+                        'Mentora CMS Console v2.0 • Flutter Web / Desktop',
+                        style: r10.copyWith(color: isDark ? slate[400] : slate[500]),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+
+              if (isWide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: adminAccountCard),
+                    Spacing.s16.w,
+                    Expanded(child: serverEnvCard),
+                  ],
+                );
+              } else {
+                return Column(
+                  children: [
+                    adminAccountCard,
+                    Spacing.s16.h,
+                    serverEnvCard,
+                  ],
+                );
+              }
+            },
           ),
         ],
       ),
@@ -399,25 +425,29 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title, style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
-        if (badgeColor != null)
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-            decoration: BoxDecoration(
-              color: badgeColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(6.r),
-            ),
-            child: Text(
-              value,
-              style: r12.copyWith(color: badgeColor, fontWeight: FontWeight.w600),
-            ),
-          )
-        else
-          Text(
-            value,
-            style: isMono
-                ? r12.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.w600)
-                : r14.copyWith(fontWeight: FontWeight.w600),
-          ),
+        Spacing.s12.w,
+        Flexible(
+          child: badgeColor != null
+              ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: badgeColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Text(
+                    value,
+                    style: r12.copyWith(color: badgeColor, fontWeight: FontWeight.w600),
+                  ),
+                )
+              : Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                  style: isMono
+                      ? r12.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.w600)
+                      : r14.copyWith(fontWeight: FontWeight.w600),
+                ),
+        ),
       ],
     );
   }

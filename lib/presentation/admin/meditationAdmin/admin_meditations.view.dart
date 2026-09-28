@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/meditation_session.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -22,7 +23,10 @@ class AdminMeditationsView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -38,9 +42,9 @@ class AdminMeditationsView extends StatelessWidget {
               onRefresh: controller.fetchMeditations,
               filterWidget: controller.categories.length > 1
                   ? Container(
-                      height: 44.h,
+                      height: 44,
                       alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF242522) : white,
                         borderRadius: BorderRadius.circular(10.r),
@@ -70,7 +74,7 @@ class AdminMeditationsView extends StatelessWidget {
                           },
                           icon: Icon(
                             Icons.keyboard_arrow_down_rounded,
-                            size: 20.spMin,
+                            size: 20,
                             color: theme.textTheme.bodyMedium?.color,
                           ),
                         ),
@@ -91,12 +95,12 @@ class AdminMeditationsView extends StatelessWidget {
             if (controller.meditations.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: const EdgeInsets.all(48),
                   child: Column(
                     children: [
                       Icon(
                         Icons.self_improvement_rounded,
-                        size: 48.spMin,
+                        size: 48,
                         color: slate[400],
                       ),
                       Spacing.s12.h,
@@ -114,16 +118,20 @@ class AdminMeditationsView extends StatelessWidget {
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 1100
                     ? 3
-                    : (constraints.maxWidth > 700 ? 2 : 1);
+                    : (constraints.maxWidth > 650 ? 2 : 1);
+
+                final double childAspectRatio = crossAxisCount == 1
+                    ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+                    : 1.35;
 
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16.w,
-                    mainAxisSpacing: 16.h,
-                    childAspectRatio: 1.45,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.meditations.length,
                   itemBuilder: (context, index) {
@@ -149,7 +157,7 @@ class AdminMeditationsView extends StatelessWidget {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -157,8 +165,8 @@ class AdminMeditationsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 58.w,
-                  height: 58.w,
+                  width: 54,
+                  height: 54,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -171,19 +179,19 @@ class AdminMeditationsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(11.r),
                     child: Image.network(
                       item.imageUrl ?? '',
-                      width: 58.w,
-                      height: 58.w,
+                      width: 54,
+                      height: 54,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
-                        width: 58.w,
-                        height: 58.w,
+                        width: 54,
+                        height: 54,
                         color: primary.withValues(alpha: 0.15),
                         child: Center(
                           child: Text(
                             '\u{f4b8}',
                             style: TextStyle(
                               fontFamily: 'FontAwesomeSolid',
-                              fontSize: 22.spMin,
+                              fontSize: 20,
                               color: primary,
                             ),
                           ),
@@ -197,12 +205,14 @@ class AdminMeditationsView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 3.h,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.12),
@@ -216,12 +226,11 @@ class AdminMeditationsView extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (item.isFeatured == true) ...[
-                            SizedBox(width: 6.w),
+                          if (item.isFeatured == true)
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6.w,
-                                vertical: 3.h,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
                               ),
                               decoration: BoxDecoration(
                                 color: warningColor.withValues(alpha: 0.15),
@@ -232,10 +241,10 @@ class AdminMeditationsView extends StatelessWidget {
                                 children: [
                                   Icon(
                                     Icons.star_rounded,
-                                    size: 11.spMin,
+                                    size: 12,
                                     color: warningColor,
                                   ),
-                                  SizedBox(width: 2.w),
+                                  const SizedBox(width: 2),
                                   Text(
                                     'Featured',
                                     style: r10.copyWith(
@@ -246,7 +255,6 @@ class AdminMeditationsView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ],
                         ],
                       ),
                       Spacing.s4.h,
@@ -259,15 +267,15 @@ class AdminMeditationsView extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2.h),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule_rounded,
-                            size: 12.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Text(
                             item.duration ?? '10 min',
                             style: r12.copyWith(
@@ -282,7 +290,7 @@ class AdminMeditationsView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 8),
             Expanded(
               child: Text(
                 item.description ?? '',
@@ -294,7 +302,7 @@ class AdminMeditationsView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: 6.h),
+            const SizedBox(height: 6),
             Divider(
               height: 1,
               color: isDark
@@ -306,7 +314,7 @@ class AdminMeditationsView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -331,14 +339,14 @@ class AdminMeditationsView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
@@ -356,14 +364,14 @@ class AdminMeditationsView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),

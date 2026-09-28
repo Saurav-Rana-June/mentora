@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/meditation_session.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_meditation.controller.dart';
 
@@ -117,142 +118,177 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 540.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    isEditing ? 'Edit Guided Meditation' : 'Add New Guided Meditation',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(540),
+          maxHeight: MediaQuery.of(context).size.height * 0.90,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isEditing ? 'Edit Guided Meditation' : 'Add New Guided Meditation',
+                        style: h3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close_rounded),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              Spacing.s16.h,
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildTextField(
-                        label: 'Title *',
-                        controller: _titleController,
-                        hint: 'e.g. Morning Mindfulness',
-                        validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
-                      ),
-                      Spacing.s12.h,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Category',
-                              controller: _categoryController,
-                              hint: 'Mindfulness, Focus, Anxiety',
-                            ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Duration *',
-                              controller: _durationController,
-                              hint: 'e.g. 10 min',
-                              validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Cover Image URL *',
-                        controller: _imageUrlController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Cover image URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Audio Stream URL *',
-                        controller: _soundTrackController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Audio stream URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Description',
-                        controller: _descriptionController,
-                        hint: 'Brief session description and guidance steps...',
-                        maxLines: 3,
-                      ),
-                      Spacing.s12.h,
-                      SwitchListTile(
-                        value: _isFeatured,
-                        onChanged: (val) => setState(() => _isFeatured = val),
-                        title: Text('Feature on Home Banner', style: r14.copyWith(fontWeight: FontWeight.w600)),
-                        subtitle: Text('Prominently display this session on patient home dashboard', style: r12.copyWith(color: slate[400])),
-                        activeThumbColor: primary,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ],
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                Spacing.s16.h,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                          label: 'Title *',
+                          controller: _titleController,
+                          hint: 'e.g. Morning Mindfulness',
+                          validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
+                        ),
+                        Spacing.s12.h,
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 420) {
+                              return Column(
+                                children: [
+                                  _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Mindfulness, Focus, Anxiety',
+                                  ),
+                                  Spacing.s12.h,
+                                  _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 10 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ],
+                              );
+                            }
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Mindfulness, Focus, Anxiety',
+                                  ),
+                                ),
+                                Spacing.s12.w,
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 10 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Cover Image URL *',
+                          controller: _imageUrlController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Cover image URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Audio Stream URL *',
+                          controller: _soundTrackController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Audio stream URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Description',
+                          controller: _descriptionController,
+                          hint: 'Brief session description and guidance steps...',
+                          maxLines: 3,
+                        ),
+                        Spacing.s12.h,
+                        SwitchListTile(
+                          value: _isFeatured,
+                          onChanged: (val) => setState(() => _isFeatured = val),
+                          title: Text('Feature on Home Banner', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                          subtitle: Text('Prominently display this session on patient home dashboard', style: r12.copyWith(color: slate[400])),
+                          activeThumbColor: primary,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Spacing.s20.h,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: Text(
-                      'Cancel',
-                      style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
-                    ),
-                  ),
-                  Spacing.s12.w,
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
+                Spacing.s16.h,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Cancel',
+                        style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
                       ),
-                      elevation: 0,
                     ),
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 18.w,
-                            height: 18.w,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    Spacing.s12.w,
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              isEditing ? 'Save Changes' : 'Create Meditation',
+                              style: r14.copyWith(
+                                color: white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          )
-                        : Text(
-                            isEditing ? 'Save Changes' : 'Create Meditation',
-                            style: r14.copyWith(
-                              color: white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                  ),
-                ],
-              ),
-            ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -290,7 +326,7 @@ class _AdminMeditationFormDialogState extends State<AdminMeditationFormDialog> {
             hintStyle: r14.copyWith(color: slate[400]),
             filled: true,
             fillColor: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
-            contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
               borderSide: BorderSide(

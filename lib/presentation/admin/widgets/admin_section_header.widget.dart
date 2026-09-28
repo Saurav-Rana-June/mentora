@@ -39,157 +39,248 @@ class AdminSectionHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Top row: Title and Add Button
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 680;
+        final hasButtons = (buttonText != null && onAddPressed != null) ||
+            (secondaryButtonText != null && onSecondaryPressed != null) ||
+            (extraActions != null && extraActions!.isNotEmpty) ||
+            (onRefresh != null);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: h2.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: theme.textTheme.headlineLarge?.color,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  Spacing.s4.h,
-                  Text(
-                    subtitle!,
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodySmall?.color,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            Row(
-              children: [
-                if (onRefresh != null)
-                  IconButton(
-                    onPressed: onRefresh,
-                    icon: Icon(
-                      Icons.refresh_rounded,
-                      color: theme.textTheme.bodyMedium?.color,
-                      size: 20.spMin,
-                    ),
-                    tooltip: 'Refresh',
-                  ),
-                if (extraActions != null) ...extraActions!,
-                if (secondaryButtonText != null && onSecondaryPressed != null) ...[
-                  Spacing.s12.w,
-                  OutlinedButton.icon(
-                    onPressed: onSecondaryPressed,
-                    icon: Icon(
-                      secondaryButtonIcon ?? Icons.tune_rounded,
-                      size: 18.spMin,
-                      color: primary,
-                    ),
-                    label: Text(
-                      secondaryButtonText!,
-                      style: r14.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: primary,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: primary.withValues(alpha: 0.35),
-                        width: 1.2,
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 12.h,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                  ),
-                ],
-                if (buttonText != null && onAddPressed != null) ...[
-                  Spacing.s12.w,
-                  ElevatedButton.icon(
-                    onPressed: onAddPressed,
-                    icon: Icon(Icons.add_rounded, size: 18.spMin, color: white),
-                    label: Text(
-                      buttonText!,
-                      style: r14.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18.w,
-                        vertical: 12.h,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-        Spacing.s16.h,
-        // Search bar & filters
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (onSearchChanged != null)
-              Expanded(
-                child: Container(
-                  height: 44.h,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF242522) : white,
-                    borderRadius: BorderRadius.circular(10.r),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : slate[200]!,
-                    ),
-                  ),
-                  child: TextField(
-                    onChanged: onSearchChanged,
-                    textAlignVertical: TextAlignVertical.center,
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodyLarge?.color,
-                    ),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: searchHint,
-                      hintStyle: r14.copyWith(color: slate[400]),
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        size: 20.spMin,
-                        color: slate[400],
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 14.w,
-                        vertical: 10.h,
-                      ),
-                    ),
-                  ),
+            // Top Section: Title, Subtitle, and Action Buttons
+            if (isCompact) ...[
+              Text(
+                title,
+                style: h2.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: theme.textTheme.headlineLarge?.color,
                 ),
               ),
-            if (filterWidget != null) ...[
-              Spacing.s12.w,
-              filterWidget!,
+              if (subtitle != null) ...[
+                Spacing.s4.h,
+                Text(
+                  subtitle!,
+                  style: r12.copyWith(
+                    color: theme.textTheme.bodySmall?.color,
+                  ),
+                ),
+              ],
+              if (hasButtons) ...[
+                Spacing.s12.h,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: _buildActionButtons(context, isDark, isCompact: true),
+                ),
+              ],
+            ] else ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: h2.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: theme.textTheme.headlineLarge?.color,
+                          ),
+                        ),
+                        if (subtitle != null) ...[
+                          Spacing.s4.h,
+                          Text(
+                            subtitle!,
+                            style: r14.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (hasButtons) ...[
+                    Spacing.s16.w,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: _buildActionButtons(context, isDark, isCompact: false),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+            Spacing.s16.h,
+            // Search Bar & Filter Row
+            if (onSearchChanged != null || filterWidget != null) ...[
+              if (isCompact && filterWidget != null && onSearchChanged != null) ...[
+                _buildSearchBar(context, isDark),
+                Spacing.s8.h,
+                filterWidget!,
+              ] else ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (onSearchChanged != null)
+                      Expanded(
+                        child: _buildSearchBar(context, isDark),
+                      ),
+                    if (filterWidget != null) ...[
+                      Spacing.s12.w,
+                      filterWidget!,
+                    ],
+                  ],
+                ),
+              ],
             ],
           ],
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildActionButtons(
+    BuildContext context,
+    bool isDark, {
+    required bool isCompact,
+  }) {
+    final theme = Theme.of(context);
+    final List<Widget> buttons = [];
+
+    if (onRefresh != null) {
+      buttons.add(
+        IconButton(
+          onPressed: onRefresh,
+          icon: Icon(
+            Icons.refresh_rounded,
+            color: theme.textTheme.bodyMedium?.color,
+            size: 20,
+          ),
+          tooltip: 'Refresh list',
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
         ),
-      ],
+      );
+    }
+
+    if (extraActions != null) {
+      for (final action in extraActions!) {
+        if (!isCompact && buttons.isNotEmpty) {
+          buttons.add(Spacing.s8.w);
+        }
+        buttons.add(action);
+      }
+    }
+
+    if (secondaryButtonText != null && onSecondaryPressed != null) {
+      if (!isCompact && buttons.isNotEmpty) {
+        buttons.add(Spacing.s12.w);
+      }
+      buttons.add(
+        OutlinedButton.icon(
+          onPressed: onSecondaryPressed,
+          icon: Icon(
+            secondaryButtonIcon ?? Icons.tune_rounded,
+            size: 16,
+            color: primary,
+          ),
+          label: Text(
+            secondaryButtonText!,
+            style: r14.copyWith(
+              fontWeight: FontWeight.w600,
+              color: primary,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(
+              color: primary.withValues(alpha: 0.35),
+              width: 1.2,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 12 : 16,
+              vertical: isCompact ? 10 : 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (buttonText != null && onAddPressed != null) {
+      if (!isCompact && buttons.isNotEmpty) {
+        buttons.add(Spacing.s12.w);
+      }
+      buttons.add(
+        ElevatedButton.icon(
+          onPressed: onAddPressed,
+          icon: Icon(Icons.add_rounded, size: 18, color: white),
+          label: Text(
+            buttonText!,
+            style: r14.copyWith(
+              fontWeight: FontWeight.w600,
+              color: white,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primary,
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 14 : 18,
+              vertical: isCompact ? 10 : 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            elevation: 0,
+          ),
+        ),
+      );
+    }
+
+    return buttons;
+  }
+
+  Widget _buildSearchBar(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
+
+    return Container(
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF242522) : white,
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+        ),
+      ),
+      child: TextField(
+        onChanged: onSearchChanged,
+        textAlignVertical: TextAlignVertical.center,
+        style: r14.copyWith(
+          color: theme.textTheme.bodyLarge?.color,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: searchHint,
+          hintStyle: r14.copyWith(color: slate[400]),
+          prefixIcon: Icon(
+            Icons.search_rounded,
+            size: 20,
+            color: slate[400],
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 10,
+          ),
+        ),
+      ),
     );
   }
 }

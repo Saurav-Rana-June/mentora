@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/video_session.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_video_session.controller.dart';
 
@@ -109,14 +110,19 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isEditing = widget.session != null;
+    final isMobile = AppScale.isMobile;
 
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 40,
+        vertical: 24,
+      ),
       child: Container(
-        width: 520.w,
+        width: AppScale.dialogMaxWidth(520),
         constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
+        padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -126,11 +132,13 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isEditing ? 'Edit Video Session' : 'Add Video Session',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+                  Expanded(
+                    child: Text(
+                      isEditing ? 'Edit Video Session' : 'Add Video Session',
+                      style: h3.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.headlineLarge?.color,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -153,27 +161,43 @@ class _AdminVideoSessionFormDialogState extends State<AdminVideoSessionFormDialo
                         validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
                       ),
                       Spacing.s12.h,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Category *',
-                              controller: _categoryController,
-                              hint: 'Stress Management, Sleep, Focus',
-                              validator: (v) => v == null || v.isEmpty ? 'Category required' : null,
+                      if (isMobile) ...[
+                        _buildTextField(
+                          label: 'Category *',
+                          controller: _categoryController,
+                          hint: 'Stress Management, Sleep, Focus',
+                          validator: (v) => v == null || v.isEmpty ? 'Category required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Duration *',
+                          controller: _durationController,
+                          hint: 'e.g. 10 mins',
+                          validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Category *',
+                                controller: _categoryController,
+                                hint: 'Stress Management, Sleep, Focus',
+                                validator: (v) => v == null || v.isEmpty ? 'Category required' : null,
+                              ),
                             ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Duration *',
-                              controller: _durationController,
-                              hint: 'e.g. 10 mins',
-                              validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                            Spacing.s12.w,
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Duration *',
+                                controller: _durationController,
+                                hint: 'e.g. 10 mins',
+                                validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                       Spacing.s12.h,
                       _buildTextField(
                         label: 'Cover Image URL *',

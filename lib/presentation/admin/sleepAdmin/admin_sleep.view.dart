@@ -6,6 +6,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/data/model/calm_music.model.dart';
 import 'package:Mentora/data/model/sound.model.dart';
 import 'package:Mentora/data/model/story.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import 'package:Mentora/widgets/others/custom.segmented.tab.widget.dart';
@@ -69,7 +70,10 @@ class _AdminSleepViewState extends State<AdminSleepView>
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,19 +104,19 @@ class _AdminSleepViewState extends State<AdminSleepView>
           Obx(() {
             final segmentTabs = [
               SegmentTab(
-                label: '🌧️  Ambient Sounds (${controller.sounds.length})',
+                label: '🌧️ Sounds (${controller.sounds.length})',
                 color: primary,
                 selectedTextColor: Colors.white,
                 textColor: isDark ? slate[400] : slate[600],
               ),
               SegmentTab(
-                label: '🎵  Calm Music (${controller.musicList.length})',
+                label: '🎵 Music (${controller.musicList.length})',
                 color: primary,
                 selectedTextColor: Colors.white,
                 textColor: isDark ? slate[400] : slate[600],
               ),
               SegmentTab(
-                label: '📖  Bedtime Stories (${controller.stories.length})',
+                label: '📖 Stories (${controller.stories.length})',
                 color: primary,
                 selectedTextColor: Colors.white,
                 textColor: isDark ? slate[400] : slate[600],
@@ -122,11 +126,13 @@ class _AdminSleepViewState extends State<AdminSleepView>
             return Align(
               alignment: Alignment.centerLeft,
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 640.w),
+                constraints: BoxConstraints(
+                  maxWidth: AppScale.isMobile ? double.infinity : 600,
+                ),
                 child: CustomSegmentedTab(
                   tabs: segmentTabs,
                   controller: _tabController,
-                  height: 44.h,
+                  height: 44,
                   indicatorPadding: EdgeInsets.all(3.r),
                   textStyle: r14.copyWith(
                     fontWeight: FontWeight.w500,
@@ -203,16 +209,20 @@ class _AdminSleepViewState extends State<AdminSleepView>
       builder: (context, constraints) {
         final crossAxisCount = constraints.maxWidth > 1100
             ? 3
-            : (constraints.maxWidth > 700 ? 2 : 1);
+            : (constraints.maxWidth > 650 ? 2 : 1);
+
+        final double childAspectRatio = crossAxisCount == 1
+            ? (constraints.maxWidth < 400 ? 1.55 : 1.85)
+            : 1.5;
 
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 16.w,
-            mainAxisSpacing: 16.h,
-            childAspectRatio: 1.6,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.sounds.length,
           itemBuilder: (context, index) {
@@ -234,7 +244,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -242,8 +252,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 52.w,
-                  height: 52.w,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
@@ -256,7 +266,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                   child: Center(
                     child: Text(
                       sound.emoji ?? '🌧️',
-                      style: TextStyle(fontSize: 24.spMin),
+                      style: const TextStyle(fontSize: 22),
                     ),
                   ),
                 ),
@@ -266,9 +276,9 @@ class _AdminSleepViewState extends State<AdminSleepView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 3.h,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
@@ -292,15 +302,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2.h),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           Icon(
                             Icons.graphic_eq_rounded,
-                            size: 13.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               sound.audioUrl?.split('/').last ?? 'Looping audio',
@@ -331,7 +341,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -356,20 +366,20 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Tooltip(
                       message: 'Delete Sound',
                       child: InkWell(
@@ -381,14 +391,14 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -416,16 +426,20 @@ class _AdminSleepViewState extends State<AdminSleepView>
       builder: (context, constraints) {
         final crossAxisCount = constraints.maxWidth > 1100
             ? 3
-            : (constraints.maxWidth > 700 ? 2 : 1);
+            : (constraints.maxWidth > 650 ? 2 : 1);
+
+        final double childAspectRatio = crossAxisCount == 1
+            ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+            : 1.35;
 
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 16.w,
-            mainAxisSpacing: 16.h,
-            childAspectRatio: 1.35,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.musicList.length,
           itemBuilder: (context, index) {
@@ -447,7 +461,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -455,8 +469,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 56.w,
-                  height: 56.w,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -469,15 +483,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
                     borderRadius: BorderRadius.circular(11.r),
                     child: Image.network(
                       item.imageUrl ?? '',
-                      width: 56.w,
-                      height: 56.w,
+                      width: 52,
+                      height: 52,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
-                        width: 56.w,
-                        height: 56.w,
+                        width: 52,
+                        height: 52,
                         color: primary.withValues(alpha: 0.15),
                         child: const Center(
-                          child: Text('🎵', style: TextStyle(fontSize: 22)),
+                          child: Text('🎵', style: TextStyle(fontSize: 20)),
                         ),
                       ),
                     ),
@@ -489,9 +503,9 @@ class _AdminSleepViewState extends State<AdminSleepView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 3.h,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
@@ -515,15 +529,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2.h),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule_rounded,
-                            size: 12.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Text(
                             item.duration ?? '10 min',
                             style: r12.copyWith(
@@ -538,7 +552,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 8),
             Expanded(
               child: Text(
                 item.description ?? '',
@@ -550,7 +564,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: 6.h),
+            const SizedBox(height: 6),
             Divider(
               height: 1,
               color: isDark
@@ -562,7 +576,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -587,22 +601,22 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Tooltip(
-                      message: 'Delete Music',
+                      message: 'Delete Music Track',
                       child: InkWell(
                         onTap: () => AdminDeleteDialog.show(
                           context: context,
@@ -612,14 +626,14 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -647,16 +661,20 @@ class _AdminSleepViewState extends State<AdminSleepView>
       builder: (context, constraints) {
         final crossAxisCount = constraints.maxWidth > 1100
             ? 3
-            : (constraints.maxWidth > 700 ? 2 : 1);
+            : (constraints.maxWidth > 650 ? 2 : 1);
+
+        final double childAspectRatio = crossAxisCount == 1
+            ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+            : 1.35;
 
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 16.w,
-            mainAxisSpacing: 16.h,
-            childAspectRatio: 1.35,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.stories.length,
           itemBuilder: (context, index) {
@@ -678,7 +696,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -686,8 +704,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 56.w,
-                  height: 56.w,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -700,15 +718,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
                     borderRadius: BorderRadius.circular(11.r),
                     child: Image.network(
                       story.imageUrl ?? '',
-                      width: 56.w,
-                      height: 56.w,
+                      width: 52,
+                      height: 52,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
-                        width: 56.w,
-                        height: 56.w,
+                        width: 52,
+                        height: 52,
                         color: primary.withValues(alpha: 0.15),
                         child: const Center(
-                          child: Text('📖', style: TextStyle(fontSize: 22)),
+                          child: Text('📖', style: TextStyle(fontSize: 20)),
                         ),
                       ),
                     ),
@@ -720,9 +738,9 @@ class _AdminSleepViewState extends State<AdminSleepView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 3.h,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
@@ -738,7 +756,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                       ),
                       Spacing.s4.h,
                       Text(
-                        story.title ?? 'Bedtime Story',
+                        story.title ?? 'Story',
                         style: r14.copyWith(
                           fontWeight: FontWeight.w700,
                           color: theme.textTheme.headlineLarge?.color,
@@ -746,15 +764,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 2.h),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule_rounded,
-                            size: 12.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Text(
                             story.duration ?? '15 min',
                             style: r12.copyWith(
@@ -769,7 +787,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 8),
             Expanded(
               child: Text(
                 story.description ?? '',
@@ -781,7 +799,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: 6.h),
+            const SizedBox(height: 6),
             Divider(
               height: 1,
               color: isDark
@@ -793,7 +811,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -818,20 +836,20 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Tooltip(
                       message: 'Delete Story',
                       child: InkWell(
@@ -843,14 +861,14 @@ class _AdminSleepViewState extends State<AdminSleepView>
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -869,12 +887,15 @@ class _AdminSleepViewState extends State<AdminSleepView>
   Widget _buildEmptyState(String message) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(48.h),
+        padding: const EdgeInsets.all(48),
         child: Column(
           children: [
-            Icon(Icons.nightlight_round, size: 48.spMin, color: slate[400]),
+            Icon(Icons.bedtime_rounded, size: 48, color: slate[400]),
             Spacing.s12.h,
-            Text(message, style: h3.copyWith(color: slate[500])),
+            Text(
+              message,
+              style: h3.copyWith(color: slate[500]),
+            ),
           ],
         ),
       ),

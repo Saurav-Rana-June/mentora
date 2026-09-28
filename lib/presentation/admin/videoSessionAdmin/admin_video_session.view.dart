@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/video_session.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -22,7 +23,10 @@ class AdminVideoSessionView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(context),
+        vertical: AppScale.pagePaddingVertical(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -73,7 +77,7 @@ class AdminVideoSessionView extends StatelessWidget {
                           },
                           icon: Icon(
                             Icons.keyboard_arrow_down_rounded,
-                            size: 20.spMin,
+                            size: 20,
                             color: theme.textTheme.bodyMedium?.color,
                           ),
                         ),
@@ -94,10 +98,10 @@ class AdminVideoSessionView extends StatelessWidget {
             if (controller.sessions.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: EdgeInsets.all(AppScale.isMobile ? 24.0 : 48.0),
                   child: Column(
                     children: [
-                      Icon(Icons.video_library_rounded, size: 48.spMin, color: slate[400]),
+                      Icon(Icons.video_library_rounded, size: 48, color: slate[400]),
                       Spacing.s12.h,
                       Text(
                         'No video sessions found',
@@ -118,7 +122,8 @@ class AdminVideoSessionView extends StatelessWidget {
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 1100
                     ? 3
-                    : (constraints.maxWidth > 700 ? 2 : 1);
+                    : (constraints.maxWidth > 650 ? 2 : 1);
+                final childAspectRatio = crossAxisCount == 1 ? 1.6 : 1.35;
 
                 return GridView.builder(
                   shrinkWrap: true,
@@ -127,7 +132,7 @@ class AdminVideoSessionView extends StatelessWidget {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16.w,
                     mainAxisSpacing: 16.h,
-                    childAspectRatio: 1.35,
+                    childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.sessions.length,
                   itemBuilder: (context, index) {
@@ -150,10 +155,11 @@ class AdminVideoSessionView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(isMobile ? 14.0 : 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -161,8 +167,8 @@ class AdminVideoSessionView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 58.w,
-                  height: 58.w,
+                  width: isMobile ? 48.0 : 58.0,
+                  height: isMobile ? 48.0 : 58.0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -182,7 +188,7 @@ class AdminVideoSessionView extends StatelessWidget {
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             color: primary.withValues(alpha: 0.15),
-                            child: Icon(Icons.play_circle_fill_rounded, color: primary, size: 28.spMin),
+                            child: Icon(Icons.play_circle_fill_rounded, color: primary, size: 28),
                           ),
                         ),
                         Container(
@@ -190,13 +196,13 @@ class AdminVideoSessionView extends StatelessWidget {
                         ),
                         Center(
                           child: Container(
-                            width: 24.w,
-                            height: 24.w,
+                            width: isMobile ? 20.0 : 24.0,
+                            height: isMobile ? 20.0 : 24.0,
                             decoration: BoxDecoration(
                               color: Colors.black.withValues(alpha: 0.55),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.play_arrow_rounded, color: white, size: 16.spMin),
+                            child: Icon(Icons.play_arrow_rounded, color: white, size: 14),
                           ),
                         ),
                       ],
@@ -209,7 +215,7 @@ class AdminVideoSessionView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6.r),
@@ -234,10 +240,10 @@ class AdminVideoSessionView extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.schedule_rounded,
-                            size: 12.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Text(
                             item.duration,
                             style: r12.copyWith(
@@ -276,7 +282,7 @@ class AdminVideoSessionView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -291,6 +297,7 @@ class AdminVideoSessionView extends StatelessWidget {
                   ),
                 ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Tooltip(
                       message: 'Edit Video Session',
@@ -301,20 +308,20 @@ class AdminVideoSessionView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: isMobile ? 6.0 : 8.0),
                     Tooltip(
                       message: 'Delete Video Session',
                       child: InkWell(
@@ -326,14 +333,14 @@ class AdminVideoSessionView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),

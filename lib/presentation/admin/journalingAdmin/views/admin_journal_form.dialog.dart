@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/journal_question.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_journaling.controller.dart';
 
@@ -74,13 +75,18 @@ class _AdminJournalQuestionFormDialogState extends State<AdminJournalQuestionFor
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isEditing = widget.question != null;
+    final isMobile = AppScale.isMobile;
 
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 40,
+        vertical: 24,
+      ),
       child: Container(
-        width: 480.w,
-        padding: EdgeInsets.all(24.w),
+        width: AppScale.dialogMaxWidth(480),
+        padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -90,11 +96,13 @@ class _AdminJournalQuestionFormDialogState extends State<AdminJournalQuestionFor
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isEditing ? 'Edit Prompt Question' : 'Add Journal Prompt',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+                  Expanded(
+                    child: Text(
+                      isEditing ? 'Edit Prompt Question' : 'Add Journal Prompt',
+                      style: h3.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.headlineLarge?.color,
+                      ),
                     ),
                   ),
                   IconButton(

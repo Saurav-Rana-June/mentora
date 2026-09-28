@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
 class AdminDeleteDialog extends StatefulWidget {
@@ -53,131 +54,139 @@ class _AdminDeleteDialogState extends State<AdminDeleteDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),
-      child: Container(
-        width: 440.w,
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(10.r),
-                  decoration: BoxDecoration(
-                    color: dangerColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Icon(
-                    Icons.delete_forever_rounded,
-                    color: dangerColor,
-                    size: 24.spMin,
-                  ),
-                ),
-                Spacing.s12.w,
-                Expanded(
-                  child: Text(
-                    widget.title,
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 24,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(440),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: dangerColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Icon(
+                      Icons.delete_forever_rounded,
+                      color: dangerColor,
+                      size: 24,
                     ),
                   ),
-                ),
-              ],
-            ),
-            Spacing.s16.h,
-            Text(
-              widget.message,
-              style: r14.copyWith(
-                color: theme.textTheme.bodyMedium?.color,
+                  Spacing.s12.w,
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: h3.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.headlineLarge?.color,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Spacing.s12.h,
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF282926) : const Color(0xFFF6F8F2),
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : slate[200]!,
-                ),
-              ),
-              child: Text(
-                widget.itemName,
+              Spacing.s16.h,
+              Text(
+                widget.message,
                 style: r14.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.textTheme.bodyLarge?.color,
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Spacing.s24.h,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
-                  child: Text(
-                    'Cancel',
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodyMedium?.color,
-                      fontWeight: FontWeight.w600,
-                    ),
+              Spacing.s12.h,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF282926) : const Color(0xFFF6F8F2),
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : slate[200]!,
                   ),
                 ),
-                Spacing.s12.w,
-                ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          setState(() => _isLoading = true);
-                          try {
-                            await widget.onConfirm();
-                            if (context.mounted) {
-                              Navigator.of(context, rootNavigator: true).pop(true);
-                            }
-                          } catch (_) {
-                            if (mounted) {
-                              setState(() => _isLoading = false);
-                            }
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: dangerColor,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 18.w,
-                      vertical: 10.h,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    elevation: 0,
+                child: Text(
+                  widget.itemName,
+                  style: r14.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 18.w,
-                          height: 18.w,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text(
-                          'Delete',
-                          style: r14.copyWith(
-                            color: white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
-          ],
+              ),
+              Spacing.s24.h,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
+                    child: Text(
+                      'Cancel',
+                      style: r14.copyWith(
+                        color: theme.textTheme.bodyMedium?.color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Spacing.s12.w,
+                  ElevatedButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            setState(() => _isLoading = true);
+                            try {
+                              await widget.onConfirm();
+                              if (context.mounted) {
+                                Navigator.of(context, rootNavigator: true).pop(true);
+                              }
+                            } catch (_) {
+                              if (mounted) {
+                                setState(() => _isLoading = false);
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: dangerColor,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            'Delete',
+                            style: r14.copyWith(
+                              color: white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

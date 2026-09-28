@@ -31,6 +31,7 @@ class MentoraCmsApp extends StatelessWidget {
       designSize: const Size(1440, 900),
       minTextAdapt: true,
       splitScreenMode: true,
+      rebuildFactor: RebuildFactors.change,
       builder: (context, child) {
         return GetMaterialApp(
           title: "Mentora CMS",

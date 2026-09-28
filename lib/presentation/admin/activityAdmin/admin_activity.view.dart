@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/activity.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -22,7 +23,10 @@ class AdminActivityView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(context),
+        vertical: AppScale.pagePaddingVertical(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -72,7 +76,7 @@ class AdminActivityView extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      size: 20.spMin,
+                      size: 20,
                       color: theme.textTheme.bodyMedium?.color,
                     ),
                   ),
@@ -93,10 +97,10 @@ class AdminActivityView extends StatelessWidget {
             if (list.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: EdgeInsets.all(AppScale.isMobile ? 24.0 : 48.0),
                   child: Column(
                     children: [
-                      Icon(Icons.assignment_outlined, size: 48.spMin, color: slate[400]),
+                      Icon(Icons.assignment_outlined, size: 48, color: slate[400]),
                       Spacing.s12.h,
                       Text(
                         'No activities found',
@@ -117,7 +121,8 @@ class AdminActivityView extends StatelessWidget {
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 1100
                     ? 3
-                    : (constraints.maxWidth > 700 ? 2 : 1);
+                    : (constraints.maxWidth > 650 ? 2 : 1);
+                final childAspectRatio = crossAxisCount == 1 ? 1.6 : 1.35;
 
                 return GridView.builder(
                   shrinkWrap: true,
@@ -126,7 +131,7 @@ class AdminActivityView extends StatelessWidget {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16.w,
                     mainAxisSpacing: 16.h,
-                    childAspectRatio: 1.35,
+                    childAspectRatio: childAspectRatio,
                   ),
                   itemCount: list.length,
                   itemBuilder: (context, index) {
@@ -149,10 +154,11 @@ class AdminActivityView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(isMobile ? 14.0 : 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -160,8 +166,8 @@ class AdminActivityView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 50.w,
-                  height: 50.w,
+                  width: isMobile ? 42.0 : 48.0,
+                  height: isMobile ? 42.0 : 48.0,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
@@ -176,7 +182,7 @@ class AdminActivityView extends StatelessWidget {
                       _getActivityIcon(item.icon),
                       style: TextStyle(
                         fontFamily: 'FontAwesomeSolid',
-                        fontSize: 18.spMin,
+                        fontSize: isMobile ? 16 : 18,
                         color: primary,
                       ),
                     ),
@@ -187,10 +193,12 @@ class AdminActivityView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: 6.0,
+                        runSpacing: 4.0,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6.r),
@@ -200,10 +208,9 @@ class AdminActivityView extends StatelessWidget {
                               style: r10.copyWith(color: primary, fontWeight: FontWeight.w700),
                             ),
                           ),
-                          if (item.isSafetyPriority) ...[
-                            SizedBox(width: 6.w),
+                          if (item.isSafetyPriority)
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                               decoration: BoxDecoration(
                                 color: dangerColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6.r),
@@ -213,7 +220,6 @@ class AdminActivityView extends StatelessWidget {
                                 style: r10.copyWith(color: dangerColor, fontWeight: FontWeight.w700),
                               ),
                             ),
-                          ],
                         ],
                       ),
                       Spacing.s4.h,
@@ -231,10 +237,10 @@ class AdminActivityView extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.schedule_rounded,
-                            size: 12.spMin,
+                            size: 14,
                             color: slate[400],
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Text(
                             item.duration,
                             style: r12.copyWith(
@@ -253,11 +259,11 @@ class AdminActivityView extends StatelessWidget {
             // Tags
             if (item.tags.isNotEmpty) ...[
               Wrap(
-                spacing: 4.w,
-                runSpacing: 4.h,
+                spacing: 4.0,
+                runSpacing: 4.0,
                 children: item.tags.take(3).map((tag) {
                   return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF282926) : const Color(0xFFF1F3EB),
                       borderRadius: BorderRadius.circular(4.r),
@@ -293,10 +299,12 @@ class AdminActivityView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Wrap(
+                  spacing: 6.0,
+                  runSpacing: 4.0,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF282926) : slate[100],
                         borderRadius: BorderRadius.circular(4.r),
@@ -310,9 +318,8 @@ class AdminActivityView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 6.w),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: item.isActive
                             ? successColor.withValues(alpha: 0.12)
@@ -330,6 +337,7 @@ class AdminActivityView extends StatelessWidget {
                   ],
                 ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Tooltip(
                       message: 'Edit Activity',
@@ -340,20 +348,20 @@ class AdminActivityView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: isMobile ? 6.0 : 8.0),
                     Tooltip(
                       message: 'Archive Activity',
                       child: InkWell(
@@ -365,14 +373,14 @@ class AdminActivityView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -406,9 +414,9 @@ class AdminActivityView extends StatelessWidget {
       case 'heart':
       case 'gratitude':
         return '\u{f004}'; // heart
-      case 'running':
       case 'movement':
       case 'walking':
+      case 'running':
         return '\u{f70c}'; // walking
       default:
         return '\u{f0ae}'; // tasks

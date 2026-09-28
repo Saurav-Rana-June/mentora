@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'package:Mentora/widgets/fields/custom_textfield.widget.dart';
@@ -20,18 +20,26 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenWrapper(safeAreaTop: true, body: buildBody(context));
+    // Listen for resize
+    MediaQuery.of(context);
+
+    return CustomScreenWrapper(
+      safeAreaTop: true,
+      body: buildBody(context),
+    );
   }
 
   Widget buildBody(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s16.symmetric.horizontal,
-          vertical: Spacing.s16.symmetric.horizontal,
+          horizontal: AppScale.pagePaddingHorizontal(),
+          vertical: 24,
         ),
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 480.w),
+          constraints: BoxConstraints(
+            maxWidth: AppScale.isMobile ? double.infinity : 480,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,8 +66,8 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 52.spMin,
-              width: 52.spMin,
+              height: 48,
+              width: 48,
               child: Image.asset('assets/logos/logo.png', fit: BoxFit.contain),
             ),
             Spacing.s12.w,
@@ -83,9 +91,9 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
         ),
         Spacing.s12.h,
         Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: Spacing.s12.symmetric.horizontal,
-            vertical: Spacing.s4.symmetric.horizontal,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 6,
           ),
           decoration: BoxDecoration(
             color: primary.withValues(alpha: isDark ? 0.15 : 0.1),
@@ -124,10 +132,7 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.s8.symmetric.horizontal,
-          vertical: Spacing.s8.symmetric.horizontal,
-        ),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: controller.formKey,
           child: Column(
@@ -149,8 +154,6 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
               buildEmailField(context),
               Spacing.s16.h,
               buildPasswordField(context),
-              // Spacing.s16.h,
-              // buildRememberAndHelpRow(context),
               Spacing.s24.h,
               buildSubmitButton(context),
             ],
@@ -351,9 +354,12 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
           ),
         ),
         Spacing.s8.w,
-        Text(
-          'Protected 256-bit encrypted administrator console',
-          style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+        Flexible(
+          child: Text(
+            'Protected 256-bit encrypted administrator console',
+            style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );

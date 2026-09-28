@@ -64,7 +64,8 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
             builder: (context, constraints) {
               final crossAxisCount = constraints.maxWidth > 1100
                   ? 3
-                  : (constraints.maxWidth > 700 ? 2 : 1);
+                  : (constraints.maxWidth > 650 ? 2 : 1);
+              final childAspectRatio = crossAxisCount == 1 ? 1.6 : widget.childAspectRatio;
 
               return GridView.builder(
                 shrinkWrap: true,
@@ -73,7 +74,7 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 16.w,
                   mainAxisSpacing: 16.h,
-                  childAspectRatio: widget.childAspectRatio,
+                  childAspectRatio: childAspectRatio,
                 ),
                 itemCount: widget.itemCount,
                 itemBuilder: (context, index) {
@@ -95,7 +96,7 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -104,8 +105,8 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
               children: [
                 if (widget.cardType == AdminSkeletonCardType.avatar)
                   Container(
-                    width: 52.w,
-                    height: 52.w,
+                    width: 48.0,
+                    height: 48.0,
                     decoration: BoxDecoration(
                       color: skeletonColor,
                       shape: BoxShape.circle,
@@ -113,8 +114,8 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
                   )
                 else
                   Container(
-                    width: 54.w,
-                    height: 54.w,
+                    width: 48.0,
+                    height: 48.0,
                     decoration: BoxDecoration(
                       color: skeletonColor,
                       borderRadius: BorderRadius.circular(12.r),

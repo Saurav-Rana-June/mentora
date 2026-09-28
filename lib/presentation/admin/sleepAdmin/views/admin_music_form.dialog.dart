@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/calm_music.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_sleep.controller.dart';
 
@@ -43,18 +44,19 @@ class _AdminMusicFormDialogState extends State<AdminMusicFormDialog> {
     super.initState();
     final m = widget.music;
     _titleController = TextEditingController(text: m?.title ?? '');
-    _categoryController = TextEditingController(text: m?.category ?? 'Music');
+    _categoryController = TextEditingController(text: m?.category ?? 'Calm Music');
     _durationController = TextEditingController(text: m?.duration ?? '10 min');
     _imageUrlController = TextEditingController(
       text: m?.imageUrl ??
-          'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5',
+          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600',
     );
     _audioUrlController = TextEditingController(
       text: m?.audioUrl ??
-          'https://www.epidemicsound.com/sound-effects/tracks/ea49cfb0-a12e-47d5-9e08-8bd8feda41f8',
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     );
     _descriptionController = TextEditingController(
-      text: m?.description ?? 'Relax your mind and drift off with this soothing music track.',
+      text: m?.description ??
+          'Relaxing acoustic and ambient instrumentation composed to support deep sleep and tranquility.',
     );
   }
 
@@ -112,125 +114,168 @@ class _AdminMusicFormDialogState extends State<AdminMusicFormDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 500.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    isEditing ? 'Edit Sleep Music Track' : 'Add Sleep Music Track',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(500),
+          maxHeight: MediaQuery.of(context).size.height * 0.90,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isEditing ? 'Edit Sleep Music Track' : 'Add Sleep Music Track',
+                        style: h3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close_rounded),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              Spacing.s16.h,
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildTextField(
-                        label: 'Track Title *',
-                        controller: _titleController,
-                        hint: 'e.g. Deep Sleep Meditation',
-                        validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
-                      ),
-                      Spacing.s12.h,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Category',
-                              controller: _categoryController,
-                              hint: 'Music, Ambient, Piano',
-                            ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Duration *',
-                              controller: _durationController,
-                              hint: 'e.g. 15 min',
-                              validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Cover Image URL *',
-                        controller: _imageUrlController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Image URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Audio Stream URL *',
-                        controller: _audioUrlController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Audio URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Description',
-                        controller: _descriptionController,
-                        hint: 'Brief description of the music track...',
-                        maxLines: 2,
-                      ),
-                    ],
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                Spacing.s16.h,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                          label: 'Track Title *',
+                          controller: _titleController,
+                          hint: 'e.g. Celestial Nightfall',
+                          validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
+                        ),
+                        Spacing.s12.h,
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 420) {
+                              return Column(
+                                children: [
+                                  _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Calm Music, Piano, Binaural',
+                                  ),
+                                  Spacing.s12.h,
+                                  _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 10 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ],
+                              );
+                            }
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Calm Music, Piano, Binaural',
+                                  ),
+                                ),
+                                Spacing.s12.w,
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 10 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Cover Image URL *',
+                          controller: _imageUrlController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Image URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Audio Stream URL *',
+                          controller: _audioUrlController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Audio stream URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Description',
+                          controller: _descriptionController,
+                          hint: 'Track notes and instruments...',
+                          maxLines: 3,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Spacing.s20.h,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: Text('Cancel', style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
-                  ),
-                  Spacing.s12.w,
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                      elevation: 0,
+                Spacing.s16.h,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Cancel',
+                        style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+                      ),
                     ),
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 18.w,
-                            height: 18.w,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    Spacing.s12.w,
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              isEditing ? 'Save Changes' : 'Create Track',
+                              style: r14.copyWith(
+                                color: white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          )
-                        : Text(
-                            isEditing ? 'Save Changes' : 'Add Track',
-                            style: r14.copyWith(color: white, fontWeight: FontWeight.w600),
-                          ),
-                  ),
-                ],
-              ),
-            ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -252,7 +297,10 @@ class _AdminMusicFormDialogState extends State<AdminMusicFormDialog> {
       children: [
         Text(
           label,
-          style: r12.copyWith(fontWeight: FontWeight.w600, color: theme.textTheme.bodyMedium?.color),
+          style: r12.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyMedium?.color,
+          ),
         ),
         Spacing.s4.h,
         TextFormField(
@@ -265,14 +313,18 @@ class _AdminMusicFormDialogState extends State<AdminMusicFormDialog> {
             hintStyle: r14.copyWith(color: slate[400]),
             filled: true,
             fillColor: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
-            contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : slate[300]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.white.withValues(alpha: 0.1) : slate[300]!,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),

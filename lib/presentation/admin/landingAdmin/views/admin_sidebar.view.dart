@@ -7,16 +7,45 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/landing_admin.controller.dart';
 
 class AdminSidebarView extends GetView<LandingAdminController> {
-  const AdminSidebarView({super.key});
+  final bool isDrawer;
+
+  const AdminSidebarView({super.key, this.isDrawer = false});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    if (isDrawer) {
+      const drawerWidth = 280.0;
+      return Container(
+        width: drawerWidth,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1F1D) : white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              offset: const Offset(4, 0),
+              blurRadius: 16,
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              buildSidebarHeader(context),
+              Expanded(child: buildSidebarNavList(context)),
+              buildSidebarAdminProfile(context),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Obx(() {
       final isCollapsed = controller.isSidebarCollapsed.value;
-      final targetWidth = isCollapsed ? 80.w : 260.w;
+      final targetWidth = isCollapsed ? 80.0 : 260.0;
 
       return AnimatedContainer(
         duration: const Duration(milliseconds: 250),
@@ -63,12 +92,12 @@ class AdminSidebarView extends GetView<LandingAdminController> {
 
   Widget buildSidebarHeader(BuildContext context) {
     final theme = Theme.of(context);
-    final isCollapsed = controller.isSidebarCollapsed.value;
+    final isCollapsed = !isDrawer && controller.isSidebarCollapsed.value;
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isCollapsed ? 12.w : 20.w,
-        vertical: isCollapsed ? 16.h : 20.h,
+        horizontal: isCollapsed ? 12 : 20,
+        vertical: isCollapsed ? 16 : 20,
       ),
       decoration: BoxDecoration(
         border: Border(
@@ -84,8 +113,8 @@ class AdminSidebarView extends GetView<LandingAdminController> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  height: 36.spMin,
-                  width: 36.spMin,
+                  height: 36,
+                  width: 36,
                   child: Image.asset(
                     'assets/logos/logo.png',
                     fit: BoxFit.contain,
@@ -95,7 +124,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                 IconButton(
                   icon: Icon(
                     Icons.menu_rounded,
-                    size: 20.spMin,
+                    size: 20,
                     color: theme.textTheme.bodyMedium?.color,
                   ),
                   onPressed: controller.toggleSidebar,
@@ -111,8 +140,8 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                   child: Row(
                     children: [
                       SizedBox(
-                        height: 38.spMin,
-                        width: 38.spMin,
+                        height: 38,
+                        width: 38,
                         child: Image.asset(
                           'assets/logos/logo.png',
                           fit: BoxFit.contain,
@@ -151,12 +180,18 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                 Spacing.s8.w,
                 IconButton(
                   icon: Icon(
-                    Icons.menu_open_rounded,
-                    size: 20.spMin,
+                    isDrawer ? Icons.close_rounded : Icons.menu_open_rounded,
+                    size: 20,
                     color: theme.textTheme.bodyMedium?.color,
                   ),
-                  onPressed: controller.toggleSidebar,
-                  tooltip: 'Collapse sidebar',
+                  onPressed: () {
+                    if (isDrawer) {
+                      Navigator.of(context).pop();
+                    } else {
+                      controller.toggleSidebar();
+                    }
+                  },
+                  tooltip: isDrawer ? 'Close drawer' : 'Collapse sidebar',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
@@ -166,12 +201,12 @@ class AdminSidebarView extends GetView<LandingAdminController> {
   }
 
   Widget buildSidebarNavList(BuildContext context) {
-    final isCollapsed = controller.isSidebarCollapsed.value;
+    final isCollapsed = !isDrawer && controller.isSidebarCollapsed.value;
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: 12.h,
-        horizontal: isCollapsed ? 8.w : 12.w,
+        vertical: 12,
+        horizontal: isCollapsed ? 8 : 12,
       ),
       itemCount: controller.menuItems.length,
       itemBuilder: (context, index) {
@@ -205,12 +240,17 @@ class AdminSidebarView extends GetView<LandingAdminController> {
       color: isSelected ? activeBg : Colors.transparent,
       borderRadius: BorderRadius.circular(10.r),
       child: InkWell(
-        onTap: () => controller.changeMenuIndex(index),
+        onTap: () {
+          controller.changeMenuIndex(index);
+          if (isDrawer) {
+            Navigator.of(context).pop();
+          }
+        },
         borderRadius: BorderRadius.circular(10.r),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: isCollapsed ? 12.w : 14.w,
-            vertical: 11.h,
+            horizontal: isCollapsed ? 12 : 14,
+            vertical: 11,
           ),
           child: Row(
             mainAxisAlignment: isCollapsed
@@ -221,7 +261,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                 item.icon,
                 style: TextStyle(
                   fontFamily: 'FontAwesomeSolid',
-                  fontSize: 16.spMin,
+                  fontSize: 16,
                   color: isSelected ? activeColor : inactiveColor,
                 ),
               ),
@@ -243,8 +283,8 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                 ),
                 if (isSelected)
                   Container(
-                    width: 6.w,
-                    height: 6.w,
+                    width: 6,
+                    height: 6,
                     decoration: BoxDecoration(
                       color: primary,
                       shape: BoxShape.circle,
@@ -266,7 +306,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
     }
 
     return Container(
-      margin: EdgeInsets.only(bottom: 6.h),
+      margin: const EdgeInsets.only(bottom: 6),
       child: navItemWidget,
     );
   }
@@ -274,12 +314,12 @@ class AdminSidebarView extends GetView<LandingAdminController> {
   Widget buildSidebarAdminProfile(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final isCollapsed = controller.isSidebarCollapsed.value;
+    final isCollapsed = !isDrawer && controller.isSidebarCollapsed.value;
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isCollapsed ? 10.w : 16.w,
-        vertical: 14.h,
+        horizontal: isCollapsed ? 10 : 16,
+        vertical: 14,
       ),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF191A18) : const Color(0xFFF9FAF7),
@@ -294,7 +334,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
               icon: Icon(
                 Icons.logout_rounded,
                 color: dangerColor,
-                size: 20.spMin,
+                size: 20,
               ),
               onPressed: controller.logout,
               tooltip: 'Logout',
@@ -308,7 +348,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                     '\u{f4fe}', // user-shield
                     style: TextStyle(
                       fontFamily: 'FontAwesomeSolid',
-                      fontSize: 14.spMin,
+                      fontSize: 14,
                       color: primary,
                     ),
                   ),
@@ -343,7 +383,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                   icon: Icon(
                     Icons.logout_rounded,
                     color: isDark ? slate[400] : slate[600],
-                    size: 18.spMin,
+                    size: 18,
                   ),
                   onPressed: controller.logout,
                   tooltip: 'Logout of CMS',

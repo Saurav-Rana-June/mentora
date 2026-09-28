@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/landing_admin.controller.dart';
 
 class AdminTopAppbarView extends GetView<LandingAdminController> {
-  const AdminTopAppbarView({super.key});
+  final bool isWideScreen;
+
+  const AdminTopAppbarView({super.key, this.isWideScreen = true});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile || !isWideScreen;
 
     return Container(
-      height: 68.h,
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      height: 64,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 12 : 24,
+      ),
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
         border: Border(
@@ -29,64 +34,108 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Obx(
-                () => controller.isSidebarCollapsed.value
-                    ? IconButton(
-                        icon: const Icon(Icons.menu_rounded),
-                        onPressed: controller.toggleSidebar,
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              Obx(
-                () => Text(
-                  controller
-                      .menuItems[controller.selectedMenuIndex.value]
-                      .title,
-                  style: h2.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: theme.textTheme.headlineMedium?.color,
+          // Left side: Menu button & Title
+          Expanded(
+            child: Row(
+              children: [
+                if (!isWideScreen)
+                  IconButton(
+                    icon: const Icon(Icons.menu_rounded),
+                    onPressed: () {
+                      controller.scaffoldKey.currentState?.openDrawer();
+                    },
+                    tooltip: 'Open navigation menu',
+                  )
+                else
+                  Obx(
+                    () => controller.isSidebarCollapsed.value
+                        ? IconButton(
+                            icon: const Icon(Icons.menu_rounded),
+                            onPressed: controller.toggleSidebar,
+                            tooltip: 'Expand sidebar',
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                Spacing.s4.w,
+                Expanded(
+                  child: Obx(
+                    () => Text(
+                      controller
+                          .menuItems[controller.selectedMenuIndex.value]
+                          .title,
+                      style: (isMobile ? h3 : h2).copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.headlineMedium?.color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          Spacing.s8.w,
+          // Right side: Status, Theme & Notifications
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: successColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(
-                    color: successColor.withValues(alpha: 0.3),
+              if (!isMobile)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: successColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: successColor.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8.w,
-                      height: 8.w,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: successColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Spacing.s8.w,
+                      Text(
+                        'API Connected',
+                        style: r12.copyWith(
+                          color: successColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Tooltip(
+                  message: 'API Backend Connected',
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: successColor.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: successColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Container(
+                      width: 8,
+                      height: 8,
                       decoration: BoxDecoration(
                         color: successColor,
                         shape: BoxShape.circle,
                       ),
                     ),
-                    Spacing.s8.w,
-                    Text(
-                      'API Backend Connected',
-                      style: r12.copyWith(
-                        color: successColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              Spacing.s12.w,
+              Spacing.s8.w,
               buildThemeModeButton(context, isDark),
-              Spacing.s12.w,
+              Spacing.s8.w,
               buildNotificationButton(context, isDark),
             ],
           ),
@@ -109,7 +158,7 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
               ? Colors.white.withValues(alpha: 0.08)
               : Colors.black.withValues(alpha: 0.05),
           child: Container(
-            padding: EdgeInsets.all(8.r),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: theme.cardColor,
               shape: BoxShape.circle,
@@ -126,7 +175,7 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
               child: Icon(
                 isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                 key: ValueKey<bool>(isDark),
-                size: 20.spMin,
+                size: 18,
                 color: isDark
                     ? const Color(0xFFFFB800)
                     : theme.textTheme.bodyMedium?.color,
@@ -152,7 +201,7 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
               ? Colors.white.withValues(alpha: 0.08)
               : Colors.black.withValues(alpha: 0.05),
           child: Container(
-            padding: EdgeInsets.all(8.r),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: theme.cardColor,
               shape: BoxShape.circle,
@@ -164,7 +213,7 @@ class AdminTopAppbarView extends GetView<LandingAdminController> {
             ),
             child: Icon(
               Icons.notifications_none_rounded,
-              size: 20.spMin,
+              size: 18,
               color: theme.textTheme.bodyMedium?.color,
             ),
           ),

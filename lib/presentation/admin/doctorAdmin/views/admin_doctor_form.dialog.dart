@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/bottomsheets/change_profile_picture.bottomsheet.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
@@ -344,35 +345,46 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 580.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.9),
-        padding: EdgeInsets.all(24.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    isEditing ? 'Edit Doctor Profile' : 'Register Doctor / Expert',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(580),
+          maxHeight: MediaQuery.of(context).size.height * 0.90,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isEditing ? 'Edit Doctor Profile' : 'Register Doctor / Expert',
+                        style: h3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close_rounded),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              Spacing.s16.h,
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                Spacing.s16.h,
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -411,7 +423,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                           icon: Icon(
                             Icons.add_photo_alternate_rounded,
                             color: primary,
-                            size: 20.spMin,
+                            size: 20,
                           ),
                           tooltip: 'Upload photo from files',
                           onPressed: _isUploadingImage
@@ -542,8 +554,9 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget buildAvatarPicker(BuildContext context) {
     final theme = Theme.of(context);
@@ -612,7 +625,7 @@ class _AdminDoctorFormDialogState extends State<AdminDoctorFormDialog> {
                   ),
                   child: Icon(
                     Icons.add_a_photo_rounded,
-                    size: 16.spMin,
+                    size: 16,
                     color: Colors.white,
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/activity.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_activity.controller.dart';
 
@@ -114,14 +115,19 @@ class _AdminActivityFormDialogState extends State<AdminActivityFormDialog> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isEditing = widget.activity != null;
+    final isMobile = AppScale.isMobile;
 
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 40,
+        vertical: 24,
+      ),
       child: Container(
-        width: 520.w,
+        width: AppScale.dialogMaxWidth(520),
         constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
+        padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -131,11 +137,13 @@ class _AdminActivityFormDialogState extends State<AdminActivityFormDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isEditing ? 'Edit Activity Plan' : 'Add Activity to Catalog',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+                  Expanded(
+                    child: Text(
+                      isEditing ? 'Edit Activity Plan' : 'Add Activity to Catalog',
+                      style: h3.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.textTheme.headlineLarge?.color,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -166,71 +174,55 @@ class _AdminActivityFormDialogState extends State<AdminActivityFormDialog> {
                         validator: (v) => v == null || v.isEmpty ? 'Caption is required' : null,
                       ),
                       Spacing.s12.h,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Category *',
-                                  style: r12.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: theme.textTheme.bodyMedium?.color,
-                                  ),
-                                ),
-                                Spacing.s4.h,
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 14.w),
-                                  decoration: BoxDecoration(
-                                    color: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
-                                    borderRadius: BorderRadius.circular(8.r),
-                                    border: Border.all(
-                                      color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: _selectedCategory,
-                                      isExpanded: true,
-                                      items: _categoryOptions.map((cat) {
-                                        return DropdownMenuItem<String>(
-                                          value: cat,
-                                          child: Text(
-                                            cat.capitalizeFirst ?? cat,
-                                            style: r14.copyWith(color: theme.textTheme.bodyLarge?.color),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (val) {
-                                        if (val != null) setState(() => _selectedCategory = val);
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
+                      if (isMobile) ...[
+                        _buildCategoryDropdown(theme, isDark),
+                        Spacing.s12.h,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Icon Identifier *',
+                                controller: _iconController,
+                                hint: 'e.g. box, lotus',
+                                validator: (v) => v == null || v.isEmpty ? 'Icon required' : null,
+                              ),
                             ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Icon Identifier *',
-                              controller: _iconController,
-                              hint: 'e.g. box, lotus, moon, book',
-                              validator: (v) => v == null || v.isEmpty ? 'Icon required' : null,
+                            Spacing.s12.w,
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Duration *',
+                                controller: _durationController,
+                                hint: 'e.g. 5 min',
+                                validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                              ),
                             ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Duration *',
-                              controller: _durationController,
-                              hint: 'e.g. 5 min',
-                              validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                          ],
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(child: _buildCategoryDropdown(theme, isDark)),
+                            Spacing.s12.w,
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Icon Identifier *',
+                                controller: _iconController,
+                                hint: 'e.g. box, lotus, moon, book',
+                                validator: (v) => v == null || v.isEmpty ? 'Icon required' : null,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                            Spacing.s12.w,
+                            Expanded(
+                              child: _buildTextField(
+                                label: 'Duration *',
+                                controller: _durationController,
+                                hint: 'e.g. 5 min',
+                                validator: (v) => v == null || v.isEmpty ? 'Duration required' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       Spacing.s12.h,
                       _buildTextField(
                         label: 'Wellness Tags (Comma Separated)',
@@ -309,6 +301,50 @@ class _AdminActivityFormDialogState extends State<AdminActivityFormDialog> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCategoryDropdown(ThemeData theme, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Category *',
+          style: r12.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyMedium?.color,
+          ),
+        ),
+        Spacing.s4.h,
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 14.w),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+            ),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _selectedCategory,
+              isExpanded: true,
+              items: _categoryOptions.map((cat) {
+                return DropdownMenuItem<String>(
+                  value: cat,
+                  child: Text(
+                    cat.capitalizeFirst ?? cat,
+                    style: r14.copyWith(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                );
+              }).toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _selectedCategory = val);
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 

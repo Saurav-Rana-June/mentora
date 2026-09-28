@@ -9,6 +9,7 @@ import 'package:my_spacing/my_spacing.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/bottomsheets/change_profile_picture.bottomsheet.dart';
 import 'package:Mentora/widgets/others/custom.avatar.dart';
@@ -411,60 +412,72 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 680.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.92),
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isEditing ? 'Edit Doctor Profile' : 'Register Doctor / Expert',
-                      style: h3.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: theme.textTheme.headlineLarge?.color,
-                      ),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 16,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(680),
+          maxHeight: MediaQuery.of(context).size.height * 0.92,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isEditing ? 'Edit Doctor Profile' : 'Register Doctor / Expert',
+                          style: h3.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: theme.textTheme.headlineLarge?.color,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Multi-part verification & onboarding workflow',
+                          style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      'Multi-part verification & onboarding workflow',
-                      style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
-            ),
-            Spacing.s16.h,
-
-            // Stepper Navigation Header
-            buildStepperHeader(context),
-            Spacing.s20.h,
-
-            // Step Content Area
-            Expanded(
-              child: SingleChildScrollView(
-                child: [
-                  buildStep1BasicInfo(context),
-                  buildStep2EducationalInfo(context),
-                  buildStep3AvailabilityInfo(context),
-                ][_currentStep],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
               ),
-            ),
-            Spacing.s16.h,
+              Spacing.s16.h,
 
-            // Bottom Navigation Actions
-            buildBottomActions(context, isEditing),
-          ],
+              // Stepper Navigation Header
+              buildStepperHeader(context),
+              Spacing.s16.h,
+
+              // Step Content Area
+              Expanded(
+                child: SingleChildScrollView(
+                  child: [
+                    buildStep1BasicInfo(context),
+                    buildStep2EducationalInfo(context),
+                    buildStep3AvailabilityInfo(context),
+                  ][_currentStep],
+                ),
+              ),
+              Spacing.s16.h,
+
+              // Bottom Navigation Actions
+              buildBottomActions(context, isEditing),
+            ],
+          ),
         ),
       ),
     );
@@ -480,7 +493,7 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
     ];
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
             ? const Color(0xFF282926)
@@ -504,13 +517,13 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
               },
               borderRadius: BorderRadius.circular(8.r),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 6.w),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 26.w,
-                      height: 26.w,
+                      width: 24,
+                      height: 24,
                       decoration: BoxDecoration(
                         color: isDone || isCurrent
                             ? primary
@@ -533,7 +546,7 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
                               ),
                       ),
                     ),
-                    Spacing.s8.w,
+                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         steps[index]['title'] as String,
@@ -657,7 +670,7 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
             hint: 'https://... or click avatar above to upload',
             validator: (v) => v == null || v.trim().isEmpty ? 'Image URL required' : null,
             suffixIcon: IconButton(
-              icon: Icon(Icons.add_photo_alternate_rounded, color: primary, size: 20.spMin),
+              icon: Icon(Icons.add_photo_alternate_rounded, color: primary, size: 20),
               tooltip: 'Upload photo from files',
               onPressed: _isUploadingImage ? null : () => _handleAvatarTap(context),
             ),
@@ -799,7 +812,7 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
             ),
             child: Row(
               children: [
-                Icon(Icons.verified_user_rounded, color: primary, size: 22.spMin),
+                Icon(Icons.verified_user_rounded, color: primary, size: 22),
                 Spacing.s12.w,
                 Expanded(
                   child: Text(
@@ -1173,7 +1186,7 @@ class _AdminDoctorWizardDialogState extends State<AdminDoctorWizardDialog> {
                   ),
                   child: Icon(
                     Icons.add_a_photo_rounded,
-                    size: 16.spMin,
+                    size: 16,
                     color: Colors.white,
                   ),
                 ),

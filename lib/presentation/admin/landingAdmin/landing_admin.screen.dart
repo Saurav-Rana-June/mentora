@@ -23,28 +23,38 @@ class LandingAdminScreen extends GetView<LandingAdminController> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScreenWrapper(
-      safeAreaTop: true,
-      scaffoldKey: controller.scaffoldKey,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWideScreen = constraints.maxWidth >= 768;
+    // Listen for resize triggers
+    MediaQuery.of(context);
 
-          return Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWideScreen = constraints.maxWidth >= 768;
+
+        return CustomScreenWrapper(
+          safeAreaTop: true,
+          scaffoldKey: controller.scaffoldKey,
+          drawer: isWideScreen
+              ? null
+              : const Drawer(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: AdminSidebarView(isDrawer: true),
+                ),
+          body: Row(
             children: [
               if (isWideScreen) const AdminSidebarView(),
-              Expanded(child: buildMainArea(context)),
+              Expanded(child: buildMainArea(context, isWideScreen)),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget buildMainArea(BuildContext context) {
+  Widget buildMainArea(BuildContext context, bool isWideScreen) {
     return Column(
       children: [
-        const AdminTopAppbarView(),
+        AdminTopAppbarView(isWideScreen: isWideScreen),
         Expanded(child: buildContentBody(context)),
       ],
     );

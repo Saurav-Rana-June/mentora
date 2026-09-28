@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/journal_question.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -20,7 +21,10 @@ class AdminJournalingView extends StatelessWidget {
     final controller = Get.put(AdminJournalingController());
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(context),
+        vertical: AppScale.pagePaddingVertical(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,10 +48,10 @@ class AdminJournalingView extends StatelessWidget {
             if (list.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: EdgeInsets.all(AppScale.isMobile ? 24.0 : 48.0),
                   child: Column(
                     children: [
-                      Icon(Icons.menu_book_rounded, size: 48.spMin, color: slate[400]),
+                      Icon(Icons.menu_book_rounded, size: 48, color: slate[400]),
                       Spacing.s12.h,
                       Text(
                         'No journaling prompts found',
@@ -88,16 +92,17 @@ class AdminJournalingView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        padding: EdgeInsets.all(isMobile ? 14.0 : 18.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 42.w,
-              height: 42.w,
+              width: isMobile ? 36.0 : 42.0,
+              height: isMobile ? 36.0 : 42.0,
               decoration: BoxDecoration(
                 color: primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10.r),
@@ -117,7 +122,7 @@ class AdminJournalingView extends StatelessWidget {
                 ),
               ),
             ),
-            Spacing.s16.w,
+            SizedBox(width: isMobile ? 12.0 : 16.0),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,10 +135,13 @@ class AdminJournalingView extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 6.h),
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8.0,
+                    runSpacing: 4.0,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: isDark ? const Color(0xFF282926) : slate[100],
                           borderRadius: BorderRadius.circular(4.r),
@@ -147,22 +155,26 @@ class AdminJournalingView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 8.w),
-                      Icon(Icons.calendar_today_rounded, size: 12.spMin, color: slate[400]),
-                      SizedBox(width: 4.w),
-                      Text(
-                        q.createdAt.toLocal().toString().split(' ')[0],
-                        style: r10.copyWith(
-                          color: isDark ? slate[400] : slate[500],
-                          fontFamily: 'monospace',
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calendar_today_rounded, size: 14, color: slate[400]),
+                          const SizedBox(width: 4),
+                          Text(
+                            q.createdAt.toLocal().toString().split(' ')[0],
+                            style: r10.copyWith(
+                              color: isDark ? slate[400] : slate[500],
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            Spacing.s12.w,
+            SizedBox(width: isMobile ? 8.0 : 12.0),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -175,20 +187,20 @@ class AdminJournalingView extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(8.r),
                     child: Container(
-                      padding: EdgeInsets.all(6.r),
+                      padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                       decoration: BoxDecoration(
                         color: primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Icon(
                         Icons.edit_outlined,
-                        size: 16.spMin,
+                        size: 16,
                         color: primary,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: isMobile ? 6.0 : 8.0),
                 Tooltip(
                   message: 'Delete Prompt',
                   child: InkWell(
@@ -200,14 +212,14 @@ class AdminJournalingView extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(8.r),
                     child: Container(
-                      padding: EdgeInsets.all(6.r),
+                      padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                       decoration: BoxDecoration(
                         color: dangerColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Icon(
                         Icons.delete_outline_rounded,
-                        size: 16.spMin,
+                        size: 16,
                         color: dangerColor,
                       ),
                     ),

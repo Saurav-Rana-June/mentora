@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../controllers/landing_admin.controller.dart';
@@ -13,7 +14,10 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -30,15 +34,19 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
   Widget buildStatCardsGrid(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final int crossAxisCount = constraints.maxWidth > 1000
+        final int crossAxisCount = constraints.maxWidth > 1050
             ? 4
-            : (constraints.maxWidth > 600 ? 2 : 1);
+            : (constraints.maxWidth > 580 ? 2 : 1);
+
+        final double childAspectRatio = crossAxisCount == 1
+            ? 2.5
+            : (crossAxisCount == 2 ? 1.85 : 1.7);
 
         return GridView.count(
           crossAxisCount: crossAxisCount,
-          crossAxisSpacing: 16.w,
-          mainAxisSpacing: 16.h,
-          childAspectRatio: 1.9,
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          childAspectRatio: childAspectRatio,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: [
@@ -92,42 +100,49 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: r12.copyWith(
-                    color: theme.textTheme.bodySmall?.color,
-                    fontWeight: FontWeight.w500,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: r12.copyWith(
+                      color: theme.textTheme.bodySmall?.color,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Spacing.s4.h,
-                Text(
-                  value,
-                  style: h2.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: theme.textTheme.headlineLarge?.color,
+                  Spacing.s4.h,
+                  Text(
+                    value,
+                    style: h2.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.textTheme.headlineLarge?.color,
+                    ),
                   ),
-                ),
-                Spacing.s4.h,
-                Text(
-                  badge,
-                  style: r10.copyWith(
-                    color: iconColor,
-                    fontWeight: FontWeight.w600,
+                  Spacing.s4.h,
+                  Text(
+                    badge,
+                    style: r10.copyWith(
+                      color: iconColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            Spacing.s8.w,
             Container(
-              width: 46.w,
-              height: 46.w,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 color: iconColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12.r),
@@ -137,7 +152,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                   icon,
                   style: TextStyle(
                     fontFamily: 'FontAwesomeSolid',
-                    fontSize: 20.spMin,
+                    fontSize: 18,
                     color: iconColor,
                   ),
                 ),
@@ -164,8 +179,8 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
         ),
         Spacing.s12.h,
         Wrap(
-          spacing: 12.w,
-          runSpacing: 12.h,
+          spacing: 10,
+          runSpacing: 10,
           children: [
             buildQuickActionButton(
               context: context,
@@ -219,7 +234,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(10.r),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(
@@ -233,7 +248,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                 icon,
                 style: TextStyle(
                   fontFamily: 'FontAwesomeSolid',
-                  fontSize: 14.spMin,
+                  fontSize: 14,
                   color: primary,
                 ),
               ),
@@ -268,7 +283,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
         Spacing.s12.h,
         CustomPrimaryCard(
           child: Padding(
-            padding: EdgeInsets.all(16.w),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 buildModuleRow(
@@ -327,62 +342,133 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
   }) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: r14.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.textTheme.bodyLarge?.color,
-                ),
-              ),
-              Spacing.s4.h,
-              Text(
-                route,
-                style: r12.copyWith(
-                  color: theme.textTheme.bodySmall?.color,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: successColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  status,
-                  style: r10.copyWith(
-                    color: successColor,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 500;
+
+        if (isNarrow) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: r14.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
+                ),
+                Spacing.s4.h,
+                Text(
+                  route,
+                  style: r12.copyWith(
+                    color: theme.textTheme.bodySmall?.color,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+                Spacing.s8.h,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: successColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        status,
+                        style: r10.copyWith(
+                          color: successColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: onManage,
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Manage',
+                        style: r14.copyWith(
+                          color: primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: r14.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                    Spacing.s4.h,
+                    Text(
+                      route,
+                      style: r12.copyWith(
+                        color: theme.textTheme.bodySmall?.color,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Spacing.s12.w,
-              TextButton(
-                onPressed: onManage,
-                child: Text(
-                  'Manage',
-                  style: r14.copyWith(
-                    color: primary,
-                    fontWeight: FontWeight.w600,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: successColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Text(
+                      status,
+                      style: r10.copyWith(
+                        color: successColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
+                  Spacing.s12.w,
+                  TextButton(
+                    onPressed: onManage,
+                    child: Text(
+                      'Manage',
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

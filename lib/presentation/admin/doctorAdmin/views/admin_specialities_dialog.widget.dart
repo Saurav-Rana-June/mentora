@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/speciality.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_doctor.controller.dart';
 
@@ -49,8 +50,10 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
                   color: theme.textTheme.headlineMedium?.color,
                 ),
               ),
-              content: SizedBox(
-                width: 440.w,
+              content: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: AppScale.dialogMaxWidth(440),
+                ),
                 child: Form(
                   key: formKey,
                   child: Column(
@@ -204,40 +207,51 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 640.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Doctor Specialities Management',
-                      style: h3.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: theme.textTheme.headlineLarge?.color,
-                      ),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(640),
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Doctor Specialities Management',
+                          style: h3.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: theme.textTheme.headlineLarge?.color,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Spacing.s4.h,
+                        Text(
+                          'Configure available clinical specialities for doctor registration & search filtering.',
+                          style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                        ),
+                      ],
                     ),
-                    Spacing.s4.h,
-                    Text(
-                      'Configure available clinical specialities for doctor registration & search filtering.',
-                      style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
-            ),
-            Spacing.s16.h,
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              Spacing.s16.h,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -280,7 +294,7 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.category_outlined, size: 40.spMin, color: slate[400]),
+                        Icon(Icons.category_outlined, size: 40, color: slate[400]),
                         Spacing.s8.h,
                         Text('No specialities configured', style: r14.copyWith(color: slate[500])),
                       ],
@@ -302,8 +316,8 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
                       child: Row(
                         children: [
                           Container(
-                            width: 36.w,
-                            height: 36.w,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8.r),
@@ -313,7 +327,7 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
                                 '\u{f0f0}', // user-md
                                 style: TextStyle(
                                   fontFamily: 'FontAwesomeSolid',
-                                  fontSize: 16.spMin,
+                                  fontSize: 16,
                                   color: primary,
                                 ),
                               ),
@@ -362,12 +376,12 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.edit_outlined, size: 18.spMin, color: primary),
+                            icon: Icon(Icons.edit_outlined, size: 18, color: primary),
                             tooltip: 'Edit Speciality',
                             onPressed: () => _showFormModal(speciality: spec),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_outline_rounded, size: 18.spMin, color: dangerColor),
+                            icon: Icon(Icons.delete_outline_rounded, size: 18, color: dangerColor),
                             tooltip: 'Delete Speciality',
                             onPressed: () => _confirmDelete(spec),
                           ),
@@ -381,6 +395,7 @@ class _AdminSpecialitiesDialogState extends State<AdminSpecialitiesDialog> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

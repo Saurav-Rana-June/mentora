@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/story.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import '../controllers/admin_sleep.controller.dart';
 
@@ -43,18 +44,19 @@ class _AdminStoryFormDialogState extends State<AdminStoryFormDialog> {
     super.initState();
     final s = widget.story;
     _titleController = TextEditingController(text: s?.title ?? '');
-    _categoryController = TextEditingController(text: s?.category ?? 'Story');
+    _categoryController = TextEditingController(text: s?.category ?? 'Bedtime Story');
     _durationController = TextEditingController(text: s?.duration ?? '15 min');
     _imageUrlController = TextEditingController(
       text: s?.imageUrl ??
-          'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0',
+          'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600',
     );
     _audioUrlController = TextEditingController(
       text: s?.audioUrl ??
-          'https://www.epidemicsound.com/sound-effects/tracks/ea49cfb0-a12e-47d5-9e08-8bd8feda41f8',
+          'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     );
     _descriptionController = TextEditingController(
-      text: s?.description ?? 'Listen to this calming bedtime story and fall asleep easily.',
+      text: s?.description ??
+          'A gentle narrated bedtime tale to calm the wandering mind into deep restorative sleep.',
     );
   }
 
@@ -112,125 +114,168 @@ class _AdminStoryFormDialogState extends State<AdminStoryFormDialog> {
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF1E1F1D) : white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      child: Container(
-        width: 500.w,
-        constraints: BoxConstraints(maxHeight: Get.height * 0.85),
-        padding: EdgeInsets.all(24.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    isEditing ? 'Edit Bedtime Story' : 'Add Bedtime Story',
-                    style: h3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.textTheme.headlineLarge?.color,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppScale.dialogMaxWidth(500),
+          maxHeight: MediaQuery.of(context).size.height * 0.90,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isEditing ? 'Edit Bedtime Story' : 'Add Bedtime Story',
+                        style: h3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: theme.textTheme.headlineLarge?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close_rounded),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              Spacing.s16.h,
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildTextField(
-                        label: 'Story Title *',
-                        controller: _titleController,
-                        hint: 'e.g. The Starry Night',
-                        validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
-                      ),
-                      Spacing.s12.h,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Category',
-                              controller: _categoryController,
-                              hint: 'Story, Fantasy, Tale',
-                            ),
-                          ),
-                          Spacing.s12.w,
-                          Expanded(
-                            child: _buildTextField(
-                              label: 'Duration *',
-                              controller: _durationController,
-                              hint: 'e.g. 20 min',
-                              validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Cover Image URL *',
-                        controller: _imageUrlController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Image URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Audio Stream URL *',
-                        controller: _audioUrlController,
-                        hint: 'https://...',
-                        validator: (v) => v == null || v.isEmpty ? 'Audio URL required' : null,
-                      ),
-                      Spacing.s12.h,
-                      _buildTextField(
-                        label: 'Story Summary / Description',
-                        controller: _descriptionController,
-                        hint: 'Brief story narrative snippet...',
-                        maxLines: 3,
-                      ),
-                    ],
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                Spacing.s16.h,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTextField(
+                          label: 'Story Title *',
+                          controller: _titleController,
+                          hint: 'e.g. The Enchanted Forest',
+                          validator: (v) => v == null || v.isEmpty ? 'Title is required' : null,
+                        ),
+                        Spacing.s12.h,
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 420) {
+                              return Column(
+                                children: [
+                                  _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Bedtime Story, Fairy Tale, Myth',
+                                  ),
+                                  Spacing.s12.h,
+                                  _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 15 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ],
+                              );
+                            }
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Category',
+                                    controller: _categoryController,
+                                    hint: 'Bedtime Story, Fairy Tale, Myth',
+                                  ),
+                                ),
+                                Spacing.s12.w,
+                                Expanded(
+                                  child: _buildTextField(
+                                    label: 'Duration *',
+                                    controller: _durationController,
+                                    hint: 'e.g. 15 min',
+                                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Cover Image URL *',
+                          controller: _imageUrlController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Cover image URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Audio Stream URL *',
+                          controller: _audioUrlController,
+                          hint: 'https://...',
+                          validator: (v) => v == null || v.isEmpty ? 'Audio stream URL required' : null,
+                        ),
+                        Spacing.s12.h,
+                        _buildTextField(
+                          label: 'Description',
+                          controller: _descriptionController,
+                          hint: 'Story synopsis and narration tone...',
+                          maxLines: 3,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Spacing.s20.h,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: Text('Cancel', style: r14.copyWith(color: theme.textTheme.bodyMedium?.color)),
-                  ),
-                  Spacing.s12.w,
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                      elevation: 0,
+                Spacing.s16.h,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Cancel',
+                        style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+                      ),
                     ),
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 18.w,
-                            height: 18.w,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    Spacing.s12.w,
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(
+                              isEditing ? 'Save Changes' : 'Create Story',
+                              style: r14.copyWith(
+                                color: white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          )
-                        : Text(
-                            isEditing ? 'Save Changes' : 'Add Story',
-                            style: r14.copyWith(color: white, fontWeight: FontWeight.w600),
-                          ),
-                  ),
-                ],
-              ),
-            ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -252,7 +297,10 @@ class _AdminStoryFormDialogState extends State<AdminStoryFormDialog> {
       children: [
         Text(
           label,
-          style: r12.copyWith(fontWeight: FontWeight.w600, color: theme.textTheme.bodyMedium?.color),
+          style: r12.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyMedium?.color,
+          ),
         ),
         Spacing.s4.h,
         TextFormField(
@@ -265,14 +313,18 @@ class _AdminStoryFormDialogState extends State<AdminStoryFormDialog> {
             hintStyle: r14.copyWith(color: slate[400]),
             filled: true,
             fillColor: isDark ? const Color(0xFF282926) : const Color(0xFFF9FAF7),
-            contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : slate[300]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.white.withValues(alpha: 0.1) : slate[300]!,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
-              borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),

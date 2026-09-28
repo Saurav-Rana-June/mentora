@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/model/breathing_pattern.model.dart';
+import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
@@ -20,7 +21,10 @@ class AdminBreathingView extends StatelessWidget {
     final controller = Get.put(AdminBreathingController());
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppScale.pagePaddingHorizontal(),
+        vertical: 20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,10 +51,10 @@ class AdminBreathingView extends StatelessWidget {
             if (controller.patterns.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(48.h),
+                  padding: const EdgeInsets.all(48),
                   child: Column(
                     children: [
-                      Icon(Icons.air_rounded, size: 48.spMin, color: slate[400]),
+                      Icon(Icons.air_rounded, size: 48, color: slate[400]),
                       Spacing.s12.h,
                       Text(
                         'No breathing techniques found',
@@ -71,16 +75,20 @@ class AdminBreathingView extends StatelessWidget {
               builder: (context, constraints) {
                 final crossAxisCount = constraints.maxWidth > 1100
                     ? 3
-                    : (constraints.maxWidth > 700 ? 2 : 1);
+                    : (constraints.maxWidth > 650 ? 2 : 1);
+
+                final double childAspectRatio = crossAxisCount == 1
+                    ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+                    : 1.35;
 
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16.w,
-                    mainAxisSpacing: 16.h,
-                    childAspectRatio: 1.35,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.patterns.length,
                   itemBuilder: (context, index) {
@@ -106,15 +114,15 @@ class AdminBreathingView extends StatelessWidget {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 50.w,
-                  height: 50.w,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
@@ -127,7 +135,7 @@ class AdminBreathingView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       item.icon?.isNotEmpty == true ? item.icon! : '🌬️',
-                      style: TextStyle(fontSize: 22.spMin),
+                      style: const TextStyle(fontSize: 20),
                     ),
                   ),
                 ),
@@ -147,7 +155,7 @@ class AdminBreathingView extends StatelessWidget {
                       ),
                       Spacing.s4.h,
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4.r),
@@ -165,16 +173,16 @@ class AdminBreathingView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 8),
             // Phase chips
             Row(
               children: [
                 _buildPhaseBadge('Inhale', '${item.inhale ?? 0}s', primary),
-                Spacing.s4.w,
+                const SizedBox(width: 4),
                 _buildPhaseBadge('Hold', '${item.holdIn ?? 0}s', infoColor),
-                Spacing.s4.w,
+                const SizedBox(width: 4),
                 _buildPhaseBadge('Exhale', '${item.exhale ?? 0}s', warningColor),
-                Spacing.s4.w,
+                const SizedBox(width: 4),
                 _buildPhaseBadge('Hold', '${item.holdOut ?? 0}s', slate[500]!),
               ],
             ),
@@ -190,7 +198,7 @@ class AdminBreathingView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(height: 6.h),
+            const SizedBox(height: 6),
             Divider(
               height: 1,
               color: isDark
@@ -202,7 +210,7 @@ class AdminBreathingView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -227,20 +235,20 @@ class AdminBreathingView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.edit_outlined,
-                            size: 16.spMin,
+                            size: 16,
                             color: primary,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Tooltip(
                       message: 'Delete Technique',
                       child: InkWell(
@@ -252,14 +260,14 @@ class AdminBreathingView extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         child: Container(
-                          padding: EdgeInsets.all(6.r),
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: dangerColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.delete_outline_rounded,
-                            size: 16.spMin,
+                            size: 16,
                             color: dangerColor,
                           ),
                         ),
@@ -278,7 +286,7 @@ class AdminBreathingView extends StatelessWidget {
   Widget _buildPhaseBadge(String label, String time, Color color) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 4.h),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(6.r),
