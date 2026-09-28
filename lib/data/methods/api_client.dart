@@ -133,8 +133,8 @@ class ApiClient {
         } else {
           Get.offAllNamed(Routes.SIGN_IN);
         }
+        return;
       }
-      return;
     }
 
     // Extract detail message from backend error response

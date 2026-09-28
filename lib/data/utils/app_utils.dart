@@ -112,28 +112,68 @@ class AppUtils {
         break;
     }
 
+    final isDark = Get.isDarkMode;
+    final bgColor = isDark ? const Color(0xFF232421) : white;
+    final titleColor = isDark ? white : (slate[900] ?? Colors.black87);
+    final messageColor = isDark
+        ? (slate[300] ?? Colors.white70)
+        : (slate[600] ?? Colors.black54);
+    final borderColor = isDark
+        ? (slate[700] ?? const Color(0xFF404040))
+        : (slate[200] ?? const Color(0xFFE5E5E5));
+
     Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: white,
+      backgroundColor: bgColor,
       dismissDirection: DismissDirection.horizontal,
       shouldIconPulse: false,
       duration: duration,
-      icon: Icon(icon, color: color, size: 26.0),
+      icon: Container(
+        margin: const EdgeInsets.only(left: 4.0, right: 6.0),
+        padding: const EdgeInsets.all(7.0),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: isDark ? 0.22 : 0.12),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: color, size: 20.0),
+      ),
+      titleText: Text(
+        title,
+        style: r16.copyWith(
+          fontWeight: FontWeight.w600,
+          color: titleColor,
+          letterSpacing: -0.2,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      messageText: Text(
+        message,
+        style: r14.copyWith(color: messageColor, height: 1.25),
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+      ),
       mainButton: actionButton,
-      colorText: black,
-      margin: const EdgeInsets.all(10.0),
-      borderRadius: 0.0,
-      leftBarIndicatorColor: color,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+      borderRadius: 14.0,
+      borderWidth: 1.0,
+      borderColor: borderColor,
       overlayBlur: 0,
       barBlur: 0,
       instantInit: false,
+      forwardAnimationCurve: Curves.easeOutCubic,
+      reverseAnimationCurve: Curves.easeInCubic,
+      animationDuration: const Duration(milliseconds: 300),
       boxShadows: [
         BoxShadow(
-          color: black.withValues(alpha: 0.2),
-          blurRadius: 10,
-          offset: const Offset(0, 10),
+          color: isDark
+              ? Colors.black.withValues(alpha: 0.45)
+              : (slate[900] ?? Colors.black).withValues(alpha: 0.08),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
         ),
       ],
     );

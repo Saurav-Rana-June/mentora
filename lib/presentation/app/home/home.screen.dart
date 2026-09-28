@@ -56,17 +56,16 @@ class HomeScreen extends GetView<HomeController> {
             Spacing.s16.h,
             buildStreakAndProgressRow(context),
             Spacing.s16.h,
-            // Obx(() {
-            //   if (controller.globalController.todayCheckIn.value == null) {
-            //     return buildMoodCheckinSection(context);
-            //   } else {
-            //     return buildMoodCheckedInCard(
-            //       context,
-            //       controller.globalController.todayCheckIn.value!,
-            //     );
-            //   }
-            // }),
-            buildMoodCheckinSection(context),
+            Obx(() {
+              if (controller.globalController.todayCheckIn.value == null) {
+                return buildMoodCheckinSection(context);
+              } else {
+                return buildMoodCheckedInCard(
+                  context,
+                  controller.globalController.todayCheckIn.value!,
+                );
+              }
+            }),
             Spacing.s16.h,
             // buildConnectSection(context),
             // Spacing.s16.h,

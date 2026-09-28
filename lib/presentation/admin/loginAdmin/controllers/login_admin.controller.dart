@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:Mentora/controllers/global.controller.dart';
@@ -75,11 +76,13 @@ class LoginAdminController extends GetxController {
       }
     } catch (e) {
       Get.log('Admin login error: $e');
-      AppUtils.snackbar(
-        'Error',
-        'An error occurred during admin login: $e',
-        SnackBarType.ERROR,
-      );
+      if (e is! DioException) {
+        AppUtils.snackbar(
+          'Error',
+          'An unexpected error occurred during admin login.',
+          SnackBarType.ERROR,
+        );
+      }
     } finally {
       isLoading.value = false;
     }
