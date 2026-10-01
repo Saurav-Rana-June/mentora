@@ -78,7 +78,7 @@ class AdminBreathingView extends StatelessWidget {
                     : (constraints.maxWidth > 650 ? 2 : 1);
 
                 final double childAspectRatio = crossAxisCount == 1
-                    ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+                    ? (constraints.maxWidth < 500 ? 1.95 : 1.7)
                     : 1.35;
 
                 return GridView.builder(
@@ -86,8 +86,8 @@ class AdminBreathingView extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
+                    crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+                    mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
                     childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.patterns.length,
@@ -111,18 +111,19 @@ class AdminBreathingView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
+                  width: isMobile ? 40 : 46,
+                  height: isMobile ? 40 : 46,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
@@ -135,7 +136,7 @@ class AdminBreathingView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       item.icon?.isNotEmpty == true ? item.icon! : '🌬️',
-                      style: const TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: isMobile ? 18 : 20),
                     ),
                   ),
                 ),

@@ -13,8 +13,8 @@ class AdminContentPlaceholderView extends GetView<LandingAdminController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final activeItem = menuItem ??
-        controller.menuItems[controller.selectedMenuIndex.value];
+    final activeItem =
+        menuItem ?? controller.menuItems[controller.selectedMenuIndex.value];
 
     return Center(
       child: Column(
@@ -31,16 +31,12 @@ class AdminContentPlaceholderView extends GetView<LandingAdminController> {
           Spacing.s16.h,
           Text(
             '${activeItem.title} Management',
-            style: h2.copyWith(
-              color: theme.textTheme.headlineMedium?.color,
-            ),
+            style: h2.copyWith(color: theme.textTheme.headlineMedium?.color),
           ),
           Spacing.s8.h,
           Text(
             'Configure, create, update, and manage ${activeItem.title} for the platform.',
-            style: r14.copyWith(
-              color: theme.textTheme.bodySmall?.color,
-            ),
+            style: r14.copyWith(color: theme.textTheme.bodySmall?.color),
           ),
         ],
       ),

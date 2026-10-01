@@ -134,7 +134,7 @@ class AdminDoctorView extends StatelessWidget {
                         : (constraints.maxWidth > 650 ? 2 : 1);
 
                     final double childAspectRatio = crossAxisCount == 1
-                        ? (constraints.maxWidth < 400 ? 1.35 : 1.6)
+                        ? (constraints.maxWidth < 500 ? 1.85 : 1.6)
                         : 1.15;
 
                     return GridView.builder(
@@ -142,8 +142,8 @@ class AdminDoctorView extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
+                        crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+                        mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
                         childAspectRatio: childAspectRatio,
                       ),
                       itemCount: controller.doctors.length,
@@ -171,10 +171,11 @@ class AdminDoctorView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -192,7 +193,7 @@ class AdminDoctorView extends StatelessWidget {
                     ),
                   ),
                   child: CircleAvatar(
-                    radius: 24.r,
+                    radius: isMobile ? 20.r : 24.r,
                     backgroundColor: primary.withValues(alpha: 0.15),
                     backgroundImage: doc.image != null && doc.image!.isNotEmpty
                         ? NetworkImage(doc.image!)

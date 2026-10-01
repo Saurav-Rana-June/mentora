@@ -121,7 +121,7 @@ class AdminMeditationsView extends StatelessWidget {
                     : (constraints.maxWidth > 650 ? 2 : 1);
 
                 final double childAspectRatio = crossAxisCount == 1
-                    ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+                    ? (constraints.maxWidth < 500 ? 1.95 : 1.7)
                     : 1.35;
 
                 return GridView.builder(
@@ -129,8 +129,8 @@ class AdminMeditationsView extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
+                    crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+                    mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
                     childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.meditations.length,
@@ -154,10 +154,11 @@ class AdminMeditationsView extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -165,8 +166,8 @@ class AdminMeditationsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 54,
-                  height: 54,
+                  width: isMobile ? 46 : 54,
+                  height: isMobile ? 46 : 54,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -179,8 +180,8 @@ class AdminMeditationsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(11.r),
                     child: Image.network(
                       item.imageUrl ?? '',
-                      width: 54,
-                      height: 54,
+                      width: isMobile ? 46 : 54,
+                      height: isMobile ? 46 : 54,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
                         width: 54,

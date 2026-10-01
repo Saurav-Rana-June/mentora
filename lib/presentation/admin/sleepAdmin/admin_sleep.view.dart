@@ -212,7 +212,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             : (constraints.maxWidth > 650 ? 2 : 1);
 
         final double childAspectRatio = crossAxisCount == 1
-            ? (constraints.maxWidth < 400 ? 1.55 : 1.85)
+            ? (constraints.maxWidth < 500 ? 1.95 : 1.85)
             : 1.5;
 
         return GridView.builder(
@@ -220,8 +220,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
+            crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+            mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.sounds.length,
@@ -241,10 +241,11 @@ class _AdminSleepViewState extends State<AdminSleepView>
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -252,8 +253,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: isMobile ? 42 : 48,
+                  height: isMobile ? 42 : 48,
                   decoration: BoxDecoration(
                     color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12.r),
@@ -429,7 +430,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             : (constraints.maxWidth > 650 ? 2 : 1);
 
         final double childAspectRatio = crossAxisCount == 1
-            ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+            ? (constraints.maxWidth < 500 ? 1.95 : 1.7)
             : 1.35;
 
         return GridView.builder(
@@ -437,8 +438,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
+            crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+            mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.musicList.length,
@@ -458,10 +459,11 @@ class _AdminSleepViewState extends State<AdminSleepView>
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -469,8 +471,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: isMobile ? 44 : 52,
+                  height: isMobile ? 44 : 52,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
@@ -664,7 +666,7 @@ class _AdminSleepViewState extends State<AdminSleepView>
             : (constraints.maxWidth > 650 ? 2 : 1);
 
         final double childAspectRatio = crossAxisCount == 1
-            ? (constraints.maxWidth < 400 ? 1.45 : 1.7)
+            ? (constraints.maxWidth < 500 ? 1.95 : 1.7)
             : 1.35;
 
         return GridView.builder(
@@ -672,8 +674,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
+            crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
+            mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 14,
             childAspectRatio: childAspectRatio,
           ),
           itemCount: controller.stories.length,
@@ -693,10 +695,11 @@ class _AdminSleepViewState extends State<AdminSleepView>
   ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(isMobile ? 12 : 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -704,8 +707,8 @@ class _AdminSleepViewState extends State<AdminSleepView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: isMobile ? 44 : 52,
+                  height: isMobile ? 44 : 52,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(

@@ -65,15 +65,17 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
               final crossAxisCount = constraints.maxWidth > 1100
                   ? 3
                   : (constraints.maxWidth > 650 ? 2 : 1);
-              final childAspectRatio = crossAxisCount == 1 ? 1.6 : widget.childAspectRatio;
+              final childAspectRatio = crossAxisCount == 1
+                  ? (constraints.maxWidth < 500 ? 1.95 : 1.6)
+                  : widget.childAspectRatio;
 
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 16.w,
-                  mainAxisSpacing: 16.h,
+                  crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 16.w,
+                  mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 16.h,
                   childAspectRatio: childAspectRatio,
                 ),
                 itemCount: widget.itemCount,

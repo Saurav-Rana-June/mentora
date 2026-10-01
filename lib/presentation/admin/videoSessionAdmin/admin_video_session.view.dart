@@ -123,15 +123,17 @@ class AdminVideoSessionView extends StatelessWidget {
                 final crossAxisCount = constraints.maxWidth > 1100
                     ? 3
                     : (constraints.maxWidth > 650 ? 2 : 1);
-                final childAspectRatio = crossAxisCount == 1 ? 1.6 : 1.35;
+                final childAspectRatio = crossAxisCount == 1
+                    ? (constraints.maxWidth < 500 ? 1.95 : 1.6)
+                    : 1.35;
 
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16.w,
-                    mainAxisSpacing: 16.h,
+                    crossAxisSpacing: constraints.maxWidth < 600 ? 10 : 16.w,
+                    mainAxisSpacing: constraints.maxWidth < 600 ? 10 : 16.h,
                     childAspectRatio: childAspectRatio,
                   ),
                   itemCount: controller.sessions.length,
@@ -159,7 +161,7 @@ class AdminVideoSessionView extends StatelessWidget {
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: EdgeInsets.all(isMobile ? 14.0 : 16.0),
+        padding: EdgeInsets.all(isMobile ? 12.0 : 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -36,16 +36,22 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
       builder: (context, constraints) {
         final int crossAxisCount = constraints.maxWidth > 1050
             ? 4
-            : (constraints.maxWidth > 580 ? 2 : 1);
+            : (constraints.maxWidth > 650
+                  ? 2
+                  : (constraints.maxWidth > 340 ? 2 : 1));
 
         final double childAspectRatio = crossAxisCount == 1
-            ? 2.5
-            : (crossAxisCount == 2 ? 1.85 : 1.7);
+            ? 2.8
+            : (crossAxisCount == 2
+                  ? (constraints.maxWidth <= 650 ? 1.30 : 1.85)
+                  : 1.65);
+
+        final double spacing = constraints.maxWidth < 600 ? 10 : 14;
 
         return GridView.count(
           crossAxisCount: crossAxisCount,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
+          crossAxisSpacing: spacing,
+          mainAxisSpacing: spacing,
           childAspectRatio: childAspectRatio,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -97,28 +103,51 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
     required Color iconColor,
   }) {
     final theme = Theme.of(context);
+    final isMobile = AppScale.isMobile;
 
     return CustomPrimaryCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
+        padding: EdgeInsets.all(isMobile ? 12 : 16),
+        child: isMobile
+            ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    style: r12.copyWith(
-                      color: theme.textTheme.bodySmall?.color,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: r12.copyWith(
+                            color: theme.textTheme.bodySmall?.color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: iconColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Center(
+                          child: Text(
+                            icon,
+                            style: TextStyle(
+                              fontFamily: 'FontAwesomeSolid',
+                              fontSize: 13,
+                              color: iconColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Spacing.s4.h,
                   Text(
                     value,
                     style: h2.copyWith(
@@ -126,10 +155,9 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                       color: theme.textTheme.headlineLarge?.color,
                     ),
                   ),
-                  Spacing.s4.h,
                   Text(
                     badge,
-                    style: r10.copyWith(
+                    style: r12.copyWith(
                       color: iconColor,
                       fontWeight: FontWeight.w600,
                     ),
@@ -137,50 +165,88 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ),
-            ),
-            Spacing.s8.w,
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Center(
-                child: Text(
-                  icon,
-                  style: TextStyle(
-                    fontFamily: 'FontAwesomeSolid',
-                    fontSize: 18,
-                    color: iconColor,
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          style: r14.copyWith(
+                            color: theme.textTheme.bodySmall?.color,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Spacing.s4.h,
+                        Text(
+                          value,
+                          style: h2.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: theme.textTheme.headlineLarge?.color,
+                          ),
+                        ),
+                        Spacing.s4.h,
+                        Text(
+                          badge,
+                          style: r12.copyWith(
+                            color: iconColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  Spacing.s8.w,
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: iconColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Center(
+                      child: Text(
+                        icon,
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeSolid',
+                          fontSize: 18,
+                          color: iconColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
   Widget buildQuickActionsSection(BuildContext context) {
     final theme = Theme.of(context);
+    final isMobile = AppScale.isMobile;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Quick CMS Actions',
-          style: h3.copyWith(
+          style: (isMobile ? r18 : h3).copyWith(
             fontWeight: FontWeight.w600,
             color: theme.textTheme.headlineMedium?.color,
           ),
         ),
         Spacing.s12.h,
         Wrap(
-          spacing: 10,
-          runSpacing: 10,
+          spacing: isMobile ? 8 : 10,
+          runSpacing: isMobile ? 8 : 10,
           children: [
             buildQuickActionButton(
               context: context,
@@ -226,17 +292,21 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = AppScale.isMobile;
 
     return Material(
       color: isDark ? const Color(0xFF242522) : const Color(0xFFF6F8F2),
-      borderRadius: BorderRadius.circular(10.r),
+      borderRadius: BorderRadius.circular(8.r),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(8.r),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 12 : 14,
+            vertical: isMobile ? 8 : 10,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.r),
+            borderRadius: BorderRadius.circular(8.r),
             border: Border.all(
               color: primary.withValues(alpha: isDark ? 0.2 : 0.3),
             ),
@@ -252,7 +322,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                   color: primary,
                 ),
               ),
-              Spacing.s8.w,
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: r14.copyWith(
@@ -269,13 +339,14 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
 
   Widget buildModulesOverviewSection(BuildContext context) {
     final theme = Theme.of(context);
+    final isMobile = AppScale.isMobile;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'CMS Module Status',
-          style: h3.copyWith(
+          style: (isMobile ? r18 : h3).copyWith(
             fontWeight: FontWeight.w600,
             color: theme.textTheme.headlineMedium?.color,
           ),
@@ -283,7 +354,7 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
         Spacing.s12.h,
         CustomPrimaryCard(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isMobile ? 12 : 16),
             child: Column(
               children: [
                 buildModuleRow(
@@ -372,7 +443,10 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: successColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12.r),
@@ -388,7 +462,10 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                     TextButton(
                       onPressed: onManage,
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -439,7 +516,10 @@ class DashboardOverviewView extends GetView<LandingAdminController> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: successColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12.r),
