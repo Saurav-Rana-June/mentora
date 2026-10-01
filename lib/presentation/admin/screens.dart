@@ -8,4 +8,7 @@ export 'package:Mentora/presentation/admin/videoSessionAdmin/admin_video_session
 export 'package:Mentora/presentation/admin/doctorAdmin/admin_doctor.view.dart';
 export 'package:Mentora/presentation/admin/activityAdmin/admin_activity.view.dart';
 export 'package:Mentora/presentation/admin/settingsAdmin/admin_settings.view.dart';
-
+export 'package:Mentora/presentation/admin/widgets/admin_pagination_footer.widget.dart';
+export 'package:Mentora/presentation/admin/widgets/admin_section_header.widget.dart';
+export 'package:Mentora/presentation/admin/widgets/admin_delete_dialog.widget.dart';
+export 'package:Mentora/presentation/admin/widgets/admin_skeleton_loading.widget.dart';

@@ -8,6 +8,7 @@ import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/others/custom.primary.card.dart';
 import '../widgets/admin_delete_dialog.widget.dart';
+import '../widgets/admin_pagination_footer.widget.dart';
 import '../widgets/admin_section_header.widget.dart';
 import '../widgets/admin_skeleton_loading.widget.dart';
 import 'controllers/admin_doctor.controller.dart';
@@ -42,7 +43,8 @@ class AdminDoctorView extends StatelessWidget {
               secondaryButtonIcon: Icons.category_outlined,
               onSecondaryPressed: () => AdminSpecialitiesDialog.show(context),
               buttonText: 'Register Doctor',
-              onAddPressed: () => AdminDoctorWizardDialog.show(context: context),
+              onAddPressed: () =>
+                  AdminDoctorWizardDialog.show(context: context),
               onRefresh: () {
                 controller.fetchSpecialities();
                 controller.fetchDoctors();
@@ -62,9 +64,13 @@ class AdminDoctorView extends StatelessWidget {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: controller.specialityFilterOptions.contains(controller.selectedSpeciality.value)
+                    value:
+                        controller.specialityFilterOptions.contains(
+                          controller.selectedSpeciality.value,
+                        )
                         ? controller.selectedSpeciality.value
-                        : controller.specialityFilterOptions.firstOrNull ?? 'All Specialities',
+                        : controller.specialityFilterOptions.firstOrNull ??
+                              'All Specialities',
                     isDense: true,
                     alignment: AlignmentDirectional.centerStart,
                     dropdownColor: isDark ? const Color(0xFF242522) : white,
@@ -108,7 +114,11 @@ class AdminDoctorView extends StatelessWidget {
                   padding: const EdgeInsets.all(48),
                   child: Column(
                     children: [
-                      Icon(Icons.person_search_rounded, size: 48, color: slate[400]),
+                      Icon(
+                        Icons.person_search_rounded,
+                        size: 48,
+                        color: slate[400],
+                      ),
                       Spacing.s12.h,
                       Text(
                         'No doctors or experts found',
@@ -246,14 +256,20 @@ class AdminDoctorView extends StatelessWidget {
                                   height: 6,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: doc.isAvailable == true ? successColor : slate[400],
+                                    color: doc.isAvailable == true
+                                        ? successColor
+                                        : slate[400],
                                   ),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  doc.isAvailable == true ? 'Active' : 'Offline',
+                                  doc.isAvailable == true
+                                      ? 'Active'
+                                      : 'Offline',
                                   style: r10.copyWith(
-                                    color: doc.isAvailable == true ? successColor : slate[500],
+                                    color: doc.isAvailable == true
+                                        ? successColor
+                                        : slate[500],
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -264,7 +280,10 @@ class AdminDoctorView extends StatelessWidget {
                       ),
                       Spacing.s4.h,
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4.r),
@@ -280,7 +299,11 @@ class AdminDoctorView extends StatelessWidget {
                       Spacing.s4.h,
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 14, color: warningColor),
+                          Icon(
+                            Icons.star_rounded,
+                            size: 14,
+                            color: warningColor,
+                          ),
                           const SizedBox(width: 2),
                           Text(
                             '${doc.rating ?? 5.0}',
@@ -292,13 +315,20 @@ class AdminDoctorView extends StatelessWidget {
                           const SizedBox(width: 2),
                           Text(
                             '(${doc.reviewsCount ?? 0})',
-                            style: r10.copyWith(color: theme.textTheme.bodySmall?.color),
+                            style: r10.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
                           ),
                           const Spacer(),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF282926) : slate[100],
+                              color: isDark
+                                  ? const Color(0xFF282926)
+                                  : slate[100],
                               borderRadius: BorderRadius.circular(4.r),
                             ),
                             child: Text(
@@ -326,9 +356,10 @@ class AdminDoctorView extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      [doc.degree, doc.university]
-                          .where((s) => s != null && s.isNotEmpty)
-                          .join(' • '),
+                      [
+                        doc.degree,
+                        doc.university,
+                      ].where((s) => s != null && s.isNotEmpty).join(' • '),
                       style: r10.copyWith(
                         color: theme.textTheme.bodySmall?.color,
                         fontWeight: FontWeight.w600,
@@ -348,7 +379,10 @@ class AdminDoctorView extends StatelessWidget {
               children: [
                 if (doc.callFeature == true)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: infoColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4.r),
@@ -370,7 +404,10 @@ class AdminDoctorView extends StatelessWidget {
                   ),
                 if (doc.videoCallFeature == true)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4.r),
@@ -392,7 +429,10 @@ class AdminDoctorView extends StatelessWidget {
                   ),
                 if (doc.availableDays != null && doc.availableDays!.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF282926) : slate[100],
                       borderRadius: BorderRadius.circular(4.r),
@@ -419,7 +459,10 @@ class AdminDoctorView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF282926) : slate[100],
                     borderRadius: BorderRadius.circular(4.r),
@@ -495,67 +538,15 @@ class AdminDoctorView extends StatelessWidget {
     BuildContext context,
     AdminDoctorController controller,
   ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1F1D) : white,
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Obx(
-            () => Text(
-              'Showing ${controller.doctors.length} of ${controller.totalItems.value} doctors',
-              style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-            ),
-          ),
-          Row(
-            children: [
-              Obx(
-                () => OutlinedButton(
-                  onPressed: controller.currentPage.value > 1
-                      ? () => controller.fetchDoctors(page: controller.currentPage.value - 1)
-                      : null,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    minimumSize: Size.zero,
-                  ),
-                  child: Text('Previous', style: r12),
-                ),
-              ),
-              Spacing.s8.w,
-              Obx(
-                () => Text(
-                  'Page ${controller.currentPage.value}',
-                  style: r12.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.textTheme.bodyLarge?.color,
-                  ),
-                ),
-              ),
-              Spacing.s8.w,
-              Obx(
-                () => OutlinedButton(
-                  onPressed: controller.currentPage.value < controller.totalPages.value
-                      ? () => controller.fetchDoctors(page: controller.currentPage.value + 1)
-                      : null,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    minimumSize: Size.zero,
-                  ),
-                  child: Text('Next', style: r12),
-                ),
-              ),
-            ],
-          ),
-        ],
+    return Obx(
+      () => AdminPaginationFooter(
+        currentPage: controller.currentPage.value,
+        totalPages: controller.totalPages.value,
+        totalItems: controller.totalItems.value,
+        currentItemCount: controller.doctors.length,
+        itemsPerPage: 9,
+        itemName: 'doctors',
+        onPageChanged: (page) => controller.fetchDoctors(page: page),
       ),
     );
   }

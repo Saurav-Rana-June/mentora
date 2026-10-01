@@ -281,15 +281,6 @@ class AdminSidebarView extends GetView<LandingAdminController> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (isSelected)
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: primary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
               ],
             ],
           ),
@@ -331,11 +322,7 @@ class AdminSidebarView extends GetView<LandingAdminController> {
       ),
       child: isCollapsed
           ? IconButton(
-              icon: Icon(
-                Icons.logout_rounded,
-                color: dangerColor,
-                size: 20,
-              ),
+              icon: Icon(Icons.logout_rounded, color: dangerColor, size: 20),
               onPressed: controller.logout,
               tooltip: 'Logout',
             )
