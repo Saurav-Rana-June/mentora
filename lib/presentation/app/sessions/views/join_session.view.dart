@@ -167,10 +167,7 @@ class _JoinSessionViewState extends State<JoinSessionView>
               left: 0,
               right: 0,
               bottom: 0,
-              child: SafeArea(
-                top: false,
-                child: buildBottomControlsDock(context),
-              ),
+              child: buildBottomControlsDock(context),
             ),
 
             // Connecting Spinner Overlay
@@ -674,9 +671,8 @@ class _JoinSessionViewState extends State<JoinSessionView>
     final isVideoCall = widget.session.callType.toLowerCase().contains("video");
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF12161C).withValues(alpha: 0.92),
+        color: const Color(0xFF12161C).withValues(alpha: 0.95),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(28),
           topRight: Radius.circular(28),
@@ -689,9 +685,13 @@ class _JoinSessionViewState extends State<JoinSessionView>
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
           // Mic Toggle
           buildControlButton(
             icon: isMicMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
@@ -782,7 +782,9 @@ class _JoinSessionViewState extends State<JoinSessionView>
           ),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 
   Widget buildControlButton({
@@ -861,11 +863,13 @@ class _JoinSessionViewState extends State<JoinSessionView>
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         final theme = Theme.of(context);
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.primaryColorLight,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
+        return SafeArea(
+          top: false,
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.primaryColorLight,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -970,10 +974,11 @@ class _JoinSessionViewState extends State<JoinSessionView>
               Spacing.s12.h,
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   // ---------------------------------------------------------------------------
   // In-Call Chat / Quick Message Modal
@@ -987,14 +992,16 @@ class _JoinSessionViewState extends State<JoinSessionView>
         final theme = Theme.of(context);
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.75,
-              decoration: BoxDecoration(
-                color: theme.primaryColorLight,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+            return SafeArea(
+              top: false,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.75,
+                decoration: BoxDecoration(
+                  color: theme.primaryColorLight,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
                 ),
-              ),
               child: Column(
                 children: [
                   Spacing.s12.h,
@@ -1162,12 +1169,13 @@ class _JoinSessionViewState extends State<JoinSessionView>
                   ),
                 ],
               ),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   // ---------------------------------------------------------------------------
   // Leave / End Consultation Confirmation Bottom Sheet
