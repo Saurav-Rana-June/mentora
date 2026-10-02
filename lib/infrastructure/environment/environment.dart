@@ -7,12 +7,9 @@ class Environments {
 
 class ConfigEnvironments {
   static const String _currentEnvironments = Environments.PRODUCTION;
-  
+
   static final List<Map<String, String>> _availableEnvironments = [
-    {
-      'env': Environments.LOCAL,
-      'url': 'http://localhost:8080/api/',
-    },
+    {'env': Environments.LOCAL, 'url': 'http://localhost:8080/api/'},
     {
       'env': Environments.DEV,
       'url': 'https://mentora-backend-iofa.onrender.com/api/',

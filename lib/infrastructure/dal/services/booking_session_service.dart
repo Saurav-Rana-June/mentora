@@ -129,4 +129,28 @@ class BookingSessionService {
       },
     );
   }
+
+  /// Update status of a booked session (e.g., "Completed", "Cancelled")
+  static Future<ApiResponse<BookedSession>?> updateSessionStatus({
+    required int sessionId,
+    required String bookingStatus,
+  }) async {
+    final payload = {
+      'bookingStatus': bookingStatus,
+    };
+
+    return client.request<ApiResponse<BookedSession>>(
+      (dio) => dio.put(
+        'book-session/$sessionId/status',
+        data: payload,
+      ),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<BookedSession>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => BookedSession.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
 }

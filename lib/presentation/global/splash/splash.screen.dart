@@ -32,6 +32,8 @@ class SplashScreen extends GetView<SplashController> {
     return CustomScreenWrapper(
       body: Center(
         child: Container(
+          height: double.infinity,
+          width: double.infinity,
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
           ),

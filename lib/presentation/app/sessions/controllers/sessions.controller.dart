@@ -74,6 +74,21 @@ class SessionsController extends GetxController {
     }
   }
 
+  Future<void> updateSessionStatus(int sessionId, String status) async {
+    try {
+      final res = await BookingSessionService.updateSessionStatus(
+        sessionId: sessionId,
+        bookingStatus: status,
+      );
+      if (res != null && res.data != null) {
+        // Refresh local list and storage
+        await fetchSessions();
+      }
+    } catch (e) {
+      Get.log("Failed to update session status: $e");
+    }
+  }
+
   void _distributeSessions(List<BookedSession> sessions) {
     final List<SessionModel> upcoming = [];
     final List<SessionModel> completed = [];
@@ -86,12 +101,16 @@ class SessionsController extends GetxController {
           statusLower == 'declined';
 
       final mapped = SessionModel(
+        id: s.id,
+        doctorId: s.doctorId,
         expertName: s.doctorName ?? "Unknown Doctor",
         specialty: s.doctorSpeciality ?? "Mental Health Professional",
         imageUrl: s.doctorImage ?? "https://randomuser.me/api/portraits/men/32.jpg",
         dateTime: _formatDateTime(s.bookingDate, s.bookingTimeslot),
         callType: s.modalityType,
         status: s.bookingStatus,
+        duration: s.duration,
+        notes: s.notes,
       );
 
       if (isPast) {
@@ -122,19 +141,27 @@ class SessionsController extends GetxController {
 }
 
 class SessionModel {
+  final int? id;
+  final int? doctorId;
   final String expertName;
   final String specialty;
   final String imageUrl;
   final String dateTime;
   final String callType;
   final String status;
+  final int duration;
+  final String? notes;
 
   SessionModel({
+    this.id,
+    this.doctorId,
     required this.expertName,
     required this.specialty,
     required this.imageUrl,
     required this.dateTime,
     required this.callType,
     required this.status,
+    this.duration = 30,
+    this.notes,
   });
 }

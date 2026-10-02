@@ -21,6 +21,7 @@ export 'package:Mentora/presentation/app/moodCheckin/mood_checkin.screen.dart';
 export 'package:Mentora/presentation/app/onboarding/onboarding.screen.dart';
 export 'package:Mentora/presentation/app/preparePlan/prepare_plan.screen.dart';
 export 'package:Mentora/presentation/app/sessions/sessions.screen.dart';
+export 'package:Mentora/presentation/app/sessions/views/join_session.view.dart';
 export 'package:Mentora/presentation/app/signIn/sign_in.screen.dart';
 export 'package:Mentora/presentation/app/signUp/sign_up.screen.dart';
 export 'package:Mentora/presentation/app/sleep/sleep.screen.dart';

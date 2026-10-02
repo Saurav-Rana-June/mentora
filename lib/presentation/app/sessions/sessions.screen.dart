@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:my_icons/icons.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/infrastructure/navigation/routes.dart';
@@ -12,6 +11,7 @@ import 'package:Mentora/widgets/others/custom.divider.dart';
 import 'package:Mentora/widgets/others/custom.screen.wrapper.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
 import 'controllers/sessions.controller.dart';
+import 'views/join_session.view.dart';
 
 class SessionsScreen extends GetView<SessionsController> {
   SessionsScreen({super.key});
@@ -411,7 +411,12 @@ class SessionsScreen extends GetView<SessionsController> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(
+                    () => JoinSessionView(session: session),
+                    transition: Transition.rightToLeft,
+                  );
+                },
               ),
             ],
           ],
