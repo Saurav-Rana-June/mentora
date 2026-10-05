@@ -1290,161 +1290,373 @@ class _JoinSessionViewState extends State<JoinSessionView>
   // ---------------------------------------------------------------------------
   void _showFeedbackAndExitModal(BuildContext context) {
     int rating = 5;
-    final List<String> feedbackTags = [
-      "Helpful Guidance",
-      "Empathetic",
-      "Clear Action Steps",
-      "Calm & Safe Space",
-    ];
-    final Set<String> selectedTags = {"Helpful Guidance"};
+    final TextEditingController feedbackNoteController = TextEditingController();
+    bool isSubmitting = false;
+
+    String getRatingTitle(int stars) {
+      switch (stars) {
+        case 5:
+          return "Outstanding & Empowering 🌟";
+        case 4:
+          return "Very Helpful & Insightful 👍";
+        case 3:
+          return "Good & Informative 🙂";
+        case 2:
+          return "Could Be Better 😐";
+        case 1:
+          return "Needs Improvement 🙁";
+        default:
+          return "Rate Consultation";
+      }
+    }
+
+    void handleSubmit(BuildContext ctx) async {
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      final int finalDurationMinutes = elapsedSeconds > 0
+          ? (elapsedSeconds / 60).ceil()
+          : widget.session.duration;
+
+      final String? feedbackText = feedbackNoteController.text.trim().isNotEmpty
+          ? feedbackNoteController.text.trim()
+          : null;
+
+      if (widget.session.id != null && Get.isRegistered<SessionsController>()) {
+        Get.find<SessionsController>().completeSession(
+          sessionId: widget.session.id!,
+          status: "Completed",
+          duration: finalDurationMinutes,
+          stars: rating,
+          review: feedbackText,
+          feedback: feedbackText,
+        );
+      }
+
+      Navigator.pop(ctx);
+      Get.back();
+
+      Get.snackbar(
+        "Session Completed",
+        "Thank you for your feedback! Your consultation summary has been updated.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: successColor.withValues(alpha: 0.92),
+        colorText: white,
+        icon: const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+        margin: EdgeInsets.all(16.r),
+        borderRadius: 16.r,
+        duration: const Duration(seconds: 3),
+      );
+    }
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      enableDrag: false,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final borderColor = isDark
+            ? (slate[700] ?? Colors.grey.shade800)
+            : (slate[200] ?? Colors.grey.shade200);
+
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return SafeArea(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
-                decoration: BoxDecoration(
-                  color: theme.primaryColorLight,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
-                  ),
+            return Container(
+              decoration: BoxDecoration(
+                color: theme.primaryColorLight,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(28.r),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 50.r,
-                      height: 50.r,
-                      decoration: BoxDecoration(
-                        color: successColor.withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.check_circle_rounded,
-                          color: successColor,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                    Spacing.s12.h,
-                    Text(
-                      "Session Complete",
-                      style: h2.copyWith(
-                        color: theme.textTheme.bodyLarge?.color,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Spacing.s4.h,
-                    Text(
-                      "Duration: ${_formatTimer(elapsedSeconds)} • With ${widget.session.expertName}",
-                      style: r12.copyWith(
-                        color: theme.textTheme.bodySmall?.color,
-                      ),
-                    ),
-                    Spacing.s16.h,
-                    Text(
-                      "How was your consultation experience?",
-                      style: r14.copyWith(
-                        color: theme.textTheme.bodyLarge?.color,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Spacing.s12.h,
-                    // Star Rating Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final starNum = index + 1;
-                        return IconButton(
-                          icon: Icon(
-                            starNum <= rating
-                                ? Icons.star_rounded
-                                : Icons.star_outline_rounded,
-                            size: 34,
-                            color: starNum <= rating
-                                ? const Color(0xFFFFB800)
-                                : slate[400],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, -6),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 20.w,
+                    right: 20.w,
+                    top: 12.h,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 16.h,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Drag Handle
+                        Container(
+                          width: 44.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: isDark ? slate[700] : slate[300],
+                            borderRadius: BorderRadius.circular(2),
                           ),
-                          onPressed: () {
-                            setModalState(() {
-                              rating = starNum;
-                            });
-                          },
-                        );
-                      }),
-                    ),
-                    Spacing.s12.h,
-                    // Tag chips
-                    Wrap(
-                      spacing: 8.w,
-                      runSpacing: 8.h,
-                      alignment: WrapAlignment.center,
-                      children: feedbackTags.map((tag) {
-                        final isSelected = selectedTags.contains(tag);
-                        return FilterChip(
-                          label: Text(
-                            tag,
+                        ),
+                        Spacing.s16.h,
+
+                        // Header Badge & Celebration Icon
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 64.r,
+                              height: 64.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primary.withValues(alpha: 0.12),
+                              ),
+                            ),
+                            Container(
+                              width: 48.r,
+                              height: 48.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primary.withValues(alpha: 0.22),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.check_circle_rounded,
+                                  color: primary,
+                                  size: 32.r,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Spacing.s12.h,
+
+                        Text(
+                          "Session Complete",
+                          style: h2.copyWith(
+                            color: theme.textTheme.bodyLarge?.color,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Spacing.s4.h,
+                        Text(
+                          "Thank you for investing in your mental wellness",
+                          textAlign: TextAlign.center,
+                          style: r12.copyWith(
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ),
+                        Spacing.s16.h,
+
+                        // Practitioner & Session Summary Card
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                          decoration: BoxDecoration(
+                            color: theme.scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Row(
+                            children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24.r,
+                                    backgroundColor: primary.withValues(alpha: 0.15),
+                                    backgroundImage: widget.session.imageUrl.isNotEmpty
+                                        ? NetworkImage(widget.session.imageUrl)
+                                        : null,
+                                    child: widget.session.imageUrl.isEmpty
+                                        ? Icon(Icons.person, color: primary, size: 24.r)
+                                        : null,
+                                  ),
+                                  Positioned(
+                                    bottom: -2,
+                                    right: -2,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: successColor,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: theme.scaffoldBackgroundColor,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        size: 8,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Spacing.s12.w,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.session.expertName,
+                                      style: r14.copyWith(
+                                        color: theme.textTheme.bodyLarge?.color,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Spacing.s4.h,
+                                    Text(
+                                      widget.session.specialty,
+                                      style: r12.copyWith(
+                                        color: theme.textTheme.bodySmall?.color,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                                decoration: BoxDecoration(
+                                  color: primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.timer_outlined,
+                                      size: 14.r,
+                                      color: primary,
+                                    ),
+                                    Spacing.s4.w,
+                                    Text(
+                                      elapsedSeconds > 0
+                                          ? _formatTimer(elapsedSeconds)
+                                          : "${widget.session.duration}m",
+                                      style: r12.copyWith(
+                                        color: primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacing.s20.h,
+
+                        // Rating Section Header
+                        Text(
+                          "How was your consultation?",
+                          style: r16.copyWith(
+                            color: theme.textTheme.bodyLarge?.color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Spacing.s8.h,
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: Text(
+                            getRatingTitle(rating),
+                            key: ValueKey(rating),
                             style: r12.copyWith(
-                              color: isSelected
-                                  ? white
-                                  : theme.textTheme.bodyMedium?.color,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
+                              color: const Color(0xFFE5A000),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          selected: isSelected,
-                          selectedColor: primary,
-                          backgroundColor: theme.scaffoldBackgroundColor,
-                          checkmarkColor: white,
-                          onSelected: (val) {
-                            setModalState(() {
-                              if (val) {
-                                selectedTags.add(tag);
-                              } else {
-                                selectedTags.remove(tag);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
+                        ),
+                        Spacing.s12.h,
+
+                        // Interactive Star Rating Row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            final starNum = index + 1;
+                            final isFilled = starNum <= rating;
+                            return GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                setModalState(() {
+                                  rating = starNum;
+                                });
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                                child: AnimatedScale(
+                                  scale: isFilled ? 1.1 : 1.0,
+                                  duration: const Duration(milliseconds: 150),
+                                  child: Icon(
+                                    isFilled
+                                        ? Icons.star_rounded
+                                        : Icons.star_outline_rounded,
+                                    size: 38.r,
+                                    color: isFilled
+                                        ? const Color(0xFFFFB800)
+                                        : (isDark ? slate[600] : slate[300]),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                        Spacing.s16.h,
+
+                        // Feedback Text Section Header
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Feedback & Notes",
+                            style: r14.copyWith(
+                              color: theme.textTheme.bodyLarge?.color,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Spacing.s8.h,
+
+                        // 4-line Feedback CustomTextFormField
+                        CustomTextFormField(
+                          controller: feedbackNoteController,
+                          maxLines: 4,
+                          minLines: 4,
+                          hintText: "Share your experience, takeaways or feedback for the practitioner...",
+                          contentPadding: EdgeInsets.all(14.r),
+                          fillColor: theme.scaffoldBackgroundColor,
+                          borderColor: borderColor,
+                          borderWidth: 1,
+                        ),
+                        Spacing.s20.h,
+
+                        // Primary Submit Button
+                        CustomPrimaryButton(
+                          text: "Submit Review & Exit",
+                          backgroundColor: primary,
+                          onPressed: () => handleSubmit(ctx),
+                        ),
+                        Spacing.s8.h,
+
+                        // Secondary Skip Button
+                        TextButton(
+                          onPressed: () => handleSubmit(ctx),
+                          child: Text(
+                            "Skip for now",
+                            style: r12.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Spacing.s24.h,
-                    CustomPrimaryButton(
-                      text: "Submit & Return",
-                      backgroundColor: primary,
-                      onPressed: () {
-                        if (widget.session.id != null &&
-                            Get.isRegistered<SessionsController>()) {
-                          Get.find<SessionsController>().updateSessionStatus(
-                            widget.session.id!,
-                            "Completed",
-                          );
-                        }
-                        Navigator.pop(ctx);
-                        Get.back();
-                        Get.snackbar(
-                          "Session Completed",
-                          "Thank you for your feedback! Your session notes and booking summary are saved.",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: successColor.withValues(alpha: 0.9),
-                          colorText: white,
-                          margin: const EdgeInsets.all(16),
-                          duration: const Duration(seconds: 3),
-                        );
-                      },
-                    ),
-                    Spacing.s8.h,
-                  ],
+                  ),
                 ),
               ),
             );
@@ -1454,3 +1666,4 @@ class _JoinSessionViewState extends State<JoinSessionView>
     );
   }
 }
+

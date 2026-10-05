@@ -16,6 +16,9 @@ class BookedSession {
   final double durationCost;
   final String? notes;
   final String bookingStatus;
+  final int? stars;
+  final String? review;
+  final String? feedback;
   final String createdAt;
   final String updatedAt;
   final String? doctorName;
@@ -35,6 +38,9 @@ class BookedSession {
     required this.durationCost,
     this.notes,
     required this.bookingStatus,
+    this.stars,
+    this.review,
+    this.feedback,
     required this.createdAt,
     required this.updatedAt,
     this.doctorName,

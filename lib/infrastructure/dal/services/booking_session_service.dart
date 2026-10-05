@@ -130,18 +130,26 @@ class BookingSessionService {
     );
   }
 
-  /// Update status of a booked session (e.g., "Completed", "Cancelled")
-  static Future<ApiResponse<BookedSession>?> updateSessionStatus({
+  /// Complete a booked session with rating, feedback, and duration
+  static Future<ApiResponse<BookedSession>?> completeSession({
     required int sessionId,
-    required String bookingStatus,
+    String bookingStatus = "Completed",
+    int? duration,
+    int? stars,
+    String? review,
+    String? feedback,
   }) async {
-    final payload = {
+    final payload = <String, dynamic>{
       'bookingStatus': bookingStatus,
+      if (duration != null) 'duration': duration,
+      if (stars != null) 'stars': stars,
+      if (review != null) 'review': review,
+      if (feedback != null) 'feedback': feedback,
     };
 
     return client.request<ApiResponse<BookedSession>>(
       (dio) => dio.put(
-        'book-session/$sessionId/status',
+        'book-session/$sessionId/complete',
         data: payload,
       ),
       withAccessToken: true,
@@ -151,6 +159,25 @@ class BookingSessionService {
           (data) => BookedSession.fromJson(data as Map<String, dynamic>),
         );
       },
+    );
+  }
+
+  /// Update status of a booked session (e.g., "Completed", "Cancelled")
+  static Future<ApiResponse<BookedSession>?> updateSessionStatus({
+    required int sessionId,
+    required String bookingStatus,
+    int? duration,
+    int? stars,
+    String? review,
+    String? feedback,
+  }) async {
+    return completeSession(
+      sessionId: sessionId,
+      bookingStatus: bookingStatus,
+      duration: duration,
+      stars: stars,
+      review: review,
+      feedback: feedback,
     );
   }
 }

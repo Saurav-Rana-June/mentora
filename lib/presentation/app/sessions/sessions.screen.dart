@@ -395,7 +395,138 @@ class SessionsScreen extends GetView<SessionsController> {
               ],
             ),
 
-            if (!isCompleted) ...[
+            if (isCompleted) ...[
+              Spacing.s16.h,
+              const CustomDivider(),
+              Spacing.s12.h,
+
+              // Duration & Star Rating Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Duration Badge
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 5.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: primary.withValues(alpha: 0.18),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.timer_outlined, size: 14.r, color: primary),
+                        Spacing.s4.w,
+                        Text(
+                          "${session.duration} mins",
+                          style: r12.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Rating Display
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(5, (index) {
+                          final starNum = index + 1;
+                          final rating = session.stars ?? 5;
+                          return Icon(
+                            starNum <= rating
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            size: 18.r,
+                            color: starNum <= rating
+                                ? const Color(0xFFFFB800)
+                                : (theme.brightness == Brightness.dark
+                                      ? (slate[600] ?? Colors.grey)
+                                      : (slate[300] ?? Colors.grey.shade300)),
+                          );
+                        }),
+                      ),
+                      Spacing.s4.w,
+                      Text(
+                        "${session.stars ?? 5}.0",
+                        style: r12.copyWith(
+                          color: theme.textTheme.bodyMedium?.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // Feedback / Review Box
+              if ((session.review != null &&
+                      session.review!.trim().isNotEmpty) ||
+                  (session.feedback != null &&
+                      session.feedback!.trim().isNotEmpty)) ...[
+                Spacing.s12.h,
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 10.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.black.withValues(alpha: 0.2)
+                        : (slate[100] ?? const Color(0xFFF1F5F9)),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color:
+                          theme.dividerTheme.color ??
+                          (slate[200] ?? Colors.grey.shade300),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.rate_review_outlined,
+                            size: 13.r,
+                            color: primary,
+                          ),
+                          Spacing.s4.w,
+                          Text(
+                            "Feedback & Review",
+                            style: r12.copyWith(
+                              color: primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Spacing.s4.h,
+                      Text(
+                        (session.review ?? session.feedback)!.trim(),
+                        style: r12.copyWith(
+                          color: theme.textTheme.bodyMedium?.color,
+                          fontStyle: FontStyle.italic,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ] else ...[
               Spacing.s20.h,
               CustomPrimaryButton(
                 text: "Join Session",

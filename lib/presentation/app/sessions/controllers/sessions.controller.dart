@@ -74,19 +74,34 @@ class SessionsController extends GetxController {
     }
   }
 
-  Future<void> updateSessionStatus(int sessionId, String status) async {
+  Future<void> completeSession({
+    required int sessionId,
+    String status = "Completed",
+    int? duration,
+    int? stars,
+    String? review,
+    String? feedback,
+  }) async {
     try {
-      final res = await BookingSessionService.updateSessionStatus(
+      final res = await BookingSessionService.completeSession(
         sessionId: sessionId,
         bookingStatus: status,
+        duration: duration,
+        stars: stars,
+        review: review,
+        feedback: feedback,
       );
       if (res != null && res.data != null) {
         // Refresh local list and storage
         await fetchSessions();
       }
     } catch (e) {
-      Get.log("Failed to update session status: $e");
+      Get.log("Failed to complete session: $e");
     }
+  }
+
+  Future<void> updateSessionStatus(int sessionId, String status) async {
+    return completeSession(sessionId: sessionId, status: status);
   }
 
   void _distributeSessions(List<BookedSession> sessions) {
@@ -111,6 +126,9 @@ class SessionsController extends GetxController {
         status: s.bookingStatus,
         duration: s.duration,
         notes: s.notes,
+        stars: s.stars,
+        review: s.review ?? s.feedback,
+        feedback: s.feedback ?? s.review,
       );
 
       if (isPast) {
@@ -151,6 +169,9 @@ class SessionModel {
   final String status;
   final int duration;
   final String? notes;
+  final int? stars;
+  final String? review;
+  final String? feedback;
 
   SessionModel({
     this.id,
@@ -163,5 +184,8 @@ class SessionModel {
     required this.status,
     this.duration = 30,
     this.notes,
+    this.stars,
+    this.review,
+    this.feedback,
   });
 }
