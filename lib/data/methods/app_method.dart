@@ -62,4 +62,46 @@ class AppMethod {
   static String? getTrustedContactPhone() {
     return _box.read<String>(_trustedContactPhoneKey);
   }
+
+  // --- Doctor Portal Credentials & Session ---
+  static const String _doctorTokenKey = 'doctor_token';
+  static const String _doctorEmailKey = 'doctor_email';
+  static const String _doctorIdKey = 'doctor_id';
+  static const String _doctorNameKey = 'doctor_name';
+
+  static Future<void> saveDoctorToken(String token) async {
+    await _box.write(_doctorTokenKey, token);
+  }
+
+  static String? getDoctorToken() {
+    return _box.read<String>(_doctorTokenKey);
+  }
+
+  static Future<void> saveDoctorEmail(String email) async {
+    await _box.write(_doctorEmailKey, email);
+  }
+
+  static String? getDoctorEmail() {
+    return _box.read<String>(_doctorEmailKey);
+  }
+
+  static Future<void> saveDoctorInfo({required int id, required String name}) async {
+    await _box.write(_doctorIdKey, id);
+    await _box.write(_doctorNameKey, name);
+  }
+
+  static int? getDoctorId() {
+    return _box.read<int>(_doctorIdKey);
+  }
+
+  static String? getDoctorName() {
+    return _box.read<String>(_doctorNameKey);
+  }
+
+  static Future<void> clearDoctorSession() async {
+    await _box.remove(_doctorTokenKey);
+    await _box.remove(_doctorEmailKey);
+    await _box.remove(_doctorIdKey);
+    await _box.remove(_doctorNameKey);
+  }
 }

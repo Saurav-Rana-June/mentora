@@ -32,6 +32,25 @@
             ]
         },
         {
+            "name": "Mentora Doctors (Web - Chrome)",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "chrome",
+            "args": [
+                "-d",
+                "chrome",
+                "--dart-define=FLAVOR=doctor"
+            ]
+        },
+        {
+            "name": "Mentora Doctors (General)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=FLAVOR=doctor"
+            ]
+        },
+        {
             "name": "Mentora App (profile mode)",
             "request": "launch",
             "type": "dart",

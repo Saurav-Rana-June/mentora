@@ -160,5 +160,30 @@ class Nav {
       page: () => LandingAdminScreen(),
       binding: LandingAdminControllerBinding(),
     ),
+    GetPage(
+      name: Routes.LOGIN_DOCTOR,
+      page: () => LoginDoctorScreen(),
+      binding: LoginDoctorControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.REGISTER_DOCTOR,
+      page: () => RegisterDoctorScreen(),
+      binding: RegisterDoctorControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.LANDING_DOCTOR,
+      page: () => LandingDoctorScreen(),
+      binding: LandingDoctorControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.DASHBOARD_DOCTOR,
+      page: () => DashboardDoctorScreen(),
+      binding: DashboardDoctorControllerBinding(),
+    ),
+    GetPage(
+      name: Routes.APPOINTMENT_DOCTOR,
+      page: () => AppointmentDoctorScreen(),
+      binding: AppointmentDoctorControllerBinding(),
+    ),
   ];
 }

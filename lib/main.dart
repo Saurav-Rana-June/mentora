@@ -5,12 +5,13 @@ import 'package:get_storage/get_storage.dart';
 import 'apps/app_flavor.dart';
 import 'apps/mentora_app.dart';
 import 'apps/mentora_cms_app.dart';
+import 'apps/mentora_doctor_app.dart';
 import 'infrastructure/navigation/routes.dart';
 
 /// Entry point supporting flavor injection via:
 /// - Explicit [flavor] parameter (e.g., `main(flavor: AppFlavor.cms)`)
 /// - Injected root [appWidget] (e.g., `main(appWidget: CustomApp())`)
-/// - Compile-time `--dart-define=FLAVOR=cms`
+/// - Compile-time `--dart-define=FLAVOR=cms` / `--dart-define=FLAVOR=doctor`
 /// - Native Flutter [appFlavor]
 void main({AppFlavor? flavor, Widget? appWidget}) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,7 @@ void main({AppFlavor? flavor, Widget? appWidget}) async {
 }
 
 AppFlavor _detectFlavor() {
-  // 1. Check compile-time dart-define: --dart-define=FLAVOR=cms / FLAVOR=app
+  // 1. Check compile-time dart-define: --dart-define=FLAVOR=doctor / FLAVOR=cms / FLAVOR=app
   const envFlavor = String.fromEnvironment('FLAVOR');
   if (envFlavor.isNotEmpty) {
     return AppFlavor.fromString(envFlavor);
@@ -46,6 +47,8 @@ Widget _buildAppForFlavor(AppFlavor flavor, String initialRoute) {
   switch (flavor) {
     case AppFlavor.cms:
       return MentoraCmsApp(initialRoute: initialRoute);
+    case AppFlavor.doctor:
+      return MentoraDoctorApp(initialRoute: Routes.LOGIN_DOCTOR);
     case AppFlavor.app:
       return MentoraApp(initialRoute: initialRoute);
   }

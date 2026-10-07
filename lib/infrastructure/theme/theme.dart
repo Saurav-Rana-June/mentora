@@ -176,7 +176,7 @@ class AppTheme {
     // INPUT FIELDS
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: slate[100],
+      fillColor: white,
       contentPadding: const EdgeInsets.all(14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -202,7 +202,7 @@ class AppTheme {
       elevation: 10,
     ),
 
-    canvasColor: slate[100],
+    canvasColor: white,
 
     // SWITCH / CHECKBOX
     switchTheme: SwitchThemeData(

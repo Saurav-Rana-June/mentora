@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/widgets/buttons/custom_primary_button.widget.dart';
@@ -23,10 +24,7 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
     // Listen for resize
     MediaQuery.of(context);
 
-    return CustomScreenWrapper(
-      safeAreaTop: true,
-      body: buildBody(context),
-    );
+    return CustomScreenWrapper(safeAreaTop: true, body: buildBody(context));
   }
 
   Widget buildBody(BuildContext context) {
@@ -47,6 +45,28 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
               buildHeader(context),
               Spacing.s24.h,
               buildFormCard(context),
+              Spacing.s16.h,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Practicing Doctor? ',
+                    style: r14.copyWith(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => Get.toNamed(Routes.LOGIN_DOCTOR),
+                    child: Text(
+                      'Access Mentora Doctors',
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Spacing.s16.h,
               buildFooterSecurityInfo(context),
             ],
@@ -91,10 +111,7 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
         ),
         Spacing.s12.h,
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 6,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
             color: primary.withValues(alpha: isDark ? 0.15 : 0.1),
             borderRadius: BorderRadius.circular(20),

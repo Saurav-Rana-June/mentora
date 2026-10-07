@@ -37,5 +37,16 @@ class Routes {
   static const ADMIN_LOGIN = LOGIN_ADMIN;
   static const LANDING_ADMIN = '/landing-admin';
   static const ADMIN_LANDING = LANDING_ADMIN;
+  static const LOGIN_DOCTOR = '/login-doctor';
+  static const DOCTOR_LOGIN = LOGIN_DOCTOR;
+  static const REGISTER_DOCTOR = '/register-doctor';
+  static const DOCTOR_REGISTER = REGISTER_DOCTOR;
+  static const LANDING_DOCTOR = '/landing-doctor';
+  static const DOCTOR_LANDING = LANDING_DOCTOR;
+  static const DASHBOARD_DOCTOR = '/dashboard-doctor';
+  static const DOCTOR_DASHBOARD = DASHBOARD_DOCTOR;
+  static const APPOINTMENT_DOCTOR = '/appointment-doctor';
+  static const DOCTOR_APPOINTMENT = APPOINTMENT_DOCTOR;
+  static const DOCTOR_APPOINTMENTS = APPOINTMENT_DOCTOR;
 }
 

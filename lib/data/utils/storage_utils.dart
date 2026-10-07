@@ -117,5 +117,10 @@ class StorageKeys {
   // Chat AI Keys
   static const String CHAT_AI_SESSIONS = 'chat_ai_sessions_cache';
   static const String CHAT_AI_CURRENT_SESSION_ID = 'chat_ai_current_session_id';
+
+  // Doctor Portal Keys
+  static const String DOCTOR_PROFILE = 'doctor_profile_cache';
+  static const String DOCTOR_PORTAL_APPOINTMENTS = 'doctor_portal_appointments_cache';
+  static const String DOCTOR_PORTAL_STATS = 'doctor_portal_stats_cache';
 }
 

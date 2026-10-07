@@ -305,6 +305,29 @@ class SignInScreen extends GetView<SignInController> {
                   ),
                 ],
               ),
+              Spacing.s16.h,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () => Get.toNamed(Routes.LOGIN_DOCTOR),
+                    child: Text(
+                      "Doctor Portal",
+                      style: r12.copyWith(color: primary, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Spacing.s8.w,
+                  Text("•", style: r12.copyWith(color: slate[400])),
+                  Spacing.s8.w,
+                  InkWell(
+                    onTap: () => Get.toNamed(Routes.LOGIN_ADMIN),
+                    child: Text(
+                      "Admin CMS",
+                      style: r12.copyWith(color: slate[500]),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

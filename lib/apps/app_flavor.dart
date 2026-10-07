@@ -2,7 +2,8 @@ import 'package:flutter/services.dart';
 
 enum AppFlavor {
   app,
-  cms;
+  cms,
+  doctor;
 
   String get appTitle {
     switch (this) {
@@ -10,11 +11,14 @@ enum AppFlavor {
         return 'Mentora';
       case AppFlavor.cms:
         return 'Mentora CMS';
+      case AppFlavor.doctor:
+        return 'Mentora Doctors';
     }
   }
 
   bool get isCms => this == AppFlavor.cms;
   bool get isApp => this == AppFlavor.app;
+  bool get isDoctor => this == AppFlavor.doctor;
 
   static AppFlavor _current = _detectFlavor();
 

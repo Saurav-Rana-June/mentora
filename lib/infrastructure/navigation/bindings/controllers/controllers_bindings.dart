@@ -23,5 +23,10 @@ export 'package:Mentora/infrastructure/navigation/bindings/controllers/booking_s
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/doctor_list.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/login_admin.controller.binding.dart';
 export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing_admin.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/login_doctor.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/register_doctor.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/landing_doctor.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/dashboard_doctor.controller.binding.dart';
+export 'package:Mentora/infrastructure/navigation/bindings/controllers/appointment_doctor.controller.binding.dart';
 
 
