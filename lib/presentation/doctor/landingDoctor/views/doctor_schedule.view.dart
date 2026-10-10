@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:my_spacing/my_spacing.dart';
 
 import 'package:Mentora/data/enums/snackbar_enum.dart';
-import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
 import 'package:Mentora/infrastructure/theme/app_scale.dart';
@@ -215,40 +214,3 @@ class _DoctorScheduleViewState extends State<DoctorScheduleView> {
   }
 }
 
-extension on Expert {
-  Expert copyWith({
-    List<String>? availableDays,
-    String? workingHoursStart,
-    String? workingHoursEnd,
-    List<String>? availableShifts,
-    List<int>? sessionDurations,
-  }) {
-    return Expert(
-      id: id,
-      name: name,
-      speciality: speciality,
-      image: image,
-      rating: rating,
-      reviewsCount: reviewsCount,
-      experienceYears: experienceYears,
-      patientsCount: patientsCount,
-      bio: bio,
-      startingPricePerHour: startingPricePerHour,
-      specialties: specialties,
-      languages: languages,
-      degree: degree,
-      university: university,
-      graduationYear: graduationYear,
-      licenseNumber: licenseNumber,
-      certifications: certifications,
-      callFeature: callFeature,
-      videoCallFeature: videoCallFeature,
-      isAvailable: isAvailable,
-      availableDays: availableDays ?? this.availableDays,
-      workingHoursStart: workingHoursStart ?? this.workingHoursStart,
-      workingHoursEnd: workingHoursEnd ?? this.workingHoursEnd,
-      availableShifts: availableShifts ?? this.availableShifts,
-      sessionDurations: sessionDurations ?? this.sessionDurations,
-    );
-  }
-}

@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/model/expert.model.dart';
+import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 
 class DoctorMenuItem {
   final String title;
   final String icon;
-  final int? badgeCount;
+  final String category;
 
   const DoctorMenuItem({
     required this.title,
     required this.icon,
-    this.badgeCount,
+    required this.category,
   });
 }
 
@@ -22,23 +26,52 @@ class LandingDoctorController extends GetxController {
 
   final RxInt selectedMenuIndex = 0.obs;
   final RxBool isSidebarCollapsed = false.obs;
+  final RxBool isLoggingOut = false.obs;
+  final RxBool isDarkMode = false.obs;
+
   final RxString doctorEmail = 'dr.sarah@mentora.com'.obs;
   final RxString doctorName = 'Dr. Sarah Jenkins, MD'.obs;
   final RxString doctorSpeciality = 'Clinical Psychologist'.obs;
   final Rx<Expert?> doctorProfile = Rx<Expert?>(null);
 
   final List<DoctorMenuItem> menuItems = const [
-    DoctorMenuItem(title: 'Clinical Dashboard', icon: '\u{f0e4}'),
-    DoctorMenuItem(title: 'Appointments', icon: '\u{f073}'),
-    DoctorMenuItem(title: 'My Patients', icon: '\u{f0c0}'),
-    DoctorMenuItem(title: 'Schedule & Availability', icon: '\u{f017}'),
-    DoctorMenuItem(title: 'Profile & Settings', icon: '\u{f4fe}'),
+    DoctorMenuItem(
+      title: 'Clinical Dashboard',
+      icon: '\u{f0e4}', // tachometer-alt
+      category: 'Overview',
+    ),
+    DoctorMenuItem(
+      title: 'Appointments',
+      icon: '\u{f073}', // calendar-alt
+      category: 'Clinical',
+    ),
+    DoctorMenuItem(
+      title: 'My Patients',
+      icon: '\u{f0c0}', // users
+      category: 'Clinical',
+    ),
+    DoctorMenuItem(
+      title: 'Schedule & Availability',
+      icon: '\u{f017}', // clock
+      category: 'Practice',
+    ),
+    DoctorMenuItem(
+      title: 'Profile & Settings',
+      icon: '\u{f4fe}', // user-shield
+      category: 'Practice',
+    ),
   ];
 
   @override
   void onInit() {
     super.onInit();
     loadDoctorInfo();
+    final savedTheme = StorageUtils.read<String>(StorageKeys.THEME_MODE);
+    if (savedTheme != null) {
+      isDarkMode.value = savedTheme == 'dark';
+    } else {
+      isDarkMode.value = Get.isDarkMode;
+    }
   }
 
   Future<void> loadDoctorInfo() async {
@@ -57,8 +90,17 @@ class LandingDoctorController extends GetxController {
     if (profile.speciality != null) doctorSpeciality.value = profile.speciality!;
   }
 
+  void toggleThemeMode() {
+    final bool newDark = !Get.isDarkMode;
+    isDarkMode.value = newDark;
+    Get.changeThemeMode(newDark ? ThemeMode.dark : ThemeMode.light);
+    StorageUtils.write(StorageKeys.THEME_MODE, newDark ? 'dark' : 'light');
+  }
+
   void changeMenuIndex(int index) {
-    selectedMenuIndex.value = index;
+    if (index >= 0 && index < menuItems.length) {
+      selectedMenuIndex.value = index;
+    }
   }
 
   void toggleSidebar() {
@@ -95,8 +137,18 @@ class LandingDoctorController extends GetxController {
     );
 
     if (shouldLogout == true) {
-      await AppMethod.clearDoctorSession();
-      Get.offAllNamed(Routes.LOGIN_DOCTOR);
+      try {
+        isLoggingOut.value = true;
+        await AppMethod.clearDoctorSession();
+        AppUtils.snackbar(
+          'Logged Out',
+          'You have been logged out of Mentora Doctors.',
+          SnackBarType.INFO,
+        );
+        Get.offAllNamed(Routes.LOGIN_DOCTOR);
+      } finally {
+        isLoggingOut.value = false;
+      }
     }
   }
 }
