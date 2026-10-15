@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:Mentora/data/model/doctor_appointment.model.dart';
+import 'package:Mentora/data/model/doctor_dashboard.model.dart';
 import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
 
@@ -13,10 +14,17 @@ class DashboardDoctorController extends GetxController {
 
   // Stats
   final RxInt totalPatients = 148.obs;
+  final RxInt totalConsultations = 120.obs;
   final RxDouble totalEarnings = 4820.0.obs;
   final RxDouble rating = 4.95.obs;
   final RxInt reviewsCount = 142.obs;
   final RxString completionRate = '98.4%'.obs;
+  final RxString patientsGrowth = '+14 this month'.obs;
+  final RxString earningsGrowth = '+\$650 this week'.obs;
+
+  // Weekly Volume & Recent Reviews
+  final Rx<WeeklyConsultationVolume?> weeklyVolume = Rx<WeeklyConsultationVolume?>(null);
+  final RxList<PatientReviewItem> recentReviews = <PatientReviewItem>[].obs;
 
   @override
   void onInit() {
@@ -31,6 +39,24 @@ class DashboardDoctorController extends GetxController {
       doctorProfile.value = profile;
       isOnline.value = profile.isAvailable ?? true;
 
+      // 1. Fetch Clinical Dashboard Data from API (Stats, Weekly Graph, Recent Reviews)
+      final dashboardRes = await DoctorPortalService.getClinicalDashboard(doctorId: profile.id);
+      if (dashboardRes != null && dashboardRes.data != null) {
+        final d = dashboardRes.data!;
+        totalPatients.value = d.stats.totalPatients;
+        totalConsultations.value = d.stats.totalConsultations;
+        totalEarnings.value = d.stats.totalEarnings;
+        rating.value = d.stats.averageRating;
+        reviewsCount.value = d.stats.reviewsCount;
+        completionRate.value = d.stats.completionRate;
+        patientsGrowth.value = d.stats.patientsGrowth;
+        earningsGrowth.value = d.stats.earningsGrowth;
+
+        weeklyVolume.value = d.weeklyVolume;
+        recentReviews.assignAll(d.recentReviews);
+      }
+
+      // 2. Fetch appointments for Today's schedule preview
       final list = await DoctorPortalService.getAppointments();
       allAppointments.assignAll(list);
 
@@ -39,19 +65,13 @@ class DashboardDoctorController extends GetxController {
       todayAppointments.assignAll(
         list.where((a) => a.bookingDate == todayStr && a.bookingStatus != 'Cancelled').toList(),
       );
-
-      // Recalculate stats dynamically
-      final completed = list.where((a) => a.bookingStatus == 'Completed').toList();
-      if (completed.isNotEmpty) {
-        final earned = completed.fold<double>(0.0, (sum, a) => sum + a.durationCost);
-        totalEarnings.value = 3200.0 + earned;
-      }
     } catch (e) {
       Get.log('Error loading doctor dashboard: $e');
     } finally {
       isLoading.value = false;
     }
   }
+
 
   void toggleOnlineStatus(bool val) async {
     isOnline.value = val;

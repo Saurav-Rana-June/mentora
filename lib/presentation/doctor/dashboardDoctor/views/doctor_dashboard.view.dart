@@ -92,7 +92,7 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                 context: context,
                 title: 'Total Patients',
                 value: '$totalPt',
-                badge: '+14 this month',
+                badge: controller.patientsGrowth.value,
                 icon: '\u{f0c0}', // users
                 iconColor: infoColor,
                 onTap: () {
@@ -105,7 +105,7 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                 context: context,
                 title: 'Trust Rating',
                 value: '${rate.toStringAsFixed(2)} ★',
-                badge: '142 Reviews',
+                badge: '${controller.reviewsCount.value} Reviews',
                 icon: '\u{f005}', // star
                 iconColor: warningColor,
               ),
@@ -113,7 +113,7 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                 context: context,
                 title: 'Monthly Earnings',
                 value: '\$${earnings.toStringAsFixed(0)}',
-                badge: '+\$650 this week',
+                badge: controller.earningsGrowth.value,
                 icon: '\u{f51e}', // coins
                 iconColor: successColor,
               ),
@@ -510,124 +510,161 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 850;
+    return Obx(() {
+      final wv = controller.weeklyVolume.value;
+      final dailyList = wv?.dailyVolume ?? [];
+      int maxCount = 8;
+      if (dailyList.isNotEmpty) {
+        for (final item in dailyList) {
+          if (item.consultationsCount > maxCount) {
+            maxCount = item.consultationsCount;
+          }
+        }
+      }
 
-        final weeklyActivity = CustomPrimaryCard(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
+      final reviews = controller.recentReviews;
+
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 850;
+
+          final weeklyActivity = CustomPrimaryCard(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Weekly Consultation Volume',
+                        style: h3.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          '${wv?.totalWeeklySessions ?? 32} Sessions',
+                          style: r10.copyWith(fontWeight: FontWeight.w700, color: primary),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Spacing.s16.h,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: dailyList.isNotEmpty
+                        ? dailyList
+                            .map((d) => buildDayBar(
+                                  context,
+                                  d.day,
+                                  d.consultationsCount,
+                                  maxCount,
+                                  isDark,
+                                ))
+                            .toList()
+                        : [
+                            buildDayBar(context, 'Mon', 6, 8, isDark),
+                            buildDayBar(context, 'Tue', 8, 8, isDark),
+                            buildDayBar(context, 'Wed', 5, 8, isDark),
+                            buildDayBar(context, 'Thu', 7, 8, isDark),
+                            buildDayBar(context, 'Fri', 4, 8, isDark),
+                            buildDayBar(context, 'Sat', 2, 8, isDark),
+                            buildDayBar(context, 'Sun', 0, 8, isDark),
+                          ],
+                  ),
+                  Spacing.s16.h,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Completion: ${wv?.completionRate ?? "98.4%"}',
+                        style: r12.copyWith(color: successColor, fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        'Avg Duration: ${wv?.avgDurationMinutes ?? 45} min',
+                        style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+
+          final patientFeedback = CustomPrimaryCard(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Recent Patient Reviews',
+                        style: h3.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      Icon(Icons.star_rounded, color: warningColor),
+                    ],
+                  ),
+                  Spacing.s16.h,
+                  if (reviews.isNotEmpty)
+                    for (int i = 0; i < reviews.length && i < 3; i++) ...[
+                      if (i > 0) Spacing.s12.h,
+                      buildFeedbackItem(
+                        patient: reviews[i].patientName,
+                        rating: reviews[i].rating,
+                        comment: reviews[i].comment,
+                        timeAgo: reviews[i].timeAgo,
+                      ),
+                    ]
+                  else ...[
+                    buildFeedbackItem(
+                      patient: 'Elena Rostova',
+                      rating: 5,
+                      comment: 'Dr. Sarah was exceptionally empathetic and practical.',
+                      timeAgo: 'Yesterday',
+                    ),
+                    Spacing.s12.h,
+                    buildFeedbackItem(
+                      patient: 'Benjamin Vance',
+                      rating: 5,
+                      comment: 'Outstanding sessions that transformed my anxiety levels.',
+                      timeAgo: '4d ago',
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+
+          if (isWide) {
+            return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Weekly Consultation Volume',
-                      style: h3.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Text(
-                        '32 Sessions',
-                        style: r10.copyWith(fontWeight: FontWeight.w700, color: primary),
-                      ),
-                    ),
-                  ],
-                ),
-                Spacing.s16.h,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    buildDayBar(context, 'Mon', 6, 8, isDark),
-                    buildDayBar(context, 'Tue', 8, 8, isDark),
-                    buildDayBar(context, 'Wed', 5, 8, isDark),
-                    buildDayBar(context, 'Thu', 7, 8, isDark),
-                    buildDayBar(context, 'Fri', 4, 8, isDark),
-                    buildDayBar(context, 'Sat', 2, 8, isDark),
-                    buildDayBar(context, 'Sun', 0, 8, isDark),
-                  ],
-                ),
-                Spacing.s16.h,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Completion: 98.4%',
-                      style: r12.copyWith(color: successColor, fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      'Avg Duration: 45 min',
-                      style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
-                    ),
-                  ],
-                ),
+                Expanded(flex: 3, child: weeklyActivity),
+                Spacing.s16.w,
+                Expanded(flex: 2, child: patientFeedback),
               ],
-            ),
-          ),
-        );
+            );
+          }
 
-        final patientFeedback = CustomPrimaryCard(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recent Patient Reviews',
-                      style: h3.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    Icon(Icons.star_rounded, color: warningColor),
-                  ],
-                ),
-                Spacing.s16.h,
-                buildFeedbackItem(
-                  patient: 'Elena Rostova',
-                  rating: 5,
-                  comment: 'Dr. Sarah was exceptionally empathetic and practical.',
-                  timeAgo: 'Yesterday',
-                ),
-                Spacing.s12.h,
-                buildFeedbackItem(
-                  patient: 'Benjamin Vance',
-                  rating: 5,
-                  comment: 'Outstanding sessions that transformed my anxiety levels.',
-                  timeAgo: '4d ago',
-                ),
-              ],
-            ),
-          ),
-        );
-
-        if (isWide) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
             children: [
-              Expanded(flex: 3, child: weeklyActivity),
-              Spacing.s16.w,
-              Expanded(flex: 2, child: patientFeedback),
+              weeklyActivity,
+              Spacing.s16.h,
+              patientFeedback,
             ],
           );
-        }
-
-        return Column(
-          children: [
-            weeklyActivity,
-            Spacing.s16.h,
-            patientFeedback,
-          ],
-        );
-      },
-    );
+        },
+      );
+    });
   }
 
   Widget buildDayBar(BuildContext context, String day, int count, int maxCount, bool isDark) {
