@@ -280,18 +280,28 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(44.r),
-                            child: CachedNetworkImage(
-                              imageUrl: controller.avatarUrl.value.isNotEmpty
-                                  ? controller.avatarUrl.value
-                                  : 'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500',
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => const CircleAvatar(
-                                radius: 40,
-                                child: Icon(Icons.person, size: 40),
-                              ),
-                            ),
+                            child: controller.avatarUrl.value.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: controller.avatarUrl.value,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (_, __, ___) => const CircleAvatar(
+                                      radius: 40,
+                                      child: Icon(Icons.person, size: 40),
+                                    ),
+                                  )
+                                : Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: primary.withValues(alpha: 0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Icon(Icons.person_rounded, size: 42, color: primary),
+                                    ),
+                                  ),
                           ),
                           if (controller.isUploadingImage.value)
                             Container(
@@ -401,9 +411,11 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                           child: DropdownButton<String>(
                             value: controller.availableSpecialityNames.contains(controller.selectedSpeciality.value)
                                 ? controller.selectedSpeciality.value
-                                : (controller.availableSpecialityNames.isNotEmpty
-                                    ? controller.availableSpecialityNames.first
-                                    : null),
+                                : null,
+                            hint: Text(
+                              'Select Primary Speciality',
+                              style: r14.copyWith(color: theme.textTheme.bodySmall?.color),
+                            ),
                             isExpanded: true,
                             dropdownColor: isDark ? const Color(0xFF1E201B) : Colors.white,
                             borderRadius: BorderRadius.circular(12.r),
@@ -979,23 +991,25 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
               return Obx(() {
                 final name = controller.nameController.text.trim().isNotEmpty
                     ? controller.nameController.text.trim()
-                    : 'Dr. Specialist Name';
-                final speciality = controller.selectedSpeciality.value;
+                    : 'Your Name, MD / Ph.D.';
+                final speciality = controller.selectedSpeciality.value.isNotEmpty
+                    ? controller.selectedSpeciality.value
+                    : 'Specialization';
                 final exp = controller.experienceController.text.trim().isNotEmpty
                     ? controller.experienceController.text.trim()
-                    : '8';
+                    : '0';
                 final degree = controller.degreeController.text.trim().isNotEmpty
                     ? controller.degreeController.text.trim()
-                    : 'Clinical Degree';
+                    : 'Medical Degree';
                 final uni = controller.universityController.text.trim().isNotEmpty
                     ? controller.universityController.text.trim()
-                    : 'Accredited Institution';
+                    : 'Medical Institution';
                 final price = controller.priceController.text.trim().isNotEmpty
                     ? controller.priceController.text.trim()
-                    : '85';
+                    : '0';
                 final bio = controller.bioController.text.trim().isNotEmpty
                     ? controller.bioController.text.trim()
-                    : 'Clinical psychologist with evidence-based cognitive therapy and trauma relief focus.';
+                    : 'Your clinical bio and patient care overview will appear here once entered.';
 
                 return Container(
                   padding: const EdgeInsets.all(20),
@@ -1014,15 +1028,25 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(35.r),
-                            child: CachedNetworkImage(
-                              imageUrl: controller.avatarUrl.value.isNotEmpty
-                                  ? controller.avatarUrl.value
-                                  : 'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500',
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => const CircleAvatar(radius: 35, child: Icon(Icons.person)),
-                            ),
+                            child: controller.avatarUrl.value.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: controller.avatarUrl.value,
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (_, __, ___) => const CircleAvatar(radius: 35, child: Icon(Icons.person)),
+                                  )
+                                : Container(
+                                    width: 70,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      color: primary.withValues(alpha: 0.15),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Icon(Icons.person_rounded, size: 36, color: primary),
+                                    ),
+                                  ),
                           ),
                           Spacing.s16.w,
                           Expanded(

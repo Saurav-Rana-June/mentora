@@ -25,37 +25,27 @@ class RegisterDoctorController extends GetxController {
   final RxBool certifiedCredentials = true.obs;
 
   // --- Step 1: Basic Information ---
-  final nameController = TextEditingController(text: 'Dr. Emily Vance');
-  final imageController = TextEditingController(
-    text: 'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500',
-  );
-  final RxString avatarUrl =
-      'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500'.obs;
-  final ratingController = TextEditingController(text: '4.95');
-  final reviewsController = TextEditingController(text: '95');
-  final experienceController = TextEditingController(text: '8');
-  final patientsController = TextEditingController(text: '340');
-  final priceController = TextEditingController(text: '85.0');
-  final specialtiesController = TextEditingController(
-    text: 'Anxiety & Panic, CBT Therapy, Trauma Recovery, Stress Management',
-  );
-  final languagesController = TextEditingController(text: 'English, Spanish');
-  final bioController = TextEditingController(
-    text:
-        'Licensed Clinical Psychologist with over 8 years of specialized experience in evidence-based Cognitive Behavioral Therapy, mindful stress relief, and trauma recovery.',
-  );
+  final nameController = TextEditingController();
+  final imageController = TextEditingController();
+  final RxString avatarUrl = ''.obs;
+  final ratingController = TextEditingController();
+  final reviewsController = TextEditingController();
+  final experienceController = TextEditingController();
+  final patientsController = TextEditingController();
+  final priceController = TextEditingController();
+  final specialtiesController = TextEditingController();
+  final languagesController = TextEditingController();
+  final bioController = TextEditingController();
 
-  final RxString selectedSpeciality = 'Clinical Psychologist'.obs;
+  final RxString selectedSpeciality = ''.obs;
   final RxList<Speciality> specialities = <Speciality>[].obs;
 
   // --- Step 2: Educational & Professional ---
-  final degreeController = TextEditingController(text: 'Ph.D. in Clinical Psychology');
-  final universityController = TextEditingController(text: 'Columbia University');
-  final gradYearController = TextEditingController(text: '2016');
-  final licenseController = TextEditingController(text: 'PSY-NY-849201');
-  final certificationsController = TextEditingController(
-    text: 'American Board of Professional Psychology, Beck Institute Certified CBT Clinician',
-  );
+  final degreeController = TextEditingController();
+  final universityController = TextEditingController();
+  final gradYearController = TextEditingController();
+  final licenseController = TextEditingController();
+  final certificationsController = TextEditingController();
 
   // --- Step 3: Availability & Schedule ---
   final RxBool callFeature = true.obs;
