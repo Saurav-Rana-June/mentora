@@ -77,7 +77,7 @@ class ApiClient {
     T Function(dynamic json)? parser,
   }) async {
     if (withAccessToken) {
-      final token = AppMethod.getUserToken();
+      final token = AppMethod.getDoctorToken() ?? AppMethod.getUserToken();
       if (token != null && token.isNotEmpty) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
       } else {
@@ -113,16 +113,21 @@ class ApiClient {
 
     // Handle 401 Unauthorized globally - clear credentials and boot user out
     if (statusCode == 401) {
-      AppMethod.clearUserSession();
-
       final currentRoute = Get.currentRoute;
-      final isAuthOrSplashRoute = currentRoute == Routes.SPLASH ||
+      final isAuthOrPublicRoute = currentRoute == Routes.SPLASH ||
           currentRoute == Routes.SIGN_IN ||
+          currentRoute == Routes.SIGN_UP ||
+          currentRoute == Routes.LOGIN ||
           currentRoute == Routes.LOGIN_ADMIN ||
+          currentRoute == Routes.LOGIN_DOCTOR ||
+          currentRoute == Routes.REGISTER_DOCTOR ||
+          currentRoute == Routes.FORGOT_PASSWORD ||
+          currentRoute == Routes.ONBOARDING ||
           currentRoute == Routes.INTRODUCTION ||
           currentRoute.isEmpty;
 
-      if (!isAuthOrSplashRoute) {
+      if (!isAuthOrPublicRoute) {
+        AppMethod.clearUserSession();
         AppUtils.snackbar(
           'Session Expired',
           'Please sign in again.',

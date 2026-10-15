@@ -5,6 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:Mentora/data/enums/snackbar_enum.dart';
+import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/model/speciality.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
@@ -14,17 +15,22 @@ import 'package:Mentora/infrastructure/navigation/routes.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 
 class RegisterDoctorController extends GetxController {
+  final formKey = GlobalKey<FormState>();
   final RxInt currentStep = 0.obs;
 
   final step1FormKey = GlobalKey<FormState>();
   final step2FormKey = GlobalKey<FormState>();
   final step3FormKey = GlobalKey<FormState>();
 
+  final RxBool certifiedCredentials = true.obs;
+
   // --- Step 1: Basic Information ---
   final nameController = TextEditingController(text: 'Dr. Emily Vance');
   final imageController = TextEditingController(
     text: 'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500',
   );
+  final RxString avatarUrl =
+      'https://images.unsplash.com/photo-1594824813501-4895781a7047?w=500'.obs;
   final ratingController = TextEditingController(text: '4.95');
   final reviewsController = TextEditingController(text: '95');
   final experienceController = TextEditingController(text: '8');
@@ -86,7 +92,10 @@ class RegisterDoctorController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchSpecialities();
+    final token = AppMethod.getDoctorToken() ?? AppMethod.getUserToken();
+    if (token != null && token.isNotEmpty) {
+      fetchSpecialities();
+    }
   }
 
   @override
@@ -173,6 +182,14 @@ class RegisterDoctorController extends GetxController {
     }
   }
 
+  void selectAllWeekdays() {
+    selectedDays.assignAll(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  }
+
+  void selectAllDays() {
+    selectedDays.assignAll(allDaysOfWeek);
+  }
+
   void toggleShift(String shift) {
     if (selectedShifts.contains(shift)) {
       if (selectedShifts.length > 1) {
@@ -251,6 +268,7 @@ class RegisterDoctorController extends GetxController {
 
       if (res?.data != null && res!.data!.isNotEmpty) {
         imageController.text = res.data!;
+        avatarUrl.value = res.data!;
         AppUtils.snackbar('Success', 'Doctor photo uploaded successfully', SnackBarType.SUCCESS);
       } else {
         AppUtils.snackbar('Success', 'Doctor photo updated', SnackBarType.SUCCESS);
@@ -263,6 +281,34 @@ class RegisterDoctorController extends GetxController {
   }
 
   Future<void> submitRegistration() async {
+    if (formKey.currentState != null && !formKey.currentState!.validate()) {
+      AppUtils.snackbar(
+        'Required Fields Incomplete',
+        'Please review the highlighted fields in your application.',
+        SnackBarType.WARNING,
+      );
+      return;
+    }
+
+    if (selectedSpeciality.value.trim().isEmpty) {
+      AppUtils.snackbar('Speciality Required', 'Please select a primary speciality.', SnackBarType.WARNING);
+      return;
+    }
+
+    if (selectedDays.isEmpty) {
+      AppUtils.snackbar('Schedule Required', 'Please select at least one available consultation day.', SnackBarType.WARNING);
+      return;
+    }
+
+    if (!certifiedCredentials.value) {
+      AppUtils.snackbar(
+        'Verification Required',
+        'Please confirm and certify your clinical qualifications and licensing information.',
+        SnackBarType.WARNING,
+      );
+      return;
+    }
+
     try {
       isLoading.value = true;
 
@@ -287,9 +333,11 @@ class RegisterDoctorController extends GetxController {
       final body = {
         'name': nameController.text.trim(),
         'speciality': selectedSpeciality.value,
-        'image': imageController.text.trim().isNotEmpty
-            ? imageController.text.trim()
-            : 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500',
+        'image': avatarUrl.value.trim().isNotEmpty
+            ? avatarUrl.value.trim()
+            : (imageController.text.trim().isNotEmpty
+                ? imageController.text.trim()
+                : 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500'),
         'rating': double.tryParse(ratingController.text.trim()) ?? 4.95,
         'reviewsCount': int.tryParse(reviewsController.text.trim()) ?? 95,
         'experienceYears': int.tryParse(experienceController.text.trim()) ?? 8,

@@ -73,9 +73,7 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
         Text(
           'Clinical Practice & Telehealth Portal',
           textAlign: TextAlign.center,
-          style: r14.copyWith(
-            color: theme.textTheme.bodySmall?.color,
-          ),
+          style: r14.copyWith(color: theme.textTheme.bodySmall?.color),
         ),
       ],
     );
@@ -185,7 +183,9 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
             hintText: '••••••••••••',
             obscureText: controller.hidePassword.value,
             textInputAction: TextInputAction.done,
-            fillColor: isDark ? const Color(0xFF282A24) : const Color(0xFFF9FAF7),
+            fillColor: isDark
+                ? const Color(0xFF282A24)
+                : const Color(0xFFF9FAF7),
             borderColor: isDark ? slate[700] : slate[200],
             borderWidth: 1,
             focusedBorderColor: primary,
@@ -267,10 +267,7 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
             child: Text(
               'Forgot Password?',
-              style: r14.copyWith(
-                color: primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: r14.copyWith(color: primary, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -314,10 +311,7 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text(
               'Register as a Doctor',
-              style: r14.copyWith(
-                color: primary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: r14.copyWith(color: primary, fontWeight: FontWeight.w700),
             ),
           ),
         ),
