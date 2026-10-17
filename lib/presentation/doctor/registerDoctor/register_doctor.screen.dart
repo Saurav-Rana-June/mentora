@@ -40,44 +40,51 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
   Widget build(BuildContext context) {
     return CustomScreenWrapper(
       safeAreaTop: true,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppScale.pagePaddingHorizontal(),
-            vertical: 24,
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 820),
-            child: Form(
-              key: controller.formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  buildTopBar(context),
-                  Spacing.s16.h,
-                  buildHeroHeader(context),
-                  Spacing.s24.h,
-                  buildClinicalIdentityCard(context),
-                  Spacing.s20.h,
-                  buildCredentialsCard(context),
-                  Spacing.s20.h,
-                  buildScheduleAndTelehealthCard(context),
-                  Spacing.s20.h,
-                  buildLivePatientPreviewCard(context),
-                  Spacing.s20.h,
-                  buildSubmitAndCertificationCard(context),
-                  Spacing.s32.h,
-                ],
-              ),
+      body: Obx(() {
+        final isStep1 = controller.registrationStage.value == 0;
+        return Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppScale.pagePaddingHorizontal(),
+              vertical: 24,
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              child: isStep1
+                  ? buildStep1AccountRegistrationView(context)
+                  : buildStep2ProfileUpdateView(context),
             ),
           ),
-        ),
+        );
+      }),
+    );
+  }
+
+  // =========================================================================
+  // STEP 1: ACCOUNT REGISTRATION VIEW (Email & Password First)
+  // =========================================================================
+
+  Widget buildStep1AccountRegistrationView(BuildContext context) {
+    return Container(
+      key: const ValueKey('step1_account_create'),
+      constraints: const BoxConstraints(maxWidth: 580),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          buildStep1TopBar(context),
+          Spacing.s20.h,
+          buildStep1HeroHeader(context),
+          Spacing.s20.h,
+          buildStep1CredentialsCard(context),
+        ],
       ),
     );
   }
 
-  // --- Top Bar with Back Navigation ---
-  Widget buildTopBar(BuildContext context) {
+  Widget buildStep1TopBar(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -116,7 +123,7 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           ),
         ),
         DoctorBadge(
-          text: 'CLINICAL CREDENTIALING',
+          text: 'STEP 1 OF 2: ACCOUNT SETUP',
           icon: '\u{f0f0}',
           color: primary,
         ),
@@ -124,8 +131,7 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
     );
   }
 
-  // --- Hero Header with Mentora Branding ---
-  Widget buildHeroHeader(BuildContext context) {
+  Widget buildStep1HeroHeader(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -177,7 +183,7 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                     ),
                     Spacing.s4.h,
                     Text(
-                      'Clinical Practice & Telehealth Onboarding',
+                      'Doctor & Clinician Registration',
                       style: r14.copyWith(
                         color: primary,
                         fontWeight: FontWeight.w600,
@@ -190,7 +196,365 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           ),
           Spacing.s16.h,
           Text(
-            'Complete your medical identity, licensing credentials, and practice schedule in the sections below to start receiving patient appointments.',
+            'Create your doctor account credentials. In the next step, you will update your clinical identity, degrees, and consultation schedule.',
+            style: r14.copyWith(
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.85),
+              height: 1.45,
+            ),
+          ),
+          Spacing.s16.h,
+          Row(
+            children: [
+              _buildStepIndicatorPill('1. Account & Security', Icons.lock_person_rounded, true),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 14,
+                  color: isDark ? Colors.white38 : Colors.black38,
+                ),
+              ),
+              _buildStepIndicatorPill('2. Profile Update', Icons.badge_outlined, false),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStep1CredentialsCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return CustomPrimaryCard(
+      color: getCardBgColor(context),
+      border: Border.all(
+        color: isDark ? Colors.white.withValues(alpha: 0.08) : slate[200]!,
+        width: 1,
+      ),
+      padding: const EdgeInsets.all(24),
+      borderRadius: 18.r,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildCardSectionHeader(
+            context: context,
+            icon: Icons.vpn_key_rounded,
+            badge: 'STEP 1',
+            title: 'Account Credentials',
+            subtitle: 'Enter your legal clinical name, practitioner email, and account password.',
+          ),
+          Spacing.s20.h,
+
+          // Full Name
+          _buildInputGroup(
+            context: context,
+            label: 'Full Legal Name *',
+            hint: 'e.g., Dr. Jane Doe, MD',
+            controller: controller.nameController,
+            prefixIcon: const Icon(Icons.person_outline_rounded, size: 20),
+          ),
+          Spacing.s16.h,
+
+          // Email
+          _buildInputGroup(
+            context: context,
+            label: 'Doctor Email Address *',
+            hint: 'e.g., doctor@mentora.com',
+            controller: controller.emailController,
+            keyboardType: TextInputType.emailAddress,
+            prefixIcon: const Icon(Icons.alternate_email_rounded, size: 20),
+          ),
+          Spacing.s16.h,
+
+          // Password
+          Obx(
+            () => _buildInputGroup(
+              context: context,
+              label: 'Account Password *',
+              hint: 'Create a secure password (min. 6 characters)',
+              controller: controller.passwordController,
+              obscureText: controller.hidePassword.value,
+              prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  controller.hidePassword.value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 20,
+                  color: slate[500],
+                ),
+                onPressed: controller.togglePasswordVisibility,
+              ),
+            ),
+          ),
+          Spacing.s16.h,
+
+          // Confirm Password
+          Obx(
+            () => _buildInputGroup(
+              context: context,
+              label: 'Confirm Password *',
+              hint: 'Re-enter your password to confirm',
+              controller: controller.confirmPasswordController,
+              obscureText: controller.hideConfirmPassword.value,
+              prefixIcon: const Icon(Icons.lock_reset_rounded, size: 20),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  controller.hideConfirmPassword.value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 20,
+                  color: slate[500],
+                ),
+                onPressed: controller.toggleConfirmPasswordVisibility,
+              ),
+            ),
+          ),
+          Spacing.s20.h,
+
+          // Security banner
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: primary.withValues(alpha: isDark ? 0.1 : 0.06),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: primary.withValues(alpha: isDark ? 0.25 : 0.3),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.shield_outlined, color: primary, size: 18),
+                Spacing.s8.w,
+                Expanded(
+                  child: Text(
+                    'Your email and password will be used to authenticate into the Mentora Doctor Portal. In Step 2, you will complete your public clinical profile.',
+                    style: r12.copyWith(
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.9),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Spacing.s24.h,
+
+          // Continue Button
+          Obx(
+            () => CustomPrimaryButton(
+              text: 'Register Account & Continue to Profile →',
+              isLoading: controller.isLoading.value,
+              backgroundColor: primary,
+              height: 52,
+              borderRadius: 14.r,
+              onPressed: controller.registerAccount,
+              prefixIcon: const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          Spacing.s16.h,
+
+          // Already have account
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Already registered as a Mentora Specialist? ',
+                style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+              ),
+              InkWell(
+                onTap: () => Get.offNamed(Routes.LOGIN_DOCTOR),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Text(
+                    'Sign In',
+                    style: r14.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // =========================================================================
+  // STEP 2: PROFILE UPDATE VIEW (Clinical Details, Degrees, Telehealth, Preview)
+  // =========================================================================
+
+  Widget buildStep2ProfileUpdateView(BuildContext context) {
+    return Container(
+      key: const ValueKey('step2_profile_update'),
+      constraints: const BoxConstraints(maxWidth: 960),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          buildStep2TopBar(context),
+          Spacing.s20.h,
+          buildStep2HeroHeader(context),
+          Spacing.s24.h,
+          buildClinicalIdentityCard(context),
+          Spacing.s20.h,
+          buildCredentialsCard(context),
+          Spacing.s20.h,
+          buildScheduleAndTelehealthCard(context),
+          Spacing.s20.h,
+          buildLivePatientPreviewCard(context),
+          Spacing.s20.h,
+          buildSubmitAndCertificationCard(context),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStep2TopBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        InkWell(
+          onTap: () => controller.registrationStage.value = 0,
+          borderRadius: BorderRadius.circular(10.r),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E201B) : Colors.white,
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(
+                color: isDark ? const Color(0xFF2D3128) : slate[200]!,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.arrow_back_rounded, size: 16),
+                Spacing.s8.w,
+                Text(
+                  'Account Credentials',
+                  style: r12.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            if (controller.emailController.text.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E201B) : slate[100],
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF2D3128) : slate[300]!,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_rounded, size: 14, color: primary),
+                    Spacing.s8.w,
+                    Text(
+                      controller.emailController.text,
+                      style: r12.copyWith(
+                        color: theme.textTheme.bodyMedium?.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Spacing.s8.w,
+            ],
+            DoctorBadge(
+              text: 'STEP 2 OF 2: PROFILE UPDATE',
+              icon: '\u{f0f0}',
+              color: primary,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildStep2HeroHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF1E221A), const Color(0xFF171914)]
+              : [const Color(0xFFF1F6EC), const Color(0xFFFAFCF8)],
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: primary.withValues(alpha: isDark ? 0.25 : 0.4),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: SizedBox(
+                  height: 38,
+                  width: 38,
+                  child: Image.asset('assets/logos/logo.png', fit: BoxFit.contain),
+                ),
+              ),
+              Spacing.s16.w,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Mentora Specialist Network',
+                      style: h1.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: theme.textTheme.headlineLarge?.color,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    Spacing.s4.h,
+                    Text(
+                      'Step 2 of 2: Complete Your Clinical Profile',
+                      style: r14.copyWith(
+                        color: primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Spacing.s16.h,
+          Text(
+            'Your account is created! Now personalize your clinical identity, medical degrees, licensing credentials, and telehealth availability below.',
             style: r14.copyWith(
               color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.85),
               height: 1.45,
@@ -203,10 +567,37 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
             runSpacing: 8,
             children: [
               _buildSectionIndicatorPill('1. Clinical Profile', Icons.person_rounded),
-              _buildSectionIndicatorPill('2. Credentials', Icons.school_rounded),
+              _buildSectionIndicatorPill('2. Credentials & Licensing', Icons.school_rounded),
               _buildSectionIndicatorPill('3. Telehealth & Hours', Icons.calendar_month_rounded),
               _buildSectionIndicatorPill('4. Patient Preview', Icons.visibility_rounded),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepIndicatorPill(String title, IconData icon, bool isActive) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: isActive ? primary.withValues(alpha: 0.15) : Colors.transparent,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: isActive ? primary : primary.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: isActive ? primary : primary.withValues(alpha: 0.6)),
+          Spacing.s4.w,
+          Text(
+            title,
+            style: r12.copyWith(
+              color: isActive ? primary : primary.withValues(alpha: 0.6),
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -1227,16 +1618,36 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           // Submit Primary Button
           Obx(
             () => CustomPrimaryButton(
-              text: 'Complete Registration & Open Doctor Portal',
+              text: 'Save Profile & Launch Doctor Portal',
               isLoading: controller.isLoading.value,
               backgroundColor: primary,
               height: 52,
               borderRadius: 14.r,
-              onPressed: controller.submitRegistration,
+              onPressed: controller.completeProfileUpdate,
               prefixIcon: const Icon(
                 Icons.verified_rounded,
                 color: Colors.white,
                 size: 20,
+              ),
+            ),
+          ),
+          Spacing.s12.h,
+
+          // Skip / Complete Later Option
+          OutlinedButton(
+            onPressed: () => Get.offAllNamed(Routes.LANDING_DOCTOR),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+              side: BorderSide(
+                color: isDark ? const Color(0xFF2C3127) : const Color(0xFFDCE2D6),
+              ),
+            ),
+            child: Text(
+              'Finish Profile Later & Go to Dashboard',
+              style: r14.copyWith(
+                color: theme.textTheme.bodyMedium?.color,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -1332,6 +1743,8 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
     required String hint,
     required TextEditingController controller,
     Widget? prefixIcon,
+    Widget? suffixIcon,
+    bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
     FormFieldValidator<String>? validator,
@@ -1352,11 +1765,13 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           hintText: hint,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          obscureText: obscureText,
           fillColor: fill,
           borderColor: border,
           borderWidth: 1.0,
           focusedBorderColor: primary,
           prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
           validator: validator,
         ),
       ],

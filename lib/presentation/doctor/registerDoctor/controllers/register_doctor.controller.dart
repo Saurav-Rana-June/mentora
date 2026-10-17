@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/methods/app_method.dart';
+import 'package:Mentora/data/model/api_response.dart';
+import 'package:Mentora/data/model/expert.model.dart';
 import 'package:Mentora/data/model/speciality.model.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
@@ -16,12 +18,17 @@ import 'package:Mentora/infrastructure/theme/theme.dart';
 
 class RegisterDoctorController extends GetxController {
   final formKey = GlobalKey<FormState>();
-  final RxInt currentStep = 0.obs;
-
+  final accountFormKey = GlobalKey<FormState>();
+  final profileFormKey = GlobalKey<FormState>();
   final step1FormKey = GlobalKey<FormState>();
   final step2FormKey = GlobalKey<FormState>();
   final step3FormKey = GlobalKey<FormState>();
 
+  /// 0 = Step 1: Register/Create Account (Email & Password), 1 = Step 2: Profile Update UI
+  final RxInt registrationStage = 0.obs;
+  final RxInt registeredDoctorId = 0.obs;
+
+  final RxInt currentStep = 0.obs;
   final RxBool certifiedCredentials = true.obs;
 
   // --- Step 1: Basic Information ---
@@ -36,6 +43,16 @@ class RegisterDoctorController extends GetxController {
   final specialtiesController = TextEditingController();
   final languagesController = TextEditingController();
   final bioController = TextEditingController();
+
+  // --- Step 2: Account Credentials & Security ---
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final RxBool hidePassword = true.obs;
+  final RxBool hideConfirmPassword = true.obs;
+
+  void togglePasswordVisibility() => hidePassword.value = !hidePassword.value;
+  void toggleConfirmPasswordVisibility() => hideConfirmPassword.value = !hideConfirmPassword.value;
 
   final RxString selectedSpeciality = ''.obs;
   final RxList<Speciality> specialities = <Speciality>[].obs;
@@ -100,6 +117,9 @@ class RegisterDoctorController extends GetxController {
     specialtiesController.dispose();
     languagesController.dispose();
     bioController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     degreeController.dispose();
     universityController.dispose();
     gradYearController.dispose();
@@ -270,18 +290,86 @@ class RegisterDoctorController extends GetxController {
     }
   }
 
-  Future<void> submitRegistration() async {
-    if (formKey.currentState != null && !formKey.currentState!.validate()) {
-      AppUtils.snackbar(
-        'Required Fields Incomplete',
-        'Please review the highlighted fields in your application.',
-        SnackBarType.WARNING,
-      );
+  /// STEP 1: Register Doctor Account via Email & Password
+  Future<void> registerAccount() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    final rawName = nameController.text.trim();
+
+    if (rawName.isEmpty) {
+      AppUtils.snackbar('Name Required', 'Please enter your clinical name or title.', SnackBarType.WARNING);
+      return;
+    }
+    if (email.isEmpty) {
+      AppUtils.snackbar('Email Required', 'Please provide a professional doctor email address.', SnackBarType.WARNING);
+      return;
+    }
+    if (!GetUtils.isEmail(email)) {
+      AppUtils.snackbar('Invalid Email', 'Please enter a valid email address.', SnackBarType.WARNING);
+      return;
+    }
+    if (password.isEmpty) {
+      AppUtils.snackbar('Password Required', 'Please create a secure account password.', SnackBarType.WARNING);
+      return;
+    }
+    if (password.length < 6) {
+      AppUtils.snackbar('Weak Password', 'Password must be at least 6 characters long.', SnackBarType.WARNING);
+      return;
+    }
+    if (password != confirmPassword) {
+      AppUtils.snackbar('Password Mismatch', 'Passwords do not match. Please verify your password.', SnackBarType.WARNING);
       return;
     }
 
+    try {
+      isLoading.value = true;
+      final body = {
+        'name': rawName,
+        'email': email,
+        'password': password,
+        'speciality': selectedSpeciality.value.isNotEmpty ? selectedSpeciality.value : 'Clinical Specialist',
+        'bio': bioController.text.trim().isNotEmpty ? bioController.text.trim() : 'Specialist clinician on Mentora.',
+      };
+
+      final res = await DoctorPortalService.registerDoctor(body);
+
+      if (res != null && res.data != null) {
+        registeredDoctorId.value = res.data!.id ?? 0;
+        await AppMethod.saveDoctorEmail(email);
+        await AppMethod.saveDoctorInfo(
+          id: registeredDoctorId.value,
+          name: rawName,
+        );
+        final existingToken = AppMethod.getDoctorToken();
+        if (existingToken == null || existingToken.isEmpty) {
+          await AppMethod.saveDoctorToken('doctor_jwt_${DateTime.now().millisecondsSinceEpoch}');
+        }
+
+        // Transition from Step 1 (Register) to Step 2 (Profile Update UI)
+        registrationStage.value = 1;
+        fetchSpecialities();
+
+        AppUtils.snackbar(
+          'Account Created!',
+          'Welcome $rawName! Now complete your clinical profile to start consulting.',
+          SnackBarType.SUCCESS,
+        );
+      } else {
+        AppUtils.snackbar('Registration Failed', 'Could not create doctor account.', SnackBarType.ERROR);
+      }
+    } catch (e) {
+      Get.log('Error creating doctor account: $e');
+      AppUtils.snackbar('Error', 'An error occurred during account creation.', SnackBarType.ERROR);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// STEP 2: Complete & Update Clinical Practice Profile
+  Future<void> completeProfileUpdate() async {
     if (selectedSpeciality.value.trim().isEmpty) {
-      AppUtils.snackbar('Speciality Required', 'Please select a primary speciality.', SnackBarType.WARNING);
+      AppUtils.snackbar('Speciality Required', 'Please select your primary clinical speciality.', SnackBarType.WARNING);
       return;
     }
 
@@ -320,8 +408,9 @@ class RegisterDoctorController extends GetxController {
           .where((s) => s.isNotEmpty)
           .toList();
 
+      final rawName = nameController.text.trim();
       final body = {
-        'name': nameController.text.trim(),
+        'name': rawName.isNotEmpty ? rawName : 'Clinical Specialist',
         'speciality': selectedSpeciality.value,
         'image': avatarUrl.value.trim().isNotEmpty
             ? avatarUrl.value.trim()
@@ -335,7 +424,9 @@ class RegisterDoctorController extends GetxController {
         'startingPricePerHour': double.tryParse(priceController.text.trim()) ?? 85.0,
         'specialties': specialtiesList,
         'languages': languagesList,
-        'bio': bioController.text.trim(),
+        'bio': bioController.text.trim().isNotEmpty
+            ? bioController.text.trim()
+            : 'Clinical specialist focused on patient mental wellbeing and therapy.',
         'degree': degreeController.text.trim(),
         'university': universityController.text.trim(),
         'graduationYear': int.tryParse(gradYearController.text.trim()) ?? 2016,
@@ -351,24 +442,40 @@ class RegisterDoctorController extends GetxController {
         'sessionDurations': selectedDurations.toList(),
       };
 
-      final res = await DoctorPortalService.registerDoctor(body);
+      ApiResponse<Expert>? res;
+      if (registeredDoctorId.value > 0) {
+        res = await DoctorPortalService.updateDoctorProfile(
+          doctorId: registeredDoctorId.value,
+          body: body,
+        );
+      } else {
+        res = await DoctorPortalService.registerDoctor(body);
+      }
 
       if (res != null && res.data != null) {
         AppUtils.snackbar(
-          'Doctor Registration Complete',
-          'Welcome to Mentora Doctors Portal! Your profile is verified.',
+          'Clinical Profile Active',
+          'Your specialist practice is now verified and active on Mentora!',
           SnackBarType.SUCCESS,
         );
 
         Get.offAllNamed(Routes.LANDING_DOCTOR);
       } else {
-        AppUtils.snackbar('Registration Failed', 'Could not register doctor profile.', SnackBarType.ERROR);
+        AppUtils.snackbar('Update Failed', 'Could not update doctor profile.', SnackBarType.ERROR);
       }
     } catch (e) {
-      Get.log('Error in doctor registration: $e');
-      AppUtils.snackbar('Error', 'An error occurred during registration.', SnackBarType.ERROR);
+      Get.log('Error updating doctor profile: $e');
+      AppUtils.snackbar('Error', 'An error occurred while saving your profile.', SnackBarType.ERROR);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> submitRegistration() async {
+    if (registrationStage.value == 0) {
+      await registerAccount();
+    } else {
+      await completeProfileUpdate();
     }
   }
 }

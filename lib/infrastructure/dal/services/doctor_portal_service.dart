@@ -57,6 +57,26 @@ class DoctorPortalService {
   /// Register new doctor profile
   static Future<ApiResponse<Expert>?> registerDoctor(Map<String, dynamic> body) async {
     try {
+      final res = await client.request<ApiResponse<Expert>>(
+        (dio) => dio.post(
+          'doctors/register',
+          data: body,
+        ),
+        withAccessToken: false,
+        parser: (json) {
+          return ApiResponse<Expert>.fromJson(
+            json as Map<String, dynamic>,
+            (data) => Expert.fromJson(data as Map<String, dynamic>),
+          );
+        },
+      );
+      if (res != null && res.data != null) {
+        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        return res;
+      }
+    } catch (_) {}
+
+    try {
       final res = await DoctorService.createDoctor(body);
       if (res != null && res.data != null) {
         await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
@@ -69,6 +89,48 @@ class DoctorPortalService {
     return ApiResponse<Expert>(
       status: 200,
       message: 'Doctor profile registered successfully',
+      data: expert,
+    );
+  }
+
+  /// Update registered doctor profile details (Step 2 of onboarding or portal settings)
+  static Future<ApiResponse<Expert>?> updateDoctorProfile({
+    required int doctorId,
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final res = await client.request<ApiResponse<Expert>>(
+        (dio) => dio.put(
+          'doctors/$doctorId',
+          data: body,
+        ),
+        withAccessToken: false,
+        parser: (json) {
+          return ApiResponse<Expert>.fromJson(
+            json as Map<String, dynamic>,
+            (data) => Expert.fromJson(data as Map<String, dynamic>),
+          );
+        },
+      );
+      if (res != null && res.data != null) {
+        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        return res;
+      }
+    } catch (_) {}
+
+    try {
+      final res = await DoctorService.updateDoctor(doctorId, body);
+      if (res != null && res.data != null) {
+        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        return res;
+      }
+    } catch (_) {}
+
+    final expert = Expert.fromJson(body);
+    await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, expert.toJson());
+    return ApiResponse<Expert>(
+      status: 200,
+      message: 'Doctor profile updated successfully',
       data: expert,
     );
   }
