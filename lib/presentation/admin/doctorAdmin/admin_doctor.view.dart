@@ -144,7 +144,7 @@ class AdminDoctorView extends StatelessWidget {
                         : (constraints.maxWidth > 650 ? 2 : 1);
 
                     final double childAspectRatio = crossAxisCount == 1
-                        ? (constraints.maxWidth < 500 ? 1.85 : 1.6)
+                        ? (constraints.maxWidth < 500 ? 1.55 : 1.45)
                         : 1.15;
 
                     return GridView.builder(

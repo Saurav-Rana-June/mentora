@@ -52,12 +52,9 @@ class LoginAdminController extends GetxController {
       if (response != null && response.data != null) {
         final token = response.data!.accessToken ?? '';
         if (token.isNotEmpty) {
+          await AppMethod.clearDoctorSession();
           await AppMethod.saveUserToken(token);
           await AppMethod.saveUserEmail(email);
-
-          if (Get.isRegistered<GlobalController>()) {
-            Get.find<GlobalController>().fetchUserProfile();
-          }
 
           AppUtils.snackbar(
             'Success',

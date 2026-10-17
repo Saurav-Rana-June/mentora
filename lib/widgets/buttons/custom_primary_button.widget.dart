@@ -76,15 +76,19 @@ class CustomPrimaryButton extends StatelessWidget {
                         prefixIcon!,
                         const SizedBox(width: 8),
                       ],
-                      Text(
-                        text,
-                        style:
-                            textStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: textColor ?? Colors.white,
-                            ),
+                      Flexible(
+                        child: Text(
+                          text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              textStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: textColor ?? Colors.white,
+                              ),
+                        ),
                       ),
                       if (suffixIcon != null) ...[
                         const SizedBox(width: 8),

@@ -77,7 +77,13 @@ class ApiClient {
     T Function(dynamic json)? parser,
   }) async {
     if (withAccessToken) {
-      final token = AppMethod.getDoctorToken() ?? AppMethod.getUserToken();
+      String? token;
+      final currentRoute = Get.currentRoute.toLowerCase();
+      if (currentRoute.contains('doctor') && !currentRoute.contains('admin')) {
+        token = AppMethod.getDoctorToken() ?? AppMethod.getUserToken();
+      } else {
+        token = AppMethod.getUserToken() ?? AppMethod.getDoctorToken();
+      }
       if (token != null && token.isNotEmpty) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
       } else {

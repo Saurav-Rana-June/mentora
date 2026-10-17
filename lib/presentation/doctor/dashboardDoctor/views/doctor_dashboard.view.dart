@@ -54,9 +54,9 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                   : (constraints.maxWidth > 340 ? 2 : 1));
 
         final double childAspectRatio = crossAxisCount == 1
-            ? 2.8
+            ? 2.1
             : (crossAxisCount == 2
-                  ? (constraints.maxWidth <= 650 ? 1.30 : 1.85)
+                  ? (constraints.maxWidth <= 650 ? 1.25 : 1.85)
                   : 1.65);
 
         final double spacing = constraints.maxWidth < 600 ? 10 : 14;

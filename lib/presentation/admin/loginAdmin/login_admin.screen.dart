@@ -46,8 +46,9 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
               Spacing.s24.h,
               buildFormCard(context),
               Spacing.s16.h,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
                     'Practicing Doctor? ',
@@ -300,24 +301,29 @@ class LoginAdminScreen extends GetView<LoginAdminController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Obx(
-          () => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomCheckBox(
-                value: controller.rememberMe.value,
-                onChanged: (_) => controller.toggleRememberMe(),
-                size: 20,
-              ),
-              Spacing.s8.w,
-              GestureDetector(
-                onTap: controller.toggleRememberMe,
-                child: Text(
-                  'Remember this session',
-                  style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+        Flexible(
+          child: Obx(
+            () => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomCheckBox(
+                  value: controller.rememberMe.value,
+                  onChanged: (_) => controller.toggleRememberMe(),
+                  size: 20,
                 ),
-              ),
-            ],
+                Spacing.s8.w,
+                Flexible(
+                  child: GestureDetector(
+                    onTap: controller.toggleRememberMe,
+                    child: Text(
+                      'Remember this session',
+                      overflow: TextOverflow.ellipsis,
+                      style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         InkWell(

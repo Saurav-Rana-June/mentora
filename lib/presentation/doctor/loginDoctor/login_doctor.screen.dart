@@ -228,28 +228,33 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Obx(
-          () => InkWell(
-            onTap: controller.toggleRememberMe,
-            borderRadius: BorderRadius.circular(6),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomCheckBox(
-                    value: controller.rememberMe.value,
-                    onChanged: (_) => controller.toggleRememberMe(),
-                    size: 18,
-                  ),
-                  Spacing.s8.w,
-                  Text(
-                    'Keep me signed in',
-                    style: r14.copyWith(
-                      color: theme.textTheme.bodyMedium?.color,
+        Flexible(
+          child: Obx(
+            () => InkWell(
+              onTap: controller.toggleRememberMe,
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomCheckBox(
+                      value: controller.rememberMe.value,
+                      onChanged: (_) => controller.toggleRememberMe(),
+                      size: 18,
                     ),
-                  ),
-                ],
+                    Spacing.s8.w,
+                    Flexible(
+                      child: Text(
+                        'Keep me signed in',
+                        overflow: TextOverflow.ellipsis,
+                        style: r14.copyWith(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -279,7 +284,7 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
   Widget buildSubmitButton() {
     return Obx(
       () => CustomPrimaryButton(
-        text: 'Sign In to Mentora Doctors',
+        text: 'Sign In to Portal',
         isLoading: controller.isLoading.value,
         onPressed: controller.login,
         backgroundColor: primary,

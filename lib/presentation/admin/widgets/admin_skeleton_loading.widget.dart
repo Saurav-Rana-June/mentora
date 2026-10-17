@@ -66,7 +66,7 @@ class _AdminGridSkeletonState extends State<AdminGridSkeleton>
                   ? 3
                   : (constraints.maxWidth > 650 ? 2 : 1);
               final childAspectRatio = crossAxisCount == 1
-                  ? (constraints.maxWidth < 500 ? 1.95 : 1.6)
+                  ? (constraints.maxWidth < 500 ? 1.55 : 1.45)
                   : widget.childAspectRatio;
 
               return GridView.builder(

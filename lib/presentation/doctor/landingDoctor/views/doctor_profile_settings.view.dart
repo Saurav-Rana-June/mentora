@@ -122,70 +122,36 @@ class _DoctorProfileSettingsViewState extends State<DoctorProfileSettingsView> {
                   ),
                   Spacing.s24.h,
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Full Name & Title', style: r14.copyWith(fontWeight: FontWeight.w600)),
-                            Spacing.s8.h,
-                            CustomTextFormField(
-                              controller: _nameCtrl,
-                              fillColor: theme.canvasColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacing.s12.w,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Primary Speciality', style: r14.copyWith(fontWeight: FontWeight.w600)),
-                            Spacing.s8.h,
-                            CustomTextFormField(
-                              controller: _specialityCtrl,
-                              fillColor: theme.canvasColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text('Full Name & Title', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                  Spacing.s8.h,
+                  CustomTextFormField(
+                    controller: _nameCtrl,
+                    fillColor: theme.canvasColor,
                   ),
                   Spacing.s16.h,
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Consultation Rate (\$/hr)', style: r14.copyWith(fontWeight: FontWeight.w600)),
-                            Spacing.s8.h,
-                            CustomTextFormField(
-                              controller: _priceCtrl,
-                              keyboardType: TextInputType.number,
-                              fillColor: theme.canvasColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacing.s12.w,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Medical License Number', style: r14.copyWith(fontWeight: FontWeight.w600)),
-                            Spacing.s8.h,
-                            CustomTextFormField(
-                              controller: _licenseCtrl,
-                              fillColor: theme.canvasColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Text('Primary Speciality', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                  Spacing.s8.h,
+                  CustomTextFormField(
+                    controller: _specialityCtrl,
+                    fillColor: theme.canvasColor,
+                  ),
+                  Spacing.s16.h,
+
+                  Text('Consultation Rate (\$/hr)', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                  Spacing.s8.h,
+                  CustomTextFormField(
+                    controller: _priceCtrl,
+                    keyboardType: TextInputType.number,
+                    fillColor: theme.canvasColor,
+                  ),
+                  Spacing.s16.h,
+
+                  Text('Medical License Number', style: r14.copyWith(fontWeight: FontWeight.w600)),
+                  Spacing.s8.h,
+                  CustomTextFormField(
+                    controller: _licenseCtrl,
+                    fillColor: theme.canvasColor,
                   ),
                   Spacing.s16.h,
 
@@ -198,23 +164,25 @@ class _DoctorProfileSettingsViewState extends State<DoctorProfileSettingsView> {
                   ),
                   Spacing.s24.h,
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      OutlinedButton.icon(
-                        onPressed: _landingCtrl.logout,
-                        icon: Icon(Icons.logout_rounded, color: dangerColor, size: 16),
-                        label: Text('Log Out of Doctor Portal', style: TextStyle(color: dangerColor)),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: dangerColor.withValues(alpha: 0.5)),
-                        ),
-                      ),
                       CustomPrimaryButton(
                         text: 'Save Changes',
                         isLoading: _isSaving,
                         backgroundColor: primary,
                         onPressed: _saveProfile,
                         prefixIcon: const Icon(Icons.check, color: Colors.white, size: 16),
+                      ),
+                      Spacing.s12.h,
+                      OutlinedButton.icon(
+                        onPressed: _landingCtrl.logout,
+                        icon: Icon(Icons.logout_rounded, color: dangerColor, size: 16),
+                        label: Text('Log Out of Doctor Portal', style: TextStyle(color: dangerColor)),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: dangerColor.withValues(alpha: 0.5)),
+                          minimumSize: const Size.fromHeight(48),
+                        ),
                       ),
                     ],
                   ),

@@ -134,6 +134,7 @@ class LoginDoctorController extends GetxController {
               ) ??
               demoDoctors.first;
 
+          await AppMethod.clearUserSession();
           await AppMethod.saveDoctorToken(token);
           await AppMethod.saveDoctorEmail(email);
           await AppMethod.saveDoctorInfo(

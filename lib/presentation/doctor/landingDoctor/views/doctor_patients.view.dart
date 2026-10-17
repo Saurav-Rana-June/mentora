@@ -115,76 +115,88 @@ class _DoctorPatientsViewState extends State<DoctorPatientsView> {
               return CustomPrimaryCard(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(50.r),
-                        child: CachedNetworkImage(
-                          imageUrl: p['image'],
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => const CircleAvatar(child: Icon(Icons.person)),
-                        ),
-                      ),
-                      Spacing.s16.w,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                      Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50.r),
+                            child: CachedNetworkImage(
+                              imageUrl: p['image'],
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) => const CircleAvatar(child: Icon(Icons.person)),
+                            ),
+                          ),
+                          Spacing.s12.w,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  p['name'],
-                                  style: h3.copyWith(fontWeight: FontWeight.w700),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        p['name'],
+                                        style: h3.copyWith(fontWeight: FontWeight.w700),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Spacing.s8.w,
+                                    DoctorBadge(
+                                      text: p['status'],
+                                      color: p['status'] == 'New Patient' ? infoColor : primary,
+                                    ),
+                                  ],
                                 ),
-                                Spacing.s8.w,
-                                DoctorBadge(
-                                  text: p['status'],
-                                  color: p['status'] == 'New Patient' ? infoColor : primary,
+                                Spacing.s4.h,
+                                Text(
+                                  '${p['age']}y • ${p['gender']} • ${p['condition']}',
+                                  style: r12.copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
                                 ),
                               ],
                             ),
-                            Spacing.s4.h,
-                            Text(
-                              '${p['age']}y • ${p['gender']} • ${p['condition']}',
-                              style: r12.copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
-                            ),
-                            Spacing.s4.h,
-                            Text(
-                              'Last consultation: ${p['lastVisit']} • Total completed sessions: ${p['totalSessions']}',
-                              style: r10.copyWith(color: primary, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      OutlinedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: Text('Patient Record: ${p['name']}'),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Primary Condition: ${p['condition']}'),
-                                  Spacing.s8.h,
-                                  Text('Total Sessions: ${p['totalSessions']}'),
-                                  Spacing.s8.h,
-                                  Text('Care Plan: Weekly cognitive behavioral sessions + guided breathing.'),
+                      Spacing.s8.h,
+                      Text(
+                        'Last consultation: ${p['lastVisit']} • Total completed sessions: ${p['totalSessions']}',
+                        style: r10.copyWith(color: primary, fontWeight: FontWeight.w600),
+                      ),
+                      Spacing.s12.h,
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text('Patient Record: ${p['name']}'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Primary Condition: ${p['condition']}'),
+                                    Spacing.s8.h,
+                                    Text('Total Sessions: ${p['totalSessions']}'),
+                                    Spacing.s8.h,
+                                    Text('Care Plan: Weekly cognitive behavioral sessions + guided breathing.'),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(),
+                                    child: const Text('Close'),
+                                  ),
                                 ],
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(),
-                                  child: const Text('Close'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        child: const Text('Clinical History'),
+                            );
+                          },
+                          child: const Text('Clinical History'),
+                        ),
                       ),
                     ],
                   ),

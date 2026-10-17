@@ -123,7 +123,7 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           ),
         ),
         DoctorBadge(
-          text: 'STEP 1 OF 2: ACCOUNT SETUP',
+          text: 'STEP 1 OF 2',
           icon: '\u{f0f0}',
           color: primary,
         ),
@@ -203,16 +203,16 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
             ),
           ),
           Spacing.s16.h,
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               _buildStepIndicatorPill('1. Account & Security', Icons.lock_person_rounded, true),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 14,
-                  color: isDark ? Colors.white38 : Colors.black38,
-                ),
+              Icon(
+                Icons.arrow_forward_rounded,
+                size: 14,
+                color: isDark ? Colors.white38 : Colors.black38,
               ),
               _buildStepIndicatorPill('2. Profile Update', Icons.badge_outlined, false),
             ],
@@ -361,11 +361,12 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           Spacing.s16.h,
 
           // Already have account
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
-                'Already registered as a Mentora Specialist? ',
+                'Already registered? ',
                 style: r14.copyWith(color: theme.textTheme.bodyMedium?.color),
               ),
               InkWell(
@@ -479,7 +480,7 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
               Spacing.s8.w,
             ],
             DoctorBadge(
-              text: 'STEP 2 OF 2: PROFILE UPDATE',
+              text: 'STEP 2 OF 2',
               icon: '\u{f0f0}',
               color: primary,
             ),
@@ -1057,43 +1058,61 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           // Modality Toggles (Clean Interactive Cards)
           Text('Supported Consultation Modalities', style: r14.copyWith(fontWeight: FontWeight.w600)),
           Spacing.s8.h,
-          Row(
-            children: [
-              Expanded(
-                child: Obx(
-                  () => _buildModalityToggleCard(
-                    context: context,
-                    icon: Icons.videocam_rounded,
-                    title: 'HD Video Calls',
-                    subtitle: 'Secure 1-on-1 telehealth video',
-                    isActive: controller.videoCallFeature.value,
-                    onToggle: (val) => controller.videoCallFeature.value = val,
-                  ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isNarrow = constraints.maxWidth < 450;
+              final videoCard = Obx(
+                () => _buildModalityToggleCard(
+                  context: context,
+                  icon: Icons.videocam_rounded,
+                  title: 'HD Video Calls',
+                  subtitle: 'Secure 1-on-1 telehealth video',
+                  isActive: controller.videoCallFeature.value,
+                  onToggle: (val) => controller.videoCallFeature.value = val,
                 ),
-              ),
-              Spacing.s16.w,
-              Expanded(
-                child: Obx(
-                  () => _buildModalityToggleCard(
-                    context: context,
-                    icon: Icons.phone_in_talk_rounded,
-                    title: 'Voice / Audio Calls',
-                    subtitle: 'Encrypted audio sessions',
-                    isActive: controller.callFeature.value,
-                    onToggle: (val) => controller.callFeature.value = val,
-                  ),
+              );
+              final audioCard = Obx(
+                () => _buildModalityToggleCard(
+                  context: context,
+                  icon: Icons.phone_in_talk_rounded,
+                  title: 'Voice / Audio Calls',
+                  subtitle: 'Encrypted audio sessions',
+                  isActive: controller.callFeature.value,
+                  onToggle: (val) => controller.callFeature.value = val,
                 ),
-              ),
-            ],
+              );
+
+              if (isNarrow) {
+                return Column(
+                  children: [
+                    videoCard,
+                    Spacing.s12.h,
+                    audioCard,
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: videoCard),
+                  Spacing.s16.w,
+                  Expanded(child: audioCard),
+                ],
+              );
+            },
           ),
           Spacing.s24.h,
 
           // Weekly Available Days
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
               Text('Available Practice Days *', style: r14.copyWith(fontWeight: FontWeight.w600)),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   TextButton(
                     onPressed: controller.selectAllWeekdays,
@@ -1360,9 +1379,8 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
             context: context,
             icon: Icons.visibility_rounded,
             badge: 'LIVE PREVIEW',
-            title: 'Live Patient Profile Preview',
-            subtitle: 'Real-time preview of how patients will see your profile in the Mentora directory.',
-            trailing: DoctorBadge(text: 'LIVE DEMO', color: primary),
+            title: 'Patient Profile Preview',
+            subtitle: 'Real-time preview of how patients will see your profile in Mentora.',
           ),
           Spacing.s20.h,
 
@@ -1468,14 +1486,22 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                                   style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
                                 ),
                                 Spacing.s8.h,
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  alignment: WrapAlignment.spaceBetween,
                                   children: [
-                                    const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
-                                    Spacing.s4.w,
-                                    Text('4.95', style: r12.copyWith(fontWeight: FontWeight.w700)),
-                                    Spacing.s4.w,
-                                    Text('(95 patient reviews)', style: r12.copyWith(color: theme.textTheme.bodySmall?.color)),
-                                    const Spacer(),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                                        Spacing.s4.w,
+                                        Text('4.95', style: r12.copyWith(fontWeight: FontWeight.w700)),
+                                        Spacing.s4.w,
+                                        Text('(95 reviews)', style: r10.copyWith(color: theme.textTheme.bodySmall?.color)),
+                                      ],
+                                    ),
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
@@ -1504,18 +1530,16 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
                       ),
                       Spacing.s16.h,
                       // Modality badges & schedule preview
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          if (controller.videoCallFeature.value) ...[
+                          if (controller.videoCallFeature.value)
                             _buildPreviewBadge(Icons.videocam_rounded, 'HD Video'),
-                            Spacing.s8.w,
-                          ],
-                          if (controller.callFeature.value) ...[
+                          if (controller.callFeature.value)
                             _buildPreviewBadge(Icons.phone_in_talk_rounded, 'Voice Call'),
-                            Spacing.s8.w,
-                          ],
                           _buildPreviewBadge(Icons.event_available_rounded, '${controller.selectedDays.length} Days/wk'),
-                          const Spacer(),
                           Text(
                             'Hours: ${controller.workingHoursStart.value} - ${controller.workingHoursEnd.value}',
                             style: r10.copyWith(color: theme.textTheme.bodySmall?.color, fontWeight: FontWeight.w600),
@@ -1654,8 +1678,9 @@ class RegisterDoctorScreen extends GetView<RegisterDoctorController> {
           Spacing.s16.h,
 
           // Footer Link to Sign In
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 'Already registered as a Mentora Specialist? ',

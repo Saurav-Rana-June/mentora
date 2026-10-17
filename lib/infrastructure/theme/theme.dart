@@ -52,57 +52,57 @@ Color infoColor = const Color(0xFF6CAAD8);
 
 MaterialColor primarySwatch = MaterialColor(0xFF1DB7CC, swatch);
 
-TextStyle h1 = TextStyle(
+TextStyle h1 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 32.sp,
+  fontSize: 32,
   fontWeight: FontWeight.w600,
 );
 
-TextStyle h2 = TextStyle(
+TextStyle h2 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 24.sp,
+  fontSize: 24,
   fontWeight: FontWeight.w600,
 );
 
-TextStyle h3 = TextStyle(
+TextStyle h3 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 22.sp,
+  fontSize: 22,
   fontWeight: FontWeight.w600,
 );
 
-TextStyle r20 = TextStyle(
+TextStyle r20 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 20.sp,
+  fontSize: 20,
   fontWeight: FontWeight.w400,
 );
 
-TextStyle r18 = TextStyle(
+TextStyle r18 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 18.sp,
+  fontSize: 18,
   fontWeight: FontWeight.w400,
 );
 
-TextStyle r16 = TextStyle(
+TextStyle r16 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 16.sp,
+  fontSize: 16,
   fontWeight: FontWeight.w400,
 );
 
-TextStyle r14 = TextStyle(
+TextStyle r14 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 14.sp,
+  fontSize: 14,
   fontWeight: FontWeight.w400,
 );
 
-TextStyle r12 = TextStyle(
+TextStyle r12 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 12.sp,
+  fontSize: 12,
   fontWeight: FontWeight.w400,
 );
 
-TextStyle r10 = TextStyle(
+TextStyle r10 = const TextStyle(
   fontFamily: "Satoshi",
-  fontSize: 10.sp,
+  fontSize: 10,
   fontWeight: FontWeight.w400,
 );
 
