@@ -12,15 +12,15 @@ class ConfigEnvironments {
     {'env': Environments.LOCAL, 'url': 'http://localhost:8080/api/'},
     {
       'env': Environments.DEV,
-      'url': 'https://mentora-backend-iofa.onrender.com/api/',
+      'url': 'https://mentora-backend-production-pro.up.railway.app/api/',
     },
     {
       'env': Environments.QAS,
-      'url': 'https://mentora-backend-iofa.onrender.com/api/',
+      'url': 'https://mentora-backend-production-pro.up.railway.app/api/',
     },
     {
       'env': Environments.PRODUCTION,
-      'url': 'https://mentora-backend-iofa.onrender.com/api/',
+      'url': 'https://mentora-backend-production-pro.up.railway.app/api/',
     },
   ];
 
