@@ -88,6 +88,20 @@ class DoctorService {
     );
   }
 
+  /// Retrieve details of currently logged-in doctor
+  static Future<ApiResponse<Expert>?> getMyDoctorProfile() async {
+    return client.request<ApiResponse<Expert>>(
+      (dio) => dio.get('doctors/me'),
+      withAccessToken: true,
+      parser: (json) {
+        return ApiResponse<Expert>.fromJson(
+          json as Map<String, dynamic>,
+          (data) => Expert.fromJson(data as Map<String, dynamic>),
+        );
+      },
+    );
+  }
+
   // ---------------- ADMIN CMS ENDPOINTS ---------------- //
 
   /// Create a new doctor profile (Admin CMS)

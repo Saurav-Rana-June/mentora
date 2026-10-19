@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:Mentora/data/enums/snackbar_enum.dart';
 import 'package:Mentora/data/methods/app_method.dart';
 import 'package:Mentora/data/utils/app_utils.dart';
+import 'package:Mentora/data/utils/storage_utils.dart';
 import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
 import 'package:Mentora/infrastructure/navigation/routes.dart';
 
@@ -32,10 +33,8 @@ class DoctorDemoProfile {
 class LoginDoctorController extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailController =
-      TextEditingController(text: 'dr.sarah@mentora.com');
-  final TextEditingController passwordController =
-      TextEditingController(text: 'DoctorPass#2026');
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final RxBool hidePassword = true.obs;
   final RxBool rememberMe = true.obs;
@@ -128,23 +127,28 @@ class LoginDoctorController extends GetxController {
       if (response != null && response.data != null) {
         final token = response.data!.accessToken ?? '';
         if (token.isNotEmpty) {
-          final activeDoc =
-              demoDoctors.firstWhereOrNull(
-                (d) => d.email.toLowerCase() == email.toLowerCase(),
-              ) ??
-              demoDoctors.first;
-
           await AppMethod.clearUserSession();
+          await AppMethod.clearDoctorSession();
+          await StorageUtils.remove(StorageKeys.DOCTOR_PROFILE);
+          await StorageUtils.remove(StorageKeys.DOCTOR_PORTAL_APPOINTMENTS);
+
           await AppMethod.saveDoctorToken(token);
           await AppMethod.saveDoctorEmail(email);
-          await AppMethod.saveDoctorInfo(
-            id: activeDoc.id,
-            name: activeDoc.name,
-          );
+
+          // Extract authentic doctor ID and name from API response or decoded JWT payload
+          final int docId = response.data!.doctorId ?? AppMethod.getDoctorId() ?? 0;
+          final String docName = response.data!.doctorName ?? email.split('@').first;
+
+          if (docId > 0) {
+            await AppMethod.saveDoctorInfo(
+              id: docId,
+              name: docName,
+            );
+          }
 
           AppUtils.snackbar(
             'Success',
-            'Welcome back, ${activeDoc.name}',
+            'Welcome back, $docName',
             SnackBarType.SUCCESS,
           );
 

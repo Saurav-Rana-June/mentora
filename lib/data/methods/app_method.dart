@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 
 class AppMethod {
@@ -22,6 +23,29 @@ class AppMethod {
     if (token.startsWith('mock_')) return false;
     final parts = token.split('.');
     return parts.length == 3 && parts.every((p) => p.trim().isNotEmpty);
+  }
+
+  /// Decode and parse JWT payload into a Map
+  static Map<String, dynamic>? decodeJwt(String? token) {
+    if (token == null || !isValidJwt(token)) return null;
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      var payload = parts[1];
+      payload = payload.replaceAll('-', '+').replaceAll('_', '/');
+      while (payload.length % 4 != 0) {
+        payload += '=';
+      }
+      final decodedBytes = base64Decode(payload);
+      final decodedString = utf8.decode(decodedBytes);
+      final parsed = jsonDecode(decodedString);
+      if (parsed is Map<String, dynamic>) {
+        return parsed;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Save JWT token to storage
@@ -127,7 +151,14 @@ class AppMethod {
   }
 
   static String? getDoctorEmail() {
-    return _box.read<String>(_doctorEmailKey);
+    final email = _box.read<String>(_doctorEmailKey);
+    if (email != null && email.isNotEmpty) return email;
+    final token = _box.read<String>(_doctorTokenKey);
+    final payload = decodeJwt(token);
+    if (payload != null && payload['email'] != null) {
+      return payload['email'].toString();
+    }
+    return null;
   }
 
   static Future<void> saveDoctorInfo({required int id, required String name}) async {
@@ -136,6 +167,16 @@ class AppMethod {
   }
 
   static int? getDoctorId() {
+    final token = _box.read<String>(_doctorTokenKey);
+    final payload = decodeJwt(token);
+    if (payload != null) {
+      final rawId = payload['doctor_id'] ?? payload['_id'];
+      if (rawId is int) return rawId;
+      if (rawId != null) {
+        final parsed = int.tryParse(rawId.toString());
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
     return _box.read<int>(_doctorIdKey);
   }
 

@@ -29,9 +29,9 @@ class LandingDoctorController extends GetxController {
   final RxBool isLoggingOut = false.obs;
   final RxBool isDarkMode = false.obs;
 
-  final RxString doctorEmail = 'dr.sarah@mentora.com'.obs;
-  final RxString doctorName = 'Dr. Sarah Jenkins, MD'.obs;
-  final RxString doctorSpeciality = 'Clinical Psychologist'.obs;
+  final RxString doctorEmail = ''.obs;
+  final RxString doctorName = ''.obs;
+  final RxString doctorSpeciality = ''.obs;
   final Rx<Expert?> doctorProfile = Rx<Expert?>(null);
 
   final List<DoctorMenuItem> menuItems = const [

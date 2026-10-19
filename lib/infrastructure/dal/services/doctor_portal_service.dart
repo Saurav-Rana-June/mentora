@@ -22,10 +22,7 @@ class DoctorPortalService {
       final res = await client.request<ApiResponse<TokenResponseModel>>(
         (dio) => dio.post(
           'doctors/login',
-          data: {
-            'email': email,
-            'password': password,
-          },
+          data: {'email': email, 'password': password},
         ),
         withAccessToken: false,
         parser: (json) {
@@ -36,32 +33,19 @@ class DoctorPortalService {
         },
       );
 
-      if (res != null && res.data != null) {
-        return res;
-      }
+      return res;
     } catch (_) {
-      // Fallback for offline / demo mode
+      return null;
     }
-
-    // Demo / fallback token for seamless clinical portal access
-    return ApiResponse<TokenResponseModel>(
-      status: 200,
-      message: 'Doctor authenticated successfully',
-      data: TokenResponseModel(
-        accessToken: AppMethod.defaultRealAuthToken,
-        tokenType: 'Bearer',
-      ),
-    );
   }
 
   /// Register new doctor profile
-  static Future<ApiResponse<Expert>?> registerDoctor(Map<String, dynamic> body) async {
+  static Future<ApiResponse<Expert>?> registerDoctor(
+    Map<String, dynamic> body,
+  ) async {
     try {
       final res = await client.request<ApiResponse<Expert>>(
-        (dio) => dio.post(
-          'doctors/register',
-          data: body,
-        ),
+        (dio) => dio.post('doctors/register', data: body),
         withAccessToken: false,
         parser: (json) {
           return ApiResponse<Expert>.fromJson(
@@ -71,7 +55,10 @@ class DoctorPortalService {
         },
       );
       if (res != null && res.data != null) {
-        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        await StorageUtils.write(
+          StorageKeys.DOCTOR_PROFILE,
+          res.data!.toJson(),
+        );
         return res;
       }
     } catch (_) {}
@@ -79,7 +66,10 @@ class DoctorPortalService {
     try {
       final res = await DoctorService.createDoctor(body);
       if (res != null && res.data != null) {
-        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        await StorageUtils.write(
+          StorageKeys.DOCTOR_PROFILE,
+          res.data!.toJson(),
+        );
         return res;
       }
     } catch (_) {}
@@ -100,10 +90,7 @@ class DoctorPortalService {
   }) async {
     try {
       final res = await client.request<ApiResponse<Expert>>(
-        (dio) => dio.put(
-          'doctors/$doctorId',
-          data: body,
-        ),
+        (dio) => dio.put('doctors/$doctorId', data: body),
         withAccessToken: false,
         parser: (json) {
           return ApiResponse<Expert>.fromJson(
@@ -113,7 +100,10 @@ class DoctorPortalService {
         },
       );
       if (res != null && res.data != null) {
-        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        await StorageUtils.write(
+          StorageKeys.DOCTOR_PROFILE,
+          res.data!.toJson(),
+        );
         return res;
       }
     } catch (_) {}
@@ -121,7 +111,10 @@ class DoctorPortalService {
     try {
       final res = await DoctorService.updateDoctor(doctorId, body);
       if (res != null && res.data != null) {
-        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res.data!.toJson());
+        await StorageUtils.write(
+          StorageKeys.DOCTOR_PROFILE,
+          res.data!.toJson(),
+        );
         return res;
       }
     } catch (_) {}
@@ -136,16 +129,21 @@ class DoctorPortalService {
   }
 
   /// Retrieve Clinical Dashboard metrics, weekly volume graph, and recent patient reviews
-  static Future<ApiResponse<DoctorDashboardData>?> getClinicalDashboard({int? doctorId}) async {
+  static Future<ApiResponse<DoctorDashboardData>?> getClinicalDashboard({
+    int? doctorId,
+  }) async {
     try {
       final docId = doctorId ?? AppMethod.getDoctorId();
-      final url = docId != null ? 'doctors/$docId/dashboard' : 'doctors/dashboard';
+      final url = docId != null
+          ? 'doctors/$docId/dashboard'
+          : 'doctors/dashboard';
       final res = await client.request<ApiResponse<DoctorDashboardData>>(
         (dio) => dio.get(url),
         parser: (json) {
           return ApiResponse<DoctorDashboardData>.fromJson(
             json as Map<String, dynamic>,
-            (data) => DoctorDashboardData.fromJson(data as Map<String, dynamic>),
+            (data) =>
+                DoctorDashboardData.fromJson(data as Map<String, dynamic>),
           );
         },
       );
@@ -164,7 +162,8 @@ class DoctorPortalService {
       final dayDate = startOfWeek.add(Duration(days: i));
       return WeeklyVolumeDay(
         day: dayNames[i],
-        date: "${dayDate.year}-${dayDate.month.toString().padLeft(2, '0')}-${dayDate.day.toString().padLeft(2, '0')}",
+        date:
+            "${dayDate.year}-${dayDate.month.toString().padLeft(2, '0')}-${dayDate.day.toString().padLeft(2, '0')}",
         consultationsCount: 0,
         hours: 0.0,
         earnings: 0.0,
@@ -203,26 +202,51 @@ class DoctorPortalService {
     );
   }
 
-
   /// Get current logged in Doctor profile
   static Future<Expert> getCurrentDoctorProfile() async {
-    final cached = StorageUtils.read<Map<String, dynamic>>(StorageKeys.DOCTOR_PROFILE);
+    final docId = AppMethod.getDoctorId();
+    final cached = StorageUtils.read<Map<String, dynamic>>(
+      StorageKeys.DOCTOR_PROFILE,
+    );
     if (cached != null) {
       try {
-        return Expert.fromJson(cached);
-      } catch (_) {}
-    }
-
-    final docId = AppMethod.getDoctorId();
-    if (docId != null) {
-      try {
-        final res = await DoctorService.getDoctorDetails(doctorId: docId);
-        if (res?.data != null) {
-          await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res!.data!.toJson());
-          return res.data!;
+        final profile = Expert.fromJson(cached);
+        if (docId == null || profile.id == docId) {
+          return profile;
         }
       } catch (_) {}
     }
+
+    // 1. Fetch by authentic doctor ID extracted from active JWT token
+    if (docId != null && docId > 0) {
+      try {
+        final res = await DoctorService.getDoctorDetails(doctorId: docId);
+        if (res?.data != null) {
+          final profile = res!.data!;
+          await StorageUtils.write(
+            StorageKeys.DOCTOR_PROFILE,
+            profile.toJson(),
+          );
+          if (profile.name != null) {
+            await AppMethod.saveDoctorInfo(id: docId, name: profile.name!);
+          }
+          return profile;
+        }
+      } catch (_) {}
+    }
+
+    // 2. Fallback to /doctors/me if docId is not determined
+    try {
+      final myRes = await DoctorService.getMyDoctorProfile();
+      if (myRes?.data != null) {
+        final profile = myRes!.data!;
+        await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, profile.toJson());
+        if (profile.id != null && profile.name != null) {
+          await AppMethod.saveDoctorInfo(id: profile.id!, name: profile.name!);
+        }
+        return profile;
+      }
+    } catch (_) {}
 
     // Default clean profile with real info if available
     return Expert(
@@ -263,24 +287,31 @@ class DoctorPortalService {
   }
 
   /// Fetch all doctor appointments from backend API (with cache fallback)
-  static Future<List<DoctorAppointmentModel>> getAppointments({int? doctorId}) async {
+  static Future<List<DoctorAppointmentModel>> getAppointments({
+    int? doctorId,
+  }) async {
     final docId = doctorId ?? AppMethod.getDoctorId();
     if (docId != null) {
       try {
-        final res = await client.request<ApiResponse<List<DoctorAppointmentModel>>>(
-          (dio) => dio.get('doctors/$docId/appointments'),
-          parser: (json) {
-            final raw = json as Map<String, dynamic>;
-            final listData = raw['data'] as List<dynamic>? ?? [];
-            return ApiResponse<List<DoctorAppointmentModel>>(
-              status: raw['status'] is int ? raw['status'] : 200,
-              message: raw['message']?.toString() ?? '',
-              data: listData
-                  .map((e) => DoctorAppointmentModel.fromJson(Map<String, dynamic>.from(e as Map)))
-                  .toList(),
+        final res = await client
+            .request<ApiResponse<List<DoctorAppointmentModel>>>(
+              (dio) => dio.get('doctors/$docId/appointments'),
+              parser: (json) {
+                final raw = json as Map<String, dynamic>;
+                final listData = raw['data'] as List<dynamic>? ?? [];
+                return ApiResponse<List<DoctorAppointmentModel>>(
+                  status: raw['status'] is int ? raw['status'] : 200,
+                  message: raw['message']?.toString() ?? '',
+                  data: listData
+                      .map(
+                        (e) => DoctorAppointmentModel.fromJson(
+                          Map<String, dynamic>.from(e as Map),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
             );
-          },
-        );
         if (res != null && res.data != null) {
           await saveAppointments(res.data!);
           return res.data!;
@@ -288,11 +319,17 @@ class DoctorPortalService {
       } catch (_) {}
     }
 
-    final cachedList = StorageUtils.read<List<dynamic>>(StorageKeys.DOCTOR_PORTAL_APPOINTMENTS);
+    final cachedList = StorageUtils.read<List<dynamic>>(
+      StorageKeys.DOCTOR_PORTAL_APPOINTMENTS,
+    );
     if (cachedList != null) {
       try {
         return cachedList
-            .map((e) => DoctorAppointmentModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .map(
+              (e) => DoctorAppointmentModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList();
       } catch (_) {}
     }
@@ -302,7 +339,9 @@ class DoctorPortalService {
   }
 
   /// Save full appointments list to cache
-  static Future<void> saveAppointments(List<DoctorAppointmentModel> list) async {
+  static Future<void> saveAppointments(
+    List<DoctorAppointmentModel> list,
+  ) async {
     await StorageUtils.write(
       StorageKeys.DOCTOR_PORTAL_APPOINTMENTS,
       list.map((e) => e.toJson()).toList(),

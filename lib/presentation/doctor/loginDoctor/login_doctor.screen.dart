@@ -136,7 +136,7 @@ class LoginDoctorScreen extends GetView<LoginDoctorController> {
         Spacing.s8.h,
         CustomTextFormField(
           controller: controller.emailController,
-          hintText: 'dr.sarah@mentora.com',
+          hintText: 'doctor@mentora.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           fillColor: isDark ? const Color(0xFF282A24) : const Color(0xFFF9FAF7),

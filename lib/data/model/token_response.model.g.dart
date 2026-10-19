@@ -10,10 +10,14 @@ TokenResponseModel _$TokenResponseModelFromJson(Map<String, dynamic> json) =>
     TokenResponseModel(
       accessToken: json['accessToken'] as String?,
       tokenType: json['tokenType'] as String?,
+      doctorId: (json['doctorId'] as num?)?.toInt(),
+      doctorName: json['doctorName'] as String?,
     );
 
 Map<String, dynamic> _$TokenResponseModelToJson(TokenResponseModel instance) =>
     <String, dynamic>{
       'accessToken': instance.accessToken,
       'tokenType': instance.tokenType,
+      'doctorId': instance.doctorId,
+      'doctorName': instance.doctorName,
     };

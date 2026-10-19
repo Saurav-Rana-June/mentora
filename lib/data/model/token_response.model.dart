@@ -6,10 +6,14 @@ part 'token_response.model.g.dart';
 class TokenResponseModel {
   String? accessToken;
   String? tokenType;
+  int? doctorId;
+  String? doctorName;
 
   TokenResponseModel({
     this.accessToken,
     this.tokenType,
+    this.doctorId,
+    this.doctorName,
   });
 
   factory TokenResponseModel.fromJson(Map<String, dynamic> json) =>
