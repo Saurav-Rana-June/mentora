@@ -91,7 +91,7 @@ class DoctorPortalService {
     try {
       final res = await client.request<ApiResponse<Expert>>(
         (dio) => dio.put('doctors/$doctorId', data: body),
-        withAccessToken: false,
+        withAccessToken: true,
         parser: (json) {
           return ApiResponse<Expert>.fromJson(
             json as Map<String, dynamic>,
