@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_spacing/my_spacing.dart';
 
+import 'package:Mentora/infrastructure/dal/services/doctor_portal_service.dart';
 import 'package:Mentora/infrastructure/theme/app_scale.dart';
 import 'package:Mentora/infrastructure/theme/theme.dart';
 import 'package:Mentora/presentation/doctor/widgets/doctor_badge.widget.dart';
@@ -18,69 +19,48 @@ class DoctorPatientsView extends StatefulWidget {
 
 class _DoctorPatientsViewState extends State<DoctorPatientsView> {
   String _searchQuery = '';
+  List<Map<String, dynamic>> _patients = [];
+  bool _isLoading = true;
 
-  final List<Map<String, dynamic>> _patients = [
-    {
-      'name': 'Jessica Miller',
-      'age': 29,
-      'gender': 'Female',
-      'image': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-      'lastVisit': 'Today',
-      'totalSessions': 4,
-      'condition': 'Work burnout & acute anxiety triggers',
-      'status': 'Active Patient',
-    },
-    {
-      'name': 'David Kim',
-      'age': 35,
-      'gender': 'Male',
-      'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-      'lastVisit': 'Today',
-      'totalSessions': 6,
-      'condition': 'Generalized Anxiety Disorder (GAD)',
-      'status': 'Active Patient',
-    },
-    {
-      'name': 'Sophia Patel',
-      'age': 32,
-      'gender': 'Female',
-      'image': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200',
-      'lastVisit': 'Today',
-      'totalSessions': 2,
-      'condition': 'Post-partum emotional changes & sleep issues',
-      'status': 'Active Patient',
-    },
-    {
-      'name': 'Marcus Reed',
-      'age': 41,
-      'gender': 'Male',
-      'image': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200',
-      'lastVisit': 'Tomorrow',
-      'totalSessions': 1,
-      'condition': 'Grief counseling & motivational fatigue',
-      'status': 'New Patient',
-    },
-    {
-      'name': 'Elena Rostova',
-      'age': 26,
-      'gender': 'Female',
-      'image': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
-      'lastVisit': 'Yesterday',
-      'totalSessions': 8,
-      'condition': 'Health anxiety & intrusive thoughts',
-      'status': 'Maintenance Phase',
-    },
-    {
-      'name': 'Benjamin Vance',
-      'age': 48,
-      'gender': 'Male',
-      'image': 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200',
-      'lastVisit': '4 days ago',
-      'totalSessions': 12,
-      'condition': 'Executive stress & depressive episodes',
-      'status': 'Maintenance Phase',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadPatients();
+  }
+
+  Future<void> _loadPatients() async {
+    try {
+      final appts = await DoctorPortalService.getAppointments();
+      final Map<int, Map<String, dynamic>> patientMap = {};
+      for (final a in appts) {
+        if (!patientMap.containsKey(a.userId)) {
+          patientMap[a.userId] = {
+            'name': a.patientName,
+            'age': a.patientAge,
+            'gender': a.patientGender,
+            'image': a.patientImage,
+            'lastVisit': a.bookingDate,
+            'totalSessions': 1,
+            'condition': a.patientIssue,
+            'status': a.bookingStatus == 'Completed' ? 'Active Patient' : 'Upcoming Consultation',
+          };
+        } else {
+          final p = patientMap[a.userId]!;
+          p['totalSessions'] = (p['totalSessions'] as int) + 1;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _patients = patientMap.values.toList();
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +85,51 @@ class _DoctorPatientsViewState extends State<DoctorPatientsView> {
             searchHint: 'Search patients by name or condition...',
             onSearchChanged: (val) => setState(() => _searchQuery = val),
           ),
-          ListView.separated(
+          if (_isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(48),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else if (filtered.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '\u{f0c0}', // users icon
+                        style: TextStyle(
+                          fontFamily: 'FontAwesomeSolid',
+                          fontSize: 32,
+                          color: primary,
+                        ),
+                      ),
+                    ),
+                    Spacing.s16.h,
+                    Text(
+                      'No Patient Records Found',
+                      style: h3.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    Spacing.s4.h,
+                    Text(
+                      'You do not have any patient consultation records yet.',
+                      style: r14.copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filtered.length,

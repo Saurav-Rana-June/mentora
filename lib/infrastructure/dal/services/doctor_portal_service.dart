@@ -154,79 +154,46 @@ class DoctorPortalService {
       }
     } catch (_) {}
 
-    // Fallback clinical dashboard data
+    // Production fallback: clean zero/empty values when offline or DB has no records
     final profile = await getCurrentDoctorProfile();
     final now = DateTime.now();
     final dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final defaultCounts = [6, 8, 5, 7, 4, 2, 0];
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
 
     final dailyVolume = List.generate(7, (i) {
       final dayDate = startOfWeek.add(Duration(days: i));
-      final count = defaultCounts[i];
       return WeeklyVolumeDay(
         day: dayNames[i],
         date: "${dayDate.year}-${dayDate.month.toString().padLeft(2, '0')}-${dayDate.day.toString().padLeft(2, '0')}",
-        consultationsCount: count,
-        hours: (count * 0.75),
-        earnings: (count * (profile.startingPricePerHour ?? 85.0)),
+        consultationsCount: 0,
+        hours: 0.0,
+        earnings: 0.0,
       );
     });
 
     final fallbackData = DoctorDashboardData(
-      doctorId: profile.id ?? 101,
-      doctorName: profile.name ?? 'Dr. Sarah Jenkins',
-      speciality: profile.speciality ?? 'Clinical Psychologist',
+      doctorId: profile.id ?? 0,
+      doctorName: profile.name ?? (AppMethod.getDoctorName() ?? 'Doctor'),
+      speciality: profile.speciality ?? 'Specialist',
       image: profile.image,
       isOnline: profile.isAvailable ?? true,
       stats: DoctorDashboardStats(
-        totalPatients: profile.patientsCount ?? 148,
-        totalConsultations: 120,
-        totalEarnings: 4820.0,
-        averageRating: profile.rating ?? 4.95,
-        reviewsCount: profile.reviewsCount ?? 142,
-        completionRate: '98.4%',
-        patientsGrowth: '+14 this month',
-        earningsGrowth: '+\$650 this week',
+        totalPatients: profile.patientsCount ?? 0,
+        totalConsultations: 0,
+        totalEarnings: 0.0,
+        averageRating: profile.rating ?? 0.0,
+        reviewsCount: profile.reviewsCount ?? 0,
+        completionRate: '0%',
+        patientsGrowth: '+0 this month',
+        earningsGrowth: '+\$0 this week',
       ),
       weeklyVolume: WeeklyConsultationVolume(
-        totalWeeklySessions: 32,
-        completionRate: '98.4%',
-        avgDurationMinutes: 45,
+        totalWeeklySessions: 0,
+        completionRate: '0%',
+        avgDurationMinutes: 0,
         dailyVolume: dailyVolume,
       ),
-      recentReviews: [
-        PatientReviewItem(
-          id: 1,
-          patientName: 'Elena Rostova',
-          patientAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
-          rating: 5,
-          comment: 'Dr. Sarah was exceptionally empathetic and practical. I felt genuinely understood.',
-          timeAgo: 'Yesterday',
-          date: "${now.subtract(const Duration(days: 1)).year}-${now.subtract(const Duration(days: 1)).month.toString().padLeft(2, '0')}-${now.subtract(const Duration(days: 1)).day.toString().padLeft(2, '0')}",
-          modality: 'Video Consultation',
-        ),
-        PatientReviewItem(
-          id: 2,
-          patientName: 'Benjamin Vance',
-          patientAvatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200',
-          rating: 5,
-          comment: 'Outstanding sessions that transformed my anxiety levels and weekly focus.',
-          timeAgo: '4d ago',
-          date: "${now.subtract(const Duration(days: 4)).year}-${now.subtract(const Duration(days: 4)).month.toString().padLeft(2, '0')}-${now.subtract(const Duration(days: 4)).day.toString().padLeft(2, '0')}",
-          modality: 'Video Consultation',
-        ),
-        PatientReviewItem(
-          id: 3,
-          patientName: 'Sophia Patel',
-          patientAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200',
-          rating: 5,
-          comment: 'Deeply knowledgeable and supportive during challenging life transitions.',
-          timeAgo: '1w ago',
-          date: "${now.subtract(const Duration(days: 7)).year}-${now.subtract(const Duration(days: 7)).month.toString().padLeft(2, '0')}-${now.subtract(const Duration(days: 7)).day.toString().padLeft(2, '0')}",
-          modality: 'Audio Call',
-        ),
-      ],
+      recentReviews: [],
     );
 
     return ApiResponse<DoctorDashboardData>(
@@ -246,36 +213,43 @@ class DoctorPortalService {
       } catch (_) {}
     }
 
-    // Default professional profile
+    final docId = AppMethod.getDoctorId();
+    if (docId != null) {
+      try {
+        final res = await DoctorService.getDoctorDetails(doctorId: docId);
+        if (res?.data != null) {
+          await StorageUtils.write(StorageKeys.DOCTOR_PROFILE, res!.data!.toJson());
+          return res.data!;
+        }
+      } catch (_) {}
+    }
+
+    // Default clean profile with real info if available
     return Expert(
-      id: AppMethod.getDoctorId() ?? 101,
-      name: AppMethod.getDoctorName() ?? 'Dr. Sarah Jenkins, MD',
-      speciality: 'Clinical Psychologist',
-      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500',
-      rating: 4.95,
-      reviewsCount: 142,
-      experienceYears: 10,
-      patientsCount: 420,
-      bio: 'Board-certified Clinical Psychologist specializing in Cognitive Behavioral Therapy (CBT), adult anxiety disorders, mindful stress management, and trauma recovery.',
-      startingPricePerHour: 85.0,
-      specialties: ['Anxiety & Panic', 'CBT Therapy', 'Stress Management', 'Depression', 'Mindfulness'],
-      languages: ['English', 'Spanish', 'French'],
-      degree: 'Ph.D. & M.D. in Clinical Psychology',
-      university: 'Stanford University School of Medicine',
-      graduationYear: 2014,
-      licenseNumber: 'PSY-CA-994820',
-      certifications: [
-        'American Board of Professional Psychology (ABPP)',
-        'Certified CBT Clinician (Beck Institute)',
-        'Telehealth Clinical Practice Certified'
-      ],
+      id: docId ?? 0,
+      name: AppMethod.getDoctorName() ?? 'Doctor Profile',
+      speciality: 'Specialist Clinician',
+      image: null,
+      rating: 0.0,
+      reviewsCount: 0,
+      experienceYears: 0,
+      patientsCount: 0,
+      bio: 'Licensed professional healthcare provider on Mentora.',
+      startingPricePerHour: 0.0,
+      specialties: ['Mental Health', 'Wellness'],
+      languages: ['English'],
+      degree: 'Medical Degree',
+      university: 'Accredited Medical University',
+      graduationYear: 2020,
+      licenseNumber: 'LIC-PENDING',
+      certifications: ['Board Certified Specialist'],
       callFeature: true,
       videoCallFeature: true,
       isAvailable: true,
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       workingHoursStart: '09:00 AM',
-      workingHoursEnd: '06:00 PM',
-      availableShifts: ['Morning', 'Afternoon', 'Evening'],
+      workingHoursEnd: '05:00 PM',
+      availableShifts: ['Morning', 'Afternoon'],
       sessionDurations: [15, 30, 45, 60],
     );
   }
@@ -288,10 +262,34 @@ class DoctorPortalService {
     }
   }
 
-  /// Fetch all doctor appointments (with mock fallback)
-  static Future<List<DoctorAppointmentModel>> getAppointments() async {
+  /// Fetch all doctor appointments from backend API (with cache fallback)
+  static Future<List<DoctorAppointmentModel>> getAppointments({int? doctorId}) async {
+    final docId = doctorId ?? AppMethod.getDoctorId();
+    if (docId != null) {
+      try {
+        final res = await client.request<ApiResponse<List<DoctorAppointmentModel>>>(
+          (dio) => dio.get('doctors/$docId/appointments'),
+          parser: (json) {
+            final raw = json as Map<String, dynamic>;
+            final listData = raw['data'] as List<dynamic>? ?? [];
+            return ApiResponse<List<DoctorAppointmentModel>>(
+              status: raw['status'] is int ? raw['status'] : 200,
+              message: raw['message']?.toString() ?? '',
+              data: listData
+                  .map((e) => DoctorAppointmentModel.fromJson(Map<String, dynamic>.from(e as Map)))
+                  .toList(),
+            );
+          },
+        );
+        if (res != null && res.data != null) {
+          await saveAppointments(res.data!);
+          return res.data!;
+        }
+      } catch (_) {}
+    }
+
     final cachedList = StorageUtils.read<List<dynamic>>(StorageKeys.DOCTOR_PORTAL_APPOINTMENTS);
-    if (cachedList != null && cachedList.isNotEmpty) {
+    if (cachedList != null) {
       try {
         return cachedList
             .map((e) => DoctorAppointmentModel.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -299,185 +297,8 @@ class DoctorPortalService {
       } catch (_) {}
     }
 
-    final now = DateTime.now();
-    final todayStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-    final tomorrow = now.add(const Duration(days: 1));
-    final tomorrowStr = "${tomorrow.year}-${tomorrow.month.toString().padLeft(2, '0')}-${tomorrow.day.toString().padLeft(2, '0')}";
-    final yesterday = now.subtract(const Duration(days: 1));
-    final yesterdayStr = "${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}";
-    final lastWeek = now.subtract(const Duration(days: 5));
-    final lastWeekStr = "${lastWeek.year}-${lastWeek.month.toString().padLeft(2, '0')}-${lastWeek.day.toString().padLeft(2, '0')}";
-
-    final initialList = <DoctorAppointmentModel>[
-      DoctorAppointmentModel(
-        id: 1001,
-        doctorId: 101,
-        userId: 201,
-        patientName: 'Jessica Miller',
-        patientImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-        patientAge: 29,
-        patientGender: 'Female',
-        patientIssue: 'Chronic work burnout, insomnia, and high anxiety during performance reviews.',
-        patientEmail: 'jessica.miller@example.com',
-        patientPhone: '+1 (555) 349-1120',
-        bookingDate: todayStr,
-        bookingTimeslot: '10:30 AM',
-        modalityType: 'Video Consultation',
-        timeSlotType: 'Morning',
-        duration: 45,
-        durationCost: 85.0,
-        notes: 'Second follow-up session. Reported improved sleep after box breathing exercises.',
-        bookingStatus: 'Upcoming',
-        createdAt: now.toIso8601String(),
-        updatedAt: now.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1002,
-        doctorId: 101,
-        userId: 202,
-        patientName: 'David Kim',
-        patientImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-        patientAge: 35,
-        patientGender: 'Male',
-        patientIssue: 'Generalized Anxiety Disorder (GAD) and social anxiety in corporate settings.',
-        patientEmail: 'david.kim@example.com',
-        patientPhone: '+1 (555) 781-9923',
-        bookingDate: todayStr,
-        bookingTimeslot: '02:00 PM',
-        modalityType: 'Video Consultation',
-        timeSlotType: 'Afternoon',
-        duration: 60,
-        durationCost: 110.0,
-        notes: 'Reviewing weekly thought-journal and cognitive restructuring techniques.',
-        bookingStatus: 'Upcoming',
-        createdAt: now.toIso8601String(),
-        updatedAt: now.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1003,
-        doctorId: 101,
-        userId: 203,
-        patientName: 'Sophia Patel',
-        patientImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200',
-        patientAge: 32,
-        patientGender: 'Female',
-        patientIssue: 'Post-partum emotional changes and panic episodes during sleep transitions.',
-        patientEmail: 'sophia.patel@example.com',
-        patientPhone: '+1 (555) 612-4489',
-        bookingDate: todayStr,
-        bookingTimeslot: '04:30 PM',
-        modalityType: 'Audio Call',
-        timeSlotType: 'Evening',
-        duration: 30,
-        durationCost: 65.0,
-        notes: 'Prefers audio-only consultation due to nursery commitments.',
-        bookingStatus: 'Upcoming',
-        createdAt: now.toIso8601String(),
-        updatedAt: now.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1004,
-        doctorId: 101,
-        userId: 204,
-        patientName: 'Marcus Reed',
-        patientImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200',
-        patientAge: 41,
-        patientGender: 'Male',
-        patientIssue: 'Grief counseling following family bereavement and motivational fatigue.',
-        patientEmail: 'marcus.reed@example.com',
-        patientPhone: '+1 (555) 890-3342',
-        bookingDate: tomorrowStr,
-        bookingTimeslot: '11:00 AM',
-        modalityType: 'Video Consultation',
-        timeSlotType: 'Morning',
-        duration: 45,
-        durationCost: 85.0,
-        notes: 'Initial evaluation and baseline clinical assessment.',
-        bookingStatus: 'Upcoming',
-        createdAt: now.toIso8601String(),
-        updatedAt: now.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1005,
-        doctorId: 101,
-        userId: 205,
-        patientName: 'Elena Rostova',
-        patientImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200',
-        patientAge: 26,
-        patientGender: 'Female',
-        patientIssue: 'Health anxiety and intrusive somatic obsession triggers.',
-        patientEmail: 'elena.rostova@example.com',
-        patientPhone: '+1 (555) 431-8891',
-        bookingDate: yesterdayStr,
-        bookingTimeslot: '01:15 PM',
-        modalityType: 'Video Consultation',
-        timeSlotType: 'Afternoon',
-        duration: 45,
-        durationCost: 85.0,
-        notes: 'Practiced grounding exercises (5-4-3-2-1 sensory method).',
-        bookingStatus: 'Completed',
-        clinicalNotes: 'Patient was responsive and receptive to exposure exercises. Prescribed guided daily breathing and 10-min evening mindfulness.',
-        stars: 5,
-        review: 'Dr. Sarah was exceptionally empathetic and practical. I felt genuinely understood.',
-        createdAt: yesterday.toIso8601String(),
-        updatedAt: yesterday.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1006,
-        doctorId: 101,
-        userId: 206,
-        patientName: 'Benjamin Vance',
-        patientImage: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200',
-        patientAge: 48,
-        patientGender: 'Male',
-        patientIssue: 'Executive stress and mild depressive symptoms affecting decision making.',
-        patientEmail: 'benjamin.vance@example.com',
-        patientPhone: '+1 (555) 902-1234',
-        bookingDate: lastWeekStr,
-        bookingTimeslot: '03:00 PM',
-        modalityType: 'Video Consultation',
-        timeSlotType: 'Afternoon',
-        duration: 60,
-        durationCost: 110.0,
-        notes: 'Completed full CBT assessment cycle.',
-        bookingStatus: 'Completed',
-        clinicalNotes: 'Significant reduction in PHQ-9 score from 14 to 7 over 4 weeks. Continuing maintenance.',
-        stars: 5,
-        review: 'Outstanding therapy sessions that have transformed my daily productivity and peace of mind.',
-        createdAt: lastWeek.toIso8601String(),
-        updatedAt: lastWeek.toIso8601String(),
-      ),
-      DoctorAppointmentModel(
-        id: 1007,
-        doctorId: 101,
-        userId: 207,
-        patientName: 'Liam O\'Connor',
-        patientImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200',
-        patientAge: 38,
-        patientGender: 'Male',
-        patientIssue: 'Relationship anxiety and communication barriers with partner.',
-        patientEmail: 'liam.oc@example.com',
-        patientPhone: '+1 (555) 234-9988',
-        bookingDate: yesterdayStr,
-        bookingTimeslot: '09:00 AM',
-        modalityType: 'Audio Call',
-        timeSlotType: 'Morning',
-        duration: 30,
-        durationCost: 65.0,
-        notes: 'Session cancelled by patient due to emergency business travel.',
-        bookingStatus: 'Cancelled',
-        cancellationReason: 'Patient had unforeseen flight delay and requested rescheduled slot.',
-        createdAt: yesterday.toIso8601String(),
-        updatedAt: yesterday.toIso8601String(),
-      ),
-    ];
-
-    await StorageUtils.write(
-      StorageKeys.DOCTOR_PORTAL_APPOINTMENTS,
-      initialList.map((e) => e.toJson()).toList(),
-    );
-
-    return initialList;
+    // Production default: empty list if database has no records
+    return <DoctorAppointmentModel>[];
   }
 
   /// Save full appointments list to cache

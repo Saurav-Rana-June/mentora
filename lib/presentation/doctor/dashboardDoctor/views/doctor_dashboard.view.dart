@@ -548,7 +548,7 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                           borderRadius: BorderRadius.circular(6.r),
                         ),
                         child: Text(
-                          '${wv?.totalWeeklySessions ?? 32} Sessions',
+                          '${wv?.totalWeeklySessions ?? 0} Sessions',
                           style: r10.copyWith(fontWeight: FontWeight.w700, color: primary),
                         ),
                       ),
@@ -568,26 +568,26 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                                   isDark,
                                 ))
                             .toList()
-                        : [
-                            buildDayBar(context, 'Mon', 6, 8, isDark),
-                            buildDayBar(context, 'Tue', 8, 8, isDark),
-                            buildDayBar(context, 'Wed', 5, 8, isDark),
-                            buildDayBar(context, 'Thu', 7, 8, isDark),
-                            buildDayBar(context, 'Fri', 4, 8, isDark),
-                            buildDayBar(context, 'Sat', 2, 8, isDark),
-                            buildDayBar(context, 'Sun', 0, 8, isDark),
-                          ],
+                        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                            .map((day) => buildDayBar(
+                                  context,
+                                  day,
+                                  0,
+                                  maxCount,
+                                  isDark,
+                                ))
+                            .toList(),
                   ),
                   Spacing.s16.h,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Completion: ${wv?.completionRate ?? "98.4%"}',
+                        'Completion: ${wv?.completionRate ?? "0%"}',
                         style: r12.copyWith(color: successColor, fontWeight: FontWeight.w600),
                       ),
                       Text(
-                        'Avg Duration: ${wv?.avgDurationMinutes ?? 45} min',
+                        'Avg Duration: ${wv?.avgDurationMinutes ?? 0} min',
                         style: r12.copyWith(color: theme.textTheme.bodySmall?.color),
                       ),
                     ],
@@ -624,21 +624,22 @@ class DoctorDashboardView extends GetView<DashboardDoctorController> {
                         timeAgo: reviews[i].timeAgo,
                       ),
                     ]
-                  else ...[
-                    buildFeedbackItem(
-                      patient: 'Elena Rostova',
-                      rating: 5,
-                      comment: 'Dr. Sarah was exceptionally empathetic and practical.',
-                      timeAgo: 'Yesterday',
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(Icons.rate_review_outlined, size: 36, color: theme.disabledColor),
+                            Spacing.s8.h,
+                            Text(
+                              'No patient reviews yet',
+                              style: r14.copyWith(color: theme.textTheme.bodySmall?.color),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    Spacing.s12.h,
-                    buildFeedbackItem(
-                      patient: 'Benjamin Vance',
-                      rating: 5,
-                      comment: 'Outstanding sessions that transformed my anxiety levels.',
-                      timeAgo: '4d ago',
-                    ),
-                  ],
                 ],
               ),
             ),

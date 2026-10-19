@@ -13,14 +13,14 @@ class DashboardDoctorController extends GetxController {
   final RxBool isLoading = false.obs;
 
   // Stats
-  final RxInt totalPatients = 148.obs;
-  final RxInt totalConsultations = 120.obs;
-  final RxDouble totalEarnings = 4820.0.obs;
-  final RxDouble rating = 4.95.obs;
-  final RxInt reviewsCount = 142.obs;
-  final RxString completionRate = '98.4%'.obs;
-  final RxString patientsGrowth = '+14 this month'.obs;
-  final RxString earningsGrowth = '+\$650 this week'.obs;
+  final RxInt totalPatients = 0.obs;
+  final RxInt totalConsultations = 0.obs;
+  final RxDouble totalEarnings = 0.0.obs;
+  final RxDouble rating = 0.0.obs;
+  final RxInt reviewsCount = 0.obs;
+  final RxString completionRate = '0%'.obs;
+  final RxString patientsGrowth = '+0 this month'.obs;
+  final RxString earningsGrowth = '+\$0 this week'.obs;
 
   // Weekly Volume & Recent Reviews
   final Rx<WeeklyConsultationVolume?> weeklyVolume = Rx<WeeklyConsultationVolume?>(null);
