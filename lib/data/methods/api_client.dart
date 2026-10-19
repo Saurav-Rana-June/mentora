@@ -36,12 +36,28 @@ class ApiClient {
       InterceptorsWrapper(
         onRequest: (options, handler) {
           log.i('API REQUEST [${options.method}] => ${options.uri}');
+          final auth = options.headers['Authorization'];
+          if (auth != null) {
+            final str = auth.toString();
+            final preview = str.length > 35
+                ? '${str.substring(0, 35)}...'
+                : str;
+            log.i('API AUTH HEADER => $preview');
+          } else {
+            log.w('API AUTH HEADER => NONE');
+          }
           if (options.data != null) {
             if (options.data is FormData) {
               final formData = options.data as FormData;
-              final fields = formData.fields.map((e) => '${e.key}: ${e.value}').join(', ');
-              final files = formData.files.map((e) => '${e.key}: ${e.value.filename}').join(', ');
-              log.i('Request Body (FormData): Fields: [$fields], Files: [$files]');
+              final fields = formData.fields
+                  .map((e) => '${e.key}: ${e.value}')
+                  .join(', ');
+              final files = formData.files
+                  .map((e) => '${e.key}: ${e.value.filename}')
+                  .join(', ');
+              log.i(
+                'Request Body (FormData): Fields: [$fields], Files: [$files]',
+              );
             } else {
               try {
                 log.i('Request Body: ${jsonEncode(options.data)}');
@@ -53,11 +69,15 @@ class ApiClient {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          log.i('API RESPONSE [${response.statusCode}] <= ${response.requestOptions.uri}');
+          log.i(
+            'API RESPONSE [${response.statusCode}] <= ${response.requestOptions.uri}',
+          );
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          log.e('API ERROR [${e.response?.statusCode}] <= ${e.requestOptions.uri}');
+          log.e(
+            'API ERROR [${e.response?.statusCode}] <= ${e.requestOptions.uri}',
+          );
           if (e.response?.data != null) {
             try {
               log.e('Error Response Data: ${jsonEncode(e.response?.data)}');
@@ -79,7 +99,15 @@ class ApiClient {
     if (withAccessToken) {
       String? token;
       final currentRoute = Get.currentRoute.toLowerCase();
-      if (currentRoute.contains('doctor') && !currentRoute.contains('admin')) {
+      // Only dedicated doctor portal screens should prioritize doctorToken.
+      // General patient screens (like '/doctor-list') must use userToken.
+      final isDoctorPortal =
+          AppFlavor.current.isDoctor ||
+          (currentRoute.contains('doctor') &&
+              !currentRoute.contains('admin') &&
+              currentRoute != Routes.DOCTOR_LIST.toLowerCase());
+
+      if (isDoctorPortal) {
         token = AppMethod.getDoctorToken() ?? AppMethod.getUserToken();
       } else {
         token = AppMethod.getUserToken() ?? AppMethod.getDoctorToken();
@@ -120,7 +148,8 @@ class ApiClient {
     // Handle 401 Unauthorized globally - clear credentials and boot user out
     if (statusCode == 401) {
       final currentRoute = Get.currentRoute;
-      final isAuthOrPublicRoute = currentRoute == Routes.SPLASH ||
+      final isAuthOrPublicRoute =
+          currentRoute == Routes.SPLASH ||
           currentRoute == Routes.SIGN_IN ||
           currentRoute == Routes.SIGN_UP ||
           currentRoute == Routes.LOGIN ||
@@ -161,10 +190,6 @@ class ApiClient {
       errorMessage = error.message ?? 'Network connection issue';
     }
 
-    AppUtils.snackbar(
-      'Error',
-      errorMessage,
-      SnackBarType.ERROR,
-    );
+    AppUtils.snackbar('Error', errorMessage, SnackBarType.ERROR);
   }
 }

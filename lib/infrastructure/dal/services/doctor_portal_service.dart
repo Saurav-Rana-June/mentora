@@ -48,7 +48,7 @@ class DoctorPortalService {
       status: 200,
       message: 'Doctor authenticated successfully',
       data: TokenResponseModel(
-        accessToken: 'mock_doctor_jwt_token_${DateTime.now().millisecondsSinceEpoch}',
+        accessToken: AppMethod.defaultRealAuthToken,
         tokenType: 'Bearer',
       ),
     );
